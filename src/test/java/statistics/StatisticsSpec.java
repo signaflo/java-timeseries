@@ -77,5 +77,13 @@ public final class StatisticsSpec {
 		double stdDeviation = Statistics.stdDeviationOf(data);
 		assertThat(stdDeviation, is(closeTo(expected, TOL)));
 	}
+	
+	@Test
+	public void whenCovarianceComputedThenResultCorrect() {
+		double[] data = {3.5, 7.0, 11.5};
+		double[] data2 = {3.0, 1.4, 10.0};
+		double expected = 14.85;
+		assertThat(Statistics.covariance(data, data2), is(closeTo(expected, TOL)));
+	}
 
 }

@@ -1,5 +1,7 @@
 package statistics;
 
+import static math.Operators.productOf;
+
 public final class Statistics {
 
 	public static final double sumOf(final double[] data) {
@@ -45,6 +47,11 @@ public final class Statistics {
 			differenced[i] = data[i] - point;
 		}
 		return differenced;
+	}
+
+	public static final double covariance(double[] data, double[] data2) {
+		return sumOf(productOf(differences(data, meanOf(data)),
+				differences(data2, meanOf(data2))))/(data.length-1);
 	}
 
 }
