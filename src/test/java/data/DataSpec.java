@@ -48,5 +48,25 @@ public class DataSpec {
 		int actual = dataSet.n();
 		assertThat(actual, is(equalTo(expected)));
 	}
+	
+	@Test
+	public void whenTimesOperationCalledThenResultCorrect() {
+		double[] data1 = new double[] {5.0, 7.5};
+		double[] data2 = new double[] {3.0, 10.0};
+		Data dataSet1 = new Data(data1);
+		Data dataSet2 = new Data(data2);
+		double[] expected = new double[] {15.0, 75.0};
+		assertThat(dataSet1.times(dataSet2), is(equalTo(expected)));
+	}
+	
+	@Test
+	public void whenPlusOperationCalledThenResultCorrect() {
+		double[] data1 = new double[] {5.0, 7.5};
+		double[] data2 = new double[] {3.0, 10.0};
+		Data dataSet1 = new Data(data1);
+		Data dataSet2 = new Data(data2);
+		double[] expected = new double[] {8.0, 17.5};
+		assertThat(dataSet1.plus(dataSet2), is(equalTo(expected)));
+	}
 
 }

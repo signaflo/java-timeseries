@@ -1,7 +1,6 @@
 package statistics;
 
 import org.junit.Test;
-import static org.junit.Assert.assertArrayEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.closeTo;
@@ -50,7 +49,7 @@ public final class StatisticsSpec {
 		double point = 6.0;
 		double[] expected = new double[] {-3.0, 3.0};
 		double[] diffs = Statistics.differences(data, point);
-		assertArrayEquals(expected, diffs, 1E-12);
+		assertThat(diffs, is(equalTo(expected)));
 	}
 	
 	@Test
@@ -58,7 +57,7 @@ public final class StatisticsSpec {
 		double[] data = {3.0, 9.0};
 		double[] expected = {9.0, 81.0};
 		double[] squared = Statistics.squared(data);
-		assertArrayEquals(expected, squared, 1E-12);
+		assertThat(squared, is(equalTo(expected)));
 	}
 	
 	@Test
