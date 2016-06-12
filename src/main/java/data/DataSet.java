@@ -3,11 +3,11 @@ package data;
 import math.Operators;
 import statistics.Statistics;
 
-public final class Data {
+public final class DataSet {
 	
 	private final double[] data;
 	
-	public Data(final double[] data) {
+	public DataSet(final double[] data) {
 		if (data == null) {
 			throw new IllegalArgumentException("The data cannot be null");
 		}
@@ -26,11 +26,11 @@ public final class Data {
 		return this.data.length;
 	}
 
-	public final double[] times(Data otherData) {
+	public final double[] times(DataSet otherData) {
 		return Operators.productOf(this.data, otherData.data);
 	}
 
-	public final double[] plus(Data otherData) {
+	public final double[] plus(DataSet otherData) {
 		return Operators.sumOf(this.data, otherData.data);
 	}
 

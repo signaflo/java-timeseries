@@ -34,7 +34,6 @@ public class OperatorsSpec {
 		double[] data2 = new double[] {4.0, 5.0};
 		double[] expected = new double[] {7.0, 10.0};
 		assertThat(Operators.sumOf(data1, data2), is(equalTo(expected)));
-
 	}
 
 }
