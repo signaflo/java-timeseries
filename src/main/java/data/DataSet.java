@@ -3,7 +3,7 @@ package data;
 import math.Operators;
 import statistics.Statistics;
 
-public final class DataSet {
+public class DataSet {
 	
 	private final double[] data;
 	
@@ -26,12 +26,28 @@ public final class DataSet {
 		return this.data.length;
 	}
 
-	public final double[] times(DataSet otherData) {
-		return Operators.productOf(this.data, otherData.data);
+	public final DataSet times(DataSet otherData) {
+		return new DataSet(Operators.productOf(this.data, otherData.data));
 	}
 
-	public final double[] plus(DataSet otherData) {
-		return Operators.sumOf(this.data, otherData.data);
+	public final DataSet plus(DataSet otherData) {
+		return new DataSet(Operators.sumOf(this.data, otherData.data));
+	}
+	
+	public final double variance() {
+		return Statistics.varianceOf(this.data);
+	}
+	
+	public final double stdDeviation() {
+		return Statistics.stdDeviationOf(this.data);
+	}
+	
+	public final double covariance(DataSet otherData) {
+		return Statistics.covariance(this.data, otherData.data);
+	}
+	
+	public final double[] data() {
+		return this.data;
 	}
 
 }

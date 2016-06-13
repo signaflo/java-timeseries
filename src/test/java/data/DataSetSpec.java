@@ -31,7 +31,7 @@ public class DataSetSpec {
 	}
 	
 	@Test
-	public void whenMeanRequestedThenResultCorret() {
+	public void whenMeanRequestedThenResultCorrect() {
 		double[] data = new double[] {3.0, 5.5, 6.5};
 		DataSet dataSet = new DataSet(data);
 		double expected = 5.0;
@@ -55,7 +55,7 @@ public class DataSetSpec {
 		DataSet dataSet1 = new DataSet(data1);
 		DataSet dataSet2 = new DataSet(data2);
 		double[] expected = new double[] {15.0, 75.0};
-		assertThat(dataSet1.times(dataSet2), is(equalTo(expected)));
+		assertThat(dataSet1.times(dataSet2).data(), is(equalTo(expected)));
 	}
 	
 	@Test
@@ -65,7 +65,7 @@ public class DataSetSpec {
 		DataSet dataSet1 = new DataSet(data1);
 		DataSet dataSet2 = new DataSet(data2);
 		double[] expected = new double[] {8.0, 17.5};
-		assertThat(dataSet1.plus(dataSet2), is(equalTo(expected)));
+		assertThat(dataSet1.plus(dataSet2).data(), is(equalTo(expected)));
 	}
 
 }
