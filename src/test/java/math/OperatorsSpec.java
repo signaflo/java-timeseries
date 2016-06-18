@@ -21,7 +21,7 @@ public class OperatorsSpec {
 	}
 	
 	@Test
-	public void whenProductOfCalledThenResultCorrect() {
+	public void whenProductOfCalledThenVectorizedProductReturned() {
 		double[] data1 = new double[] {3.0, 5.0};
 		double[] data2 = new double[] {4.0, 5.0};
 		double[] expected = new double[] {12.0, 25.0};
@@ -29,7 +29,7 @@ public class OperatorsSpec {
 	}
 	
 	@Test
-	public void whenSumOfCalledThenResultCorrect() {
+	public void whenSumOfCalledThenVectorizedSumReturned() {
 		double[] data1 = new double[] {3.0, 5.0};
 		double[] data2 = new double[] {4.0, 5.0};
 		double[] expected = new double[] {7.0, 10.0};

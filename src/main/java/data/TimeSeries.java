@@ -8,5 +8,9 @@ public final class TimeSeries extends DataSet {
 		super(series);
 		this.series = series;
 	}
+	
+	public final double[] series() {
+		return this.series;
+	}
 
 }
