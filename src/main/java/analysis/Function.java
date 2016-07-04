@@ -2,10 +2,10 @@ package analysis;
 
 import org.apache.commons.math3.analysis.differentiation.DerivativeStructure;
 
-final class Function {
+abstract class Function {
 	
-	private final int nVariables;
-	private final DerivativeStructure[] variables;
+	final int nVariables;
+	final DerivativeStructure[] variables;
 	
 	Function(final int nVariables, final int order) {
 		this(nVariables, order, new double[nVariables]);
