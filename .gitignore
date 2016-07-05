@@ -5,3 +5,5 @@
 /target/
 .gradle/
 .settings/
+/gradle.properties
+/.gitignore
