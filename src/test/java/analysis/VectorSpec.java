@@ -1,7 +1,6 @@
 package analysis;
 
 import org.apache.commons.math3.analysis.differentiation.DerivativeStructure;
-import org.apache.commons.math3.optim.linear.SolutionCallback;
 import org.junit.Test;
 
 public class VectorSpec {
