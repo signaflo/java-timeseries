@@ -2,7 +2,7 @@ package analysis;
 
 import org.apache.commons.math3.analysis.differentiation.DerivativeStructure;
 
-public final class RowVector {
+public final class RowVector implements Vector {
 	
 	private final DerivativeStructure[] points;
 	private final int nRows = 1;
@@ -28,12 +28,19 @@ public final class RowVector {
 		return this.points;
 	}
 	
+	@Override
 	public final int nRows() {
 		return this.nRows;
 	}
 	
+	@Override
 	public final int nCols() {
 		return this.nCols;
+	}
+	
+	@Override
+	public final Vector transpose() {
+		return new ColumnVector(this.points);
 	}
 
 
