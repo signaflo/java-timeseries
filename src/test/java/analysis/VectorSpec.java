@@ -11,9 +11,9 @@ public class VectorSpec {
 		DerivativeStructure y = new DerivativeStructure(1, 1, 0, 8);
 		DerivativeStructure z = new DerivativeStructure(1, 1, 0, 3);
 		DerivativeStructure w = new DerivativeStructure(1, 1, 0, 5);
-		Vector v = new Vector(new DerivativeStructure[] {x, y});
-		Vector u = new Vector(new DerivativeStructure[] {z, w});
-		Vector vu = v.plus(u);
+		ColumnVector v = new ColumnVector(new DerivativeStructure[] {x, y});
+		ColumnVector u = new ColumnVector(new DerivativeStructure[] {z, w});
+		ColumnVector vu = v.plus(u);
 		DerivativeStructure[] result = vu.points();
 		for (DerivativeStructure ds : result) {
 			double[] derivs = ds.getAllDerivatives();
