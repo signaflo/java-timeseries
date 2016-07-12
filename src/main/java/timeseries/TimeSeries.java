@@ -1,4 +1,6 @@
-package data;
+package timeseries;
+
+import data.DataSet;
 
 public final class TimeSeries extends DataSet {
 	

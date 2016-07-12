@@ -10,7 +10,7 @@ public class Vector {
 		this.points = points;
 	}
 	
-	Vector add(Vector other) {
+	Vector plus(Vector other) {
 		if (this.points.length != other.points.length) {
 			throw new IllegalArgumentException("The vectors must have the same length");
 		}
