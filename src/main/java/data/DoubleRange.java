@@ -1,5 +1,7 @@
 package data;
 
+import statistics.Statistics;
+
 final class DoubleRange {
 	
 	private final double[] range;
@@ -23,4 +25,7 @@ final class DoubleRange {
 		return this.range;
 	}
 
+	public final double sum() {
+		return Statistics.sumOf(range);
+	}
 }
