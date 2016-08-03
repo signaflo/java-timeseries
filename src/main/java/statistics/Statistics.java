@@ -2,6 +2,8 @@ package statistics;
 
 import static math.Operators.productOf;
 
+import java.util.Arrays;
+
 public final class Statistics {
 
 	public static final double sumOf(final double[] data) {
@@ -49,9 +51,25 @@ public final class Statistics {
 		return differenced;
 	}
 
-	public static final double covariance(double[] data, double[] data2) {
+	public static final double covarianceOf(final double[] data, final double[] data2) {
 		return sumOf(productOf(differences(data, meanOf(data)),
 				differences(data2, meanOf(data2))))/(data.length-1);
+	}
+	
+	public static final double correlationOf(final double[] data, final double[] data2) {
+		return covarianceOf(data, data2)/(stdDeviationOf(data)*stdDeviationOf(data2));
+	}
+	
+	// Arrays.sort uses quicksort algorithm as of Java 8.
+	public static final double medianOf(final double[] data) {
+		double[] copy = data.clone();
+		Arrays.sort(copy);
+		if (copy.length % 2 == 0) {
+			return (copy[(copy.length/2) - 1] + copy[(copy.length/2)]) / 2.0;
+		}
+		else {
+			return copy[(copy.length - 1)/2];
+		}
 	}
 
 }

@@ -9,7 +9,7 @@ public class DataSet {
 	
 	public DataSet(final double[] data) {
 		if (data == null) {
-			throw new IllegalArgumentException("The data cannot be null");
+			throw new IllegalArgumentException("Null array passed to constructor.");
 		}
 		this.data = data;
 	}
@@ -43,7 +43,11 @@ public class DataSet {
 	}
 	
 	public final double covariance(DataSet otherData) {
-		return Statistics.covariance(this.data, otherData.data);
+		return Statistics.covarianceOf(this.data, otherData.data);
+	}
+	
+	public final double correlation(DataSet otherData) {
+		return Statistics.covarianceOf(this.data, otherData.data);
 	}
 	
 	public final double[] data() {

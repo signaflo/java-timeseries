@@ -82,7 +82,25 @@ public final class StatisticsSpec {
 		double[] data = {3.5, 7.0, 11.5};
 		double[] data2 = {3.0, 1.4, 10.0};
 		double expected = 14.85;
-		assertThat(Statistics.covariance(data, data2), is(closeTo(expected, TOL)));
+		assertThat(Statistics.covarianceOf(data, data2), is(closeTo(expected, TOL)));
+	}
+	
+	@Test
+	public void whenCorrelationComputedThenResultCorrect() {
+		double[] data = {3.5, 7.0, 11.5};
+		double[] data2 = {3.0, 1.4, 10.0};
+		double expected = 0.80957592; //Julia
+		assertThat(Statistics.correlationOf(data, data2), is(closeTo(expected, TOL)));
+	}
+	
+	@Test
+	public void whenMedianComputedThenResultCorrect() {
+		double[] data = {11.5, 3.0, 7.0};
+		double[] data2 = {3.0, 1.4, 7.0, 9.5};
+		double expected = 7.0;
+		double expected2 = 5.0;
+		assertThat(Statistics.medianOf(data), is(equalTo(expected)));
+		assertThat(Statistics.medianOf(data2), is(equalTo(expected2)));
 	}
 
 }
