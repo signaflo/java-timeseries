@@ -43,8 +43,8 @@ public class DataSetSpec {
 	public void whenLengthRequestedThenResultCorrect() {
 		double[] data = new double[] {5.0, 7.5};
 		DataSet dataSet = new DataSet(data);
-		int expected = 2;
-		int actual = dataSet.n();
+		long expected = 2;
+		long actual = dataSet.n();
 		assertThat(actual, is(equalTo(expected)));
 	}
 	
@@ -60,12 +60,15 @@ public class DataSetSpec {
 	
 	@Test
 	public void whenPlusOperationCalledThenResultCorrect() {
-		double[] data1 = new double[] {5.0, 7.5};
-		double[] data2 = new double[] {3.0, 10.0};
-		DataSet dataSet1 = new DataSet(data1);
-		DataSet dataSet2 = new DataSet(data2);
+		DataSet dataSet1 = new DataSet(5.0, 7.5);
+		DataSet dataSet2 = new DataSet(3.0, 10.0);
 		double[] expected = new double[] {8.0, 17.5};
 		assertThat(dataSet1.plus(dataSet2).data(), is(equalTo(expected)));
+	}
+	
+	@Test
+	public void whenCorrelationComputedThenResultCorrect() {
+		
 	}
 
 }

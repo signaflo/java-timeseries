@@ -7,11 +7,11 @@ public class DataSet {
 	
 	private final double[] data;
 	
-	public DataSet(final double[] data) {
+	public DataSet(final double... data) {
 		if (data == null) {
 			throw new IllegalArgumentException("Null array passed to constructor.");
 		}
-		this.data = data;
+		this.data = data.clone();
 	}
 	
 	public final double sum() {
@@ -26,11 +26,11 @@ public class DataSet {
 		return this.data.length;
 	}
 
-	public final DataSet times(DataSet otherData) {
+	public final DataSet times(final DataSet otherData) {
 		return new DataSet(Operators.productOf(this.data, otherData.data));
 	}
 
-	public final DataSet plus(DataSet otherData) {
+	public final DataSet plus(final DataSet otherData) {
 		return new DataSet(Operators.sumOf(this.data, otherData.data));
 	}
 	
@@ -42,12 +42,12 @@ public class DataSet {
 		return Statistics.stdDeviationOf(this.data);
 	}
 	
-	public final double covariance(DataSet otherData) {
+	public final double covariance(final DataSet otherData) {
 		return Statistics.covarianceOf(this.data, otherData.data);
 	}
 	
 	public final double correlation(DataSet otherData) {
-		return Statistics.covarianceOf(this.data, otherData.data);
+		return Statistics.correlationOf(this.data, otherData.data);
 	}
 	
 	public final double[] data() {
