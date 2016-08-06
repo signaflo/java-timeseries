@@ -1,2 +1,2 @@
-#Scalytics
-A new library for statistics in Java.
+#Java Time Series
+Time series analysis on the JVM.
