@@ -1,5 +1,12 @@
 package timeseries;
 
+import java.time.Instant;
+import java.time.Period;
+import java.time.Year;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 
 import javax.swing.JFrame;
@@ -10,7 +17,7 @@ import data.DataSet;
 
 /**
  * A sequence of observations taken at regular time intervals.
- * @author jacob
+ * @author Jacob Rachiele
  *
  */
 public final class TimeSeries extends DataSet {
@@ -19,29 +26,50 @@ public final class TimeSeries extends DataSet {
 	private final double mean;
 	private final double[] series;
 	private final double[] timeIndices;
+	private String name = "Time Series";
+	private final TemporalUnit unitOfTime;
+	private final Period cycleLength;
+	
+	/**
+	 * Construct a new TimeSeries object with the given parameters.
+	 * @param unitOfTime the unit of time in which cycle lengths are measured in.
+	 *     Defaults to {@link Years}
+	 * @param period the length of the time cycle with respect to the given time unit.
+	 * For example, there are 12 months in a year, so if the time unit is Years, then 
+	 * the period, in months, is 12, since the length of a yearly cycle measured by months is 12.
+	 * @param startTime
+	 * @param series
+	 */
+	public TimeSeries(final TemporalUnit unitOfTime, final Period period,
+			final Instant startTime, final double... series) {
+		super(series);
+		this.series = series;
+		this.n = series.length;
+		this.mean = super.mean();
+		super.setName(this.name);
+		this.timeIndices = new double[series.length];
+		for (int i = 0; i < timeIndices.length; i++) {
+			timeIndices[i] =  i;
+		}
+		this.unitOfTime = unitOfTime;
+		this.cycleLength = period;
+	}
 	
 	/**
 	 * Construct a new TimeSeries from the underlying series data with the given start time.
 	 * @param startTime the time of the first observation.
 	 * @param series the observations.
 	 */
-	public TimeSeries(int startTime, final double... series) {
-		super(series);
-		this.series = series;
-		this.n = series.length;
-		this.mean = super.mean();
-		this.timeIndices = new double[series.length];
-		for (int i = 0; i < timeIndices.length; i++) {
-			timeIndices[i] = startTime + i;
-		}
+	public TimeSeries(final Instant startTime, final double... series) {
+		this(ChronoUnit.YEARS, Period.ofMonths(12), startTime, series);
 	}
 	
 	/**
-	 * Construct a new TimeSeries from the underlying series data with a default start time of 1.
+	 * Construct a new TimeSeries from the underlying series data with a default start at the epoch.
 	 * @param series the sequence of observations.
 	 */
 	public TimeSeries(final double... series) {
-		this(1, series);
+		this(ZonedDateTime.of(1, 1, 1, 1, 1, 1, 1, ZoneId.of("UTC-05:00")).toInstant(), series);
 	}
 	
 	/**
@@ -109,6 +137,12 @@ public final class TimeSeries extends DataSet {
 		return autoCorrelation;
 	}
 	
+	public final TimeSeries timeSlice(final int from, final int to) {
+		double[] sliced = new double[to - from + 1];
+		System.arraycopy(series, from - 1, sliced, 0, to - from + 1);
+		return new TimeSeries(sliced);
+	}
+	
 	/**
 	 * Produce a simple line plot connecting the time indices to the observations.
 	 */
@@ -123,14 +157,26 @@ public final class TimeSeries extends DataSet {
 		frame.setContentPane(plot);
 		frame.setVisible(true);
 	}
+	
+	@Override
+	public void setName(final String newName) {
+		this.name = newName;
+		super.setName(newName);
+	}
+	
+	@Override
+	public String getName() {
+		return this.name;
+	}
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("series: ").append(Arrays.toString(series)).
-		append("\nsize: ").append(n).
-		append("\nmean: ").append(super.mean()).
-		append("\nstandard deviation: ").append(super.stdDeviation());
+		builder.append("Time Series: ").append(name).
+		append("\nObservations: ").append(Arrays.toString(series)).
+		append("\nSize: ").append(n).
+		append("\nMean: ").append(super.mean()).
+		append("\nStandard deviation: ").append(super.stdDeviation());
 		return builder.toString();
 	}
 

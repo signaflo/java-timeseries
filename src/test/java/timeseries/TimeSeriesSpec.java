@@ -10,6 +10,12 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.closeTo;
 import static org.junit.Assert.assertArrayEquals;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 
@@ -21,7 +27,7 @@ public class TimeSeriesSpec {
 	@Test
 	public void whenTimeSeriesMeanTakenThenResultCorrect() {
 		double[] data = new double[] {3.0, 7.0, 5.0};
-		TimeSeries series = new TimeSeries(2000, data);
+		TimeSeries series = new TimeSeries(ZonedDateTime.now().toInstant(), data);
 		assertThat(series.mean(), is(equalTo(5.0)));
 	}
 	

@@ -1,14 +1,13 @@
 package data;
 
+import java.awt.Color;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
-import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
-import org.knowm.xchart.style.Styler;
-import org.knowm.xchart.style.XYStyler;
 import org.knowm.xchart.style.Styler.ChartTheme;
 
 /**
@@ -19,6 +18,7 @@ import org.knowm.xchart.style.Styler.ChartTheme;
 public class DataSet {
 	
 	private final double[] data;
+	private String name = "Data";
 	
 	/**
 	 * Construct a new DataSet from the given data.
@@ -29,6 +29,14 @@ public class DataSet {
 			throw new IllegalArgumentException("Null array passed to constructor.");
 		}
 		this.data = data.clone();
+	}
+	
+	public void setName(final String newName) {
+		this.name = newName;
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 	
 	/**
@@ -134,26 +142,32 @@ public class DataSet {
 		for (int i = 0; i < indices.length; i++) {
 			indices[i] = i;
 		}
-		XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800).
-				title("Data plot").xAxisTitle("index").yAxisTitle("values").build();
-		XYStyler styler = chart.getStyler();
-		styler.setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
-		chart.addSeries("data", indices, data);
+		XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).
+				title("Scatter Plot").xAxisTitle("Index").yAxisTitle("Values").build();
+		chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter).
+		    setChartFontColor(Color.BLACK).setSeriesColors(new Color[] {Color.BLUE});
+		chart.addSeries(this.name, indices, data);
 	    new SwingWrapper<>(chart).displayChart();
 	}
-	public final void plotAgainst(final DataSet otherData) {
-		XYChart chart = QuickChart.getChart("DataSet", "x", "y", "data", this.data, otherData.data);
+	
+	public void plotAgainst(final DataSet otherData) {
+		XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
+				.title("Scatter Plot").xAxisTitle("X").yAxisTitle("Y").build();
+		chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter).
+	    setChartFontColor(Color.BLACK).setSeriesColors(new Color[] {Color.BLUE});
+		chart.addSeries(" ", otherData.data, this.data);
 		new SwingWrapper<>(chart).displayChart();
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("data: ").append(Arrays.toString(data)).
-		append("\nsize: ").append(data.length).
-		append("\nmean: ").append(mean()).
-		append("\nstandard deviation: ").append(stdDeviation());
-		return builder.toString();
+		DecimalFormat df = new DecimalFormat("0.##");
+		return new StringBuilder().
+		append("DataSet: ").append(name).
+		append("\nValues: ").append(Arrays.toString(data)).
+		append("\nSize: ").append(data.length).
+		append("\nMean: ").append(mean()).
+		append("\nStandard deviation: ").append(df.format(stdDeviation())).toString();
 	}
 
 }
