@@ -2,6 +2,15 @@ package data;
 
 import java.util.Arrays;
 
+import org.knowm.xchart.QuickChart;
+import org.knowm.xchart.SwingWrapper;
+import org.knowm.xchart.XYChart;
+import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
+import org.knowm.xchart.style.Styler;
+import org.knowm.xchart.style.XYStyler;
+import org.knowm.xchart.style.Styler.ChartTheme;
+
 /**
  * A collection of numerical observations.
  * @author jacob
@@ -118,6 +127,23 @@ public class DataSet {
 	 */
 	public final double[] data() {
 		return this.data;
+	}
+	
+	public void plot() {
+		final double[] indices = new double[this.data.length];
+		for (int i = 0; i < indices.length; i++) {
+			indices[i] = i;
+		}
+		XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800).
+				title("Data plot").xAxisTitle("index").yAxisTitle("values").build();
+		XYStyler styler = chart.getStyler();
+		styler.setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
+		chart.addSeries("data", indices, data);
+	    new SwingWrapper<>(chart).displayChart();
+	}
+	public final void plotAgainst(final DataSet otherData) {
+		XYChart chart = QuickChart.getChart("DataSet", "x", "y", "data", this.data, otherData.data);
+		new SwingWrapper<>(chart).displayChart();
 	}
 
 	@Override

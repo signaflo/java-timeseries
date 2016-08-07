@@ -112,6 +112,7 @@ public final class TimeSeries extends DataSet {
 	/**
 	 * Produce a simple line plot connecting the time indices to the observations.
 	 */
+	@Override
 	public final void plot() {
 		Plot2DPanel plot = new Plot2DPanel();
 		JFrame frame = new JFrame("Time Series Plot");
