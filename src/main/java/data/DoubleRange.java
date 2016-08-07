@@ -1,7 +1,5 @@
 package data;
 
-import statistics.Statistics;
-
 final class DoubleRange {
 	
 	private final double[] range;
@@ -13,19 +11,19 @@ final class DoubleRange {
 		}
 	}
 	
-	public static final DoubleRange newRangeExclusive(final int from, final int to) {
+	static final DoubleRange newRangeExclusive(final int from, final int to) {
 		return new DoubleRange(from, to, 1);
 	}
 	
-	public static final DoubleRange newRangeInclusive(final int from, final int to) {
+	static final DoubleRange newRangeInclusive(final int from, final int to) {
 		return new DoubleRange(from, to + 1, 1);
 	}
 	
-	public final double[] asArray() {
+	final double[] asArray() {
 		return this.range;
 	}
 
-	public final double sum() {
+	final double sum() {
 		return Statistics.sumOf(range);
 	}
 }

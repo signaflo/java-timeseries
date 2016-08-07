@@ -1,7 +1,5 @@
 package data;
 
-import statistics.Statistics;
-
 final class Range {
 	
 	private final int[] range;
@@ -16,27 +14,27 @@ final class Range {
 		}
 	}
 	
-	public static final Range newRangeExclusive(final int from, final int to) {
+	static final Range newRangeExclusive(final int from, final int to) {
 		return new Range(from, to, 1);
 	}
 	
-	public static final Range newRangeInclusive(final int from, final int to) {
+	static final Range newRangeInclusive(final int from, final int to) {
 		return new Range(from, to + 1, 1);
 	}
 	
-	public final int[] asArray() {
+	final int[] asArray() {
 		return this.range;
 	}
 	
-	public final double sum() {
+	final double sum() {
 		return Statistics.sumOf(data);
 	}
 	
-	public Range sliceInclusive(final int from, final int to) {
+	Range sliceInclusive(final int from, final int to) {
 		return new Range(this.range[from], this.range[to + 1], 1);
 	}
 	
-	public Range sliceExclusive(final int from, final int to) {
+	Range sliceExclusive(final int from, final int to) {
 		return new Range(this.range[from], this.range[to], 1);
 	}
 

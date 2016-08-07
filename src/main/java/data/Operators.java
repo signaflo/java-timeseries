@@ -1,8 +1,10 @@
-package math;
+package data;
 
-public final class Operators {
+final class Operators {
+
+	private Operators(){}
 	
-	public static final double[] productOf(final double[] data1, final double[] data2) {
+	static final double[] productOf(final double[] data1, final double[] data2) {
 		if (data1.length != data2.length) {
 			throw new IllegalArgumentException("The data arrays must have the same length.");
 		}
@@ -13,7 +15,7 @@ public final class Operators {
 		return product;
 	}
 
-	public static final double[] sumOf(final double[] data1, final double[] data2) {
+	static final double[] sumOf(final double[] data1, final double[] data2) {
 		if (data1.length != data2.length) {
 			throw new IllegalArgumentException("The data arrays must have the same length.");
 		}

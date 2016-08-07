@@ -7,6 +7,7 @@ import org.junit.rules.ExpectedException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.closeTo;
 
 public class DataSetSpec {
 	
@@ -37,6 +38,64 @@ public class DataSetSpec {
 		double expected = 5.0;
 		double actual = dataSet.mean();
 		assertThat(actual, is(equalTo(expected)));
+	}
+	
+	@Test
+	public void whenMedianRequestedThenResultCorrect() {
+		double[] data = new double[] {5.5, 6.5, 3.0};
+		DataSet dataSet = new DataSet(data);
+		double expected = 5.5;
+		double actual = dataSet.median();
+		assertThat(actual, is(equalTo(expected)));
+	}
+	
+	@Test
+	public void whenMedianRequestedEvenNumDataPointsThenResultCorrect() {
+		double[] data = new double[] {6.5, 10.0, 3.0, 5.5};
+		DataSet dataSet = new DataSet(data);
+		double expected = 6.0;
+		double actual = dataSet.median();
+		assertThat(actual, is(equalTo(expected)));
+	}
+	
+	@Test
+	public void whenVarianceRequestedEvenNumDataPointsThenResultCorrect() {
+		double[] data = new double[] {6.5, 10.0, 3.0, 5.5};
+		DataSet dataSet = new DataSet(data);
+		double expected = 8.416667;
+		double actual = dataSet.variance();
+		assertThat(actual, is(closeTo(expected, 1E-4)));
+	}
+	
+	@Test
+	public void whenStdDeviationRequestedEvenNumDataPointsThenResultCorrect() {
+		double[] data = new double[] {6.5, 10.0, 3.0, 5.5};
+		DataSet dataSet = new DataSet(data);
+		double expected = 2.901149;
+		double actual = dataSet.stdDeviation();
+		assertThat(actual, is(closeTo(expected, 1E-4)));
+	}
+	
+	@Test
+	public void whenCovarianceRequestedEvenNumDataPointsThenResultCorrect() {
+		double[] data1 = new double[] {6.5, 10.0, 3.0, 5.5};
+		double[] data2 = new double[] {3.0, 5.0, 7.0, 4.5};
+		DataSet dataSet = new DataSet(data1);
+		DataSet dataSet2 = new DataSet(data2);
+		double expected =  -2.208333;
+		double actual = dataSet.covariance(dataSet2);
+		assertThat(actual, is(closeTo(expected, 1E-4)));
+	}
+	
+	@Test
+	public void whenCorrelationRequestedEvenNumDataPointsThenResultCorrect() {
+		double[] data1 = new double[] {6.5, 10.0, 3.0, 5.5};
+		double[] data2 = new double[] {3.0, 5.0, 7.0, 4.5};
+		DataSet dataSet = new DataSet(data1);
+		DataSet dataSet2 = new DataSet(data2);
+		double expected = -0.4607651;
+		double actual = dataSet.correlation(dataSet2);
+		assertThat(actual, is(closeTo(expected, 1E-4)));
 	}
 	
 	@Test

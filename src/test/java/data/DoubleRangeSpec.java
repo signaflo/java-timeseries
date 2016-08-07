@@ -3,6 +3,10 @@ package data;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.closeTo;
+
 public class DoubleRangeSpec {
 	
 	@Test
@@ -35,6 +39,12 @@ public class DoubleRangeSpec {
 		int to = 5;
 		double[] expected = new double[] {2.0, 3.0, 4.0};
 		assertArrayEquals(expected, DoubleRange.newRangeExclusive(from, to).asArray(), 1E-8);
+	}
+	
+	@Test
+	public void whenSumComputedResultCorrect() {
+		DoubleRange range = DoubleRange.newRangeExclusive(2, 5);
+		assertThat(range.sum(), is(closeTo(9.0, 1E-8)));
 	}
 
 
