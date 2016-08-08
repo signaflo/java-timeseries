@@ -1,11 +1,11 @@
 package data;
 
 import timeseries.TimeSeries;
-
+import static data.TestData.*;
 public class Main {
 
 	public static void main(String[] args) {
-		TimeSeries ausBeer = new TimeSeries(TestData.ausbeer());
+		TimeSeries ausBeer = ausbeerSeries();
 	    DataSet data = ausBeer.timeSlice(2, 211);
 	    data.setName("Australian Beer Production");
 	    DataSet lag1 = ausBeer.timeSlice(1, 210);

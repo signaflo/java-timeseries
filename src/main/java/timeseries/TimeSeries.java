@@ -2,7 +2,6 @@ package timeseries;
 
 import java.time.Instant;
 import java.time.Period;
-import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -33,7 +32,6 @@ public final class TimeSeries extends DataSet {
 	/**
 	 * Construct a new TimeSeries object with the given parameters.
 	 * @param unitOfTime the unit of time in which cycle lengths are measured in.
-	 *     Defaults to {@link Years}
 	 * @param period the length of the time cycle with respect to the given time unit.
 	 * For example, there are 12 months in a year, so if the time unit is Years, then 
 	 * the period, in months, is 12, since the length of a yearly cycle measured by months is 12.
@@ -60,7 +58,7 @@ public final class TimeSeries extends DataSet {
 	 * @param startTime the time of the first observation.
 	 * @param series the observations.
 	 */
-	public TimeSeries(final Instant startTime, final double... series) {
+	TimeSeries(final Instant startTime, final double... series) {
 		this(ChronoUnit.YEARS, Period.ofMonths(12), startTime, series);
 	}
 	
@@ -69,7 +67,7 @@ public final class TimeSeries extends DataSet {
 	 * @param series the sequence of observations.
 	 */
 	public TimeSeries(final double... series) {
-		this(ZonedDateTime.of(1, 1, 1, 1, 1, 1, 1, ZoneId.of("UTC-05:00")).toInstant(), series);
+		this(ZonedDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneId.of("America/Chicago")).toInstant(), series);
 	}
 	
 	/**
@@ -153,7 +151,7 @@ public final class TimeSeries extends DataSet {
 		plot.addLinePlot("Series", timeIndices, series);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(true);
-		frame.setSize(600, 400);
+		frame.setSize(800, 600);
 		frame.setContentPane(plot);
 		frame.setVisible(true);
 	}

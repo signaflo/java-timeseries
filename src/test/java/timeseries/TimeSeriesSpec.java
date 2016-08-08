@@ -64,4 +64,9 @@ public class TimeSeriesSpec {
 		double[] result = series.autoCorrelationUpToLag(5);
 		assertArrayEquals(expected, result, 1E-2);
 	}
+	
+//	@Test
+//	public void testDailySeries() {
+//		TimeSeries series = new TimeSeries()
+//	}
 }
