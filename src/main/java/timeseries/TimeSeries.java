@@ -31,7 +31,6 @@ public final class TimeSeries extends DataSet {
 	private String name = "Time Series";
 	private final TemporalUnit timeScale;
 	private final double periodLength;
-	private Duration duration;
 	
 	/**
 	 * Construct a new TimeSeries object with the given parameters.
