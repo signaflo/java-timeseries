@@ -1,7 +1,6 @@
 package timeseries;
 
 import java.time.Instant;
-import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -25,7 +24,7 @@ public final class Ts {
 			final double... series) {
 		final Instant startingInstant = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
 				ZoneId.of(ZONE_ID)).toInstant();
-		return new TimeSeries(ChronoUnit.YEARS, Period.ofMonths(12), startingInstant, series);
+		return new TimeSeries(ChronoUnit.MONTHS, 1L, startingInstant, series);
 	}
 	
 	/**
@@ -42,7 +41,7 @@ public final class Ts {
 			final int startDay, final double... series) {
 		final Instant startingInstant = ZonedDateTime.of(startYear, startMonth, startDay, 0, 0, 0, 0,
 				ZoneId.of(ZONE_ID)).toInstant();
-		return new TimeSeries(ChronoUnit.YEARS, Period.ofMonths(12), startingInstant, series);
+		return new TimeSeries(ChronoUnit.MONTHS, 1L, startingInstant, series);
 	}
 	
 	/**
@@ -59,7 +58,7 @@ public final class Ts {
 		final int startMonth  = 3*startQuarter - 2;
 		final Instant startingInstant = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
 				ZoneId.of(ZONE_ID)).toInstant();
-		return new TimeSeries(ChronoUnit.YEARS, Period.ofMonths(3), startingInstant, series);
+		return new TimeSeries(ChronoUnit.MONTHS, 3L, startingInstant, series);
 	}
 
 }

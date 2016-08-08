@@ -1,7 +1,10 @@
 package timeseries;
 
+import java.awt.Color;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.Period;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -11,6 +14,7 @@ import java.util.Arrays;
 import javax.swing.JFrame;
 
 import org.math.plot.Plot2DPanel;
+import org.math.plot.plots.LinePlot;
 
 import data.DataSet;
 
@@ -21,24 +25,23 @@ import data.DataSet;
  */
 public final class TimeSeries extends DataSet {
 	
+	
 	private final int n;
 	private final double mean;
 	private final double[] series;
 	private final double[] timeIndices;
 	private String name = "Time Series";
-	private final TemporalUnit unitOfTime;
-	private final Period cycleLength;
+	final TemporalUnit timeUnit;
+	private final long periodLength;
+	Duration duration;
 	
 	/**
 	 * Construct a new TimeSeries object with the given parameters.
-	 * @param unitOfTime the unit of time in which cycle lengths are measured in.
-	 * @param period the length of the time cycle with respect to the given time unit.
-	 * For example, there are 12 months in a year, so if the time unit is Years, then 
-	 * the period, in months, is 12, since the length of a yearly cycle measured by months is 12.
+	 * @param timeUnit the length of time between observations.
 	 * @param startTime
 	 * @param series
 	 */
-	public TimeSeries(final TemporalUnit unitOfTime, final Period period,
+	public TimeSeries(final TemporalUnit timeUnit, final long periodLength,
 			final Instant startTime, final double... series) {
 		super(series);
 		this.series = series;
@@ -49,8 +52,8 @@ public final class TimeSeries extends DataSet {
 		for (int i = 0; i < timeIndices.length; i++) {
 			timeIndices[i] =  i;
 		}
-		this.unitOfTime = unitOfTime;
-		this.cycleLength = period;
+		this.timeUnit = timeUnit;
+		this.periodLength = periodLength;
 	}
 	
 	/**
@@ -59,11 +62,13 @@ public final class TimeSeries extends DataSet {
 	 * @param series the observations.
 	 */
 	TimeSeries(final Instant startTime, final double... series) {
-		this(ChronoUnit.YEARS, Period.ofMonths(12), startTime, series);
+		this(ChronoUnit.MONTHS, 1L, startTime, series);
 	}
 	
 	/**
-	 * Construct a new TimeSeries from the underlying series data with a default start at the epoch.
+	 * Construct a new TimeSeries from the underlying series data counting from year 1. Use
+	 * this constructor if the dates and/or times associated with the observations do not matter.
+	 * If dates and/or times do matter, use a more appropriate constructor.
 	 * @param series the sequence of observations.
 	 */
 	public TimeSeries(final double... series) {
@@ -141,6 +146,8 @@ public final class TimeSeries extends DataSet {
 		return new TimeSeries(sliced);
 	}
 	
+	// ********** Plots ********** //
+	
 	/**
 	 * Produce a simple line plot connecting the time indices to the observations.
 	 */
@@ -155,6 +162,41 @@ public final class TimeSeries extends DataSet {
 		frame.setContentPane(plot);
 		frame.setVisible(true);
 	}
+	
+	public final void plotAcf() {
+		final int k = 20;
+		final double[] acf = autoCorrelationUpToLag(k);
+		final double[] lags = new double[k + 1];
+		for (int i = 0; i < lags.length; i++) {
+			lags[i] = i;
+		}
+		final double upper = (-1/series.length) + (2/Math.sqrt(series.length));
+		final double lower = (-1/series.length) - (2/Math.sqrt(series.length));
+		final double[][] upperLine = new double[lags.length][lags.length];
+		final double[][] lowerLine = new double[lags.length][lags.length];
+		for (int i = 0; i < lags.length; i++) {
+			upperLine[i] = new double[] {i, upper};
+		}
+		for (int i = 0; i < lags.length; i++) {
+			lowerLine[i] = new double[] {i, lower};
+		}
+		
+		final LinePlot lineUp = new LinePlot("Upper Bound", Color.RED, upperLine);
+		final LinePlot lineDown = new LinePlot("Lower Bound", Color.RED, lowerLine);
+		final Plot2DPanel plot = new Plot2DPanel();
+		final JFrame frame = new JFrame("Acf Plot");
+		plot.addBarPlot("Autocorrelations to Lag 20", lags, acf);
+		plot.addPlot(lineUp);
+		plot.addPlot(lineDown);
+		plot.setFixedBounds(1, Math.floor(lower*10)/10, 1.0);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(true);
+		frame.setSize(800, 600);
+		frame.setContentPane(plot);
+		frame.setVisible(true);
+	}
+	
+	// ********** Plots ********** //
 	
 	@Override
 	public void setName(final String newName) {

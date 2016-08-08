@@ -19,6 +19,8 @@ import java.time.ZonedDateTime;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 
+import data.TestData;
+
 public class TimeSeriesSpec {
 	
 	@Rule
@@ -65,8 +67,9 @@ public class TimeSeriesSpec {
 		assertArrayEquals(expected, result, 1E-2);
 	}
 	
-//	@Test
-//	public void testDailySeries() {
-//		TimeSeries series = new TimeSeries()
-//	}
+	@Test
+	public void testDailySeries() {
+		TimeSeries series = TestData.ausbeerSeries();
+		System.out.println(series.timeUnit.getDuration().toString());
+	}
 }
