@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 
 public final class Ts {
 	
@@ -24,7 +25,9 @@ public final class Ts {
 			final double... series) {
 		final Instant startingInstant = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
 				ZoneId.of(ZONE_ID)).toInstant();
-		return new TimeSeries(ChronoUnit.MONTHS, 1L, startingInstant, series);
+		final TemporalUnit timeUnit = ChronoUnit.MONTHS;
+		final double periodLength = 1;
+		return new TimeSeries(timeUnit, periodLength, startingInstant, series);
 	}
 	
 	/**
@@ -41,7 +44,9 @@ public final class Ts {
 			final int startDay, final double... series) {
 		final Instant startingInstant = ZonedDateTime.of(startYear, startMonth, startDay, 0, 0, 0, 0,
 				ZoneId.of(ZONE_ID)).toInstant();
-		return new TimeSeries(ChronoUnit.MONTHS, 1L, startingInstant, series);
+		final TemporalUnit timeUnit = ChronoUnit.MONTHS;
+		final double periodLength = 1;
+		return new TimeSeries(timeUnit, periodLength, startingInstant, series);
 	}
 	
 	/**
@@ -58,7 +63,9 @@ public final class Ts {
 		final int startMonth  = 3*startQuarter - 2;
 		final Instant startingInstant = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
 				ZoneId.of(ZONE_ID)).toInstant();
-		return new TimeSeries(ChronoUnit.MONTHS, 3L, startingInstant, series);
+		final TemporalUnit timeUnit = ChronoUnit.MONTHS;
+		final double periodLength = 3;
+		return new TimeSeries(timeUnit, periodLength, startingInstant, series);
 	}
 
 }

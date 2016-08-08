@@ -10,16 +10,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.closeTo;
 import static org.junit.Assert.assertArrayEquals;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.Year;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
-
-import data.TestData;
 
 public class TimeSeriesSpec {
 	
@@ -65,11 +59,5 @@ public class TimeSeriesSpec {
 		double[] expected = new double[] {1.000, -0.376, -0.083,  0.268, -0.392,  0.083 };
 		double[] result = series.autoCorrelationUpToLag(5);
 		assertArrayEquals(expected, result, 1E-2);
-	}
-	
-	@Test
-	public void testDailySeries() {
-		TimeSeries series = TestData.ausbeerSeries();
-		System.out.println(series.timeUnit.getDuration().toString());
 	}
 }

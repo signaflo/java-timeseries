@@ -6,6 +6,30 @@ repositories {
     mavenCentral()
 }
 
+task generateJavadoc(type: Javadoc) {
+  source = sourceSets.main.allJava
+  classpath = sourceSets.main.compileClasspath
+  options.memberLevel = JavadocMemberLevel.PACKAGE
+  options {
+    links "https://docs.oracle.com/javase/8/docs/api/"
+  }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: generateJavadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
 dependencies {
 
     compile 'org.slf4j:slf4j-simple:1.7.21'

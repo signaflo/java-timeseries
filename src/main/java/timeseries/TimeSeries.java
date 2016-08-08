@@ -3,8 +3,6 @@ package timeseries;
 import java.awt.Color;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.Period;
-import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -31,17 +29,23 @@ public final class TimeSeries extends DataSet {
 	private final double[] series;
 	private final double[] timeIndices;
 	private String name = "Time Series";
-	final TemporalUnit timeUnit;
-	private final long periodLength;
-	Duration duration;
+	private final TemporalUnit timeScale;
+	private final double periodLength;
+	private Duration duration;
 	
 	/**
 	 * Construct a new TimeSeries object with the given parameters.
-	 * @param timeUnit the length of time between observations.
-	 * @param startTime
-	 * @param series
+	 * @param timeScale The scale of time at which observations are made (or aggregated). Time series observations
+	 *   are commonly made (or aggregated) on a yearly, monthly, weekly, daily, hourly, etc... basis.
+	 * @param periodLength The length of time between observations measured in the units given by the
+	 *   <code>timeScale</code> argument. For example, with quarterly data the time scale would likely 
+	 *   be given as months, so the periodLength would be 3 since there are 3 months in one quarter. On the
+	 *   other hand, if one used a time scale of years, then the periodLength would be 1/4, since there is 1/4
+	 *   of a year in a single quarter.
+	 * @param startTime The time at which the first observation was made. Usually a rough approximation.
+	 * @param series The data constituting this TimeSeries.
 	 */
-	public TimeSeries(final TemporalUnit timeUnit, final long periodLength,
+	public TimeSeries(final TemporalUnit timeScale, final double periodLength,
 			final Instant startTime, final double... series) {
 		super(series);
 		this.series = series;
@@ -52,12 +56,12 @@ public final class TimeSeries extends DataSet {
 		for (int i = 0; i < timeIndices.length; i++) {
 			timeIndices[i] =  i;
 		}
-		this.timeUnit = timeUnit;
+		this.timeScale = timeScale;
 		this.periodLength = periodLength;
 	}
 	
 	/**
-	 * Construct a new TimeSeries from the underlying series data with the given start time.
+	 * Construct a new TimeSeries from the given data with the supplied start time.
 	 * @param startTime the time of the first observation.
 	 * @param series the observations.
 	 */
@@ -66,7 +70,7 @@ public final class TimeSeries extends DataSet {
 	}
 	
 	/**
-	 * Construct a new TimeSeries from the underlying series data counting from year 1. Use
+	 * Construct a new TimeSeries from the given data counting from year 1. Use
 	 * this constructor if the dates and/or times associated with the observations do not matter.
 	 * If dates and/or times do matter, use a more appropriate constructor.
 	 * @param series the sequence of observations.
