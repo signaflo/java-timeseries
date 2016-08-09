@@ -44,7 +44,7 @@ public final class TimeSeries extends DataSet {
 	 * @param startTime The time at which the first observation was made. Usually a rough approximation.
 	 * @param series The data constituting this TimeSeries.
 	 */
-	public TimeSeries(final TemporalUnit timeScale, final double periodLength,
+	public TimeSeries(final TemporalUnit timeScale, final long periodLength,
 			final Instant startTime, final double... series) {
 		super(series);
 		this.series = series;

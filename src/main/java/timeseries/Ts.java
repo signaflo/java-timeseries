@@ -26,7 +26,7 @@ public final class Ts {
 		final Instant startingInstant = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
 				ZoneId.of(ZONE_ID)).toInstant();
 		final TemporalUnit timeUnit = ChronoUnit.MONTHS;
-		final double periodLength = 1;
+		final long periodLength = 1;
 		return new TimeSeries(timeUnit, periodLength, startingInstant, series);
 	}
 	
@@ -45,7 +45,7 @@ public final class Ts {
 		final Instant startingInstant = ZonedDateTime.of(startYear, startMonth, startDay, 0, 0, 0, 0,
 				ZoneId.of(ZONE_ID)).toInstant();
 		final TemporalUnit timeUnit = ChronoUnit.MONTHS;
-		final double periodLength = 1;
+		final long periodLength = 1;
 		return new TimeSeries(timeUnit, periodLength, startingInstant, series);
 	}
 	
@@ -64,7 +64,7 @@ public final class Ts {
 		final Instant startingInstant = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
 				ZoneId.of(ZONE_ID)).toInstant();
 		final TemporalUnit timeUnit = ChronoUnit.MONTHS;
-		final double periodLength = 3;
+		final long periodLength = 3;
 		return new TimeSeries(timeUnit, periodLength, startingInstant, series);
 	}
 

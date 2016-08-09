@@ -9,7 +9,7 @@ repositories {
 task generateJavadoc(type: Javadoc) {
   source = sourceSets.main.allJava
   classpath = sourceSets.main.compileClasspath
-  options.memberLevel = JavadocMemberLevel.PACKAGE
+  options.memberLevel = JavadocMemberLevel.PUBLIC
   options {
     links "https://docs.oracle.com/javase/8/docs/api/"
   }

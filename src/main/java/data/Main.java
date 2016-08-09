@@ -2,7 +2,7 @@ package data;
 
 import timeseries.TimeSeries;
 import static data.TestData.*;
-public class Main {
+final class Main {
 
 	public static void main(String[] args) {
 		TimeSeries ausBeer = ausbeerSeries();
