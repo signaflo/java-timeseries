@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import org.math.plot.Plot2DPanel;
 import org.math.plot.plots.LinePlot;
 
+
 import data.DataSet;
 
 /**
@@ -30,6 +31,8 @@ public final class TimeSeries extends DataSet {
 	private final double[] timeIndices;
 	private String name = "Time Series";
 	private final List<OffsetDateTime> observationTimes;
+	private final long periodLength;
+	private final TemporalUnit timeScale;
 	
 	/**
 	 * Construct a new TimeSeries object with the given parameters.
@@ -37,8 +40,8 @@ public final class TimeSeries extends DataSet {
 	 *   are commonly made (or aggregated) on a yearly, monthly, weekly, daily, hourly, etc... basis.
 	 * @param startTime The time at which the first observation was made. Usually a rough approximation.
 	 * @param periodLength The length of time between observations measured in the units given by the
-	 *   <code>timeScale</code> argument. For example, quarterly data, though not required, should likely be 
-	 *   provided with a timeScale of {@link ChronoUnit#MONTHS} and a periodLength of 3.
+	 *   <code>timeScale</code> argument. For example, quarterly data could be provided with a 
+	 *   timeScale of {@link ChronoUnit#MONTHS} and a periodLength of 3.
 	 * @param series The data constituting this TimeSeries.
 	 */
 	public TimeSeries(final TemporalUnit timeScale, final OffsetDateTime startTime,
@@ -52,11 +55,29 @@ public final class TimeSeries extends DataSet {
 		for (int i = 0; i < timeIndices.length; i++) {
 			timeIndices[i] =  i;
 		}
+		this.timeScale = timeScale;
+		this.periodLength = periodLength;
 		this.observationTimes = new ArrayList<>(series.length);
 		observationTimes.add(startTime);
 		for (int i = 1; i < series.length; i++) {
 			observationTimes.add(observationTimes.get(i - 1).plus(periodLength, timeScale));
 		}
+	}
+	
+	private TimeSeries(final TemporalUnit timeScale, final List<OffsetDateTime> observationTimes,
+			final long periodLength, final double... series) {
+		super(series);
+		this.series = series;
+		this.n = series.length;
+		this.mean = super.mean();
+		super.setName(this.name);
+		this.timeIndices = new double[series.length];
+		for (int i = 0; i < timeIndices.length; i++) {
+			timeIndices[i] =  i;
+		}
+		this.timeScale = timeScale;
+		this.periodLength = periodLength;
+		this.observationTimes = observationTimes;
 	}
 	
 	/**
@@ -122,7 +143,7 @@ public final class TimeSeries extends DataSet {
 	 * @return every covariance measure of this series with itself up to the given lag.
 	 */
 	public final double[] autoCovarianceUpToLag(final int k) {
-		double[] acv = new double[Math.min(k + 1, n)];
+		final double[] acv = new double[Math.min(k + 1, n)];
 		for (int i = 0; i < Math.min(k + 1, n); i++) {
 			acv[i] = autoCovarianceAtLag(i);
 		}
@@ -135,17 +156,18 @@ public final class TimeSeries extends DataSet {
 	 * @return every correlation coefficient of this series with itself up to the given lag.
 	 */
 	public final double[] autoCorrelationUpToLag(final int k) {
-		double[] autoCorrelation = new double[Math.min(k + 1, n)];
+		final double[] autoCorrelation = new double[Math.min(k + 1, n)];
 		for (int i = 0; i < Math.min(k + 1, n); i++) {
 			autoCorrelation[i] = autoCorrelationAtLag(i);
 		}
 		return autoCorrelation;
 	}
 	
-	public final TimeSeries timeSlice(final int from, final int to) {
-		double[] sliced = new double[to - from + 1];
-		System.arraycopy(series, from - 1, sliced, 0, to - from + 1);
-		return new TimeSeries(sliced);
+	public final TimeSeries slice(final int from, final int to) {
+		final double[] sliced = new double[to - from + 1];
+		System.arraycopy(series, from, sliced, 0, to - from + 1);
+		final List<OffsetDateTime> obsTimes = this.observationTimes.subList(from, to + 1);
+		return new TimeSeries(this.timeScale, obsTimes, this.periodLength, sliced);
 	}
 	
 	// ********** Plots ********** //
@@ -214,12 +236,13 @@ public final class TimeSeries extends DataSet {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Time Series: ").append(name).
-		append("\nObservations: ").append(Arrays.toString(series)).
-		append("\nSize: ").append(n).
-		append("\nMean: ").append(super.mean()).
-		append("\nStandard deviation: ").append(super.stdDeviation());
+		builder.append("n: ").append(n).append("\nmean: ").append(mean).append("\nseries: ")
+				.append(Arrays.toString(series)).append("\ntimeIndices: ").append(Arrays.toString(timeIndices))
+				.append("\nname: ").append(name).append("\nobservationTimes: ").append(observationTimes)
+				.append("\nperiodLength: ").append(periodLength).append(" " + timeScale).append("\ntimeScale: ")
+				.append(timeScale);
 		return builder.toString();
 	}
+
 
 }
