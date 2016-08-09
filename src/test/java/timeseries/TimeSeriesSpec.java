@@ -23,7 +23,7 @@ public class TimeSeriesSpec {
 	@Test
 	public void whenTimeSeriesMeanTakenThenResultCorrect() {
 		double[] data = new double[] {3.0, 7.0, 5.0};
-		TimeSeries series = new TimeSeries(ZonedDateTime.now().toInstant(), data);
+		TimeSeries series = new TimeSeries(ZonedDateTime.now(), data);
 		assertThat(series.mean(), is(equalTo(5.0)));
 	}
 	

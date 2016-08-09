@@ -1,6 +1,5 @@
 package timeseries;
 
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -23,11 +22,11 @@ public final class Ts {
 	 */
 	public static final TimeSeries newMonthlySeries(final int startYear, final int startMonth,
 			final double... series) {
-		final Instant startingInstant = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
-				ZoneId.of(ZONE_ID)).toInstant();
+		final ZonedDateTime startingInstant = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
+				ZoneId.of(ZONE_ID));
 		final TemporalUnit timeUnit = ChronoUnit.MONTHS;
 		final long periodLength = 1;
-		return new TimeSeries(timeUnit, periodLength, startingInstant, series);
+		return new TimeSeries(timeUnit, startingInstant, periodLength, series);
 	}
 	
 	/**
@@ -42,11 +41,11 @@ public final class Ts {
 	 */
 	public static final TimeSeries newMonthlySeries(final int startYear, final int startMonth,
 			final int startDay, final double... series) {
-		final Instant startingInstant = ZonedDateTime.of(startYear, startMonth, startDay, 0, 0, 0, 0,
-				ZoneId.of(ZONE_ID)).toInstant();
+		final ZonedDateTime startingInstant = ZonedDateTime.of(startYear, startMonth, startDay, 0, 0, 0, 0,
+				ZoneId.of(ZONE_ID));
 		final TemporalUnit timeUnit = ChronoUnit.MONTHS;
 		final long periodLength = 1;
-		return new TimeSeries(timeUnit, periodLength, startingInstant, series);
+		return new TimeSeries(timeUnit, startingInstant, periodLength, series);
 	}
 	
 	/**
@@ -61,11 +60,11 @@ public final class Ts {
 	public static final TimeSeries newQuarterlySeries(final int startYear, final int startQuarter,
 			final double... series) {
 		final int startMonth  = 3*startQuarter - 2;
-		final Instant startingInstant = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
-				ZoneId.of(ZONE_ID)).toInstant();
+		final ZonedDateTime startingInstant = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
+				ZoneId.of(ZONE_ID));
 		final TemporalUnit timeUnit = ChronoUnit.MONTHS;
 		final long periodLength = 3;
-		return new TimeSeries(timeUnit, periodLength, startingInstant, series);
+		return new TimeSeries(timeUnit, startingInstant, periodLength, series);
 	}
 
 }

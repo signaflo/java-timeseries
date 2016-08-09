@@ -1,13 +1,13 @@
 package timeseries;
 
 import java.awt.Color;
-import java.time.Duration;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -29,20 +29,20 @@ public final class TimeSeries extends DataSet {
 	private final double[] series;
 	private final double[] timeIndices;
 	private String name = "Time Series";
-	private final TemporalUnit timeScale;
-	private final long periodLength;
+	private final List<ZonedDateTime> observationTimes;
 	
 	/**
 	 * Construct a new TimeSeries object with the given parameters.
 	 * @param timeScale The scale of time at which observations are made (or aggregated). Time series observations
 	 *   are commonly made (or aggregated) on a yearly, monthly, weekly, daily, hourly, etc... basis.
-	 * @param periodLength The length of time between observations measured in the units given by the
-	 *   <code>timeScale</code> argument.
 	 * @param startTime The time at which the first observation was made. Usually a rough approximation.
+	 * @param periodLength The length of time between observations measured in the units given by the
+	 *   <code>timeScale</code> argument. For example, quarterly data, though not required, should likely be 
+	 *   provided with a timeScale of {@link ChronoUnit#MONTHS} and a periodLength of 3.
 	 * @param series The data constituting this TimeSeries.
 	 */
-	public TimeSeries(final TemporalUnit timeScale, final long periodLength,
-			final Instant startTime, final double... series) {
+	public TimeSeries(final TemporalUnit timeScale, final ZonedDateTime startTime,
+			final long periodLength, final double... series) {
 		super(series);
 		this.series = series;
 		this.n = series.length;
@@ -52,8 +52,11 @@ public final class TimeSeries extends DataSet {
 		for (int i = 0; i < timeIndices.length; i++) {
 			timeIndices[i] =  i;
 		}
-		this.timeScale = timeScale;
-		this.periodLength = periodLength;
+		this.observationTimes = new ArrayList<>(series.length);
+		observationTimes.add(startTime);
+		for (int i = 1; i < series.length; i++) {
+			observationTimes.add(observationTimes.get(i - 1).plus(periodLength, timeScale));
+		}
 	}
 	
 	/**
@@ -61,18 +64,17 @@ public final class TimeSeries extends DataSet {
 	 * @param startTime the time of the first observation.
 	 * @param series the observations.
 	 */
-	TimeSeries(final Instant startTime, final double... series) {
-		this(ChronoUnit.MONTHS, 1L, startTime, series);
+	TimeSeries(final ZonedDateTime startTime, final double... series) {
+		this(ChronoUnit.MONTHS, startTime, 1L, series);
 	}
 	
 	/**
 	 * Construct a new TimeSeries from the given data counting from year 1. Use
 	 * this constructor if the dates and/or times associated with the observations do not matter.
-	 * If dates and/or times do matter, use a more appropriate constructor.
 	 * @param series the sequence of observations.
 	 */
 	public TimeSeries(final double... series) {
-		this(ZonedDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneId.of("America/Chicago")).toInstant(), series);
+		this(ZonedDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneId.of("America/Chicago")), series);
 	}
 	
 	/**
