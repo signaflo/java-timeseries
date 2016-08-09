@@ -30,17 +30,14 @@ public final class TimeSeries extends DataSet {
 	private final double[] timeIndices;
 	private String name = "Time Series";
 	private final TemporalUnit timeScale;
-	private final double periodLength;
+	private final long periodLength;
 	
 	/**
 	 * Construct a new TimeSeries object with the given parameters.
 	 * @param timeScale The scale of time at which observations are made (or aggregated). Time series observations
 	 *   are commonly made (or aggregated) on a yearly, monthly, weekly, daily, hourly, etc... basis.
 	 * @param periodLength The length of time between observations measured in the units given by the
-	 *   <code>timeScale</code> argument. For example, with quarterly data the time scale would likely 
-	 *   be given as months, so the periodLength would be 3 since there are 3 months in one quarter. On the
-	 *   other hand, if one used a time scale of years, then the periodLength would be 1/4, since there is 1/4
-	 *   of a year in a single quarter.
+	 *   <code>timeScale</code> argument.
 	 * @param startTime The time at which the first observation was made. Usually a rough approximation.
 	 * @param series The data constituting this TimeSeries.
 	 */
