@@ -1,13 +1,14 @@
 package timeseries;
 
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 
 public final class Ts {
 	
-	private static final String ZONE_ID = "America/Chicago";
+	private static final int ZONE_OFFSET = 0;
 	
 	private Ts(){}
 	
@@ -22,8 +23,8 @@ public final class Ts {
 	 */
 	public static final TimeSeries newMonthlySeries(final int startYear, final int startMonth,
 			final double... series) {
-		final ZonedDateTime startingInstant = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
-				ZoneId.of(ZONE_ID));
+		final OffsetDateTime startingInstant = OffsetDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
+				ZoneOffset.ofHours(ZONE_OFFSET));
 		final TemporalUnit timeUnit = ChronoUnit.MONTHS;
 		final long periodLength = 1;
 		return new TimeSeries(timeUnit, startingInstant, periodLength, series);
@@ -41,8 +42,8 @@ public final class Ts {
 	 */
 	public static final TimeSeries newMonthlySeries(final int startYear, final int startMonth,
 			final int startDay, final double... series) {
-		final ZonedDateTime startingInstant = ZonedDateTime.of(startYear, startMonth, startDay, 0, 0, 0, 0,
-				ZoneId.of(ZONE_ID));
+		final OffsetDateTime startingInstant = OffsetDateTime.of(startYear, startMonth, startDay, 0, 0, 0, 0,
+				ZoneOffset.ofHours(ZONE_OFFSET));
 		final TemporalUnit timeUnit = ChronoUnit.MONTHS;
 		final long periodLength = 1;
 		return new TimeSeries(timeUnit, startingInstant, periodLength, series);
@@ -60,8 +61,8 @@ public final class Ts {
 	public static final TimeSeries newQuarterlySeries(final int startYear, final int startQuarter,
 			final double... series) {
 		final int startMonth  = 3*startQuarter - 2;
-		final ZonedDateTime startingInstant = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
-				ZoneId.of(ZONE_ID));
+		final OffsetDateTime startingInstant = OffsetDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
+				ZoneOffset.ofHours(0));
 		final TemporalUnit timeUnit = ChronoUnit.MONTHS;
 		final long periodLength = 3;
 		return new TimeSeries(timeUnit, startingInstant, periodLength, series);

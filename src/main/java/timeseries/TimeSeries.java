@@ -1,8 +1,8 @@
 package timeseries;
 
 import java.awt.Color;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public final class TimeSeries extends DataSet {
 	private final double[] series;
 	private final double[] timeIndices;
 	private String name = "Time Series";
-	private final List<ZonedDateTime> observationTimes;
+	private final List<OffsetDateTime> observationTimes;
 	
 	/**
 	 * Construct a new TimeSeries object with the given parameters.
@@ -41,7 +41,7 @@ public final class TimeSeries extends DataSet {
 	 *   provided with a timeScale of {@link ChronoUnit#MONTHS} and a periodLength of 3.
 	 * @param series The data constituting this TimeSeries.
 	 */
-	public TimeSeries(final TemporalUnit timeScale, final ZonedDateTime startTime,
+	public TimeSeries(final TemporalUnit timeScale, final OffsetDateTime startTime,
 			final long periodLength, final double... series) {
 		super(series);
 		this.series = series;
@@ -64,7 +64,7 @@ public final class TimeSeries extends DataSet {
 	 * @param startTime the time of the first observation.
 	 * @param series the observations.
 	 */
-	TimeSeries(final ZonedDateTime startTime, final double... series) {
+	TimeSeries(final OffsetDateTime startTime, final double... series) {
 		this(ChronoUnit.MONTHS, startTime, 1L, series);
 	}
 	
@@ -74,7 +74,7 @@ public final class TimeSeries extends DataSet {
 	 * @param series the sequence of observations.
 	 */
 	public TimeSeries(final double... series) {
-		this(ZonedDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneId.of("America/Chicago")), series);
+		this(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);
 	}
 	
 	/**
