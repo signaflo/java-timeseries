@@ -11,4 +11,10 @@ public final class Doubles {
 		}
 		return filled;
 	}
+	
+	public static final double[] slice(final double[] data, final int from, final int to) {
+		final double[] sliced = new double[to - from];
+		System.arraycopy(data, from, sliced, 0, to - from);
+		return sliced;
+	}
 }

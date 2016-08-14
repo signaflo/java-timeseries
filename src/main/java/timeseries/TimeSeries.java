@@ -14,8 +14,8 @@ import javax.swing.JFrame;
 import org.math.plot.Plot2DPanel;
 import org.math.plot.plots.LinePlot;
 
-
 import data.DataSet;
+import data.Doubles;
 
 /**
  * A sequence of observations taken at regular time intervals.
@@ -24,7 +24,7 @@ import data.DataSet;
  */
 public final class TimeSeries extends DataSet {
 	
-	
+	private final TemporalUnit timeScale;
 	private final int n;
 	private final double mean;
 	private final double[] series;
@@ -32,7 +32,7 @@ public final class TimeSeries extends DataSet {
 	private String name = "Time Series";
 	private final List<OffsetDateTime> observationTimes;
 	private final long periodLength;
-	private final TemporalUnit timeScale;
+	
 	
 	/**
 	 * Construct a new TimeSeries object with the given parameters.
@@ -166,7 +166,7 @@ public final class TimeSeries extends DataSet {
 	public final TimeSeries slice(final int from, final int to) {
 		final double[] sliced = new double[to - from + 1];
 		System.arraycopy(series, from, sliced, 0, to - from + 1);
-		final List<OffsetDateTime> obsTimes = this.observationTimes.subList(from, to + 1);
+		final List<OffsetDateTime> obsTimes = new ArrayList<>(this.observationTimes.subList(from, to + 1));
 		return new TimeSeries(this.timeScale, obsTimes, this.periodLength, sliced);
 	}
 	
@@ -177,8 +177,8 @@ public final class TimeSeries extends DataSet {
 	 */
 	@Override
 	public final void plot() {
-		Plot2DPanel plot = new Plot2DPanel();
-		JFrame frame = new JFrame("Time Series Plot");
+		final Plot2DPanel plot = new Plot2DPanel();
+		final JFrame frame = new JFrame("Time Series Plot");
 		plot.addLinePlot("Series", timeIndices, series);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(true);
@@ -205,6 +205,23 @@ public final class TimeSeries extends DataSet {
 			lowerLine[i] = new double[] {i, lower};
 		}
 		
+//		CategoryChart chart = new CategoryChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800).
+//				title("Autocorrelations By Lag").build();
+
+		
+//		XYSeries series = chart.addSeries("Acf", lags, acf);
+//		XYSeries series2 = chart.addSeries("Upper Bound", lags, upperLine);
+//		XYSeries series3 = chart.addSeries("Lower Bound", lags, lowerLine);
+//		chart.getStyler().setChartFontColor(Color.BLACK).setSeriesColors(new Color[] {Color.BLUE,
+//				Color.RED, Color.RED});
+//		series.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
+//		
+//		series2.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
+//		series2.setMarker(SeriesMarkers.NONE);
+//		series3.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
+//		series3.setMarker(SeriesMarkers.NONE);
+//		new SwingWrapper<>(chart).displayChart();
+		
 		final LinePlot lineUp = new LinePlot("Upper Bound", Color.RED, upperLine);
 		final LinePlot lineDown = new LinePlot("Lower Bound", Color.RED, lowerLine);
 		final Plot2DPanel plot = new Plot2DPanel();
@@ -223,26 +240,55 @@ public final class TimeSeries extends DataSet {
 	// ********** Plots ********** //
 	
 	@Override
-	public void setName(final String newName) {
+	public final void setName(final String newName) {
 		this.name = newName;
 		super.setName(newName);
 	}
 	
 	@Override
-	public String getName() {
+	public final String getName() {
 		return this.name;
+	}
+	
+	public final TimeSeries copy() {
+		return new TimeSeries(this);
+	}
+	
+	private TimeSeries(final TimeSeries original) {
+		super(original);
+		this.mean = original.mean;
+		this.n = original.n;
+		this.name = original.name;
+		// Note OffsetDateTime is immutable.
+		this.observationTimes = new ArrayList<>(original.observationTimes);
+		this.periodLength = original.periodLength;
+		this.series = original.series.clone();
+		this.timeIndices = original.timeIndices.clone();
+		this.timeScale = original.timeScale;
+	}
+	
+	public final TemporalUnit timeScale() {
+		return this.timeScale;
+	}
+	
+	public final List<OffsetDateTime> observationTimes() {
+		return this.observationTimes;
+	}
+	
+	public final long periodLength() {
+		return this.periodLength;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("n: ").append(n).append("\nmean: ").append(mean).append("\nseries: ")
-				.append(Arrays.toString(series)).append("\ntimeIndices: ").append(Arrays.toString(timeIndices))
-				.append("\nname: ").append(name).append("\nobservationTimes: ").append(observationTimes)
-				.append("\nperiodLength: ").append(periodLength).append(" " + timeScale).append("\ntimeScale: ")
-				.append(timeScale);
+				.append(Arrays.toString(Doubles.slice(series, 0, 3))).append(" ... ")
+				.append(Arrays.toString(Doubles.slice(series, n - 3, n))).append("\nname: ").append(name)
+				.append("\nobservationTimes: ").append(observationTimes.subList(0, 3)).append(" ... ")
+				.append(observationTimes.subList(n - 3, n)).append("\nperiodLength: ")
+				.append(periodLength).append(" " + timeScale).append("\ntimeScale: ").append(timeScale);
 		return builder.toString();
 	}
-
 
 }

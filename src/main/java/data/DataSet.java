@@ -170,4 +170,14 @@ public class DataSet {
 		append("\nStandard deviation: ").append(df.format(stdDeviation())).toString();
 	}
 
+	// Copy constructor. Should be called directly by all subclass copy constructors.
+	protected DataSet(final DataSet other) {
+		this.data = other.data;
+		this.name = other.name;
+	}
+	
+	public DataSet copy() {
+		return new DataSet(this);
+	}
+
 }
