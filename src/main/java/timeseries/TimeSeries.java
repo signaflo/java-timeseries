@@ -106,6 +106,10 @@ public final class TimeSeries extends DataSet {
 		return this.series;
 	}
 	
+	public final double[] timeIndices() {
+		return this.timeIndices;
+	}
+	
 	public final double at(final int index) {
 		return this.series[index];
 	}
