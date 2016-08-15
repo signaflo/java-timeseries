@@ -1,13 +1,13 @@
 package timeseries;
 
 import data.TestData;
+import timeseries.models.RandomWalk;
 
 final class Main {
 
 	public static void main(String[] args) {
-	    TimeSeries series = TestData.ausbeerSeries();
-	    System.out.println(series);
-	    series.plotAcf();
+		RandomWalk rwalk = RandomWalk.simulate(100);
+		rwalk.plot();
 	}
 
 }

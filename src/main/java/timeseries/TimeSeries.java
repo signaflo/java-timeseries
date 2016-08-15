@@ -106,6 +106,10 @@ public final class TimeSeries extends DataSet {
 		return this.series;
 	}
 	
+	public final double at(final int index) {
+		return this.series[index];
+	}
+	
 	/**
 	 * The indices corresponding to the observations.
 	 * @return the indices corresponding to the observations.
@@ -289,6 +293,74 @@ public final class TimeSeries extends DataSet {
 				.append(observationTimes.subList(n - 3, n)).append("\nperiodLength: ")
 				.append(periodLength).append(" " + timeScale).append("\ntimeScale: ").append(timeScale);
 		return builder.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		long temp;
+		temp = Double.doubleToLongBits(mean);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + n;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((observationTimes == null) ? 0 : observationTimes.hashCode());
+		result = prime * result + (int) (periodLength ^ (periodLength >>> 32));
+		result = prime * result + Arrays.hashCode(series);
+		result = prime * result + Arrays.hashCode(timeIndices);
+		result = prime * result + ((timeScale == null) ? 0 : timeScale.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		TimeSeries other = (TimeSeries) obj;
+		if (Double.doubleToLongBits(mean) != Double.doubleToLongBits(other.mean)) {
+			return false;
+		}
+		if (n != other.n) {
+			return false;
+		}
+		if (name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!name.equals(other.name)) {
+			return false;
+		}
+		if (observationTimes == null) {
+			if (other.observationTimes != null) {
+				return false;
+			}
+		} else if (!observationTimes.equals(other.observationTimes)) {
+			return false;
+		}
+		if (periodLength != other.periodLength) {
+			return false;
+		}
+		if (!Arrays.equals(series, other.series)) {
+			return false;
+		}
+		if (!Arrays.equals(timeIndices, other.timeIndices)) {
+			return false;
+		}
+		if (timeScale == null) {
+			if (other.timeScale != null) {
+				return false;
+			}
+		} else if (!timeScale.equals(other.timeScale)) {
+			return false;
+		}
+		return true;
 	}
 
 }
