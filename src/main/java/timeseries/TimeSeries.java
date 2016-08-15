@@ -111,14 +111,6 @@ public final class TimeSeries extends DataSet {
 	}
 	
 	/**
-	 * The indices corresponding to the observations.
-	 * @return the indices corresponding to the observations.
-	 */
-	public final double[] timeIndices() {
-		return this.timeIndices;
-	}
-	
-	/**
 	 * The covariance of this series with itself at lag k.
 	 * @param k the lag to compute the autocovariance at.
 	 * @return the covariance of this series with itself at lag k.
@@ -183,7 +175,7 @@ public final class TimeSeries extends DataSet {
 	public final void plot() {
 		final Plot2DPanel plot = new Plot2DPanel();
 		final JFrame frame = new JFrame("Time Series Plot");
-		plot.addLinePlot("Series", timeIndices, series);
+		plot.addLinePlot("Series", series);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(true);
 		frame.setSize(800, 600);

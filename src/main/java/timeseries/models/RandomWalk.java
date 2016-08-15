@@ -2,6 +2,10 @@ package timeseries.models;
 
 import java.time.OffsetDateTime;
 
+import javax.swing.JFrame;
+
+import org.math.plot.Plot2DPanel;
+
 import smile.stat.distribution.Distribution;
 import smile.stat.distribution.GaussianDistribution;
 import timeseries.TimeSeries;
@@ -78,9 +82,27 @@ public final class RandomWalk {
 	}
 	
 	public final void plot() {
-		this.timeSeries.plot();
+		final Plot2DPanel plot = new Plot2DPanel();
+		final JFrame frame = new JFrame("Time Series Plot");
+		plot.addLinePlot("Scatter", fittedSeries.series());
+		plot.addScatterPlot("Series", timeSeries.series());
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(true);
+		frame.setSize(800, 600);
+		frame.setContentPane(plot);
+		frame.setVisible(true);
 	}
 	
+	public final void residualPlot() {
+		final Plot2DPanel plot = new Plot2DPanel();
+		final JFrame frame = new JFrame("Time Series Plot");
+		plot.addScatterPlot("Series", residuals.series());
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(true);
+		frame.setSize(800, 600);
+		frame.setContentPane(plot);
+		frame.setVisible(true);
+	}
 	private final TimeSeries fitSeries() {
 		final double[] fitted = new double[timeSeries.n()];
 		fitted[0] = timeSeries.at(0);
