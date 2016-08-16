@@ -215,7 +215,7 @@ public final class TimeSeries extends DataSet {
 	 */
 	@Override
 	public final void plot() {
-		XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800).title(this.name).build();
+		XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200).title(this.name).build();
 		XYSeries xySeries = chart.addSeries(this.name, timeIndices, this.series);
 		xySeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line).setMarker(new None());
 		new SwingWrapper<>(chart).displayChart();
@@ -225,7 +225,7 @@ public final class TimeSeries extends DataSet {
 		final int k = 20;
 		final double[] acf = autoCorrelationUpToLag(k);
 		final double[] lags = new double[k + 1];
-		for (int i = 0; i < lags.length; i++) {
+		for (int i = 1; i < lags.length; i++) {
 			lags[i] = i;
 		}
 		final double upper = (-1 / series.length) + (2 / Math.sqrt(series.length));
@@ -251,45 +251,28 @@ public final class TimeSeries extends DataSet {
 		//
 		//
 		// final JFrame frame = new JFrame("Acf plot");
-		Runnable plotter = () -> {
-			XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
+		new Thread(() -> {
+			XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
 					.title("Autocorrelations By Lag").build();
 
-			XYSeries series = chart.addSeries("Acf", lags, acf);
+			XYSeries series = chart.addSeries("Autocorrelation", lags, acf);
 			XYSeries series2 = chart.addSeries("Upper Bound", lags, upperLine);
 			XYSeries series3 = chart.addSeries("Lower Bound", lags, lowerLine);
 			chart.getStyler().setChartFontColor(Color.BLACK)
-					.setSeriesColors(new Color[] { Color.BLUE, Color.RED, Color.RED });
+					.setSeriesColors(new Color[] { Color.BLACK, Color.BLUE, Color.BLUE });
+			
 			series.setXYSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
-
-			series2.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
-			series2.setMarker(SeriesMarkers.NONE);
-			series2.setLineStyle(SeriesLines.DASH_DOT);
-			series3.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
-			series3.setMarker(SeriesMarkers.NONE);
+			series2.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line)
+			.setMarker(SeriesMarkers.NONE).setLineStyle(SeriesLines.DASH_DASH);
+			series3.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line)
+			.setMarker(SeriesMarkers.NONE).setLineStyle(SeriesLines.DASH_DASH);
 			JPanel panel = new XChartPanel<>(chart);
 			JFrame frame = new JFrame("Autocorrelation by Lag");
 			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			frame.add(panel);
 			frame.pack();
 			frame.setVisible(true);
-		};
-		new Thread(plotter).run();
-
-		// final LinePlot lineUp = new LinePlot("Upper Bound", Color.RED,
-		// upperLine);
-		// final LinePlot lineDown = new LinePlot("Lower Bound", Color.RED,
-		// lowerLine);
-		// final Plot2DPanel plot = new Plot2DPanel();;
-		// plot.addBarPlot("Autocorrelations to Lag 20", lags, acf);
-		// plot.addPlot(lineUp);
-		// plot.addPlot(lineDown);
-		// plot.setFixedBounds(1, Math.floor(lower*10)/10, 1.0);
-		// frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// frame.setResizable(true);
-		// frame.setSize(800, 600);
-		// frame.setContentPane(new PlotPanel(canvas));
-		// frame.setVisible(true);
+		}).run();
 	}
 
 	// ********** Plots ********** //

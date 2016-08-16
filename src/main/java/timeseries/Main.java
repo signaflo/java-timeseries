@@ -1,6 +1,5 @@
 package timeseries;
 
-import data.TestData;
 import timeseries.models.RandomWalk;
 
 final class Main {
@@ -9,9 +8,6 @@ final class Main {
 		RandomWalk rwalk = RandomWalk.simulate(100);
 		rwalk.timeSeries().plotAcf();
 		//rwalk.timeSeries().plot();
-		try {
-		    Thread.sleep(5000);
-		} catch (Exception e) {}
 	}
 
 }

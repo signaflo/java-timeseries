@@ -40,7 +40,6 @@ dependencies {
     compile 'com.github.haifengl:smile-core:1.2.0'
     compile 'com.github.haifengl:smile-plot:1.2.0'
     compile 'com.google.guava:guava:19.0'
-    compile 'com.github.yannrichet:JMathPlot:1.0.1'
     compile 'org.knowm.xchart:xchart:3.2.0'
     //compile 'com.sparkjava:spark-core:2.5'
     testCompile 'junit:junit:4.+'
