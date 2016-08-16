@@ -3,8 +3,6 @@ package timeseries.models;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 
-import javax.swing.JFrame;
-
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -13,9 +11,7 @@ import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
 import org.knowm.xchart.style.Styler.ChartTheme;
 import org.knowm.xchart.style.XYStyler;
 import org.knowm.xchart.style.markers.Circle;
-import org.knowm.xchart.style.markers.Marker;
 import org.knowm.xchart.style.markers.None;
-import org.math.plot.Plot2DPanel;
 
 import smile.stat.distribution.Distribution;
 import smile.stat.distribution.GaussianDistribution;
@@ -82,6 +78,10 @@ public final class RandomWalk {
 		final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1).plus(timeSeries.periodLength(),
 				timeSeries.timeScale());
 		return new TimeSeries(timeSeries.timeScale(), startTime, timeSeries.periodLength(), forecast);
+	}
+	
+	public final TimeSeries timeSeries() {
+		return this.timeSeries;
 	}
 	
 	public final TimeSeries fittedSeries() {
