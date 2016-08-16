@@ -1,18 +1,18 @@
 package timeseries;
 
-import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import java.awt.Color;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -215,10 +215,19 @@ public final class TimeSeries extends DataSet {
 	 */
 	@Override
 	public final void plot() {
-		XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200).title(this.name).build();
-		XYSeries xySeries = chart.addSeries(this.name, timeIndices, this.series);
-		xySeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line).setMarker(new None());
-		new SwingWrapper<>(chart).displayChart();
+		new Thread(() -> {
+			XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2)
+					.height(800).width(1200).title(this.name).build();
+			XYSeries xySeries = chart.addSeries(this.name, timeIndices, this.series).
+			setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
+			xySeries.setMarker(new None()).setLineColor(Color.BLUE);
+			JPanel panel = new XChartPanel<>(chart);
+			JFrame frame = new JFrame(this.name);
+			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			frame.add(panel);
+			frame.pack();
+			frame.setVisible(true);
+		}).run();
 	}
 
 	public final void plotAcf() {
@@ -238,19 +247,7 @@ public final class TimeSeries extends DataSet {
 		for (int i = 0; i < lags.length; i++) {
 			lowerLine[i] = lower;
 		}
-		//
-		// PlotCanvas canvas = smile.plot.LinePlot.plot(acf, Style.LONG_DASH);
-		//
-		//
-		// Plot lowerBound = new LinePlot(lowerLine, Style.DASH);
-		// lowerBound.setColor(Color.RED);
-		// Plot upperBound = new LinePlot(upperLine, Style.DASH);
-		// upperBound.setColor(Color.RED);
-		// canvas.add(upperBound);
-		// canvas.add(lowerBound);
-		//
-		//
-		// final JFrame frame = new JFrame("Acf plot");
+
 		new Thread(() -> {
 			XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
 					.title("Autocorrelations By Lag").build();
@@ -260,12 +257,12 @@ public final class TimeSeries extends DataSet {
 			XYSeries series3 = chart.addSeries("Lower Bound", lags, lowerLine);
 			chart.getStyler().setChartFontColor(Color.BLACK)
 					.setSeriesColors(new Color[] { Color.BLACK, Color.BLUE, Color.BLUE });
-			
+
 			series.setXYSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
-			series2.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line)
-			.setMarker(SeriesMarkers.NONE).setLineStyle(SeriesLines.DASH_DASH);
-			series3.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line)
-			.setMarker(SeriesMarkers.NONE).setLineStyle(SeriesLines.DASH_DASH);
+			series2.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line).setMarker(SeriesMarkers.NONE)
+					.setLineStyle(SeriesLines.DASH_DASH);
+			series3.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line).setMarker(SeriesMarkers.NONE)
+					.setLineStyle(SeriesLines.DASH_DASH);
 			JPanel panel = new XChartPanel<>(chart);
 			JFrame frame = new JFrame("Autocorrelation by Lag");
 			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
