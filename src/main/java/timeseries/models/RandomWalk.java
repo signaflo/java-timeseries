@@ -1,10 +1,17 @@
 package timeseries.models;
 
+import java.awt.Color;
 import java.time.OffsetDateTime;
 
-import javax.swing.JFrame;
-
-import org.math.plot.Plot2DPanel;
+import org.knowm.xchart.SwingWrapper;
+import org.knowm.xchart.XYChart;
+import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.XYSeries;
+import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
+import org.knowm.xchart.style.Styler.ChartTheme;
+import org.knowm.xchart.style.XYStyler;
+import org.knowm.xchart.style.markers.Circle;
+import org.knowm.xchart.style.markers.None;
 
 import smile.stat.distribution.Distribution;
 import smile.stat.distribution.GaussianDistribution;
@@ -73,6 +80,10 @@ public final class RandomWalk {
 		return new TimeSeries(timeSeries.timeScale(), startTime, timeSeries.periodLength(), forecast);
 	}
 	
+	public final TimeSeries timeSeries() {
+		return this.timeSeries;
+	}
+	
 	public final TimeSeries fittedSeries() {
 		return this.fittedSeries;
 	}
@@ -81,27 +92,27 @@ public final class RandomWalk {
 	    return this.residuals;
 	}
 	
-	public final void plot() {
-		final Plot2DPanel plot = new Plot2DPanel();
-		final JFrame frame = new JFrame("Time Series Plot");
-		plot.addLinePlot("Scatter", fittedSeries.series());
-		plot.addScatterPlot("Series", timeSeries.series());
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setResizable(true);
-		frame.setSize(800, 600);
-		frame.setContentPane(plot);
-		frame.setVisible(true);
+	public final void plotFit() {
+		final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
+				.title("Random Walk Fitted and Actual").build();
+		XYSeries fitSeries = chart.addSeries("Fitted Values", fittedSeries.timeIndices(), fittedSeries.series());
+		XYSeries observedSeries = chart.addSeries("Observed Values", timeSeries.timeIndices(), timeSeries.series());
+		XYStyler styler = chart.getStyler();
+		styler.setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line);
+		observedSeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
+		observedSeries.setMarker(new Circle()).setMarkerColor(Color.RED);
+		fitSeries.setMarker(new None()).setLineColor(Color.BLUE);
+		
+		new SwingWrapper<>(chart).displayChart();
 	}
 	
-	public final void residualPlot() {
-		final Plot2DPanel plot = new Plot2DPanel();
-		final JFrame frame = new JFrame("Time Series Plot");
-		plot.addScatterPlot("Series", residuals.series());
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setResizable(true);
-		frame.setSize(800, 600);
-		frame.setContentPane(plot);
-		frame.setVisible(true);
+	public final void plotResiduals() {
+		final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
+				.title("Random Walk Fitted and Actual").build();
+		XYSeries residualSeries = chart.addSeries("Model Residuals", residuals.timeIndices(), residuals.series());
+		residualSeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
+		residualSeries.setMarker(new Circle()).setMarkerColor(Color.RED);	
+		new SwingWrapper<>(chart).displayChart();
 	}
 	private final TimeSeries fitSeries() {
 		final double[] fitted = new double[timeSeries.n()];
