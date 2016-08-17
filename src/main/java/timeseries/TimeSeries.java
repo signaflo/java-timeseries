@@ -7,6 +7,7 @@ import java.time.temporal.TemporalUnit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import java.awt.Color;
@@ -46,21 +47,13 @@ public final class TimeSeries extends DataSet {
 	/**
 	 * Construct a new TimeSeries object with the given parameters.
 	 * 
-	 * @param timeScale
-	 *            The scale of time at which observations are made (or
-	 *            aggregated). Time series observations are commonly made (or
-	 *            aggregated) on a yearly, monthly, weekly, daily, hourly,
-	 *            etc... basis.
-	 * @param startTime
-	 *            The time at which the first observation was made. Usually a
-	 *            rough approximation.
-	 * @param periodLength
-	 *            The length of time between observations measured in the units
-	 *            given by the <code>timeScale</code> argument. For example,
-	 *            quarterly data could be provided with a timeScale of
-	 *            {@link ChronoUnit#MONTHS} and a periodLength of 3.
-	 * @param series
-	 *            The data constituting this TimeSeries.
+	 * @param timeScale The scale of time at which observations are made (or aggregated). Time series observations are
+	 *        commonly made (or aggregated) on a yearly, monthly, weekly, daily, hourly, etc... basis.
+	 * @param startTime The time at which the first observation was made. Usually a rough approximation.
+	 * @param periodLength The length of time between observations measured in the units given by the
+	 *        <code>timeScale</code> argument. For example, quarterly data could be provided with a timeScale of
+	 *        {@link ChronoUnit#MONTHS} and a periodLength of 3.
+	 * @param series The data constituting this TimeSeries.
 	 */
 	public TimeSeries(final TemporalUnit timeScale, final OffsetDateTime startTime, final long periodLength,
 			final double... series) {
@@ -99,25 +92,20 @@ public final class TimeSeries extends DataSet {
 	}
 
 	/**
-	 * Construct a new TimeSeries from the given data with the supplied start
-	 * time.
+	 * Construct a new TimeSeries from the given data with the supplied start time.
 	 * 
-	 * @param startTime
-	 *            the time of the first observation.
-	 * @param series
-	 *            the observations.
+	 * @param startTime the time of the first observation.
+	 * @param series the observations.
 	 */
 	TimeSeries(final OffsetDateTime startTime, final double... series) {
 		this(ChronoUnit.MONTHS, startTime, 1L, series);
 	}
 
 	/**
-	 * Construct a new TimeSeries from the given data counting from year 1. Use
-	 * this constructor if the dates and/or times associated with the
-	 * observations do not matter.
+	 * Construct a new TimeSeries from the given data counting from year 1. Use this constructor if the dates and/or
+	 * times associated with the observations do not matter.
 	 * 
-	 * @param series
-	 *            the sequence of observations.
+	 * @param series the time series of observations.
 	 */
 	public TimeSeries(final double... series) {
 		this(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);
@@ -143,8 +131,7 @@ public final class TimeSeries extends DataSet {
 	/**
 	 * The covariance of this series with itself at lag k.
 	 * 
-	 * @param k
-	 *            the lag to compute the autocovariance at.
+	 * @param k the lag to compute the autocovariance at.
 	 * @return the covariance of this series with itself at lag k.
 	 */
 	public final double autoCovarianceAtLag(final int k) {
@@ -158,8 +145,7 @@ public final class TimeSeries extends DataSet {
 	/**
 	 * The correlation of this series with itself at lag k.
 	 * 
-	 * @param k
-	 *            the lag to compute the autocorrelation at.
+	 * @param k the lag to compute the autocorrelation at.
 	 * @return the correlation of this series with itself at lag k.
 	 */
 	public final double autoCorrelationAtLag(final int k) {
@@ -170,10 +156,8 @@ public final class TimeSeries extends DataSet {
 	/**
 	 * Every covariance measure of this series with itself up to the given lag.
 	 * 
-	 * @param k
-	 *            the maximum lag to compute the autocovariance at.
-	 * @return every covariance measure of this series with itself up to the
-	 *         given lag.
+	 * @param k the maximum lag to compute the autocovariance at.
+	 * @return every covariance measure of this series with itself up to the given lag.
 	 */
 	public final double[] autoCovarianceUpToLag(final int k) {
 		final double[] acv = new double[Math.min(k + 1, n)];
@@ -184,13 +168,10 @@ public final class TimeSeries extends DataSet {
 	}
 
 	/**
-	 * Every correlation coefficient of this series with itself up to the given
-	 * lag.
+	 * Every correlation coefficient of this series with itself up to the given lag.
 	 * 
-	 * @param k
-	 *            the maximum lag to compute the autocorrelation at.
-	 * @return every correlation coefficient of this series with itself up to
-	 *         the given lag.
+	 * @param k the maximum lag to compute the autocorrelation at.
+	 * @return every correlation coefficient of this series with itself up to the given lag.
 	 */
 	public final double[] autoCorrelationUpToLag(final int k) {
 		final double[] autoCorrelation = new double[Math.min(k + 1, n)];
@@ -210,16 +191,20 @@ public final class TimeSeries extends DataSet {
 	// ********** Plots ********** //
 
 	/**
-	 * Produce a simple line plot connecting the time indices to the
-	 * observations.
+	 * Produce a simple line plot connecting the time indices to the observations.
 	 */
 	@Override
 	public final void plot() {
+		final List<Date> xAxis = new ArrayList<>(this.observationTimes.size());
+		for (OffsetDateTime dateTime : this.observationTimes) {
+			xAxis.add(Date.from(dateTime.toInstant()));
+		}
 		new Thread(() -> {
-			XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2)
-					.height(800).width(1200).title(this.name).build();
-			XYSeries xySeries = chart.addSeries(this.name, timeIndices, this.series).
-			setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
+			XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200).title(this.name)
+					.build();
+			List<Double> seriesList = com.google.common.primitives.Doubles.asList(this.series);
+			XYSeries xySeries = chart.addSeries(this.name, xAxis, seriesList)
+					.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
 			xySeries.setMarker(new None()).setLineColor(Color.BLUE);
 			JPanel panel = new XChartPanel<>(chart);
 			JFrame frame = new JFrame(this.name);
