@@ -13,8 +13,9 @@ import org.knowm.xchart.style.XYStyler;
 import org.knowm.xchart.style.markers.Circle;
 import org.knowm.xchart.style.markers.None;
 
-import smile.stat.distribution.Distribution;
-import smile.stat.distribution.GaussianDistribution;
+import stats.distributions.Distribution;
+import stats.distributions.NormalDistribution;
+
 import timeseries.TimeSeries;
 
 public final class RandomWalk {
@@ -34,9 +35,9 @@ public final class RandomWalk {
 	
 	/**
 	 * Simulate a random walk assuming that the errors follow the given Distribution.
-	 * @param dist
-	 * @param n
-	 * @return
+	 * @param dist The probability distribution that observations are drawn from.
+	 * @param n The number of observations to simulate.
+	 * @return A simulated RandomWalk model.
 	 */
 	public static final RandomWalk simulate(final Distribution dist, final int n) {
 		final double[] series = new double[n];
@@ -49,23 +50,23 @@ public final class RandomWalk {
 	/**
 	 * Simulate a random walk assuming errors follow a Normal (Gaussian) Distribution with the given mean and 
 	 * standard deviation.
-	 * @param mean
-	 * @param sigma
-	 * @param n
+	 * @param mean The mean of the Normal distribution the observations are drawn from.
+	 * @param sigma The standard deviation of the Normal distribution the observations are drawn from.
+	 * @param n The number of observations to simulate.
 	 * @return
 	 */
 	public static final RandomWalk simulate(final double mean, final double sigma, final int n) {
-		final Distribution dist = new GaussianDistribution(mean, sigma);
+		final Distribution dist = new NormalDistribution(mean, sigma);
 		return simulate(dist, n);
 	}
 	
 	public static final RandomWalk simulate(final double sigma, final int n) {
-		final Distribution dist = new GaussianDistribution(0, sigma);
+		final Distribution dist = new NormalDistribution(0, sigma);
 		return simulate(dist, n);
 	}
 	
 	public static final RandomWalk simulate(final int n) {
-		final Distribution dist = new GaussianDistribution(0, 1);
+		final Distribution dist = new NormalDistribution(0, 1);
 		return simulate(dist, n);
 	}
 	
