@@ -7,6 +7,7 @@ import java.time.temporal.TemporalUnit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import java.awt.Color;
@@ -194,10 +195,15 @@ public final class TimeSeries extends DataSet {
 	 */
 	@Override
 	public final void plot() {
+		final List<Date> xAxis = new ArrayList<>(this.observationTimes.size());
+		for (OffsetDateTime dateTime : this.observationTimes) {
+			xAxis.add(Date.from(dateTime.toInstant()));
+		}
 		new Thread(() -> {
 			XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200).title(this.name)
 					.build();
-			XYSeries xySeries = chart.addSeries(this.name, timeIndices, this.series)
+			List<Double> seriesList = com.google.common.primitives.Doubles.asList(this.series);
+			XYSeries xySeries = chart.addSeries(this.name, xAxis, seriesList)
 					.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
 			xySeries.setMarker(new None()).setLineColor(Color.BLUE);
 			JPanel panel = new XChartPanel<>(chart);
