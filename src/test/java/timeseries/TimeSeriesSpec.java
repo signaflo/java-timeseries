@@ -12,10 +12,35 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import data.TestData;
+
 public class TimeSeriesSpec {
 	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
+	
+	@Test
+	public void whenBoxCoxTransformationWithOutOfRangeLambdaExceptionThrown() {
+	  exception.expect(IllegalArgumentException.class);
+	  TimeSeries series = TestData.ausbeerSeries();
+	  series.transform(2.5);
+	}
+	
+	@Test
+	public void whenBoxCoxTransformLogThenDataTransformedCorrectly() {
+	  double[] data = new double[] {3.0, 7.0, Math.E};
+	  double[] expected = new double[] {Math.log(3.0), Math.log(7.0), 1.0};
+	  TimeSeries timeSeries = new TimeSeries(data);
+	  assertArrayEquals(expected, timeSeries.transform(0).series(), 1E-4);
+	}
+	
+	 @Test
+	  public void whenBoxCoxInvTransformLogThenDataTransformedCorrectly() {
+	    double[] data = new double[] {Math.log(3.0), Math.log(7.0), 1.0};
+	    double[] expected = new double[] {3.0, 7.0, Math.E};
+	    TimeSeries timeSeries = new TimeSeries(data);
+	    assertArrayEquals(expected, timeSeries.backTransform(0).series(), 1E-4);
+	  }
 	
 	@Test
 	public void whenTimeSeriesMeanTakenThenResultCorrect() {
