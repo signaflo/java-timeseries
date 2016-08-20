@@ -5,5 +5,6 @@ Time series analysis on the JVM.
 * Dedicated time series library.
 * Autocorrelation function and plot.
 * Random walk simulation.
+* Box-Cox data transformations.
 * Much more to come...
 
