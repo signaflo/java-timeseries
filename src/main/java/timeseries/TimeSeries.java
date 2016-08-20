@@ -39,7 +39,6 @@ public final class TimeSeries extends DataSet {
 	private final int n;
 	private final double mean;
 	private final double[] series;
-	private final double[] timeIndices;
 	private String name = "Time Series";
 	private final List<OffsetDateTime> observationTimes;
 	private final long periodLength;
@@ -62,10 +61,6 @@ public final class TimeSeries extends DataSet {
 		this.n = series.length;
 		this.mean = super.mean();
 		super.setName(this.name);
-		this.timeIndices = new double[series.length];
-		for (int i = 0; i < timeIndices.length; i++) {
-			timeIndices[i] = i;
-		}
 		this.timeScale = timeScale;
 		this.periodLength = periodLength;
 		this.observationTimes = new ArrayList<>(series.length);
@@ -82,10 +77,6 @@ public final class TimeSeries extends DataSet {
 		this.n = series.length;
 		this.mean = super.mean();
 		super.setName(this.name);
-		this.timeIndices = new double[series.length];
-		for (int i = 0; i < timeIndices.length; i++) {
-			timeIndices[i] = i;
-		}
 		this.timeScale = timeScale;
 		this.periodLength = periodLength;
 		this.observationTimes = observationTimes;
@@ -120,10 +111,12 @@ public final class TimeSeries extends DataSet {
 		return this.series;
 	}
 
-	public final double[] timeIndices() {
-		return this.timeIndices;
-	}
-
+	/**
+	 * Return the value of the time series at the given index.
+	 * 
+	 * @param index the index of the value to return.
+	 * @return the value of the time series at the given index.
+	 */
 	public final double at(final int index) {
 		return this.series[index];
 	}
@@ -181,17 +174,43 @@ public final class TimeSeries extends DataSet {
 		return autoCorrelation;
 	}
 
-	public final TimeSeries slice(final int from, final int to) {
-		final double[] sliced = new double[to - from + 1];
-		System.arraycopy(series, from, sliced, 0, to - from + 1);
-		final List<OffsetDateTime> obsTimes = new ArrayList<>(this.observationTimes.subList(from, to + 1));
+	/**
+	 * Return a slice of this time series from start (inclusive) to end (exclusive).
+	 * 
+	 * @param start the beginning index of the slice. The value at the index is included in the returned TimeSeries.
+	 * @param end the ending index of the slice. The value at the index is <i>not</i> included in the returned
+	 *        TimeSeries.
+	 * @return a slice of this time series from start (inclusive) to end (exclusive).
+	 */
+	public final TimeSeries slice(final int start, final int end) {
+		final double[] sliced = new double[end - start + 1];
+		System.arraycopy(series, start, sliced, 0, end - start + 1);
+		final List<OffsetDateTime> obsTimes = new ArrayList<>(this.observationTimes.subList(start, end + 1));
 		return new TimeSeries(this.timeScale, obsTimes, this.periodLength, sliced);
+	}
+	
+	public final TimeSeries transform(final double boxCoxLambda) {
+		if(boxCoxLambda > 2 || boxCoxLambda < -1) {
+			throw new IllegalArgumentException("The BoxCox parameter must lie between"
+					+ " -1 and 2, but the provided parameter was equal to " + boxCoxLambda);
+		}
+		final double[] boxCoxed = Doubles.boxCox(this.series, boxCoxLambda);
+		return new TimeSeries(this.timeScale, this.observationTimes, this.periodLength, boxCoxed);
+	}
+	
+	public final TimeSeries backTransform(final double boxCoxLambda) {
+		if(boxCoxLambda > 2 || boxCoxLambda < -1) {
+			throw new IllegalArgumentException("The BoxCox parameter must lie between"
+					+ " -1 and 2, but the provided parameter was equal to " + boxCoxLambda);
+		}
+		final double[] invBoxCoxed = Doubles.inverseBoxCox(this.series, boxCoxLambda);
+		return new TimeSeries(this.timeScale, this.observationTimes, this.periodLength, invBoxCoxed);
 	}
 
 	// ********** Plots ********** //
 
 	/**
-	 * Produce a simple line plot connecting the time indices to the observations.
+	 * Display a line plot connecting the observation times to the observation values.
 	 */
 	@Override
 	public final void plot() {
@@ -215,8 +234,12 @@ public final class TimeSeries extends DataSet {
 		}).run();
 	}
 
-	public final void plotAcf() {
-		final int k = 20;
+	/**
+	 * Display a plot of the sample autocorrelations up to the given lag.
+	 * 
+	 * @param k the maximum lag to include in the acf plot.
+	 */
+	public final void plotAcf(final int k) {
 		final double[] acf = autoCorrelationUpToLag(k);
 		final double[] lags = new double[k + 1];
 		for (int i = 1; i < lags.length; i++) {
@@ -270,6 +293,9 @@ public final class TimeSeries extends DataSet {
 		return this.name;
 	}
 
+	/**
+	 * Return a new deep copy of this TimeSeries.
+	 */
 	public final TimeSeries copy() {
 		return new TimeSeries(this);
 	}
@@ -283,7 +309,6 @@ public final class TimeSeries extends DataSet {
 		this.observationTimes = new ArrayList<>(original.observationTimes);
 		this.periodLength = original.periodLength;
 		this.series = original.series.clone();
-		this.timeIndices = original.timeIndices.clone();
 		this.timeScale = original.timeScale;
 	}
 
@@ -323,7 +348,6 @@ public final class TimeSeries extends DataSet {
 		result = prime * result + ((observationTimes == null) ? 0 : observationTimes.hashCode());
 		result = prime * result + (int) (periodLength ^ (periodLength >>> 32));
 		result = prime * result + Arrays.hashCode(series);
-		result = prime * result + Arrays.hashCode(timeIndices);
 		result = prime * result + ((timeScale == null) ? 0 : timeScale.hashCode());
 		return result;
 	}
@@ -364,9 +388,6 @@ public final class TimeSeries extends DataSet {
 			return false;
 		}
 		if (!Arrays.equals(series, other.series)) {
-			return false;
-		}
-		if (!Arrays.equals(timeIndices, other.timeIndices)) {
 			return false;
 		}
 		if (timeScale == null) {

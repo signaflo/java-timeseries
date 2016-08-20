@@ -2,6 +2,9 @@ package timeseries.models;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
@@ -94,25 +97,37 @@ public final class RandomWalk {
 	}
 	
 	public final void plotFit() {
+		final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
+		for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
+			xAxis.add(Date.from(dateTime.toInstant()));
+		}
+		List<Double> seriesList = com.google.common.primitives.Doubles.asList(timeSeries.series());
+		List<Double> fittedList = com.google.common.primitives.Doubles.asList(fittedSeries.series());
 		final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
 				.title("Random Walk Fitted and Actual").build();
-		XYSeries fitSeries = chart.addSeries("Fitted Values", fittedSeries.timeIndices(), fittedSeries.series());
-		XYSeries observedSeries = chart.addSeries("Observed Values", timeSeries.timeIndices(), timeSeries.series());
+		XYSeries fitSeries = chart.addSeries("Fitted Values", xAxis, fittedList);
+		XYSeries observedSeries = chart.addSeries("Observed Values", xAxis, seriesList);
 		XYStyler styler = chart.getStyler();
 		styler.setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line);
-		observedSeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
-		observedSeries.setMarker(new Circle()).setMarkerColor(Color.RED);
+		observedSeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
+		observedSeries.setMarker(new None()).setLineColor(Color.RED);
 		fitSeries.setMarker(new None()).setLineColor(Color.BLUE);
 		
 		new SwingWrapper<>(chart).displayChart();
 	}
 	
 	public final void plotResiduals() {
+		final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
+		for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
+			xAxis.add(Date.from(dateTime.toInstant()));
+		}
+		List<Double> seriesList = com.google.common.primitives.Doubles.asList(residuals.series());
 		final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
 				.title("Random Walk Fitted and Actual").build();
-		XYSeries residualSeries = chart.addSeries("Model Residuals", residuals.timeIndices(), residuals.series());
+		XYSeries residualSeries = chart.addSeries("Model Residuals", xAxis, seriesList);
 		residualSeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
 		residualSeries.setMarker(new Circle()).setMarkerColor(Color.RED);	
+		
 		new SwingWrapper<>(chart).displayChart();
 	}
 	private final TimeSeries fitSeries() {
