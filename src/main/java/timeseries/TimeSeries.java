@@ -340,9 +340,6 @@ public final class TimeSeries extends DataSet {
 	  for (String s : constructors) {
 	    System.out.println(s);
 	  }
-	  
-	  System.out.println("\nFor help on a particular method type the name of the class followed by"
-	      + " a dot, the name of the method, and the word 'help'.");
 	
 	  System.out.println("\nMethods supported by this class include: ");
 	  String[] methods = Arrays.deepToString((TimeSeries.class.getMethods()))
