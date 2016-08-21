@@ -1,16 +1,15 @@
 package timeseries;
 
+import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import java.awt.Color;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -57,7 +56,7 @@ public final class TimeSeries extends DataSet {
 	public TimeSeries(final TemporalUnit timeScale, final OffsetDateTime startTime, final long periodLength,
 			final double... series) {
 		super(series);
-		this.series = series;
+		this.series = series.clone();
 		this.n = series.length;
 		this.mean = super.mean();
 		super.setName(this.name);
@@ -73,13 +72,13 @@ public final class TimeSeries extends DataSet {
 	private TimeSeries(final TemporalUnit timeScale, final List<OffsetDateTime> observationTimes,
 			final long periodLength, final double... series) {
 		super(series);
-		this.series = series;
+		this.series = series.clone();
 		this.n = series.length;
 		this.mean = super.mean();
 		super.setName(this.name);
 		this.timeScale = timeScale;
 		this.periodLength = periodLength;
-		this.observationTimes = observationTimes;
+		this.observationTimes = new ArrayList<>(observationTimes);
 	}
 
 	/**
@@ -108,7 +107,7 @@ public final class TimeSeries extends DataSet {
 	 * @return the time series of observations.
 	 */
 	public final double[] series() {
-		return this.series;
+		return this.series.clone();
 	}
 
 	/**
@@ -214,6 +213,8 @@ public final class TimeSeries extends DataSet {
 	 */
 	@Override
 	public final void plot() {
+	  
+	  Runnable help = () -> System.out.println("plot help.");
 		final List<Date> xAxis = new ArrayList<>(this.observationTimes.size());
 		for (OffsetDateTime dateTime : this.observationTimes) {
 			xAxis.add(Date.from(dateTime.toInstant()));
@@ -232,6 +233,11 @@ public final class TimeSeries extends DataSet {
 			frame.pack();
 			frame.setVisible(true);
 		}).run();
+	}
+	
+	public static final void plothelp() {
+	  System.out.println("The plot method displays a plot of the observations against the time of those observations.");
+	  
 	}
 
 	/**
@@ -322,6 +328,30 @@ public final class TimeSeries extends DataSet {
 
 	public final long periodLength() {
 		return this.periodLength;
+	}
+	
+	public static final void help() {
+	  
+	  System.out.println("A TimeSeries represents a sequence of observations taken at "
+	      + "regular time intervals.\nTo construct a TimeSeries, use one of the following,"
+	      + " where the type 'double' refers to any primitive sequence of doubles: ");
+	   String[] constructors = Arrays.deepToString(TimeSeries.class.getConstructors())
+	        .replace("[", "").replace("]", "").split(", ");
+	  for (String s : constructors) {
+	    System.out.println(s);
+	  }
+	  
+	  System.out.println("\nFor help on a particular method type the name of the class followed by"
+	      + " a dot, the name of the method, and the word 'help'.");
+	
+	  System.out.println("\nMethods supported by this class include: ");
+	  String[] methods = Arrays.deepToString((TimeSeries.class.getMethods()))
+	      .replace("[",  "").replace("]", "").split(", ");
+	  for (int i = 0; i < methods.length - 6; i++) {
+	    if (!methods[i].substring(methods[i].length() - 6).equals("help()")) {
+	      System.out.println(methods[i]);
+	    }
+	  }
 	}
 
 	@Override

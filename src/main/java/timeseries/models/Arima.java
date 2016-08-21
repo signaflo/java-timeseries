@@ -2,7 +2,7 @@ package timeseries.models;
 
 import timeseries.TimeSeries;
 
-public class Arima {
+public final class Arima {
 	
 	private final TimeSeries observations;
 	private final ModelOrder order;

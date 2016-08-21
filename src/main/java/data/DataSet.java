@@ -134,7 +134,7 @@ public class DataSet {
 	 * @return the observations.
 	 */
 	public final double[] data() {
-		return this.data;
+		return this.data.clone();
 	}
 	
 	public void plot() {
@@ -172,7 +172,7 @@ public class DataSet {
 
 	// Copy constructor. Should be called directly by all subclass copy constructors.
 	protected DataSet(final DataSet other) {
-		this.data = other.data;
+		this.data = other.data.clone();
 		this.name = other.name;
 	}
 	

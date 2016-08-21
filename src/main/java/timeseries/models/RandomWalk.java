@@ -85,15 +85,15 @@ public final class RandomWalk {
 	}
 	
 	public final TimeSeries timeSeries() {
-		return this.timeSeries;
+		return this.timeSeries.copy();
 	}
 	
 	public final TimeSeries fittedSeries() {
-		return this.fittedSeries;
+		return this.fittedSeries.copy();
 	}
 
 	public final TimeSeries residuals() {
-	    return this.residuals;
+	    return this.residuals.copy();
 	}
 	
 	public final void plotFit() {

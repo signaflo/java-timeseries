@@ -40,7 +40,7 @@ public final class TestData {
 				398, 406, 526, 428, 397, 403, 517, 435, 383, 424, 521, 421, 402, 414, 500, 451, 380, 416, 492, 428, 408,
 				406, 506, 435, 380, 421, 490, 435, 390, 412, 454, 416, 403, 408, 482, 438, 386, 405, 491, 427, 383, 394,
 				473, 420, 390, 410 });
-		ausBeer.setName("Australian quarterly\nbeer production");
+		ausBeer.setName("Australian quarterly beer production");
 		return ausBeer;
 	}
 
