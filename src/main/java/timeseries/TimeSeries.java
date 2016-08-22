@@ -214,7 +214,6 @@ public final class TimeSeries extends DataSet {
 	@Override
 	public final void plot() {
 	  
-	  Runnable help = () -> System.out.println("plot help.");
 		final List<Date> xAxis = new ArrayList<>(this.observationTimes.size());
 		for (OffsetDateTime dateTime : this.observationTimes) {
 			xAxis.add(Date.from(dateTime.toInstant()));
@@ -233,11 +232,6 @@ public final class TimeSeries extends DataSet {
 			frame.pack();
 			frame.setVisible(true);
 		}).run();
-	}
-	
-	public static final void plothelp() {
-	  System.out.println("The plot method displays a plot of the observations against the time of those observations.");
-	  
 	}
 
 	/**
@@ -328,27 +322,6 @@ public final class TimeSeries extends DataSet {
 
 	public final long periodLength() {
 		return this.periodLength;
-	}
-	
-	public static final void help() {
-	  
-	  System.out.println("A TimeSeries represents a sequence of observations taken at "
-	      + "regular time intervals.\nTo construct a TimeSeries, use one of the following,"
-	      + " where the type 'double' refers to any primitive sequence of doubles: ");
-	   String[] constructors = Arrays.deepToString(TimeSeries.class.getConstructors())
-	        .replace("[", "").replace("]", "").split(", ");
-	  for (String s : constructors) {
-	    System.out.println(s);
-	  }
-	
-	  System.out.println("\nMethods supported by this class include: ");
-	  String[] methods = Arrays.deepToString((TimeSeries.class.getMethods()))
-	      .replace("[",  "").replace("]", "").split(", ");
-	  for (int i = 0; i < methods.length - 6; i++) {
-	    if (!methods[i].substring(methods[i].length() - 6).equals("help()")) {
-	      System.out.println(methods[i]);
-	    }
-	  }
 	}
 
 	@Override
