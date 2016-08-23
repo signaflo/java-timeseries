@@ -6,7 +6,7 @@ import timeseries.models.RandomWalk;
 final class Main {
 
 	public static void main(String[] args) throws Exception {
-		final TimeSeries timeSeries = TestData.ausbeerSeries();
+		TestData.ausbeerSeries();
 	    RandomWalk rwalk = RandomWalk.simulate(100);
 		rwalk.plotResiduals();
 	}
