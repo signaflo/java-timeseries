@@ -190,7 +190,8 @@ public final class TimeSeries extends DataSet {
   /**
    * Transform the series using a Box-Cox transformation with the given parameter value. Setting boxCoxLambda equal to 0
    * corresponds to the natural logarithm while values other than 0 correspond to power transforms. See the definition
-   * given <a target=_blank href="https://en.wikipedia.org/wiki/Power_transform#Box.E2.80.93Cox_transformation">here.</a>
+   * given
+   * <a target=_blank href="https://en.wikipedia.org/wiki/Power_transform#Box.E2.80.93Cox_transformation">here.</a>
    * 
    * @param boxCoxLambda ahe parameter to use for the transformation.
    * @return a new TimeSeries transformed using the given Box-Cox parameter.
@@ -207,6 +208,7 @@ public final class TimeSeries extends DataSet {
 
   /**
    * Perform the inverse of the Box-Cox transformation on this series and return the result in a new TimeSeries.
+   * 
    * @param boxCoxLambda the Box-Cox transformation parameter to use for the inversion.
    * @return a new TimeSeries with the inverse Box-Cox transformation applied.
    */
@@ -218,20 +220,32 @@ public final class TimeSeries extends DataSet {
     final double[] invBoxCoxed = Doubles.inverseBoxCox(this.series, boxCoxLambda);
     return new TimeSeries(this.timeScale, this.observationTimes, this.periodLength, invBoxCoxed);
   }
-  
+
+  /**
+   * Compute a moving average of order m.
+   * @param m the order of the moving average. The number of neighboring values to use
+   * for the average.
+   * @return a new TimeSeries with the smoothed data.
+   */
   public final TimeSeries movingAverage(final int m) {
-    final int k = (m - 1)/2;
-    double[] average = new double[this.n - m + 1];
+    final int c = m % 2;
+    final int k = (m - c) / 2;
+    final double[] average;
+    average = new double[this.n - m + 1];
     double sum;
     for (int t = 0; t < average.length; t++) {
       sum = 0;
-      for (int j = -k; j <= k; j++) {
+      for (int j = -k; j < k + c; j++) {
         sum += series[t + k + j];
       }
-      average[t] = sum/m;
+      average[t] = sum / m;
     }
-    final List<OffsetDateTime> times = this.observationTimes.subList(k, n - k);
+    final List<OffsetDateTime> times = this.observationTimes.subList(k + c - 1, n - k);
     return new TimeSeries(this.timeScale, times, this.periodLength, average);
+  }
+  
+  public final TimeSeries centeredMovingAverage(final int m) {
+    return movingAverage(m).movingAverage(2);
   }
 
   // ********** Plots ********** //
