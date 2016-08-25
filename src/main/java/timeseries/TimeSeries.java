@@ -218,6 +218,21 @@ public final class TimeSeries extends DataSet {
     final double[] invBoxCoxed = Doubles.inverseBoxCox(this.series, boxCoxLambda);
     return new TimeSeries(this.timeScale, this.observationTimes, this.periodLength, invBoxCoxed);
   }
+  
+  public final TimeSeries movingAverage(final int m) {
+    final int k = (m - 1)/2;
+    double[] average = new double[this.n - m + 1];
+    double sum;
+    for (int t = 0; t < average.length; t++) {
+      sum = 0;
+      for (int j = -k; j <= k; j++) {
+        sum += series[t + k + j];
+      }
+      average[t] = sum/m;
+    }
+    final List<OffsetDateTime> times = this.observationTimes.subList(k, n - k);
+    return new TimeSeries(this.timeScale, times, this.periodLength, average);
+  }
 
   // ********** Plots ********** //
 

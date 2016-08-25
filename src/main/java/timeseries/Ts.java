@@ -1,5 +1,7 @@
 package timeseries;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
@@ -10,6 +12,14 @@ public final class Ts {
 	private static final int ZONE_OFFSET = 0;
 	
 	private Ts(){}
+	
+	public static final TimeSeries newAnnualSeries(final int startYear, final double... series) {
+	  final LocalDateTime localDateTime = LocalDateTime.of(startYear, Month.JANUARY, 1, 0, 0);
+	  final OffsetDateTime startingInstant = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
+	  final TemporalUnit timeUnit = ChronoUnit.YEARS;
+	  final long periodLength = 1;
+	  return new TimeSeries(timeUnit, startingInstant, periodLength, series);
+	}
 	
 	/**
 	 * Construct a new TimeSeries object with a cycle length of one year and monthly observations,
@@ -22,8 +32,8 @@ public final class Ts {
 	 */
 	public static final TimeSeries newMonthlySeries(final int startYear, final int startMonth,
 			final double... series) {
-		final OffsetDateTime startingInstant = OffsetDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
-				ZoneOffset.ofHours(ZONE_OFFSET));
+	  final LocalDateTime localDateTime = LocalDateTime.of(startYear, startMonth, 1, 0, 0);
+		final OffsetDateTime startingInstant = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
 		final TemporalUnit timeUnit = ChronoUnit.MONTHS;
 		final long periodLength = 1;
 		return new TimeSeries(timeUnit, startingInstant, periodLength, series);

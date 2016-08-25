@@ -2,9 +2,15 @@ package timeseries.models;
 
 import timeseries.TimeSeries;
 
+/**
+ * An Autoregressive Integrated Moving Average model.
+ * @author Jacob Rachiele
+ *
+ */
 public final class Arima {
 	
 	private final TimeSeries observations;
+	// The number of parameters, degree of differencing, and constant flag.
 	private final ModelOrder order;
 	
 	private Arima(final TimeSeries observations, final ModelOrder order) {
@@ -22,6 +28,12 @@ public final class Arima {
 	  return initParams;
 	}
 	
+	/**
+	 * The order of an ARIMA model, consisting of the number of autoregressive and moving average parameters,
+	 * along with the degree of differencing and whether or not a constant is in the model.
+	 * @author Jacob Rachiele
+	 *
+	 */
 	public static final class ModelOrder {
 		private final int p;
 		private final int d;
@@ -42,13 +54,14 @@ public final class Arima {
 			this.constant = (constant == true)? 1 : 0;
 		}
 		
-		public final ModelOrder copy() {
-			return new ModelOrder(this);
-		}
-		
+		// This returns the total number of nonseasonal and seasonal ARMA parameters.
 		private final int sumARMA() {
 		  return this.p + this.q + this.P + this.Q;
 		}
+		
+    public final ModelOrder copy() {
+      return new ModelOrder(this);
+    }
 		
 		private ModelOrder(final ModelOrder original) {
 			this.p = original.p;
