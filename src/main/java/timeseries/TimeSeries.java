@@ -245,7 +245,7 @@ public final class TimeSeries extends DataSet {
   }
   
   public final TimeSeries centeredMovingAverage(final int m) {
-    return movingAverage(m).movingAverage(2);
+    return (m % 2 == 0)? movingAverage(m).movingAverage(2) : movingAverage(m);
   }
 
   // ********** Plots ********** //

@@ -112,4 +112,14 @@ public class TimeSeriesSpec {
     assertArrayEquals(expected, result, 1E-2);
     System.out.println(series.centeredMovingAverage(4));
   }
+  
+  @Test
+  public void whenFivePeriodCenteredMovingAverageComputedResultCorrect() {
+    TimeSeries series = TestData.elecSales();
+    double[] expected = new double[] { 2381.53, 2424.556, 2463.758, 2552.598, 2627.7, 2750.622, 2858.348, 3014.704,
+        3077.3, 3144.52, 3188.7, 3202.32, 3216.94, 3307.296, 3398.754, 3485.434 };
+    double[] result = series.centeredMovingAverage(5).series();
+    assertArrayEquals(expected, result, 1E-2);
+    System.out.println(series.centeredMovingAverage(5));
+  }
 }
