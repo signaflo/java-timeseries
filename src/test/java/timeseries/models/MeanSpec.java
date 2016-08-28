@@ -12,7 +12,7 @@ import java.time.temporal.TemporalUnit;
 
 import org.junit.Test;
 
-import data.Doubles;
+import data.DoubleFunctions;
 import data.TestData;
 import timeseries.TimeSeries;
 
@@ -24,7 +24,7 @@ public class MeanSpec {
 		int h = 6;
 		MeanModel meanModel = new MeanModel(series);
 		TimeSeries forecast = meanModel.forecast(h);
-		double[] expected = Doubles.fill(h, series.mean());
+		double[] expected = DoubleFunctions.fill(h, series.mean());
 		assertArrayEquals(expected, forecast.series(), 1E-2);
 	}
 	

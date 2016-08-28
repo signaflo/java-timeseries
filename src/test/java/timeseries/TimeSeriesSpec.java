@@ -6,7 +6,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertArrayEquals;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -112,7 +115,7 @@ public class TimeSeriesSpec {
     assertArrayEquals(expected, result, 1E-2);
     System.out.println(series.centeredMovingAverage(4));
   }
-  
+
   @Test
   public void whenFivePeriodCenteredMovingAverageComputedResultCorrect() {
     TimeSeries series = TestData.elecSales();
@@ -121,5 +124,27 @@ public class TimeSeriesSpec {
     double[] result = series.centeredMovingAverage(5).series();
     assertArrayEquals(expected, result, 1E-2);
     System.out.println(series.centeredMovingAverage(5));
+  }
+
+  @Test
+  public void whenTimeSeriesAggregatedDatesCorrect() {
+    TimeSeries series = TestData.ausbeerSeries();
+    TimeSeries aggregated = series.aggregate(ChronoUnit.DECADES, 1);
+    OffsetDateTime expectedStart = OffsetDateTime.of(LocalDateTime.of(1956, 1, 1, 0, 0), ZoneOffset.ofHours(0));
+    OffsetDateTime expectedEnd = OffsetDateTime.of(LocalDateTime.of(1996, 1, 1, 0, 0), ZoneOffset.ofHours(0));
+    assertThat(aggregated.observationTimes().get(0), is(equalTo(expectedStart)));
+    assertThat(aggregated.observationTimes().get(aggregated.n() - 1), is(equalTo(expectedEnd)));
+  }
+
+  @Test
+  public void whenWeeklySeriesCreatedResultCorrect() {
+    TimeSeries series = TestData.sydneyAir();
+    TimeSeries aggregated = series.aggregate(ChronoUnit.MONTHS, 1);
+    aggregated.print();
+  }
+
+  @Test
+  public void testTimeScale() {
+    System.out.println(ChronoUnit.DAYS.getDuration().getSeconds() / (ChronoUnit.SECONDS.getDuration().getSeconds()));
   }
 }

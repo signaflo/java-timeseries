@@ -1,8 +1,8 @@
 package data;
 
-public final class Doubles {
+public final class DoubleFunctions {
 
-  private Doubles() {
+  private DoubleFunctions() {
   }
 
   public static final double[] fill(final int size, final double value) {

@@ -62,13 +62,13 @@ final class Statistics {
 	
 	// Arrays.sort uses quicksort algorithm as of Java 8.
 	static final double medianOf(final double[] data) {
-		double[] copy = data.clone();
-		Arrays.sort(copy);
-		if (copy.length % 2 == 0) {
-			return (copy[(copy.length/2) - 1] + copy[(copy.length/2)]) / 2.0;
+		double[] sorted = data.clone();
+		Arrays.sort(sorted);
+		if (sorted.length % 2 == 0) {
+			return (sorted[(sorted.length/2) - 1] + sorted[(sorted.length/2)]) / 2.0;
 		}
 		else {
-			return copy[(copy.length - 1)/2];
+			return sorted[(sorted.length - 1)/2];
 		}
 	}
 

@@ -24,7 +24,7 @@ import org.knowm.xchart.style.markers.None;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import data.DataSet;
-import data.Doubles;
+import data.DoubleFunctions;
 
 /**
  * A sequence of observations taken at regular time intervals.
@@ -32,7 +32,7 @@ import data.Doubles;
  * @author Jacob Rachiele
  *
  */
-public final class TimeSeries extends DataSet {
+public class TimeSeries extends DataSet {
 
   private final TemporalUnit timeScale;
   private final int n;
@@ -41,6 +41,16 @@ public final class TimeSeries extends DataSet {
   private String name = "Time Series";
   private final List<OffsetDateTime> observationTimes;
   private final long periodLength;
+
+  /**
+   * Construct a new TimeSeries from the given data counting from year 1. Use this constructor if the dates and/or times
+   * associated with the observations do not matter.
+   * 
+   * @param series the time series of observations.
+   */
+  public TimeSeries(final double... series) {
+    this(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);
+  }
 
   /**
    * Construct a new TimeSeries object with the given parameters.
@@ -69,6 +79,16 @@ public final class TimeSeries extends DataSet {
     }
   }
 
+  /**
+   * Construct a new TimeSeries from the given data with the supplied start time.
+   * 
+   * @param startTime the time of the first observation.
+   * @param series the observations.
+   */
+  /* package */ TimeSeries(final OffsetDateTime startTime, final double... series) {
+    this(ChronoUnit.MONTHS, startTime, 1L, series);
+  }
+
   private TimeSeries(final TemporalUnit timeScale, final List<OffsetDateTime> observationTimes, final long periodLength,
       final double... series) {
     super(series);
@@ -81,33 +101,40 @@ public final class TimeSeries extends DataSet {
     this.observationTimes = new ArrayList<>(observationTimes);
   }
 
-  /**
-   * Construct a new TimeSeries from the given data with the supplied start time.
-   * 
-   * @param startTime the time of the first observation.
-   * @param series the observations.
-   */
-  TimeSeries(final OffsetDateTime startTime, final double... series) {
-    this(ChronoUnit.MONTHS, startTime, 1L, series);
+  private TimeSeries(final TimeSeries original) {
+    super(original);
+    this.mean = original.mean;
+    this.n = original.n;
+    this.name = original.name;
+    // Note OffsetDateTime is immutable.
+    this.observationTimes = new ArrayList<>(original.observationTimes);
+    this.periodLength = original.periodLength;
+    this.series = original.series.clone();
+    this.timeScale = original.timeScale;
   }
 
-  /**
-   * Construct a new TimeSeries from the given data counting from year 1. Use this constructor if the dates and/or times
-   * associated with the observations do not matter.
-   * 
-   * @param series the time series of observations.
-   */
-  public TimeSeries(final double... series) {
-    this(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);
+  public final TimeSeries aggregate() {
+    return null;
   }
 
-  /**
-   * The time series of observations.
-   * 
-   * @return the time series of observations.
-   */
-  public final double[] series() {
-    return this.series.clone();
+  public final TimeSeries aggregate(final TemporalUnit time) {
+    return aggregate(time, 1);
+  }
+
+  public final TimeSeries aggregate(final TemporalUnit time, final int periodLength) {
+    final int period = (int)((time.getDuration().getSeconds() * periodLength) / (timeScale.getDuration().getSeconds() * this.periodLength));
+    final List<OffsetDateTime> obsTimes = new ArrayList<>();
+    double[] aggregated = new double[series.length/period];
+    double sum = 0.0;
+    for (int i = 0; i < aggregated.length; i++) {
+      sum = 0.0;
+      for (int j = 0; j < period; j++) {
+        sum += series[j + period * i];
+      }
+      aggregated[i] = sum;
+      obsTimes.add(this.observationTimes.get(i*period));
+    }
+    return new TimeSeries(time, obsTimes, periodLength, aggregated);
   }
 
   /**
@@ -121,20 +148,6 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * The covariance of this series with itself at lag k.
-   * 
-   * @param k the lag to compute the autocovariance at.
-   * @return the covariance of this series with itself at lag k.
-   */
-  public final double autoCovarianceAtLag(final int k) {
-    double sumOfProductOfDeviations = 0.0;
-    for (int t = 0; t < n - k; t++) {
-      sumOfProductOfDeviations += (series[t] - mean) * (series[t + k] - mean);
-    }
-    return sumOfProductOfDeviations / n;
-  }
-
-  /**
    * The correlation of this series with itself at lag k.
    * 
    * @param k the lag to compute the autocorrelation at.
@@ -143,20 +156,6 @@ public final class TimeSeries extends DataSet {
   public final double autoCorrelationAtLag(final int k) {
     final double variance = autoCovarianceAtLag(0);
     return autoCovarianceAtLag(k) / variance;
-  }
-
-  /**
-   * Every covariance measure of this series with itself up to the given lag.
-   * 
-   * @param k the maximum lag to compute the autocovariance at.
-   * @return every covariance measure of this series with itself up to the given lag.
-   */
-  public final double[] autoCovarianceUpToLag(final int k) {
-    final double[] acv = new double[Math.min(k + 1, n)];
-    for (int i = 0; i < Math.min(k + 1, n); i++) {
-      acv[i] = autoCovarianceAtLag(i);
-    }
-    return acv;
   }
 
   /**
@@ -174,36 +173,31 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Return a slice of this time series from start (inclusive) to end (exclusive).
+   * The covariance of this series with itself at lag k.
    * 
-   * @param start the beginning index of the slice. The value at the index is included in the returned TimeSeries.
-   * @param end the ending index of the slice. The value at the index is <i>not</i> included in the returned TimeSeries.
-   * @return a slice of this time series from start (inclusive) to end (exclusive).
+   * @param k the lag to compute the autocovariance at.
+   * @return the covariance of this series with itself at lag k.
    */
-  public final TimeSeries slice(final int start, final int end) {
-    final double[] sliced = new double[end - start + 1];
-    System.arraycopy(series, start, sliced, 0, end - start + 1);
-    final List<OffsetDateTime> obsTimes = new ArrayList<>(this.observationTimes.subList(start, end + 1));
-    return new TimeSeries(this.timeScale, obsTimes, this.periodLength, sliced);
+  public final double autoCovarianceAtLag(final int k) {
+    double sumOfProductOfDeviations = 0.0;
+    for (int t = 0; t < n - k; t++) {
+      sumOfProductOfDeviations += (series[t] - mean) * (series[t + k] - mean);
+    }
+    return sumOfProductOfDeviations / n;
   }
 
   /**
-   * Transform the series using a Box-Cox transformation with the given parameter value. Setting boxCoxLambda equal to 0
-   * corresponds to the natural logarithm while values other than 0 correspond to power transforms. See the definition
-   * given
-   * <a target=_blank href="https://en.wikipedia.org/wiki/Power_transform#Box.E2.80.93Cox_transformation">here.</a>
+   * Every covariance measure of this series with itself up to the given lag.
    * 
-   * @param boxCoxLambda ahe parameter to use for the transformation.
-   * @return a new TimeSeries transformed using the given Box-Cox parameter.
-   * @throws IllegalArgumentException if boxCoxLambda is not strictly between -1 and 2.
+   * @param k the maximum lag to compute the autocovariance at.
+   * @return every covariance measure of this series with itself up to the given lag.
    */
-  public final TimeSeries transform(final double boxCoxLambda) {
-    if (boxCoxLambda > 2 || boxCoxLambda < -1) {
-      throw new IllegalArgumentException("The BoxCox parameter must lie between"
-          + " -1 and 2, but the provided parameter was equal to " + boxCoxLambda);
+  public final double[] autoCovarianceUpToLag(final int k) {
+    final double[] acv = new double[Math.min(k + 1, n)];
+    for (int i = 0; i < Math.min(k + 1, n); i++) {
+      acv[i] = autoCovarianceAtLag(i);
     }
-    final double[] boxCoxed = Doubles.boxCox(this.series, boxCoxLambda);
-    return new TimeSeries(this.timeScale, this.observationTimes, this.periodLength, boxCoxed);
+    return acv;
   }
 
   /**
@@ -217,14 +211,102 @@ public final class TimeSeries extends DataSet {
       throw new IllegalArgumentException("The BoxCox parameter must lie between"
           + " -1 and 2, but the provided parameter was equal to " + boxCoxLambda);
     }
-    final double[] invBoxCoxed = Doubles.inverseBoxCox(this.series, boxCoxLambda);
+    final double[] invBoxCoxed = DoubleFunctions.inverseBoxCox(this.series, boxCoxLambda);
     return new TimeSeries(this.timeScale, this.observationTimes, this.periodLength, invBoxCoxed);
+  }
+
+  public final TimeSeries centeredMovingAverage(final int m) {
+    if (m % 2 == 1)
+      return movingAverage(m);
+    TimeSeries firstAverage = movingAverage(m);
+    final int k = m / 2;
+    final List<OffsetDateTime> times = this.observationTimes.subList(k, n - k);
+    double[] secondAverage = firstAverage.movingAverage(2).series;
+    return new TimeSeries(this.timeScale, times, this.periodLength, secondAverage);
+  }
+
+  /**
+   * Return a new deep copy of this TimeSeries.
+   */
+  public final TimeSeries copy() {
+    return new TimeSeries(this);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!super.equals(obj)) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    TimeSeries other = (TimeSeries) obj;
+    if (Double.doubleToLongBits(mean) != Double.doubleToLongBits(other.mean)) {
+      return false;
+    }
+    if (n != other.n) {
+      return false;
+    }
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    } else if (!name.equals(other.name)) {
+      return false;
+    }
+    if (observationTimes == null) {
+      if (other.observationTimes != null) {
+        return false;
+      }
+    } else if (!observationTimes.equals(other.observationTimes)) {
+      return false;
+    }
+    if (periodLength != other.periodLength) {
+      return false;
+    }
+    if (!Arrays.equals(series, other.series)) {
+      return false;
+    }
+    if (timeScale == null) {
+      if (other.timeScale != null) {
+        return false;
+      }
+    } else if (!timeScale.equals(other.timeScale)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public final String getName() {
+    return this.name;
+  }
+
+  // ********** Plots ********** //
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    long temp;
+    temp = Double.doubleToLongBits(mean);
+    result = prime * result + (int) (temp ^ (temp >>> 32));
+    result = prime * result + n;
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    result = prime * result + ((observationTimes == null) ? 0 : observationTimes.hashCode());
+    result = prime * result + (int) (periodLength ^ (periodLength >>> 32));
+    result = prime * result + Arrays.hashCode(series);
+    result = prime * result + ((timeScale == null) ? 0 : timeScale.hashCode());
+    return result;
   }
 
   /**
    * Compute a moving average of order m.
-   * @param m the order of the moving average. The number of neighboring values to use
-   * for the average.
+   * 
+   * @param m the order of the moving average. The number of neighboring values to use for averaging.
    * @return a new TimeSeries with the smoothed data.
    */
   public final TimeSeries movingAverage(final int m) {
@@ -244,8 +326,12 @@ public final class TimeSeries extends DataSet {
     return new TimeSeries(this.timeScale, times, this.periodLength, average);
   }
   
-  public final TimeSeries centeredMovingAverage(final int m) {
-    return (m % 2 == 0)? movingAverage(m).movingAverage(2) : movingAverage(m);
+  public final List<OffsetDateTime> observationTimes() {
+    return this.observationTimes;
+  }
+
+  public final long periodLength() {
+    return this.periodLength;
   }
 
   // ********** Plots ********** //
@@ -256,11 +342,11 @@ public final class TimeSeries extends DataSet {
   @Override
   public final void plot() {
 
-    final List<Date> xAxis = new ArrayList<>(this.observationTimes.size());
-    for (OffsetDateTime dateTime : this.observationTimes) {
-      xAxis.add(Date.from(dateTime.toInstant()));
-    }
     new Thread(() -> {
+      final List<Date> xAxis = new ArrayList<>(this.observationTimes.size());
+      for (OffsetDateTime dateTime : this.observationTimes) {
+        xAxis.add(Date.from(dateTime.toInstant()));
+      }
       XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200).title(this.name).build();
       List<Double> seriesList = com.google.common.primitives.Doubles.asList(this.series);
       XYSeries xySeries = chart.addSeries(this.name, xAxis, seriesList)
@@ -321,7 +407,18 @@ public final class TimeSeries extends DataSet {
     }).run();
   }
 
-  // ********** Plots ********** //
+  public final void print() {
+    System.out.println(this.toString());
+  }
+
+  /**
+   * The time series of observations.
+   * 
+   * @return the time series of observations.
+   */
+  public final double[] series() {
+    return this.series.clone();
+  }
 
   @Override
   public final void setName(final String newName) {
@@ -329,116 +426,62 @@ public final class TimeSeries extends DataSet {
     super.setName(newName);
   }
 
-  @Override
-  public final String getName() {
-    return this.name;
-  }
-
   /**
-   * Return a new deep copy of this TimeSeries.
+   * Return a slice of this time series from start (inclusive) to end (exclusive).
+   * 
+   * @param start the beginning index of the slice. The value at the index is included in the returned TimeSeries.
+   * @param end the ending index of the slice. The value at the index is <i>not</i> included in the returned TimeSeries.
+   * @return a slice of this time series from start (inclusive) to end (exclusive).
    */
-  public final TimeSeries copy() {
-    return new TimeSeries(this);
-  }
-
-  private TimeSeries(final TimeSeries original) {
-    super(original);
-    this.mean = original.mean;
-    this.n = original.n;
-    this.name = original.name;
-    // Note OffsetDateTime is immutable.
-    this.observationTimes = new ArrayList<>(original.observationTimes);
-    this.periodLength = original.periodLength;
-    this.series = original.series.clone();
-    this.timeScale = original.timeScale;
+  public final TimeSeries slice(final int start, final int end) {
+    final double[] sliced = new double[end - start + 1];
+    System.arraycopy(series, start, sliced, 0, end - start + 1);
+    final List<OffsetDateTime> obsTimes = new ArrayList<>(this.observationTimes.subList(start, end + 1));
+    return new TimeSeries(this.timeScale, obsTimes, this.periodLength, sliced);
   }
 
   public final TemporalUnit timeScale() {
     return this.timeScale;
   }
 
-  public final List<OffsetDateTime> observationTimes() {
-    return this.observationTimes;
-  }
-
-  public final long periodLength() {
-    return this.periodLength;
-  }
-
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append("n: ").append(n).append("\nmean: ").append(mean).append("\nseries: ")
-        .append(Arrays.toString(Doubles.slice(series, 0, 3))).append(" ... ")
-        .append(Arrays.toString(Doubles.slice(series, n - 3, n))).append("\nname: ").append(name)
-        .append("\nobservationTimes: ").append(observationTimes.subList(0, 3)).append(" ... ")
-        .append(observationTimes.subList(n - 3, n)).append("\nperiodLength: ").append(periodLength)
-        .append(" " + timeScale).append("\ntimeScale: ").append(timeScale);
+    builder.append("n: ").append(n).append("\nmean: ").append(mean).append("\nseries: ");
+    if (series.length > 6) {
+      builder.append(Arrays.toString(DoubleFunctions.slice(series, 0, 3))).append(" ... ")
+          .append(Arrays.toString(DoubleFunctions.slice(series, n - 3, n)));
+    } else {
+      builder.append(Arrays.toString(series));
+    }
+    builder.append("\nname: ").append(name).append("\nobservationTimes: ");
+    if (series.length > 6) {
+      builder.append(observationTimes.subList(0, 3)).append(" ... ").append(observationTimes.subList(n - 3, n));
+    } else {
+      builder.append(observationTimes);
+    }
+    builder.append("\nperiodLength: ").append(periodLength).append(" " + timeScale).append("\ntimeScale: ")
+        .append(timeScale);
     return builder.toString();
   }
 
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    long temp;
-    temp = Double.doubleToLongBits(mean);
-    result = prime * result + (int) (temp ^ (temp >>> 32));
-    result = prime * result + n;
-    result = prime * result + ((name == null) ? 0 : name.hashCode());
-    result = prime * result + ((observationTimes == null) ? 0 : observationTimes.hashCode());
-    result = prime * result + (int) (periodLength ^ (periodLength >>> 32));
-    result = prime * result + Arrays.hashCode(series);
-    result = prime * result + ((timeScale == null) ? 0 : timeScale.hashCode());
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
+  /**
+   * Transform the series using a Box-Cox transformation with the given parameter value. Setting boxCoxLambda equal to 0
+   * corresponds to the natural logarithm while values other than 0 correspond to power transforms. See the definition
+   * given
+   * <a target=_blank href="https://en.wikipedia.org/wiki/Power_transform#Box.E2.80.93Cox_transformation">here.</a>
+   * 
+   * @param boxCoxLambda ahe parameter to use for the transformation.
+   * @return a new TimeSeries transformed using the given Box-Cox parameter.
+   * @throws IllegalArgumentException if boxCoxLambda is not strictly between -1 and 2.
+   */
+  public final TimeSeries transform(final double boxCoxLambda) {
+    if (boxCoxLambda > 2 || boxCoxLambda < -1) {
+      throw new IllegalArgumentException("The BoxCox parameter must lie between"
+          + " -1 and 2, but the provided parameter was equal to " + boxCoxLambda);
     }
-    if (!super.equals(obj)) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    TimeSeries other = (TimeSeries) obj;
-    if (Double.doubleToLongBits(mean) != Double.doubleToLongBits(other.mean)) {
-      return false;
-    }
-    if (n != other.n) {
-      return false;
-    }
-    if (name == null) {
-      if (other.name != null) {
-        return false;
-      }
-    } else if (!name.equals(other.name)) {
-      return false;
-    }
-    if (observationTimes == null) {
-      if (other.observationTimes != null) {
-        return false;
-      }
-    } else if (!observationTimes.equals(other.observationTimes)) {
-      return false;
-    }
-    if (periodLength != other.periodLength) {
-      return false;
-    }
-    if (!Arrays.equals(series, other.series)) {
-      return false;
-    }
-    if (timeScale == null) {
-      if (other.timeScale != null) {
-        return false;
-      }
-    } else if (!timeScale.equals(other.timeScale)) {
-      return false;
-    }
-    return true;
+    final double[] boxCoxed = DoubleFunctions.boxCox(this.series, boxCoxLambda);
+    return new TimeSeries(this.timeScale, this.observationTimes, this.periodLength, boxCoxed);
   }
 
 }

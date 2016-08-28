@@ -2,7 +2,7 @@ package timeseries.models;
 
 import java.time.OffsetDateTime;
 
-import data.Doubles;
+import data.DoubleFunctions;
 import timeseries.TimeSeries;
 
 /**
@@ -21,11 +21,11 @@ public final class MeanModel {
 		this.timeSeries = observed.copy();
 		this.mean = this.timeSeries.mean();
 		this.fittedSeries = new TimeSeries(observed.timeScale(), observed.observationTimes().get(0),
-				observed.periodLength(), Doubles.fill(observed.n(), this.mean));
+				observed.periodLength(), DoubleFunctions.fill(observed.n(), this.mean));
 	}
 	
 	public final TimeSeries forecast(final int steps) {
-		final double[] forecasted = Doubles.fill(steps, this.mean);
+		final double[] forecasted = DoubleFunctions.fill(steps, this.mean);
 		final OffsetDateTime startTime = this.timeSeries.observationTimes().get(this.timeSeries.n() - 1)
 				.plus(this.timeSeries.periodLength(), this.timeSeries.timeScale());
 		final TimeSeries forecastSeries = new TimeSeries(this.timeSeries.timeScale(), startTime,
