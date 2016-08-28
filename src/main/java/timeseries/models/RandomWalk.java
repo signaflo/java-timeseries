@@ -102,6 +102,7 @@ public final class RandomWalk {
   }
 
   public final void plotFit() {
+    
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
       for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
@@ -130,6 +131,7 @@ public final class RandomWalk {
   }
 
   public final void plotResiduals() {
+    
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
       for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
@@ -149,6 +151,7 @@ public final class RandomWalk {
       frame.pack();
       frame.setVisible(true);
     }).run();
+    
   }
 
   private final TimeSeries fitSeries() {

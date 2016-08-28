@@ -145,6 +145,6 @@ public class TimeSeriesSpec {
 
   @Test
   public void testTimeScale() {
-    System.out.println(ChronoUnit.DAYS.getDuration().getSeconds() / (ChronoUnit.SECONDS.getDuration().getSeconds()));
+    System.out.println(ChronoUnit.WEEKS.getDuration().getSeconds() / (ChronoUnit.SECONDS.getDuration().getSeconds()));
   }
 }

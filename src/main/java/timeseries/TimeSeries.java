@@ -359,6 +359,7 @@ public class TimeSeries extends DataSet {
       frame.pack();
       frame.setVisible(true);
     }).run();
+    
   }
 
   /**
@@ -367,6 +368,7 @@ public class TimeSeries extends DataSet {
    * @param k the maximum lag to include in the acf plot.
    */
   public final void plotAcf(final int k) {
+    
     final double[] acf = autoCorrelationUpToLag(k);
     final double[] lags = new double[k + 1];
     for (int i = 1; i < lags.length; i++) {
@@ -386,7 +388,6 @@ public class TimeSeries extends DataSet {
     new Thread(() -> {
       XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
           .title("Autocorrelations By Lag").build();
-
       XYSeries series = chart.addSeries("Autocorrelation", lags, acf);
       XYSeries series2 = chart.addSeries("Upper Bound", lags, upperLine);
       XYSeries series3 = chart.addSeries("Lower Bound", lags, lowerLine);
@@ -405,6 +406,7 @@ public class TimeSeries extends DataSet {
       frame.pack();
       frame.setVisible(true);
     }).run();
+    
   }
 
   public final void print() {
