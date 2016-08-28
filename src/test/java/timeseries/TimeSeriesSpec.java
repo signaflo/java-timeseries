@@ -134,13 +134,13 @@ public class TimeSeriesSpec {
     OffsetDateTime expectedEnd = OffsetDateTime.of(LocalDateTime.of(1996, 1, 1, 0, 0), ZoneOffset.ofHours(0));
     assertThat(aggregated.observationTimes().get(0), is(equalTo(expectedStart)));
     assertThat(aggregated.observationTimes().get(aggregated.n() - 1), is(equalTo(expectedEnd)));
+    series.difference(2, 2).print();
   }
 
   @Test
   public void whenWeeklySeriesCreatedResultCorrect() {
     TimeSeries series = TestData.sydneyAir();
-    TimeSeries aggregated = series.aggregate(ChronoUnit.MONTHS, 1);
-    aggregated.print();
+    series.aggregate(ChronoUnit.YEARS).print();
   }
 
   @Test

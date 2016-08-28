@@ -1,8 +1,11 @@
 package timeseries;
 
 import java.awt.Color;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
@@ -122,9 +125,10 @@ public class TimeSeries extends DataSet {
   }
 
   public final TimeSeries aggregate(final TemporalUnit time, final int periodLength) {
-    final int period = (int)((time.getDuration().getSeconds() * periodLength) / (timeScale.getDuration().getSeconds() * this.periodLength));
+    final int period = (int) ((time.getDuration().getSeconds() * periodLength)
+        / (timeScale.getDuration().getSeconds() * this.periodLength));
     final List<OffsetDateTime> obsTimes = new ArrayList<>();
-    double[] aggregated = new double[series.length/period];
+    double[] aggregated = new double[series.length / period];
     double sum = 0.0;
     for (int i = 0; i < aggregated.length; i++) {
       sum = 0.0;
@@ -132,9 +136,11 @@ public class TimeSeries extends DataSet {
         sum += series[j + period * i];
       }
       aggregated[i] = sum;
-      obsTimes.add(this.observationTimes.get(i*period));
+      obsTimes.add(this.observationTimes.get(i * period));
     }
-    return new TimeSeries(time, obsTimes, periodLength, aggregated);
+    TimeSeries series = new TimeSeries(time, obsTimes, periodLength, aggregated);
+    series.setName("Aggregated " + this.name);
+    return series;
   }
 
   /**
@@ -231,6 +237,24 @@ public class TimeSeries extends DataSet {
   public final TimeSeries copy() {
     return new TimeSeries(this);
   }
+  
+  public final TimeSeries difference(final int lag, final int differences) {
+    TimeSeries diffed = difference(lag);
+    for (int i = 1; i < differences; i++) {
+      diffed = diffed.difference(lag);
+    }
+    return diffed;
+  }
+  
+  public final TimeSeries difference(final int lag) {
+    double[] diffed = differenceArray(lag);
+    final List<OffsetDateTime> obsTimes = this.observationTimes.subList(lag, n);
+    return new TimeSeries(this.timeScale, obsTimes, this.periodLength, diffed);
+  }
+  
+  public final TimeSeries difference() {
+    return difference(1);
+  }
 
   @Override
   public boolean equals(Object obj) {
@@ -325,7 +349,7 @@ public class TimeSeries extends DataSet {
     final List<OffsetDateTime> times = this.observationTimes.subList(k + c - 1, n - k);
     return new TimeSeries(this.timeScale, times, this.periodLength, average);
   }
-  
+
   public final List<OffsetDateTime> observationTimes() {
     return this.observationTimes;
   }
@@ -359,7 +383,7 @@ public class TimeSeries extends DataSet {
       frame.pack();
       frame.setVisible(true);
     }).run();
-    
+
   }
 
   /**
@@ -368,7 +392,7 @@ public class TimeSeries extends DataSet {
    * @param k the maximum lag to include in the acf plot.
    */
   public final void plotAcf(final int k) {
-    
+
     final double[] acf = autoCorrelationUpToLag(k);
     final double[] lags = new double[k + 1];
     for (int i = 1; i < lags.length; i++) {
@@ -406,7 +430,7 @@ public class TimeSeries extends DataSet {
       frame.pack();
       frame.setVisible(true);
     }).run();
-    
+
   }
 
   public final void print() {
@@ -448,19 +472,52 @@ public class TimeSeries extends DataSet {
 
   @Override
   public String toString() {
+    DateTimeFormatter dateFormatter;
+    switch ((ChronoUnit) timeScale) {
+    case HOURS:
+    case MINUTES:
+    case SECONDS:
+    case MILLIS:
+    case MICROS:
+    case NANOS:
+      dateFormatter = DateTimeFormatter.ISO_TIME;
+      break;
+    default:
+      dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    }
+    NumberFormat numFormatter = new DecimalFormat("#0.0000");
     StringBuilder builder = new StringBuilder();
-    builder.append("n: ").append(n).append("\nmean: ").append(mean).append("\nseries: ");
+    builder.append("n: ").append(n).append("\nmean: ").append(numFormatter.format(mean)).append("\nseries: ");
     if (series.length > 6) {
-      builder.append(Arrays.toString(DoubleFunctions.slice(series, 0, 3))).append(" ... ")
-          .append(Arrays.toString(DoubleFunctions.slice(series, n - 3, n)));
+      for (double d : DoubleFunctions.slice(series, 0, 3)) {
+        builder.append(numFormatter.format(d)).append(", ");
+      }
+      builder.append("..., ");
+      for (double d : DoubleFunctions.slice(series, n - 3, n - 1)) {
+        builder.append(numFormatter.format(d)).append(", ");
+      }
+      builder.append(numFormatter.format(series[n - 1]));
     } else {
-      builder.append(Arrays.toString(series));
+      for (int i = 0; i < series.length - 1; i++) {
+        builder.append(numFormatter.format(series[i])).append(", ");
+      }
+      builder.append(numFormatter.format(series[n - 1]));
     }
     builder.append("\nname: ").append(name).append("\nobservationTimes: ");
     if (series.length > 6) {
-      builder.append(observationTimes.subList(0, 3)).append(" ... ").append(observationTimes.subList(n - 3, n));
+      for (OffsetDateTime date : observationTimes.subList(0, 3)) {
+        builder.append(date.format(dateFormatter)).append(", ");
+      }
+      builder.append("..., ");
+      for (OffsetDateTime date : observationTimes.subList(n - 3, n - 1)) {
+        builder.append(date.format(dateFormatter)).append(", ");
+      }
+      builder.append(observationTimes.get(n - 1).format(dateFormatter));
     } else {
-      builder.append(observationTimes);
+      for (int i = 0; i < observationTimes.size() - 1; i++) {
+        builder.append(observationTimes.get(i).format(dateFormatter)).append(", ");
+      }
+      builder.append(observationTimes.get(n - 1).format(dateFormatter));
     }
     builder.append("\nperiodLength: ").append(periodLength).append(" " + timeScale).append("\ntimeScale: ")
         .append(timeScale);
@@ -484,6 +541,14 @@ public class TimeSeries extends DataSet {
     }
     final double[] boxCoxed = DoubleFunctions.boxCox(this.series, boxCoxLambda);
     return new TimeSeries(this.timeScale, this.observationTimes, this.periodLength, boxCoxed);
+  }
+  
+  private final double[] differenceArray(final int lag) {
+    double[] differenced = new double[series.length - lag];
+    for (int i = 0; i < differenced.length; i++) {
+      differenced[i] = series[i + lag] - series[i];
+    }
+    return differenced;
   }
 
 }
