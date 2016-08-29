@@ -1,43 +1,65 @@
 package timeseries;
 
-import java.time.temporal.ChronoField;
+import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalField;
 import java.time.temporal.TemporalUnit;
 
 public enum TimeScale {
-  
-  DECADE(ChronoUnit.DECADES, ChronoField.YEAR, 1L),
-  YEAR(ChronoUnit.YEARS, ChronoField.YEAR, 1L),
-  QUARTER(ChronoUnit.MONTHS, ChronoField.MONTH_OF_YEAR, 3L),
-  MONTH(ChronoUnit.MONTHS, ChronoField.MONTH_OF_YEAR, 1L),
-  WEEK(ChronoUnit.WEEKS, ChronoField.ALIGNED_WEEK_OF_YEAR, 1L),
-  DAY(ChronoUnit.DAYS, ChronoField.DAY_OF_WEEK, 1L),
-  HOUR(ChronoUnit.HOURS, ChronoField.HOUR_OF_DAY, 1L),
-  MINUTE(ChronoUnit.MINUTES, ChronoField.MINUTE_OF_HOUR, 1L),
-  SECOND(ChronoUnit.SECONDS, ChronoField.SECOND_OF_MINUTE, 1L),
-  MILLISECOND(ChronoUnit.MILLIS, ChronoField.MILLI_OF_SECOND, 1L),
-  NANOSECOND(ChronoUnit.NANOS, ChronoField.NANO_OF_SECOND, 1L);
-  
+
+  DECADE(ChronoUnit.DECADES, 1L),
+  YEAR(ChronoUnit.YEARS, 1L),
+  QUARTER(ChronoUnit.MONTHS, 3L),
+  MONTH(ChronoUnit.MONTHS, 1L),
+  WEEK(ChronoUnit.WEEKS, 1L),
+  DAY(ChronoUnit.DAYS, 1L),
+  HOUR(ChronoUnit.HOURS, 1L),
+  MINUTE(ChronoUnit.MINUTES, 1L),
+  SECOND(ChronoUnit.SECONDS, 1L),
+  MILLISECOND(ChronoUnit.MILLIS, 1L),
+  MICROSECOND(ChronoUnit.MICROS, 1L),
+  NANOSECOND(ChronoUnit.NANOS, 1L);
+
   private final TemporalUnit timeUnit;
-  private final TemporalField timeField;
   private final long periodLength;
-  
-  TimeScale(TemporalUnit timeUnit, TemporalField timeField, long periodLength) {
+
+  TimeScale(TemporalUnit timeUnit, long periodLength) {
     this.timeUnit = timeUnit;
-    this.timeField = timeField;
     this.periodLength = periodLength;
   }
-  
+
   TemporalUnit timeUnit() {
     return this.timeUnit;
-  }
-  
-  TemporalField timeField() {
-    return this.timeField;
   }
 
   long periodLength() {
     return this.periodLength;
+  }
+
+  double per(final TimeScale otherTimeScale) {
+    return otherTimeScale.totalDuration() / this.totalDuration();
+
+  }
+
+  /**
+   * The total amount of time in this time scale measured in seconds, the base SI unit of time.
+   * @return the total amount of time in this time scale measured in seconds.
+   */
+  double totalDuration() {
+    
+    Duration thisDuration = this.timeUnit.getDuration();
+    
+    // Since the duration is measured in seconds and is treated by the Duration class as a long, we need
+    //     to treat time scales less than one second as special cases and return the values ourselves.
+    switch (this) {
+      case NANOSECOND:
+        return 1E-9;
+      case MICROSECOND:
+        return 1E-6;
+      case MILLISECOND:
+        return 1E-3;
+      default:
+        return (double)(thisDuration.getSeconds() * this.periodLength);
+    }
+    
   }
 }

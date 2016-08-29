@@ -140,11 +140,13 @@ public class TimeSeriesSpec {
   @Test
   public void whenWeeklySeriesCreatedResultCorrect() {
     TimeSeries series = TestData.sydneyAir();
-    series.aggregate(ChronoUnit.YEARS).print();
+    TimeSeries seriesOne = series.aggregateToYears();
+    TimeSeries seriesTwo = series.aggregate(ChronoUnit.YEARS);
+    assertThat(seriesOne, is(equalTo(seriesTwo)));
   }
 
   @Test
   public void testTimeScale() {
-    System.out.println(ChronoUnit.WEEKS.getDuration().getSeconds() / (ChronoUnit.SECONDS.getDuration().getSeconds()));
+    System.out.println(TimeScale.MILLISECOND.per(TimeScale.DAY));
   }
 }

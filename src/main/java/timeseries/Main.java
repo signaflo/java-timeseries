@@ -6,7 +6,7 @@ final class Main {
 
   public static void main(String[] args) throws Exception {
     TimeSeries sydney = TestData.sydneyAir();
-    sydney.transform(0.5).plot();
+    sydney.difference().plot();
     //livestock.plot();
   }
 
