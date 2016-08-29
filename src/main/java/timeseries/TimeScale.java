@@ -1,11 +1,13 @@
 package timeseries;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 
 public enum TimeScale {
 
+  CENTURY(ChronoUnit.CENTURIES, 1L),
   DECADE(ChronoUnit.DECADES, 1L),
   YEAR(ChronoUnit.YEARS, 1L),
   QUARTER(ChronoUnit.MONTHS, 3L),
@@ -56,7 +58,7 @@ public enum TimeScale {
       case MICROSECOND:
         return 1E-6;
       case MILLISECOND:
-        return 1E-3;
+        return 1E-9;
       default:
         return (double)(thisDuration.getSeconds() * this.periodLength);
     }
