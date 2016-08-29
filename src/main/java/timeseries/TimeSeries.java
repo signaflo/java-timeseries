@@ -371,13 +371,19 @@ public class TimeSeries extends DataSet {
       for (OffsetDateTime dateTime : this.observationTimes) {
         xAxis.add(Date.from(dateTime.toInstant()));
       }
-      XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200).title(this.name).build();
-      List<Double> seriesList = com.google.common.primitives.Doubles.asList(this.series);
-      XYSeries xySeries = chart.addSeries(this.name, xAxis, seriesList)
+      final List<Double> seriesList = com.google.common.primitives.Doubles.asList(this.series);
+      for (int t = 0; t < seriesList.size(); t++) {
+        if (seriesList.get(t).isInfinite()) {
+          seriesList.set(t, Double.NaN);
+        }
+      }
+      final XYChart chart = new XYChartBuilder().theme(ChartTheme.XChart).height(480).width(960).title(this.name).build();
+      final XYSeries xySeries = chart.addSeries(this.name, xAxis, seriesList)
           .setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
+      xySeries.setLineWidth(0.75f);
       xySeries.setMarker(new None()).setLineColor(Color.BLUE);
-      JPanel panel = new XChartPanel<>(chart);
-      JFrame frame = new JFrame(this.name);
+      final JPanel panel = new XChartPanel<>(chart);
+      final JFrame frame = new JFrame(this.name);
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
       frame.add(panel);
       frame.pack();
@@ -465,6 +471,13 @@ public class TimeSeries extends DataSet {
     final List<OffsetDateTime> obsTimes = new ArrayList<>(this.observationTimes.subList(start, end + 1));
     return new TimeSeries(this.timeScale, obsTimes, this.periodLength, sliced);
   }
+  
+  public final TimeSeries timeSlice(final int start, final int end) {
+    final double[] sliced = new double[end - start + 1];
+    System.arraycopy(series, start - 1, sliced, 0, end - start + 1);
+    final List<OffsetDateTime> obsTimes = new ArrayList<>(this.observationTimes.subList(start - 1, end));
+    return new TimeSeries(this.timeScale, obsTimes, this.periodLength, sliced);
+  }
 
   public final TemporalUnit timeScale() {
     return this.timeScale;
@@ -540,7 +553,9 @@ public class TimeSeries extends DataSet {
           + " -1 and 2, but the provided parameter was equal to " + boxCoxLambda);
     }
     final double[] boxCoxed = DoubleFunctions.boxCox(this.series, boxCoxLambda);
-    return new TimeSeries(this.timeScale, this.observationTimes, this.periodLength, boxCoxed);
+    final TimeSeries transformed = new TimeSeries(this.timeScale, this.observationTimes, this.periodLength, boxCoxed);
+    transformed.setName(this.name + "\nTransformed (Lambda = " + boxCoxLambda + ")");
+    return transformed;
   }
   
   private final double[] differenceArray(final int lag) {

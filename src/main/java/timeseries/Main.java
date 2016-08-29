@@ -5,9 +5,8 @@ import data.TestData;
 final class Main {
 
   public static void main(String[] args) throws Exception {
-    TimeSeries livestock = TestData.livestock();
-    TimeSeries ausbeer = TestData.ausbeerSeries();
-    livestock.print();
+    TimeSeries sydney = TestData.sydneyAir();
+    sydney.transform(0.5).plot();
     //livestock.plot();
   }
 

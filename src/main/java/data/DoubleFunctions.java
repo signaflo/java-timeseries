@@ -21,10 +21,11 @@ public final class DoubleFunctions {
 
   public static final double[] boxCox(final double[] data, final double lambda) {
     final double[] boxCoxed = new double[data.length];
-    if (Math.abs(lambda) < 1E-15) {
+    if (Math.abs(lambda) < 1E-15) { 
       for (int i = 0; i < boxCoxed.length; i++) {
         boxCoxed[i] = Math.log(data[i]);
       }
+      
     } else {
       for (int i = 0; i < boxCoxed.length; i++) {
         boxCoxed[i] = (Math.pow(data[i], lambda) - 1) / lambda;
