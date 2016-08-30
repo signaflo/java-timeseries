@@ -85,7 +85,7 @@ public final class RandomWalk {
       forecast[t] = timeSeries.at(n - 1);
     }
     final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1).plus(timeSeries.periodLength(),
-        timeSeries.timeScale());
+        timeSeries.timeScale().timeUnit());
     return new TimeSeries(timeSeries.timeScale(), startTime, timeSeries.periodLength(), forecast);
   }
 

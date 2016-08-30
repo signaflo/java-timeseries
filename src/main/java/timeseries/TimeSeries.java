@@ -6,8 +6,6 @@ import java.text.NumberFormat;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -37,7 +35,7 @@ import data.DoubleFunctions;
  */
 public class TimeSeries extends DataSet {
 
-  private final TemporalUnit timeScale;
+  private final TimeScale timeScale;
   private final int n;
   private final double mean;
   private final double[] series;
@@ -54,10 +52,6 @@ public class TimeSeries extends DataSet {
   public TimeSeries(final double... series) {
     this(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);
   }
-  
-  public TimeSeries(final Time timeScale, final OffsetDateTime startTime, final double... series) {
-    this(timeScale.timeUnit(), startTime, timeScale.periodLength(), series);
-  }
 
   /**
    * Construct a new TimeSeries using the given arguments.
@@ -70,7 +64,7 @@ public class TimeSeries extends DataSet {
    *        {@link ChronoUnit#MONTHS} and a periodLength of 3.
    * @param series The data constituting this TimeSeries.
    */
-  public TimeSeries(final TemporalUnit timeScale, final OffsetDateTime startTime, final long periodLength,
+  public TimeSeries(final TimeScale timeScale, final OffsetDateTime startTime, final long periodLength,
       final double... series) {
     super(series);
     this.series = series.clone();
@@ -82,7 +76,8 @@ public class TimeSeries extends DataSet {
     this.observationTimes = new ArrayList<>(series.length);
     observationTimes.add(startTime);
     for (int i = 1; i < series.length; i++) {
-      observationTimes.add(observationTimes.get(i - 1).plus(periodLength, timeScale));
+      observationTimes.add(
+          observationTimes.get(i - 1).plus((long) (timeScale.periodLength() * periodLength), timeScale.timeUnit()));
     }
   }
 
@@ -93,10 +88,10 @@ public class TimeSeries extends DataSet {
    * @param series the observations.
    */
   /* package */ TimeSeries(final OffsetDateTime startTime, final double... series) {
-    this(ChronoUnit.MONTHS, startTime, 1L, series);
+    this(TimeScale.MONTH, startTime, 1L, series);
   }
 
-  private TimeSeries(final TemporalUnit timeScale, final List<OffsetDateTime> observationTimes, final long periodLength,
+  private TimeSeries(final TimeScale timeScale, final List<OffsetDateTime> observationTimes, final long periodLength,
       final double... series) {
     super(series);
     this.series = series.clone();
@@ -119,24 +114,24 @@ public class TimeSeries extends DataSet {
     this.series = original.series.clone();
     this.timeScale = original.timeScale;
   }
-  
+
   public final TimeSeries aggregateToYears() {
-    return aggregate(ChronoUnit.YEARS, 1);
+    return aggregate(TimeScale.YEAR, 1);
   }
 
-  public final TimeSeries aggregate(final TemporalUnit time) {
+  public final TimeSeries aggregate(final TimeScale time) {
     return aggregate(time, 1);
   }
 
   /**
    * Aggregate the TimeSeries up to the given TemporalUnit with the specified period length.
+   * 
    * @param time the unit of time that this series should be aggregated up to.
    * @param periodLength the length of a period in terms of the unit of time given.
    * @return A new TimeSeries aggregated up to the given unit of time.
    */
-  public final TimeSeries aggregate(final TemporalUnit time, final int periodLength) {
-    final int period = (int) ((time.getDuration().getSeconds() * periodLength)
-        / (timeScale.getDuration().getSeconds() * this.periodLength));
+  public final TimeSeries aggregate(final TimeScale time, final int periodLength) {
+    final int period = (int) ((timeScale.per(time) / this.periodLength) * periodLength);
     final List<OffsetDateTime> obsTimes = new ArrayList<>();
     double[] aggregated = new double[series.length / period];
     double sum = 0.0;
@@ -250,6 +245,7 @@ public class TimeSeries extends DataSet {
 
   /**
    * Difference this series the given number of times at the given lag.
+   * 
    * @param lag the lag at which to take differences.
    * @param times the number of times to difference the series at the given lag.
    * @return a new TimeSeries differenced the given number of times at the given lag.
@@ -348,15 +344,15 @@ public class TimeSeries extends DataSet {
     return new TimeSeries(this.timeScale, obsTimes, this.periodLength, sliced);
   }
 
-  public final TemporalUnit timeScale() {
+  public final TimeScale timeScale() {
     return this.timeScale;
   }
 
   /**
    * Transform the series using a Box-Cox transformation with the given parameter value. Setting boxCoxLambda equal to 0
    * corresponds to the natural logarithm while values other than 0 correspond to power transforms. See the definition
-   * given <a target="_blank" href="https://en.wikipedia.org/wiki/Power_transform#Box.E2.80.93Cox_transformation">
-   * here.</a>
+   * given
+   * <a target="_blank" href="https://en.wikipedia.org/wiki/Power_transform#Box.E2.80.93Cox_transformation"> here.</a>
    * 
    * @param boxCoxLambda the parameter to use for the transformation.
    * @return a new TimeSeries transformed using the given Box-Cox parameter.
@@ -380,7 +376,6 @@ public class TimeSeries extends DataSet {
     }
     return differenced;
   }
-  
 
   // ********** Plots ********** //
 
@@ -463,9 +458,8 @@ public class TimeSeries extends DataSet {
     }).run();
 
   }
-  
+
   // ********** Plots ********** //
-  
 
   @Override
   public boolean equals(Object obj) {
@@ -496,7 +490,7 @@ public class TimeSeries extends DataSet {
       return false;
     return true;
   }
-  
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -511,21 +505,21 @@ public class TimeSeries extends DataSet {
     result = prime * result + ((timeScale == null) ? 0 : timeScale.hashCode());
     return result;
   }
-  
+
   @Override
   public String toString() {
     DateTimeFormatter dateFormatter;
-    switch ((ChronoUnit) timeScale) {
-    case HOURS:
-    case MINUTES:
-    case SECONDS:
-    case MILLIS:
-    case MICROS:
-    case NANOS:
-      dateFormatter = DateTimeFormatter.ISO_TIME;
-      break;
-    default:
-      dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    switch (timeScale) {
+      case HOUR:
+      case MINUTE:
+      case SECOND:
+      case MILLISECOND:
+      case MICROSECOND:
+      case NANOSECOND:
+        dateFormatter = DateTimeFormatter.ISO_TIME;
+        break;
+      default:
+        dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     }
     NumberFormat numFormatter = new DecimalFormat("#0.0000");
     StringBuilder builder = new StringBuilder();

@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 
-public enum Time {
+public enum TimeScale {
 
   CENTURY(ChronoUnit.CENTURIES, 1L),
   DECADE(ChronoUnit.DECADES, 1L),
@@ -23,12 +23,12 @@ public enum Time {
   private final TemporalUnit timeUnit;
   private final long periodLength;
 
-  Time(TemporalUnit timeUnit, long periodLength) {
+  TimeScale(TemporalUnit timeUnit, long periodLength) {
     this.timeUnit = timeUnit;
     this.periodLength = periodLength;
   }
 
-  TemporalUnit timeUnit() {
+  public TemporalUnit timeUnit() {
     return this.timeUnit;
   }
 
@@ -36,7 +36,7 @@ public enum Time {
     return this.periodLength;
   }
 
-  double per(final Time otherTimeScale) {
+  double per(final TimeScale otherTimeScale) {
     return otherTimeScale.totalDuration() / this.totalDuration();
 
   }
@@ -57,7 +57,7 @@ public enum Time {
       case MICROSECOND:
         return 1E-6;
       case MILLISECOND:
-        return 1E-9;
+        return 1E-3;
       default:
         return thisDuration.getSeconds() * this.periodLength;
     }

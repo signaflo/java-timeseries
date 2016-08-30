@@ -9,7 +9,6 @@ import static org.junit.Assert.assertArrayEquals;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -129,7 +128,7 @@ public class TimeSeriesSpec {
   @Test
   public void whenTimeSeriesAggregatedDatesCorrect() {
     TimeSeries series = TestData.ausbeerSeries();
-    TimeSeries aggregated = series.aggregate(ChronoUnit.DECADES, 1);
+    TimeSeries aggregated = series.aggregate(TimeScale.DECADE, 1);
     OffsetDateTime expectedStart = OffsetDateTime.of(LocalDateTime.of(1956, 1, 1, 0, 0), ZoneOffset.ofHours(0));
     OffsetDateTime expectedEnd = OffsetDateTime.of(LocalDateTime.of(1996, 1, 1, 0, 0), ZoneOffset.ofHours(0));
     assertThat(aggregated.observationTimes().get(0), is(equalTo(expectedStart)));
@@ -141,12 +140,18 @@ public class TimeSeriesSpec {
   public void whenWeeklySeriesCreatedResultCorrect() {
     TimeSeries series = TestData.sydneyAir();
     TimeSeries seriesOne = series.aggregateToYears();
-    TimeSeries seriesTwo = series.aggregate(ChronoUnit.YEARS);
+    TimeSeries seriesTwo = series.aggregate(TimeScale.YEAR);
     assertThat(seriesOne, is(equalTo(seriesTwo)));
+  }
+  
+  @Test
+  public void whenMinuteSeriesCreatedObservationTimesCorrect() {
+    TimeSeries series = TestData.internetTraffic();
+    series.aggregate(TimeScale.SECOND);
   }
 
   @Test
   public void testTimeScale() {
-    System.out.println(Time.DAY.per(Time.CENTURY));
+    System.out.println(TimeScale.DAY.per(TimeScale.CENTURY));
   }
 }
