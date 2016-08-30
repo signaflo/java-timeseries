@@ -24,7 +24,7 @@ public enum TimeScale {
   private final TemporalUnit timeUnit;
   private final long periodLength;
 
-  TimeScale(TemporalUnit timeUnit, long periodLength) {
+  TimeScale(final TemporalUnit timeUnit, final long periodLength) {
     this.timeUnit = timeUnit;
     this.periodLength = periodLength;
   }

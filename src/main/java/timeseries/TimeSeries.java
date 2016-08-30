@@ -8,6 +8,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -28,12 +29,12 @@ import data.DataSet;
 import data.DoubleFunctions;
 
 /**
- * A sequence of observations taken at regular time intervals.
+ * An immutable sequence of observations taken at regular time intervals.
  * 
  * @author Jacob Rachiele
  *
  */
-public class TimeSeries extends DataSet {
+public final class TimeSeries extends DataSet {
 
   private final TimeScale timeScale;
   private final int n;
@@ -70,12 +71,13 @@ public class TimeSeries extends DataSet {
     this.mean = super.mean();
     this.timeScale = timeScale;
     this.periodLength = periodLength;
-    this.observationTimes = new ArrayList<>(series.length);
-    observationTimes.add(startTime);
+    List<OffsetDateTime> dateTimes = new ArrayList<>(series.length);
+    dateTimes.add(startTime);
     for (int i = 1; i < series.length; i++) {
-      observationTimes.add(
-          observationTimes.get(i - 1).plus((long) (timeScale.periodLength() * periodLength), timeScale.timeUnit()));
+      dateTimes.add(
+          dateTimes.get(i - 1).plus((long) (timeScale.periodLength() * periodLength), timeScale.timeUnit()));
     }
+    this.observationTimes = Collections.unmodifiableList(dateTimes);
   }
 
   /**
@@ -96,7 +98,7 @@ public class TimeSeries extends DataSet {
     this.mean = super.mean();
     this.timeScale = timeScale;
     this.periodLength = periodLength;
-    this.observationTimes = new ArrayList<>(observationTimes);
+    this.observationTimes = Collections.unmodifiableList(observationTimes);
   }
 
   private TimeSeries(final TimeSeries original) {
@@ -104,7 +106,7 @@ public class TimeSeries extends DataSet {
     this.mean = original.mean;
     this.n = original.n;
     // Note OffsetDateTime is immutable.
-    this.observationTimes = new ArrayList<>(original.observationTimes);
+    this.observationTimes = Collections.unmodifiableList(original.observationTimes);
     this.periodLength = original.periodLength;
     this.series = original.series.clone();
     this.timeScale = original.timeScale;
@@ -291,7 +293,7 @@ public class TimeSeries extends DataSet {
   }
 
   public final List<OffsetDateTime> observationTimes() {
-    return new ArrayList<>(this.observationTimes);
+    return this.observationTimes;
   }
 
   public final long periodLength() {
