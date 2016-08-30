@@ -1,11 +1,10 @@
 package timeseries;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 
-public enum TimeScale {
+public enum Time {
 
   CENTURY(ChronoUnit.CENTURIES, 1L),
   DECADE(ChronoUnit.DECADES, 1L),
@@ -24,7 +23,7 @@ public enum TimeScale {
   private final TemporalUnit timeUnit;
   private final long periodLength;
 
-  TimeScale(TemporalUnit timeUnit, long periodLength) {
+  Time(TemporalUnit timeUnit, long periodLength) {
     this.timeUnit = timeUnit;
     this.periodLength = periodLength;
   }
@@ -37,7 +36,7 @@ public enum TimeScale {
     return this.periodLength;
   }
 
-  double per(final TimeScale otherTimeScale) {
+  double per(final Time otherTimeScale) {
     return otherTimeScale.totalDuration() / this.totalDuration();
 
   }
@@ -60,7 +59,7 @@ public enum TimeScale {
       case MILLISECOND:
         return 1E-9;
       default:
-        return (double)(thisDuration.getSeconds() * this.periodLength);
+        return thisDuration.getSeconds() * this.periodLength;
     }
     
   }

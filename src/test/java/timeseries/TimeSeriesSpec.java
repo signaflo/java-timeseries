@@ -147,6 +147,6 @@ public class TimeSeriesSpec {
 
   @Test
   public void testTimeScale() {
-    System.out.println(TimeScale.DAY.per(TimeScale.CENTURY));
+    System.out.println(Time.DAY.per(Time.CENTURY));
   }
 }

@@ -54,6 +54,10 @@ public class TimeSeries extends DataSet {
   public TimeSeries(final double... series) {
     this(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);
   }
+  
+  public TimeSeries(final Time timeScale, final OffsetDateTime startTime, final double... series) {
+    this(timeScale.timeUnit(), startTime, timeScale.periodLength(), series);
+  }
 
   /**
    * Construct a new TimeSeries using the given arguments.
