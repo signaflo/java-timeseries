@@ -32,7 +32,7 @@ public enum TimeScale {
     return this.timeUnit;
   }
 
-  long periodLength() {
+  public long periodLength() {
     return this.periodLength;
   }
 

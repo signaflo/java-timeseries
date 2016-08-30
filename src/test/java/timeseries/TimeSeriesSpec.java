@@ -145,9 +145,9 @@ public class TimeSeriesSpec {
   }
   
   @Test
-  public void whenMinuteSeriesCreatedObservationTimesCorrect() {
-    TimeSeries series = TestData.internetTraffic();
-    series.aggregate(TimeScale.SECOND);
+  public void whenMinuteSeriesCreatedObservationTimesCorrect() throws Exception {
+    TimeSeries series = TestData.debitcards();
+    series.aggregate(TimeScale.MONTH, 4).print();
   }
 
   @Test

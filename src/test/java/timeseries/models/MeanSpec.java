@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import data.DoubleFunctions;
 import data.TestData;
+import timeseries.TimeScale;
 import timeseries.TimeSeries;
 
 public class MeanSpec {
@@ -40,7 +41,7 @@ public class MeanSpec {
 	public final void whenMeanForecastComputedTimeScaleUnchanged() {
 		TimeSeries series = TestData.ausbeerSeries();
 		TimeSeries forecast = new MeanModel(series).forecast(6);
-		TemporalUnit timeScale = ChronoUnit.MONTHS;
+		TimeScale timeScale = TimeScale.QUARTER;
 		assertThat(forecast.timeScale(), is(equalTo(timeScale)));
 	}
 

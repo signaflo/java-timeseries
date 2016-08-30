@@ -27,7 +27,8 @@ public final class MeanModel {
 	public final TimeSeries forecast(final int steps) {
 		final double[] forecasted = DoubleFunctions.fill(steps, this.mean);
 		final OffsetDateTime startTime = this.timeSeries.observationTimes().get(this.timeSeries.n() - 1)
-				.plus(this.timeSeries.periodLength(), this.timeSeries.timeScale().timeUnit());
+				.plus(this.timeSeries.periodLength() * this.timeSeries.timeScale().periodLength(), 
+				    this.timeSeries.timeScale().timeUnit());
 		final TimeSeries forecastSeries = new TimeSeries(this.timeSeries.timeScale(), startTime,
 				this.timeSeries.periodLength(), forecasted);
 		forecastSeries.setName(this.timeSeries.getName() + " " + steps + " step ahead forecast");

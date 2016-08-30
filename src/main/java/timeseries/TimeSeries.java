@@ -56,12 +56,11 @@ public class TimeSeries extends DataSet {
   /**
    * Construct a new TimeSeries using the given arguments.
    * 
-   * @param timeScale The scale of time at which observations are made (or aggregated). Time series observations are
-   *        commonly made (or aggregated) on a yearly, monthly, weekly, daily, hourly, etc... basis.
+   * @param timeScale The scale of time at which observations are made (or aggregated).
    * @param startTime The time at which the first observation was made. Usually a rough approximation.
    * @param periodLength The length of time between observations measured in the units given by the
-   *        <code>timeScale</code> argument. For example, quarterly data could be provided with a timeScale of
-   *        {@link ChronoUnit#MONTHS} and a periodLength of 3.
+   *        <code>timeScale</code> argument. For example, biyearly data could be created with a timeScale of
+   *        {@link TimeScale#YEAR} and a periodLength of 2.
    * @param series The data constituting this TimeSeries.
    */
   public TimeSeries(final TimeScale timeScale, final OffsetDateTime startTime, final long periodLength,
@@ -124,7 +123,9 @@ public class TimeSeries extends DataSet {
   }
 
   /**
-   * Aggregate the TimeSeries up to the given TemporalUnit with the specified period length.
+   * Aggregate the TimeSeries up to the given time scale with the specified period length. For example, to aggregate
+   * monthly data to biyearly data, one could give a time argument of {@link TimeScale#YEAR} and a periodLength argument
+   * of 2.
    * 
    * @param time the unit of time that this series should be aggregated up to.
    * @param periodLength the length of a period in terms of the unit of time given.
@@ -132,6 +133,10 @@ public class TimeSeries extends DataSet {
    */
   public final TimeSeries aggregate(final TimeScale time, final int periodLength) {
     final int period = (int) ((timeScale.per(time) / this.periodLength) * periodLength);
+    if (period == 0) {
+      throw new IllegalArgumentException("The given time scale was of a smaller magnitude than the original time scale."
+          + " To aggregate a series, the time scale argument must be of a larger magnitude than the original.");
+    }
     final List<OffsetDateTime> obsTimes = new ArrayList<>();
     double[] aggregated = new double[series.length / period];
     double sum = 0.0;
@@ -555,9 +560,11 @@ public class TimeSeries extends DataSet {
       }
       builder.append(observationTimes.get(n - 1).format(dateFormatter));
     }
-    builder.append("\nperiodLength: ").append(periodLength).append(" " + timeScale).append("\ntimeScale: ")
-        .append(timeScale);
-    return builder.toString();
+    builder.append("\nperiodLength: ").append(periodLength).append(" " + timeScale);
+    if (periodLength > 1) {
+      builder.append("S");
+    }
+    return builder.append("\ntimeScale: ").append(timeScale).toString();
   }
 
 }
