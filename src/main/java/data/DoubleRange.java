@@ -20,7 +20,7 @@ final class DoubleRange {
 	}
 	
 	final double[] asArray() {
-		return this.range;
+		return this.range.clone();
 	}
 
 	final double sum() {

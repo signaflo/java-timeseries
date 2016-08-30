@@ -33,7 +33,7 @@ public final class TestData {
   }
 
   public static final TimeSeries ausbeerSeries() {
-    TimeSeries ausBeer = Ts.newQuarterlySeries(1956, 1,
+    return Ts.newQuarterlySeries(1956, 1,
         new double[] { 284, 213, 227, 308, 262, 228, 236, 320, 272, 233, 237, 313, 261, 227, 250, 314, 286, 227, 260,
             311, 295, 233, 257, 339, 279, 250, 270, 346, 294, 255, 278, 363, 313, 273, 300, 370, 331, 288, 306, 386,
             335, 288, 308, 402, 353, 316, 325, 405, 393, 319, 327, 442, 383, 332, 361, 446, 387, 357, 374, 466, 410,
@@ -45,32 +45,26 @@ public final class TestData {
             406, 526, 428, 397, 403, 517, 435, 383, 424, 521, 421, 402, 414, 500, 451, 380, 416, 492, 428, 408, 406,
             506, 435, 380, 421, 490, 435, 390, 412, 454, 416, 403, 408, 482, 438, 386, 405, 491, 427, 383, 394, 473,
             420, 390, 410 });
-    ausBeer.setName("Quarterly Beer Production");
-    return ausBeer;
   }
 
   public static final TimeSeries livestock() {
-    TimeSeries livestock = Ts.newAnnualSeries(1961,
+    return Ts.newAnnualSeries(1961,
         new double[] { 232.288994, 229.536258, 233.145936, 243.763684, 252.602916, 259.677371, 260.766892, 269.784084,
             266.414974, 263.917747, 268.307222, 260.662556, 266.639419, 277.515778, 283.834045, 290.309028, 292.474198,
             300.830694, 309.286657, 318.331081, 329.37239, 338.883998, 339.244126, 328.600632, 314.255385, 314.459695,
             321.413779, 329.789292, 346.385165, 352.297882, 348.370515, 417.562922, 417.12357, 417.749459, 412.233904,
             411.946817, 394.697075, 401.49927, 408.270468, 414.2428, 407.997978, 403.460832, 413.824928, 428.104959,
             445.338742, 452.994173, 455.74017 });
-    livestock.setName("Livestock");
-    return livestock;
   }
 
   public static final TimeSeries elecSales() {
-    TimeSeries elec = Ts.newAnnualSeries(1989,
+    return Ts.newAnnualSeries(1989,
         new double[] { 2354.34, 2379.71, 2318.52, 2468.99, 2386.09, 2569.47, 2575.72, 2762.72, 2844.5, 3000.7, 3108.1,
             3357.5, 3075.7, 3180.6, 3221.6, 3176.2, 3430.6, 3527.48, 3637.89, 3655 });
-    elec.setName("Annual Electricity Sales");
-    return elec;
   }
 
   public static final TimeSeries debitcards() {
-    TimeSeries cards = Ts.newMonthlySeries(2000, 1,
+    return Ts.newMonthlySeries(2000, 1,
         new double[] { 7204, 7335, 7812, 7413, 9136, 8725, 8751, 9609, 8601, 8930, 8835, 11688, 8078, 7892, 8151, 8738,
             9416, 9533, 9943, 10859, 8789, 9960, 9619, 12900, 8620, 8401, 8546, 10004, 10675, 10115, 11206, 11555,
             10453, 10421, 9950, 13975, 9315, 9366, 9910, 10302, 11371, 11857, 12387, 12421, 12073, 11963, 10666, 15613,
@@ -82,8 +76,6 @@ public final class TestData {
             16419, 19638, 19773, 21052, 22011, 19039, 17893, 19276, 25167, 16699, 16619, 17851, 18160, 22032, 21395,
             22217, 24565, 21095, 20114, 19931, 26120, 18580, 18492, 19724, 20123, 22582, 22595, 23379, 24920, 20325,
             22038, 20988, 26675 });
-    cards.setName("Debit Cards");
-    return cards;
   }
 
   public static final TimeSeries sydneyAir() {
@@ -105,10 +97,8 @@ public final class TestData {
         1.801, 1.727, 1.992, 1.865, 1.801, 1.661, 2.366, 2.003, 2.092, 1.703, 1.337, 1.985, 1.808, 1.839, 1.714, 1.73,
         1.725, 1.456, 1.447, 1.357, 1.28, 1.363, 1.228, 1.411, 1.13, 1.153, 1.257, 1.259, 1.153, 1.202, 1.185, 1.247,
         1.434, 1.45, 1.227, 1.245, 1.417, 1.458, 1.398, 1.423, 1.358, 1.488 };
-    TimeSeries sydney = new TimeSeries(TimeScale.WEEK,
+    return new TimeSeries(TimeScale.WEEK,
         OffsetDateTime.of(LocalDateTime.of(1987, 6, 22, 0, 0), ZoneOffset.ofHours(0)), 1L, syd);
-    sydney.setName("Sydney Air Passengers");
-    return sydney;
   }
 
   public static final TimeSeries internetTraffic() {
@@ -316,10 +306,8 @@ public final class TestData {
         3496.537, 3477.594, 3519.641, 3566.907, 3619.604, 3545.919, 3580.011, 3507.3, 3463.601, 3359.582, 3391.929,
         3364.103, 3344.854, 3265.992, 3230.704, 3208.588, 3254.183, 3192.484, 3130.113, 3166.313, 3085.524, 3017.947,
         3111.564, 3057.035, 3024.072, 2936.645, 2974.818, 3005.528, 3066.679, 3017.318, 2976.698, 2959.047, 2952.356 };
-    TimeSeries trafficSeries = new TimeSeries(TimeScale.MILLISECOND,
+    return new TimeSeries(TimeScale.MILLISECOND,
         OffsetDateTime.of(LocalDateTime.of(2004, 11, 19, 9, 30), ZoneOffset.ofHours(0)), 5L, traffic);
-    trafficSeries.setName("UK Internet Traffic");
-    return trafficSeries;
   }
 
 }

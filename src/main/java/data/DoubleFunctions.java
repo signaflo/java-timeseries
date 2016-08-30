@@ -2,8 +2,7 @@ package data;
 
 public final class DoubleFunctions {
 
-  private DoubleFunctions() {
-  }
+  private DoubleFunctions() {}
 
   public static final double[] fill(final int size, final double value) {
     final double[] filled = new double[size];

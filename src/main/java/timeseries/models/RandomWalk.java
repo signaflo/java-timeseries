@@ -21,7 +21,7 @@ import org.knowm.xchart.style.markers.None;
 
 import stats.distributions.Distribution;
 import stats.distributions.NormalDistribution;
-
+import timeseries.TimeScale;
 import timeseries.TimeSeries;
 
 public final class RandomWalk {
@@ -34,9 +34,6 @@ public final class RandomWalk {
     this.timeSeries = observed.copy();
     this.fittedSeries = fitSeries();
     this.residuals = calculateResiduals();
-
-    this.fittedSeries.setName("Fitted Series");
-    this.residuals.setName("Residuals");
   }
 
   /**
@@ -79,15 +76,17 @@ public final class RandomWalk {
   }
 
   public final TimeSeries forecast(final int steps) {
-    final int n = timeSeries.n();
-    final double[] forecast = new double[steps];
+    int n = timeSeries.n();
+    long periodLength = timeSeries.periodLength();
+    TimeScale timeScale = timeSeries.timeScale();
+    
+    double[] forecast = new double[steps];
     for (int t = 0; t < steps; t++) {
       forecast[t] = timeSeries.at(n - 1);
     }
     final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1).plus(
-        timeSeries.periodLength() * timeSeries.timeScale().periodLength(),
-        timeSeries.timeScale().timeUnit());
-    return new TimeSeries(timeSeries.timeScale(), startTime, timeSeries.periodLength(), forecast);
+        periodLength * timeScale.periodLength(), timeScale.timeUnit());
+    return new TimeSeries(timeScale, startTime, periodLength, forecast);
   }
 
   public final TimeSeries timeSeries() {

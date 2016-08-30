@@ -3,6 +3,7 @@ package timeseries.models;
 import java.time.OffsetDateTime;
 
 import data.DoubleFunctions;
+import timeseries.TimeScale;
 import timeseries.TimeSeries;
 
 /**
@@ -25,14 +26,14 @@ public final class MeanModel {
 	}
 	
 	public final TimeSeries forecast(final int steps) {
+	  int n = timeSeries.n();
+	  long periodLength = timeSeries.periodLength();
+	  TimeScale timeScale = timeSeries.timeScale();
+	  
 		final double[] forecasted = DoubleFunctions.fill(steps, this.mean);
-		final OffsetDateTime startTime = this.timeSeries.observationTimes().get(this.timeSeries.n() - 1)
-				.plus(this.timeSeries.periodLength() * this.timeSeries.timeScale().periodLength(), 
-				    this.timeSeries.timeScale().timeUnit());
-		final TimeSeries forecastSeries = new TimeSeries(this.timeSeries.timeScale(), startTime,
-				this.timeSeries.periodLength(), forecasted);
-		forecastSeries.setName(this.timeSeries.getName() + " " + steps + " step ahead forecast");
-		return forecastSeries;
+		final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
+				.plus(periodLength * timeScale.periodLength(), timeScale.timeUnit());
+		return new TimeSeries(timeScale, startTime, periodLength, forecasted);
 	}
 	
 	public final TimeSeries fittedSeries() {

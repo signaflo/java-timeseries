@@ -7,8 +7,6 @@ import static org.junit.Assert.assertArrayEquals;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 
 import org.junit.Test;
 

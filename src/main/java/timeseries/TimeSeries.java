@@ -39,7 +39,6 @@ public class TimeSeries extends DataSet {
   private final int n;
   private final double mean;
   private final double[] series;
-  private String name = "Time Series";
   private final List<OffsetDateTime> observationTimes;
   private final long periodLength;
 
@@ -69,7 +68,6 @@ public class TimeSeries extends DataSet {
     this.series = series.clone();
     this.n = series.length;
     this.mean = super.mean();
-    super.setName(this.name);
     this.timeScale = timeScale;
     this.periodLength = periodLength;
     this.observationTimes = new ArrayList<>(series.length);
@@ -96,7 +94,6 @@ public class TimeSeries extends DataSet {
     this.series = series.clone();
     this.n = series.length;
     this.mean = super.mean();
-    super.setName(this.name);
     this.timeScale = timeScale;
     this.periodLength = periodLength;
     this.observationTimes = new ArrayList<>(observationTimes);
@@ -106,7 +103,6 @@ public class TimeSeries extends DataSet {
     super(original);
     this.mean = original.mean;
     this.n = original.n;
-    this.name = original.name;
     // Note OffsetDateTime is immutable.
     this.observationTimes = new ArrayList<>(original.observationTimes);
     this.periodLength = original.periodLength;
@@ -148,9 +144,7 @@ public class TimeSeries extends DataSet {
       aggregated[i] = sum;
       obsTimes.add(this.observationTimes.get(i * period));
     }
-    TimeSeries series = new TimeSeries(time, obsTimes, periodLength, aggregated);
-    series.setName("Aggregated " + this.name);
-    return series;
+    return new TimeSeries(time, obsTimes, periodLength, aggregated);
   }
 
   /**
@@ -273,11 +267,6 @@ public class TimeSeries extends DataSet {
     return difference(1);
   }
 
-  @Override
-  public final String getName() {
-    return this.name;
-  }
-
   /**
    * Compute a moving average of order m.
    * 
@@ -302,7 +291,7 @@ public class TimeSeries extends DataSet {
   }
 
   public final List<OffsetDateTime> observationTimes() {
-    return this.observationTimes;
+    return new ArrayList<>(this.observationTimes);
   }
 
   public final long periodLength() {
@@ -322,12 +311,6 @@ public class TimeSeries extends DataSet {
     return this.series.clone();
   }
 
-  @Override
-  public final void setName(final String newName) {
-    this.name = newName;
-    super.setName(newName);
-  }
-
   /**
    * Return a slice of this time series from start (inclusive) to end (exclusive).
    * 
@@ -338,14 +321,14 @@ public class TimeSeries extends DataSet {
   public final TimeSeries slice(final int start, final int end) {
     final double[] sliced = new double[end - start + 1];
     System.arraycopy(series, start, sliced, 0, end - start + 1);
-    final List<OffsetDateTime> obsTimes = new ArrayList<>(this.observationTimes.subList(start, end + 1));
+    final List<OffsetDateTime> obsTimes = this.observationTimes.subList(start, end + 1);
     return new TimeSeries(this.timeScale, obsTimes, this.periodLength, sliced);
   }
 
   public final TimeSeries timeSlice(final int start, final int end) {
     final double[] sliced = new double[end - start + 1];
     System.arraycopy(series, start - 1, sliced, 0, end - start + 1);
-    final List<OffsetDateTime> obsTimes = new ArrayList<>(this.observationTimes.subList(start - 1, end));
+    final List<OffsetDateTime> obsTimes = this.observationTimes.subList(start - 1, end);
     return new TimeSeries(this.timeScale, obsTimes, this.periodLength, sliced);
   }
 
@@ -369,9 +352,7 @@ public class TimeSeries extends DataSet {
           + " -1 and 2, but the provided parameter was equal to " + boxCoxLambda);
     }
     final double[] boxCoxed = DoubleFunctions.boxCox(this.series, boxCoxLambda);
-    final TimeSeries transformed = new TimeSeries(this.timeScale, this.observationTimes, this.periodLength, boxCoxed);
-    transformed.setName(this.name + "\nTransformed (Lambda = " + boxCoxLambda + ")");
-    return transformed;
+    return new TimeSeries(this.timeScale, this.observationTimes, this.periodLength, boxCoxed);
   }
 
   private final double[] differenceArray(final int lag) {
@@ -401,14 +382,14 @@ public class TimeSeries extends DataSet {
           seriesList.set(t, Double.NaN);
         }
       }
-      final XYChart chart = new XYChartBuilder().theme(ChartTheme.XChart).height(480).width(960).title(this.name)
+      final XYChart chart = new XYChartBuilder().theme(ChartTheme.XChart).height(480).width(960).title("")
           .build();
-      final XYSeries xySeries = chart.addSeries(this.name, xAxis, seriesList)
+      final XYSeries xySeries = chart.addSeries("", xAxis, seriesList)
           .setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
       xySeries.setLineWidth(0.75f);
       xySeries.setMarker(new None()).setLineColor(Color.BLUE);
       final JPanel panel = new XChartPanel<>(chart);
-      final JFrame frame = new JFrame(this.name);
+      final JFrame frame = new JFrame("");
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
       frame.add(panel);
       frame.pack();
@@ -544,7 +525,7 @@ public class TimeSeries extends DataSet {
       }
       builder.append(numFormatter.format(series[n - 1]));
     }
-    builder.append("\nname: ").append(name).append("\nobservationTimes: ");
+    builder.append("\nobservationTimes: ");
     if (series.length > 6) {
       for (OffsetDateTime date : observationTimes.subList(0, 3)) {
         builder.append(date.format(dateFormatter)).append(", ");

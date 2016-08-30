@@ -23,7 +23,7 @@ final class Range {
 	}
 	
 	final int[] asArray() {
-		return this.range;
+		return this.range.clone();
 	}
 	
 	final double sum() {

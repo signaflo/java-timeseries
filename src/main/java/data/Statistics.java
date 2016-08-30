@@ -5,6 +5,8 @@ import static data.Operators.productOf;
 import java.util.Arrays;
 
 final class Statistics {
+  
+  private Statistics(){}
 
 	static final double sumOf(final double[] data) {
 		double sum = 0.0;

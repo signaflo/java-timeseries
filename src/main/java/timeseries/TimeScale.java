@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 
+//Immutable
 public enum TimeScale {
 
   CENTURY(ChronoUnit.CENTURIES, 1L),

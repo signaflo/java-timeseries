@@ -18,7 +18,6 @@ import org.knowm.xchart.style.Styler.ChartTheme;
 public class DataSet {
 	
 	private final double[] data;
-	private String name = "Data";
 	
 	/**
 	 * Construct a new DataSet from the given data.
@@ -29,14 +28,6 @@ public class DataSet {
 			throw new IllegalArgumentException("Null array passed to constructor.");
 		}
 		this.data = data.clone();
-	}
-	
-	public void setName(final String newName) {
-		this.name = newName;
-	}
-	
-	public String getName() {
-		return this.name;
 	}
 	
 	/**
@@ -146,7 +137,7 @@ public class DataSet {
 				title("Scatter Plot").xAxisTitle("Index").yAxisTitle("Values").build();
 		chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter).
 		    setChartFontColor(Color.BLACK).setSeriesColors(new Color[] {Color.BLUE});
-		chart.addSeries(this.name, indices, data);
+		chart.addSeries("", indices, data);
 	    new SwingWrapper<>(chart).displayChart();
 	}
 	
@@ -163,7 +154,6 @@ public class DataSet {
 	public String toString() {
 		DecimalFormat df = new DecimalFormat("0.##");
 		return new StringBuilder().
-		append("DataSet: ").append(name).
 		append("\nValues: ").append(Arrays.toString(data)).
 		append("\nSize: ").append(data.length).
 		append("\nMean: ").append(mean()).
@@ -173,7 +163,6 @@ public class DataSet {
 	// Copy constructor. Should be called directly by all subclass copy constructors.
 	protected DataSet(final DataSet other) {
 		this.data = other.data.clone();
-		this.name = other.name;
 	}
 	
 	public DataSet copy() {
@@ -185,7 +174,6 @@ public class DataSet {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + Arrays.hashCode(data);
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
@@ -202,13 +190,6 @@ public class DataSet {
 		}
 		DataSet other = (DataSet) obj;
 		if (!Arrays.equals(data, other.data)) {
-			return false;
-		}
-		if (name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		} else if (!name.equals(other.name)) {
 			return false;
 		}
 		return true;
