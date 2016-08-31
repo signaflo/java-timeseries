@@ -6,6 +6,9 @@ import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+
+import java.io.File;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.closeTo;
 
@@ -123,11 +126,6 @@ public class DataSetSpec {
 		DataSet dataSet2 = new DataSet(3.0, 10.0);
 		double[] expected = new double[] {8.0, 17.5};
 		assertThat(dataSet1.plus(dataSet2).data(), is(equalTo(expected)));
-	}
-	
-	@Test
-	public void whenCorrelationComputedThenResultCorrect() {
-		
 	}
 
 }
