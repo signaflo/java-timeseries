@@ -112,12 +112,21 @@ public final class TimeSeries extends DataSet {
     this.timeScale = original.timeScale;
   }
 
+  /**
+   * Aggregate the observations in this series to the yearly level.
+   * @return a new TimeSeries with the observations in this series aggregated to the yearly level.
+   */
   public final TimeSeries aggregateToYears() {
     return aggregate(TimeScale.YEAR, 1);
   }
 
-  public final TimeSeries aggregate(final TimeScale time) {
-    return aggregate(time, 1);
+  /**
+   * Aggregate the observations in this series to the given time scale.
+   * @param timeScale The time scale to aggregate up to.
+   * @return a new TimeSeries with the observations in this series aggregated to the given time scale.
+   */
+  public final TimeSeries aggregate(final TimeScale timeScale) {
+    return aggregate(timeScale, 1);
   }
 
   /**
@@ -227,6 +236,11 @@ public final class TimeSeries extends DataSet {
     return new TimeSeries(this.timeScale, this.observationTimes, this.periodLength, invBoxCoxed);
   }
 
+  /**
+   * Return a moving average of order m if m is odd and of order 2xm if m is even.
+   * @param m the order of the moving average.
+   * @return a centered moving average of order m.
+   */
   public final TimeSeries centeredMovingAverage(final int m) {
     if (m % 2 == 1)
       return movingAverage(m);
@@ -259,12 +273,21 @@ public final class TimeSeries extends DataSet {
     return diffed;
   }
 
+  /**
+   * Difference this time series at the given lag and return the result in a new TimeSeries.
+   * @param lag the lag at which to take differences.
+   * @return a new TimeSeries differenced at the given lag.
+   */
   public final TimeSeries difference(final int lag) {
     double[] diffed = differenceArray(lag);
     final List<OffsetDateTime> obsTimes = this.observationTimes.subList(lag, n);
     return new TimeSeries(this.timeScale, obsTimes, this.periodLength, diffed);
   }
 
+  /**
+   * Difference this time series once at lag 1 and return the result in a new TimeSeries.
+   * @return a new TimeSeries differenced once at lag.
+   */
   public final TimeSeries difference() {
     return difference(1);
   }
@@ -272,8 +295,8 @@ public final class TimeSeries extends DataSet {
   /**
    * Compute a moving average of order m.
    * 
-   * @param m the order of the moving average. The number of neighboring values to use for averaging.
-   * @return a new TimeSeries with the smoothed data.
+   * @param m the order of the moving average.
+   * @return a new TimeSeries with the smoothed observations.
    */
   public final TimeSeries movingAverage(final int m) {
     final int c = m % 2;
@@ -292,14 +315,25 @@ public final class TimeSeries extends DataSet {
     return new TimeSeries(this.timeScale, times, this.periodLength, average);
   }
 
+  /**
+   * Return the list of observation times for this time series.
+   * @return the list of observation times for this time series.
+   */
   public final List<OffsetDateTime> observationTimes() {
     return this.observationTimes;
   }
 
+  /**
+   * Return the length of a period relative to this time series' time scale.
+   * @return the length of a period relative to this time series' time scale.
+   */
   public final long periodLength() {
     return this.periodLength;
   }
 
+  /**
+   * Print a descriptive summary of this time series.
+   */
   public final void print() {
     System.out.println(this.toString());
   }
@@ -327,6 +361,16 @@ public final class TimeSeries extends DataSet {
     return new TimeSeries(this.timeScale, obsTimes, this.periodLength, sliced);
   }
 
+  /**
+   * Return a slice of this time series using R/Julia style indexing.
+   * 
+   * @param start the beginning time index of the slice. The value at the time 
+   * index is included in the returned TimeSeries.
+   * @param end the ending time index of the slice. The value at the time index is 
+   * <i>not</i> included in the returned TimeSeries.
+   * @return a slice of this time series from start (inclusive) to end (exclusive) using
+   * R/Julia style indexing.
+   */
   public final TimeSeries timeSlice(final int start, final int end) {
     final double[] sliced = new double[end - start + 1];
     System.arraycopy(series, start - 1, sliced, 0, end - start + 1);
@@ -334,6 +378,10 @@ public final class TimeSeries extends DataSet {
     return new TimeSeries(this.timeScale, obsTimes, this.periodLength, sliced);
   }
 
+  /**
+   * Return the time scale at which observations of this series are made.
+   * @return the time scale at which observations of this series are made.
+   */
   public final TimeScale timeScale() {
     return this.timeScale;
   }
