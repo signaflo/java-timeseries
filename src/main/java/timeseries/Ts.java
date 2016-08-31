@@ -11,6 +11,12 @@ public final class Ts {
 	
 	private Ts(){}
 	
+	/**
+	 * Construct a new TimeSeries object with observations made annually starting at the given year.
+	 * @param startYear the year of the first observation.
+	 * @param series the sequence of observations constituting this time series.
+	 * @return a new TimeSeries object with the given series data and start year.
+	 */
 	public static final TimeSeries newAnnualSeries(final int startYear, final double... series) {
 	  final LocalDateTime localDateTime = LocalDateTime.of(startYear, Month.JANUARY, 1, 0, 0);
 	  final OffsetDateTime startingInstant = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
@@ -20,13 +26,13 @@ public final class Ts {
 	}
 	
 	/**
-	 * Construct a new TimeSeries object with a cycle length of one year and monthly observations,
+	 * Construct a new TimeSeries object with observations made monthly in a yearly cycle,
 	 * starting at the given year and month.
-	 * @param startYear The year of the first observation.
-	 * @param startMonth The month of the first observation - an integer between
+	 * @param startYear the year of the first observation.
+	 * @param startMonth the month of the first observation - an integer between
 	 *  1 and 12 corresponding to the months January through December.
-	 * @param series The sequence of observations constituting this time series.
-	 * @return A new TimeSeries object with the given year, month, and series data.
+	 * @param series the sequence of observations constituting this time series.
+	 * @return a new TimeSeries object with the given series data, start year, and start month.
 	 */
 	public static final TimeSeries newMonthlySeries(final int startYear, final int startMonth,
 			final double... series) {

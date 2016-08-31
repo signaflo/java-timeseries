@@ -237,7 +237,7 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Return a moving average of order m if m is odd and of order 2xm if m is even.
+   * Return a moving average of order m if m is odd and of order 2 &times; m if m is even.
    * @param m the order of the moving average.
    * @return a centered moving average of order m.
    */
@@ -316,8 +316,8 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Return the list of observation times for this time series.
-   * @return the list of observation times for this time series.
+   * Return the list of observation times for this series.
+   * @return the list of observation times for this series.
    */
   public final List<OffsetDateTime> observationTimes() {
     return this.observationTimes;
@@ -387,10 +387,16 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Transform the series using a Box-Cox transformation with the given parameter value. Setting boxCoxLambda equal to 0
-   * corresponds to the natural logarithm while values other than 0 correspond to power transforms. See the definition
-   * given
+   * Transform the series using a Box-Cox transformation with the given parameter value.
+   * 
+   * <p>
+   * Setting boxCoxLambda equal to 0
+   * corresponds to the natural logarithm while values other than 0 correspond to power transforms.
+   * </p>
+   * <p>
+   * See the definition given
    * <a target="_blank" href="https://en.wikipedia.org/wiki/Power_transform#Box.E2.80.93Cox_transformation"> here.</a>
+   * </p>
    * 
    * @param boxCoxLambda the parameter to use for the transformation.
    * @return a new TimeSeries transformed using the given Box-Cox parameter.
@@ -416,7 +422,7 @@ public final class TimeSeries extends DataSet {
   // ********** Plots ********** //
 
   /**
-   * Display a line plot connecting the observation times to the observation values.
+   * Display a line plot connecting the observation times to the measurements.
    */
   @Override
   public final void plot() {
