@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ */
+
 package timeseries.models;
 
 import java.awt.Color;

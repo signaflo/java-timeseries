@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ */
+
 package timeseries;
 
 import java.time.LocalDateTime;

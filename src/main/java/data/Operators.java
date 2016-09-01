@@ -1,5 +1,14 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ */
+
 package data;
 
+/**
+ * Static methods for performing vector operations on arrays.
+ * @author Jacob Rachiele
+ *
+ */
 final class Operators {
 
 	private Operators(){}

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ */
+
 package data;
 
 import java.awt.Color;
@@ -12,7 +16,7 @@ import org.knowm.xchart.style.Styler.ChartTheme;
 
 /**
  * A collection of numerical observations.
- * @author jacob
+ * @author Jacob Rachiele
  *
  */
 public class DataSet {

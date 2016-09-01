@@ -1,10 +1,18 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ */
+
 package timeseries;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 
-//Immutable
+/**
+ * A set of enum constants representing standard time scales, raging from nanoseconds to centuries.
+ * @author Jacob Rachiele
+ *
+ */
 public enum TimeScale {
 
   CENTURY(ChronoUnit.CENTURIES, 1L),
