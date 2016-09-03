@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
@@ -22,11 +23,12 @@ public final class CsvReader {
   private final File csvFile;
   private final CSVParser parser;
   private final List<List<String>> parsedRecords;
+  private final List<String> header;
   
-  public CsvReader(final String csvFilePath, final boolean header) {
+  public CsvReader(final String csvFilePath, final boolean headerRow) {
     this.csvFile = new File(getClass().getClassLoader().getResource(csvFilePath).getFile());
     this.parser = getParser(csvFile);
-    List<CSVRecord> records = null;
+    List<CSVRecord> records = Collections.emptyList();
     try {
         records = parser.getRecords();
     } catch (IOException ie) {
@@ -39,7 +41,15 @@ public final class CsvReader {
       }
     }
     // TODO: Add method for large csv files where we don't read all records at once.
-    if (header) records.remove(0);
+    if (headerRow) {
+      this.header = new ArrayList<String>();
+      CSVRecord headerRecord = records.remove(0);
+      for (String s : headerRecord) {
+        this.header.add(s);
+      }
+    } else {
+      this.header = Collections.emptyList();
+    }
     this.parsedRecords = parseRecords(records);
 
   }
@@ -72,8 +82,34 @@ public final class CsvReader {
     return this.csvFile;
   }
   
-  public final List<List<String>> parsedRecords() {
+  public final List<List<String>> getRows() {
     return this.parsedRecords;
+  }
+  
+  public final List<String> getColumn(final int i) {
+    List<String> column = new ArrayList<>(this.parsedRecords.size());
+    for (List<String> record : parsedRecords) {
+      column.add(record.get(i));
+    }
+    return column;
+  }
+  
+  public final List<String> getHeader() {
+    return this.header;
+  }
+  
+  public final List<List<String>> getColumns() {
+    int nCols = this.parsedRecords.get(0).size();
+    List<List<String>> columns = new ArrayList<>(nCols);
+    List<String> column;
+    for (int i = 0; i < nCols; i++) {
+      column = new ArrayList<>(this.parsedRecords.size());
+      for (List<String> row : this.parsedRecords) {
+        column.add(row.get(i));
+      }
+      columns.add(column);
+    }
+    return columns;
   }
   
 }
