@@ -29,6 +29,9 @@ import org.knowm.xchart.style.lines.SeriesLines;
 import org.knowm.xchart.style.markers.None;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
+import com.google.common.primitives.Doubles;
+
+import data.CsvReader;
 import data.DataSet;
 import data.DoubleFunctions;
 
@@ -444,7 +447,7 @@ public final class TimeSeries extends DataSet {
       }
       final XYChart chart = new XYChartBuilder().theme(ChartTheme.XChart).height(480).width(960).title("")
           .build();
-      final XYSeries xySeries = chart.addSeries("", xAxis, seriesList)
+      final XYSeries xySeries = chart.addSeries("Time Series Plot", xAxis, seriesList)
           .setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
       xySeries.setLineWidth(0.75f);
       xySeries.setMarker(new None()).setLineColor(Color.BLUE);

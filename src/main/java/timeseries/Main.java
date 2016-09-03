@@ -6,8 +6,7 @@ final class Main {
 
   public static void main(String[] args) throws Exception {
     TimeSeries traffic = TestData.internetTraffic();
-    traffic.plot();
-    //livestock.plot();
+    traffic.difference().plotAcf(20);
   }
 
 }

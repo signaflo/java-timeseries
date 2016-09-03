@@ -7,8 +7,6 @@ import org.junit.rules.ExpectedException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import java.io.File;
-
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.closeTo;
 

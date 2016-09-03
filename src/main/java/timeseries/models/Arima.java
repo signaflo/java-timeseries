@@ -17,6 +17,7 @@ public final class Arima {
 		this.observations = observations.copy();
 		this.order = order.copy();
 		double[] initialParameters = setInitialParameters();
+		System.out.println(initialParameters);
 	}
 	
 	private final double[] setInitialParameters() {

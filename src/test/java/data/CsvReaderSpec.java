@@ -1,8 +1,8 @@
 package data;
 
 import java.time.YearMonth;
+import java.util.List;
 
-import org.apache.commons.csv.CSVRecord;
 import org.junit.Test;
 
 public class CsvReaderSpec {
@@ -10,11 +10,13 @@ public class CsvReaderSpec {
   @Test
   public void testFile() throws Exception {
     String csvPath = "monthly-total-number-of-pigs-sla.csv";
-    CsvReader<YearMonth, Integer> reader = new CsvReader<>(csvPath, YearMonth.class, Integer.class);
-    for (CSVRecord record : reader.parser()) {
+    CsvReader reader = new CsvReader(csvPath, true);
+    List<List<String>> rows = reader.parsedRecords();
+    for (List<String> record : rows) {
+      
       System.out.print(YearMonth.parse(record.get(0)).atDay(1));
       System.out.println(", " + Integer.parseInt(record.get(1)));
     }
-    reader.parser().close();
   }
+  
 }

@@ -1,9 +1,4 @@
 package data;
-
-import timeseries.TimeSeries;
-import static data.TestData.*;
-
-import java.io.File;
 final class Main {
 
 	public static void main(String[] args) {
