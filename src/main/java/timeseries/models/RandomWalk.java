@@ -28,7 +28,7 @@ import stats.distributions.Normal;
 import timeseries.TimeScale;
 import timeseries.TimeSeries;
 
-public final class RandomWalk {
+public final class RandomWalk implements Model {
 
   private final TimeSeries timeSeries;
   private final TimeSeries fittedSeries;
@@ -47,7 +47,7 @@ public final class RandomWalk {
    * @param n The number of observations to simulate.
    * @return A simulated RandomWalk model.
    */
-  public static final RandomWalk simulate(final Distribution dist, final int n) {
+  public static final Model simulate(final Distribution dist, final int n) {
     final double[] series = new double[n];
     for (int t = 0; t < n; t++) {
       series[t] = dist.rand();
@@ -64,22 +64,26 @@ public final class RandomWalk {
    * @param n The number of observations to simulate.
    * @return
    */
-  public static final RandomWalk simulate(final double mean, final double sigma, final int n) {
+  public static final Model simulate(final double mean, final double sigma, final int n) {
     final Distribution dist = new Normal(mean, sigma);
     return simulate(dist, n);
   }
 
-  public static final RandomWalk simulate(final double sigma, final int n) {
+  public static final Model simulate(final double sigma, final int n) {
     final Distribution dist = new Normal(0, sigma);
     return simulate(dist, n);
   }
 
-  public static final RandomWalk simulate(final int n) {
+  public static final Model simulate(final int n) {
     final Distribution dist = new Normal(0, 1);
     return simulate(dist, n);
   }
 
-  public final TimeSeries forecast(final int steps) {
+  /* (non-Javadoc)
+   * @see timeseries.models.Model#pointForecast(int)
+   */
+  @Override
+  public final TimeSeries pointForecast(final int steps) {
     int n = timeSeries.n();
     long periodLength = timeSeries.periodLength();
     TimeScale timeScale = timeSeries.timeScale();
@@ -92,19 +96,43 @@ public final class RandomWalk {
         periodLength * timeScale.periodLength(), timeScale.timeUnit());
     return new TimeSeries(timeScale, startTime, periodLength, forecast);
   }
+  
+  /* (non-Javadoc)
+   * @see timeseries.models.Model#newForecast(int, double)
+   */
+  @Override
+  public final Forecast newForecast(final int steps, final double alpha) {
+    return new RandomWalkForecast(this, steps, alpha);
+  }
 
+  /* (non-Javadoc)
+   * @see timeseries.models.Model#timeSeries()
+   */
+  @Override
   public final TimeSeries timeSeries() {
     return this.timeSeries.copy();
   }
 
+  /* (non-Javadoc)
+   * @see timeseries.models.Model#fittedSeries()
+   */
+  @Override
   public final TimeSeries fittedSeries() {
     return this.fittedSeries.copy();
   }
 
+  /* (non-Javadoc)
+   * @see timeseries.models.Model#residuals()
+   */
+  @Override
   public final TimeSeries residuals() {
     return this.residuals.copy();
   }
 
+  /* (non-Javadoc)
+   * @see timeseries.models.Model#plotFit()
+   */
+  @Override
   public final void plotFit() {
     
     new Thread(() -> {
@@ -135,6 +163,10 @@ public final class RandomWalk {
 
   }
 
+  /* (non-Javadoc)
+   * @see timeseries.models.Model#plotResiduals()
+   */
+  @Override
   public final void plotResiduals() {
     
     new Thread(() -> {
