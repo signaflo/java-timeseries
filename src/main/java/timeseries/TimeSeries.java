@@ -29,9 +29,6 @@ import org.knowm.xchart.style.lines.SeriesLines;
 import org.knowm.xchart.style.markers.None;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
-import com.google.common.primitives.Doubles;
-
-import data.CsvReader;
 import data.DataSet;
 import data.DoubleFunctions;
 
@@ -93,7 +90,7 @@ public final class TimeSeries extends DataSet {
    * @param startTime the time of the first observation.
    * @param series the observations.
    */
-  /* package */ TimeSeries(final OffsetDateTime startTime, final double... series) {
+  TimeSeries(final OffsetDateTime startTime, final double... series) {
     this(TimeScale.MONTH, startTime, 1L, series);
   }
 
@@ -447,7 +444,7 @@ public final class TimeSeries extends DataSet {
       }
       final XYChart chart = new XYChartBuilder().theme(ChartTheme.XChart).height(480).width(960).title("")
           .build();
-      final XYSeries xySeries = chart.addSeries("Time Series Plot", xAxis, seriesList)
+      final XYSeries xySeries = chart.addSeries("Series Values", xAxis, seriesList)
           .setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
       xySeries.setLineWidth(0.75f);
       xySeries.setMarker(new None()).setLineColor(Color.BLUE);
@@ -457,10 +454,38 @@ public final class TimeSeries extends DataSet {
       frame.add(panel);
       frame.pack();
       frame.setVisible(true);
-    }).run();
+    }).start();
 
   }
 
+  public final void plot(final String plotName) {
+
+    new Thread(() -> {
+      final List<Date> xAxis = new ArrayList<>(this.observationTimes.size());
+      for (OffsetDateTime dateTime : this.observationTimes) {
+        xAxis.add(Date.from(dateTime.toInstant()));
+      }
+      final List<Double> seriesList = com.google.common.primitives.Doubles.asList(this.series);
+      for (int t = 0; t < seriesList.size(); t++) {
+        if (seriesList.get(t).isInfinite()) {
+          seriesList.set(t, Double.NaN);
+        }
+      }
+      final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800).title(plotName)
+          .build();
+      final XYSeries xySeries = chart.addSeries("Series Values", xAxis, seriesList)
+          .setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
+      xySeries.setLineWidth(0.75f);
+      xySeries.setMarker(new None()).setLineColor(Color.BLUE);
+      final JPanel panel = new XChartPanel<>(chart);
+      final JFrame frame = new JFrame(plotName);
+      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      frame.add(panel);
+      frame.pack();
+      frame.setVisible(true);
+    }).start();
+
+  }
   /**
    * Display a plot of the sample autocorrelations up to the given lag.
    * 
@@ -609,6 +634,15 @@ public final class TimeSeries extends DataSet {
       builder.append("S");
     }
     return builder.append("\ntimeScale: ").append(timeScale).toString();
+  }
+ 
+
+  public final TimeSeries minus(final TimeSeries otherSeries) {
+    final double[] subtracted = new double[this.series.length];
+    for (int t = 0; t < subtracted.length; t++) {
+      subtracted[t] = this.series[t] - otherSeries.series[t];
+    }
+    return new TimeSeries(timeScale, observationTimes, periodLength, subtracted);
   }
 
 }

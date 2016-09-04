@@ -14,9 +14,6 @@ import org.apache.commons.csv.CSVRecord;
 /**
  * 
  * @author Jacob Rachiele
- *
- * @param <T> The type of the first column.
- * @param <V> The type of the columns following the first.
  */
 public final class CsvReader {
   
@@ -84,6 +81,10 @@ public final class CsvReader {
   
   public final List<List<String>> getRows() {
     return this.parsedRecords;
+  }
+  
+  public final List<String> getRow(final int i) {
+    return this.parsedRecords.get(i);
   }
   
   public final List<String> getColumn(final int i) {

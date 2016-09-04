@@ -4,7 +4,23 @@
 
 package timeseries.models;
 
+import java.awt.Color;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import org.knowm.xchart.XChartPanel;
+import org.knowm.xchart.XYChart;
+import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.XYSeries;
+import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
+import org.knowm.xchart.style.Styler.ChartTheme;
+import org.knowm.xchart.style.markers.Circle;
+import org.knowm.xchart.style.markers.None;
 
 import data.DoubleFunctions;
 import timeseries.TimeScale;
@@ -40,9 +56,73 @@ public final class MeanModel {
         .plus(periodLength * timeScale.periodLength(), timeScale.timeUnit());
     return new TimeSeries(timeScale, startTime, periodLength, forecasted);
   }
-
+  
+  public final TimeSeries timeSeries() {
+    return this.timeSeries;
+  }
+  
   public final TimeSeries fittedSeries() {
     return this.fittedSeries;
+  }
+
+  public final TimeSeries residuals() {
+    return this.timeSeries.minus(this.fittedSeries);
+  }
+
+  public final void plotResiduals() {
+    new Thread(() -> {
+      final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
+      for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
+        xAxis.add(Date.from(dateTime.toInstant()));
+      }
+      List<Double> seriesList = com.google.common.primitives.Doubles.asList(residuals().series());
+      final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
+          .title("Mean Model Residuals").build();
+      XYSeries residualSeries = chart.addSeries("Model Residuals", xAxis, seriesList);
+      residualSeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
+      residualSeries.setMarker(new Circle()).setMarkerColor(Color.RED);
+
+      JPanel panel = new XChartPanel<>(chart);
+      JFrame frame = new JFrame("Mean Model Residuals");
+      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      frame.add(panel);
+      frame.pack();
+      frame.setVisible(true);
+    }).start();
+  }
+
+  public final void plotFitted() {
+    this.fittedSeries.plot("Mean Model Fitted Values");
+  }
+
+  public final void plotFit() {
+
+    new Thread(() -> {
+      final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
+      for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
+        xAxis.add(Date.from(dateTime.toInstant()));
+      }
+      List<Double> seriesList = com.google.common.primitives.Doubles.asList(timeSeries.series());
+      List<Double> fittedList = com.google.common.primitives.Doubles.asList(fittedSeries.series());
+      final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
+          .title("Mean Model Fitted vs Actual").build();
+      XYSeries fitSeries = chart.addSeries("Fitted Values", xAxis, fittedList);
+      XYSeries observedSeries = chart.addSeries("Actual Values", xAxis, seriesList);
+      
+      chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line);
+      
+      observedSeries.setLineWidth(0.75f);
+      observedSeries.setMarker(new None()).setLineColor(Color.RED);
+      fitSeries.setLineWidth(0.75f);
+      fitSeries.setMarker(new None()).setLineColor(Color.BLUE);
+
+      JPanel panel = new XChartPanel<>(chart);
+      JFrame frame = new JFrame("Mean Model Fit");
+      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      frame.add(panel);
+      frame.pack();
+      frame.setVisible(true);
+    }).start();
   }
 
   @Override

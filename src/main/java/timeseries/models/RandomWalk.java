@@ -24,7 +24,7 @@ import org.knowm.xchart.style.markers.Circle;
 import org.knowm.xchart.style.markers.None;
 
 import stats.distributions.Distribution;
-import stats.distributions.NormalDistribution;
+import stats.distributions.Normal;
 import timeseries.TimeScale;
 import timeseries.TimeSeries;
 
@@ -65,17 +65,17 @@ public final class RandomWalk {
    * @return
    */
   public static final RandomWalk simulate(final double mean, final double sigma, final int n) {
-    final Distribution dist = new NormalDistribution(mean, sigma);
+    final Distribution dist = new Normal(mean, sigma);
     return simulate(dist, n);
   }
 
   public static final RandomWalk simulate(final double sigma, final int n) {
-    final Distribution dist = new NormalDistribution(0, sigma);
+    final Distribution dist = new Normal(0, sigma);
     return simulate(dist, n);
   }
 
   public static final RandomWalk simulate(final int n) {
-    final Distribution dist = new NormalDistribution(0, 1);
+    final Distribution dist = new Normal(0, 1);
     return simulate(dist, n);
   }
 
@@ -114,14 +114,15 @@ public final class RandomWalk {
       }
       List<Double> seriesList = com.google.common.primitives.Doubles.asList(timeSeries.series());
       List<Double> fittedList = com.google.common.primitives.Doubles.asList(fittedSeries.series());
-      final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
-          .title("Random Walk Fitted and Actual").build();
+      final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
+          .title("Random Walk Fitted vs Actual").build();
       XYSeries fitSeries = chart.addSeries("Fitted Values", xAxis, fittedList);
-      XYSeries observedSeries = chart.addSeries("Observed Values", xAxis, seriesList);
+      XYSeries observedSeries = chart.addSeries("Actual Values", xAxis, seriesList);
       XYStyler styler = chart.getStyler();
       styler.setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line);
-      observedSeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
+      observedSeries.setLineWidth(0.75f);
       observedSeries.setMarker(new None()).setLineColor(Color.RED);
+      fitSeries.setLineWidth(0.75f);
       fitSeries.setMarker(new None()).setLineColor(Color.BLUE);
       
       JPanel panel = new XChartPanel<>(chart);
@@ -130,7 +131,7 @@ public final class RandomWalk {
       frame.add(panel);
       frame.pack();
       frame.setVisible(true);
-    }).run();
+    }).start();
 
   }
 
@@ -142,19 +143,19 @@ public final class RandomWalk {
         xAxis.add(Date.from(dateTime.toInstant()));
       }
       List<Double> seriesList = com.google.common.primitives.Doubles.asList(residuals.series());
-      final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
-          .title("Random Walk Fitted and Actual").build();
+      final XYChart chart = new XYChartBuilder().theme(ChartTheme.XChart).height(600).width(800)
+          .title("Random Walk Residuals").build();
       XYSeries residualSeries = chart.addSeries("Model Residuals", xAxis, seriesList);
       residualSeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
       residualSeries.setMarker(new Circle()).setMarkerColor(Color.RED);
 
       JPanel panel = new XChartPanel<>(chart);
-      JFrame frame = new JFrame("Random Walk Fit");
+      JFrame frame = new JFrame("Random Walk Residuals");
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
       frame.add(panel);
       frame.pack();
       frame.setVisible(true);
-    }).run();
+    }).start();
     
   }
 
