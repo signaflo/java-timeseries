@@ -1,6 +1,7 @@
 package timeseries.models;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -122,6 +123,7 @@ public final class RandomWalkForecast implements Forecast {
    */
   @Override
   public final void plot() {
+    
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       for (OffsetDateTime dateTime : forecast.observationTimes()) {
@@ -143,7 +145,11 @@ public final class RandomWalkForecast implements Forecast {
       forecastSeries.setMarker(new None());
       forecastSeries.setLineWidth(1.5f);
 
-      chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.RED);
+      chart.setXAxisTitle("Time");
+      chart.setYAxisTitle("Forecast Values");
+      chart.getStyler().setAxisTitleFont(new Font("Arial", Font.PLAIN, 14));
+      chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.RED)
+      .setChartFontColor(new Color(112, 112, 112));
       forecastSeries.setLineColor(Color.BLUE);
 
       JPanel panel = new XChartPanel<>(chart);
