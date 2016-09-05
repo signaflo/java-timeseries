@@ -28,12 +28,23 @@ import stats.distributions.Normal;
 import timeseries.TimeScale;
 import timeseries.TimeSeries;
 
+/**
+ * A model for a random walk process. Some important characteristics of the random walk are that the
+ * process variance increases as a function of time (non-stationarity) and that the optimal forecast
+ * at any point in the future is equal to the last observed value.
+ * @author Jacob Rachiele
+ *
+ */
 public final class RandomWalk implements Model {
 
   private final TimeSeries timeSeries;
   private final TimeSeries fittedSeries;
   private final TimeSeries residuals;
 
+  /**
+   * Create a new random walk model from the given time series of observations.
+   * @param observed the observed series.
+   */
   public RandomWalk(final TimeSeries observed) {
     this.timeSeries = observed.copy();
     this.fittedSeries = fitSeries();
@@ -41,7 +52,7 @@ public final class RandomWalk implements Model {
   }
 
   /**
-   * Simulate a random walk assuming that the errors follow the given Distribution.
+   * Simulate a random walk assuming that the errors, or random shocks, follow the given Distribution.
    * 
    * @param dist The probability distribution that observations are drawn from.
    * @param n The number of observations to simulate.
@@ -143,10 +154,16 @@ public final class RandomWalk implements Model {
     return this.residuals.copy();
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * {@inheritDoc}
    * 
-   * @see timeseries.models.Model#plotFit()
+   * <p>
+   * <b>Implementation Note:</b>
+   * </p>
+   * <p>
+   * In the case of the random walk the plot of the fitted values is a one-period
+   * horizontal shift of the observations plot.
+   * </p>
    */
   @Override
   public final void plotFit() {
@@ -193,7 +210,7 @@ public final class RandomWalk implements Model {
         xAxis.add(Date.from(dateTime.toInstant()));
       }
       List<Double> seriesList = com.google.common.primitives.Doubles.asList(residuals.series());
-      final XYChart chart = new XYChartBuilder().theme(ChartTheme.XChart).height(600).width(800)
+      final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
           .title("Random Walk Residuals").build();
       XYSeries residualSeries = chart.addSeries("Model Residuals", xAxis, seriesList);
       residualSeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Scatter);

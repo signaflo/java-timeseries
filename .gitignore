@@ -7,3 +7,4 @@
 .settings/
 /gradle.properties
 /.gitignore
+.idea/

@@ -3,7 +3,7 @@ package timeseries.models;
 import timeseries.TimeSeries;
 
 /**
- * An Autoregressive Integrated Moving Average model.
+ * An Autoregressive Integrated Moving Average model. This class is immutable and thread-safe.
  * @author Jacob Rachiele
  *
  */
@@ -13,9 +13,10 @@ public final class Arima {
 	// The number of parameters, degree of differencing, and constant flag.
 	private final ModelOrder order;
 	
+	// Note: no need to copy since TimeSeries and ModelOrder are immutable;
 	private Arima(final TimeSeries observations, final ModelOrder order) {
-		this.observations = observations.copy();
-		this.order = order.copy();
+		this.observations = observations;
+		this.order = order;
 		double[] initialParameters = setInitialParameters();
 		System.out.println(initialParameters);
 	}
@@ -31,7 +32,8 @@ public final class Arima {
 	
 	/**
 	 * The order of an ARIMA model, consisting of the number of autoregressive and moving average parameters,
-	 * along with the degree of differencing and whether or not a constant is in the model.
+	 * along with the degree of differencing and whether or not a constant is in the model. This class is
+	 * immutable and thread-safe.
 	 * @author Jacob Rachiele
 	 *
 	 */
@@ -58,20 +60,6 @@ public final class Arima {
 		// This returns the total number of nonseasonal and seasonal ARMA parameters.
 		private final int sumARMA() {
 		  return this.p + this.q + this.P + this.Q;
-		}
-		
-    public final ModelOrder copy() {
-      return new ModelOrder(this);
-    }
-		
-		private ModelOrder(final ModelOrder original) {
-			this.p = original.p;
-			this.d = original.d;
-			this.q = original.q;
-			this.P = original.P;
-			this.D = original.D;
-			this.Q = original.Q;
-			this.constant = original.constant;
 		}
 	}
 
