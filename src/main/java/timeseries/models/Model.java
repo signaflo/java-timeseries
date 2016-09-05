@@ -6,7 +6,7 @@ public interface Model {
 
   TimeSeries pointForecast(int steps);
 
-  Forecast newForecast(int steps, double alpha);
+  Forecast forecast(int steps, double alpha);
 
   TimeSeries timeSeries();
 

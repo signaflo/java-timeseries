@@ -27,25 +27,37 @@ public final class RandomWalkForecast implements Forecast {
 
   private final Model model;
   private final TimeSeries forecast;
-  private final TimeSeries upperInterval;
-  private final TimeSeries lowerInterval;
-  private final int steps;
-  private final double alpha;
+  private final TimeSeries upperValues;
+  private final TimeSeries lowerValues;
+  private final double criticalValue;
+  private final TimeSeries fcstErrors;
 
   public RandomWalkForecast(final Model model, final int steps, final double alpha) {
     this.model = model;
     this.forecast = model.pointForecast(steps);
-    this.alpha = alpha;
-    this.steps = steps;
-    this.upperInterval = upperPredictionInterval(steps, alpha);
-    this.lowerInterval = lowerPredictionInterval(steps, alpha);
+    this.criticalValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
+    this.fcstErrors = getFcstErrors();
+    this.upperValues = computeUpperPredictionValues(steps, alpha);
+    this.lowerValues = computeLowerPredictionValues(steps, alpha);
+  }
+  
+  @Override
+  public final TimeSeries forecast() {
+    return this.forecast;
   }
 
-  /* (non-Javadoc)
-   * @see timeseries.models.Forecast#upperPredictionInterval(int, double)
-   */
   @Override
-  public final TimeSeries upperPredictionInterval(final int steps, final double alpha) {
+  public final TimeSeries upperPredictionValues() {
+    return this.upperValues;
+  }
+  
+  @Override
+  public final TimeSeries lowerPredictionValues() {
+    return this.lowerValues;
+  }
+  
+  @Override
+  public final TimeSeries computeUpperPredictionValues(final int steps, final double alpha) {
     double[] upperPredictionValues = new double[steps];
     double criticalValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
     for (int t = 0; t < steps; t++) {
@@ -59,7 +71,7 @@ public final class RandomWalkForecast implements Forecast {
    * @see timeseries.models.Forecast#lowerPredictionInterval(int, double)
    */
   @Override
-  public final TimeSeries lowerPredictionInterval(final int steps, final double alpha) {
+  public final TimeSeries computeLowerPredictionValues(final int steps, final double alpha) {
     double[] upperPredictionValues = new double[steps];
     double criticalValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
     for (int t = 0; t < steps; t++) {
@@ -84,13 +96,7 @@ public final class RandomWalkForecast implements Forecast {
         xAxis.add(Date.from(dateTime.toInstant()));
       }
 
-      double critValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
-      double[] errors = new double[forecast.n()];
-      for (int t = 0; t < errors.length; t++) {
-        errors[t] = critValue * Math.sqrt(t + 1);
-      }
-
-      List<Double> errorList = Doubles.asList(errors);
+      List<Double> errorList = Doubles.asList(fcstErrors.series());
       List<Double> seriesList = Doubles.asList(model.timeSeries().series());
       List<Double> forecastList = Doubles.asList(forecast.series());
       final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
@@ -130,26 +136,20 @@ public final class RandomWalkForecast implements Forecast {
         xAxis.add(Date.from(dateTime.toInstant()));
       }
 
-      double critValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
-      double[] errors = new double[forecast.n()];
-      for (int t = 0; t < errors.length; t++) {
-        errors[t] = critValue * Math.sqrt(t + 1);
-      }
-
-      List<Double> errorList = Doubles.asList(errors);
+      List<Double> errorList = Doubles.asList(fcstErrors.series());
       List<Double> forecastList = Doubles.asList(forecast.series());
       final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
           .title("Random Walk Forecast").build();
-
-      XYSeries forecastSeries = chart.addSeries("Forecast", xAxis, forecastList, errorList);
-      forecastSeries.setMarker(new None());
-      forecastSeries.setLineWidth(1.5f);
 
       chart.setXAxisTitle("Time");
       chart.setYAxisTitle("Forecast Values");
       chart.getStyler().setAxisTitleFont(new Font("Arial", Font.PLAIN, 14));
       chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.RED)
-      .setChartFontColor(new Color(112, 112, 112));
+      .setChartFontColor(new Color(112, 112, 112));     
+      
+      XYSeries forecastSeries = chart.addSeries("Forecast", xAxis, forecastList, errorList);
+      forecastSeries.setMarker(new None());
+      forecastSeries.setLineWidth(1.5f);
       forecastSeries.setLineColor(Color.BLUE);
 
       JPanel panel = new XChartPanel<>(chart);
@@ -159,6 +159,15 @@ public final class RandomWalkForecast implements Forecast {
       frame.pack();
       frame.setVisible(true);
     }).start();
+  }
+  
+  private TimeSeries getFcstErrors() {
+    double[] errors = new double[forecast.n()];
+    for (int t = 0; t < errors.length; t++) {
+      errors[t] = criticalValue * Math.sqrt(t + 1);
+    }
+    return new TimeSeries(forecast.timeScale(), forecast.observationTimes().get(0), 
+        forecast.periodLength(), errors);
   }
 
 }

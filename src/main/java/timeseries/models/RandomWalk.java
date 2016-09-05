@@ -59,53 +59,63 @@ public final class RandomWalk implements Model {
    * Simulate a random walk assuming errors follow a Normal (Gaussian) Distribution with the given mean and standard
    * deviation.
    * 
-   * @param mean The mean of the Normal distribution the observations are drawn from.
-   * @param sigma The standard deviation of the Normal distribution the observations are drawn from.
-   * @param n The number of observations to simulate.
-   * @return
+   * @param mean the mean of the Normal distribution the observations are drawn from.
+   * @param sigma the standard deviation of the Normal distribution the observations are drawn from.
+   * @param n the number of observations to simulate.
+   * @return a new simulated random walk model.
    */
   public static final Model simulate(final double mean, final double sigma, final int n) {
     final Distribution dist = new Normal(mean, sigma);
     return simulate(dist, n);
   }
 
+  /**
+   * Simulate a random walk assuming errors follow a Normal (Gaussian) Distribution with zero mean and with the provided
+   * standard deviation.
+   * 
+   * @param sigma the standard deviation of the Normal distribution the observations are drawn from.
+   * @param n the number of observations to simulate.
+   * @return a new simulated random walk model.
+   */
   public static final Model simulate(final double sigma, final int n) {
     final Distribution dist = new Normal(0, sigma);
     return simulate(dist, n);
   }
 
+  /**
+   * Simulate a random walk assuming errors follow a standard Normal (Gaussian) Distribution.
+   * 
+   * @param n the number of observations to simulate.
+   * @return a new simulated random walk model.
+   */
   public static final Model simulate(final int n) {
     final Distribution dist = new Normal(0, 1);
     return simulate(dist, n);
   }
 
-  /* (non-Javadoc)
-   * @see timeseries.models.Model#pointForecast(int)
-   */
   @Override
   public final TimeSeries pointForecast(final int steps) {
     int n = timeSeries.n();
     long periodLength = timeSeries.periodLength();
     TimeScale timeScale = timeSeries.timeScale();
-    
+
     double[] forecast = new double[steps];
     for (int t = 0; t < steps; t++) {
       forecast[t] = timeSeries.at(n - 1);
     }
-    final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1).plus(
-        periodLength * timeScale.periodLength(), timeScale.timeUnit());
+    final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
+        .plus(periodLength * timeScale.periodLength(), timeScale.timeUnit());
     return new TimeSeries(timeScale, startTime, periodLength, forecast);
   }
-  
-  /* (non-Javadoc)
-   * @see timeseries.models.Model#newForecast(int, double)
-   */
+
   @Override
-  public final Forecast newForecast(final int steps, final double alpha) {
+  public final Forecast forecast(final int steps, final double alpha) {
     return new RandomWalkForecast(this, steps, alpha);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see timeseries.models.Model#timeSeries()
    */
   @Override
@@ -113,7 +123,9 @@ public final class RandomWalk implements Model {
     return this.timeSeries.copy();
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see timeseries.models.Model#fittedSeries()
    */
   @Override
@@ -121,7 +133,9 @@ public final class RandomWalk implements Model {
     return this.fittedSeries.copy();
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see timeseries.models.Model#residuals()
    */
   @Override
@@ -129,12 +143,14 @@ public final class RandomWalk implements Model {
     return this.residuals.copy();
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see timeseries.models.Model#plotFit()
    */
   @Override
   public final void plotFit() {
-    
+
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
       for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
@@ -152,7 +168,7 @@ public final class RandomWalk implements Model {
       observedSeries.setMarker(new None()).setLineColor(Color.RED);
       fitSeries.setLineWidth(0.75f);
       fitSeries.setMarker(new None()).setLineColor(Color.BLUE);
-      
+
       JPanel panel = new XChartPanel<>(chart);
       JFrame frame = new JFrame("Random Walk Fit");
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -163,12 +179,14 @@ public final class RandomWalk implements Model {
 
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see timeseries.models.Model#plotResiduals()
    */
   @Override
   public final void plotResiduals() {
-    
+
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
       for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
@@ -188,7 +206,7 @@ public final class RandomWalk implements Model {
       frame.pack();
       frame.setVisible(true);
     }).start();
-    
+
   }
 
   private final TimeSeries fitSeries() {

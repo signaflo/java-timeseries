@@ -12,12 +12,14 @@ final class Main {
   public static void main(String[] args) throws Exception {
     TimeSeries series = TestData.ausbeerSeries();
     Model model = new RandomWalk(series);
-    Forecast fcst = model.newForecast(12, 0.05);
+    Forecast fcst = model.forecast(12, 0.05);
     fcst.plot();
     fcst.pastAndFuture();
-//    MeanModel meanModel = new MeanModel(series);
-//    MeanForecast meanFcst = new MeanForecast(meanModel, 12, 0.05);
-//    meanFcst.plot();
+    Model meanModel = new MeanModel(series);
+    Forecast meanFcst = new MeanForecast(meanModel, 12, 0.05);
+    meanFcst.plot();
+    meanFcst.pastAndFuture();
+    
   }
 
 }

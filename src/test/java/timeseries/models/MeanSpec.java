@@ -22,25 +22,25 @@ public class MeanSpec {
 		TimeSeries series = TestData.ausbeerSeries();
 		int h = 6;
 		MeanModel meanModel = new MeanModel(series);
-		TimeSeries forecast = meanModel.forecast(h);
+		TimeSeries pointForecast = meanModel.pointForecast(h);
 		double[] expected = DoubleFunctions.fill(h, series.mean());
-		assertArrayEquals(expected, forecast.series(), 1E-2);
+		assertArrayEquals(expected, pointForecast.series(), 1E-2);
 	}
 	
 	@Test
 	public final void whenMeanForecastComputedFirstObservationTimeCorrect() {
 		TimeSeries series = TestData.ausbeerSeries();
-		TimeSeries forecast = new MeanModel(series).forecast(6);
+		TimeSeries pointForecast = new MeanModel(series).pointForecast(6);
 		OffsetDateTime expectedTime = OffsetDateTime.of(2008, 10, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0));
-		assertThat(forecast.observationTimes().get(0), is(equalTo(expectedTime)));
+		assertThat(pointForecast.observationTimes().get(0), is(equalTo(expectedTime)));
 	}
 	
 	@Test
 	public final void whenMeanForecastComputedTimeScaleUnchanged() {
 		TimeSeries series = TestData.ausbeerSeries();
-		TimeSeries forecast = new MeanModel(series).forecast(6);
+		TimeSeries pointForecast = new MeanModel(series).pointForecast(6);
 		TimeScale timeScale = TimeScale.QUARTER;
-		assertThat(forecast.timeScale(), is(equalTo(timeScale)));
+		assertThat(pointForecast.timeScale(), is(equalTo(timeScale)));
 	}
 
 }

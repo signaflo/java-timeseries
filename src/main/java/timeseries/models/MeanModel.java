@@ -33,7 +33,7 @@ import timeseries.TimeSeries;
  * @author Jacob Rachiele
  *
  */
-public final class MeanModel {
+public final class MeanModel implements Model {
 
   private final TimeSeries timeSeries;
   private final TimeSeries fittedSeries;
@@ -45,8 +45,17 @@ public final class MeanModel {
     this.fittedSeries = new TimeSeries(observed.timeScale(), observed.observationTimes().get(0),
         observed.periodLength(), DoubleFunctions.fill(observed.n(), this.mean));
   }
+  
+  /* (non-Javadoc)
+   * @see timeseries.models.Model#newForecast(int, double)
+   */
+  @Override
+  public final Forecast forecast(final int steps, final double alpha) {
+    return new MeanForecast(this, steps, alpha);
+  }
 
-  public final TimeSeries forecast(final int steps) {
+  @Override
+  public final TimeSeries pointForecast(final int steps) {
     int n = timeSeries.n();
     long periodLength = timeSeries.periodLength();
     TimeScale timeScale = timeSeries.timeScale();
@@ -57,18 +66,22 @@ public final class MeanModel {
     return new TimeSeries(timeScale, startTime, periodLength, forecasted);
   }
   
+  @Override
   public final TimeSeries timeSeries() {
     return this.timeSeries;
   }
   
+  @Override
   public final TimeSeries fittedSeries() {
     return this.fittedSeries;
   }
 
+  @Override
   public final TimeSeries residuals() {
     return this.timeSeries.minus(this.fittedSeries);
   }
 
+  @Override
   public final void plotResiduals() {
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
@@ -95,6 +108,7 @@ public final class MeanModel {
     this.fittedSeries.plot("Mean Model Fitted Values");
   }
 
+  @Override
   public final void plotFit() {
 
     new Thread(() -> {
