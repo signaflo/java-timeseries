@@ -72,9 +72,9 @@ public enum TimeUnit {
    * for practical purposes the double returned by this method will very often be
    * coerced to a long or integer.
    * </p>
-   * @param timeScale the time unit for which the frequency of occurrence of this time unit 
+   * @param timeScale the time scale for which the frequency of occurrence of this time unit 
    * is to be found.
-   * @return the number of times this TimeUnit occurs in the provided TimeUnit.
+   * @return the number of times this TimeUnit occurs in the provided TimeScale.
    */
   public double frequencyPer(final TimeScale timeScale) {
     return timeScale.totalDuration() / this.totalDuration();

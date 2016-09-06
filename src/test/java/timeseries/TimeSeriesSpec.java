@@ -128,7 +128,7 @@ public class TimeSeriesSpec {
   @Test
   public void whenTimeSeriesAggregatedDatesCorrect() {
     TimeSeries series = TestData.ausbeerSeries();
-    TimeSeries aggregated = series.aggregate(TimeUnit.DECADE, 1);
+    TimeSeries aggregated = series.aggregate(TimeUnit.DECADE);
     OffsetDateTime expectedStart = OffsetDateTime.of(LocalDateTime.of(1956, 1, 1, 0, 0), ZoneOffset.ofHours(0));
     OffsetDateTime expectedEnd = OffsetDateTime.of(LocalDateTime.of(1996, 1, 1, 0, 0), ZoneOffset.ofHours(0));
     assertThat(aggregated.observationTimes().get(0), is(equalTo(expectedStart)));

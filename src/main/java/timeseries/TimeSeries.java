@@ -40,12 +40,11 @@ import data.DoubleFunctions;
  */
 public final class TimeSeries extends DataSet {
 
-  private final TimeUnit timeScale;
+  private final TimeScale timeScale;
   private final int n;
   private final double mean;
   private final double[] series;
   private final List<OffsetDateTime> observationTimes;
-  private final long timeScaleLength;
 
   /**
    * Construct a new TimeSeries from the given data counting from year 1. Use this constructor if the dates and/or times
@@ -56,30 +55,48 @@ public final class TimeSeries extends DataSet {
   public TimeSeries(final double... series) {
     this(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);
   }
+  
+  /**
+   * Construct a new TimeSeries using the given arguments.
+   * 
+   * @param timeUnit The time scale at which observations are made.
+   * @param startTime The time at which the first observation was made. Usually a rough approximation.
+   * @param series The data underlying the time series.
+   */
+  public TimeSeries(final TimeUnit timeUnit, final OffsetDateTime startTime, final double... series) {
+    super(series);
+    this.series = series.clone();
+    this.n = series.length;
+    this.mean = super.mean();
+    this.timeScale = new TimeScale(timeUnit, 1);
+    List<OffsetDateTime> dateTimes = new ArrayList<>(series.length);
+    dateTimes.add(startTime);
+    for (int i = 1; i < series.length; i++) {
+      dateTimes.add(
+          dateTimes.get(i - 1).plus(timeUnit.periodLength(), timeUnit.temporalUnit()));
+    }
+    this.observationTimes = Collections.unmodifiableList(dateTimes);
+  }
 
   /**
    * Construct a new TimeSeries using the given arguments.
    * 
-   * @param timeScale The scale of time at which observations are made (or aggregated).
+   * @param timeScale The time scale at which observations are made.
    * @param startTime The time at which the first observation was made. Usually a rough approximation.
-   * @param timeScaleLength The length of time between observations measured in the units given by the
-   *        <code>timeScale</code> argument. For example, semi-yearly data could be created with a timeScale of
-   *        {@link TimeUnit#QUARTER} and a timeScaleLength of 2.
-   * @param series The data constituting this TimeSeries.
+   * @param series The data underlying the time series.
    */
-  public TimeSeries(final TimeUnit timeScale, final OffsetDateTime startTime, final long timeScaleLength,
-      final double... series) {
+  public TimeSeries(final TimeScale timeScale, final OffsetDateTime startTime, final double... series) {
     super(series);
     this.series = series.clone();
     this.n = series.length;
     this.mean = super.mean();
     this.timeScale = timeScale;
-    this.timeScaleLength = timeScaleLength;
     List<OffsetDateTime> dateTimes = new ArrayList<>(series.length);
     dateTimes.add(startTime);
     for (int i = 1; i < series.length; i++) {
       dateTimes.add(
-          dateTimes.get(i - 1).plus((long) (timeScale.periodLength() * timeScaleLength), timeScale.temporalUnit()));
+          dateTimes.get(i - 1).plus(timeScale.unitLength() * timeScale.timeUnit().periodLength(),
+              timeScale.timeUnit().temporalUnit()));
     }
     this.observationTimes = Collections.unmodifiableList(dateTimes);
   }
@@ -91,17 +108,16 @@ public final class TimeSeries extends DataSet {
    * @param series the observations.
    */
   TimeSeries(final OffsetDateTime startTime, final double... series) {
-    this(TimeUnit.MONTH, startTime, 1L, series);
+    this(TimeUnit.MONTH, startTime, series);
   }
 
-  private TimeSeries(final TimeUnit timeScale, final List<OffsetDateTime> observationTimes, 
-      final long timeScaleLength, final double... series) {
+  private TimeSeries(final TimeScale timeScale, final List<OffsetDateTime> observationTimes, 
+      final double... series) {
     super(series);
     this.series = series.clone();
     this.n = series.length;
     this.mean = super.mean();
     this.timeScale = timeScale;
-    this.timeScaleLength = timeScaleLength;
     this.observationTimes = Collections.unmodifiableList(observationTimes);
   }
 
@@ -111,7 +127,6 @@ public final class TimeSeries extends DataSet {
     this.n = original.n;
     // Note OffsetDateTime is immutable.
     this.observationTimes = Collections.unmodifiableList(original.observationTimes);
-    this.timeScaleLength = original.timeScaleLength;
     this.series = original.series.clone();
     this.timeScale = original.timeScale;
   }
@@ -121,16 +136,16 @@ public final class TimeSeries extends DataSet {
    * @return a new TimeSeries with the observations in this series aggregated to the yearly level.
    */
   public final TimeSeries aggregateToYears() {
-    return aggregate(TimeUnit.YEAR, 1);
+    return aggregate(TimeScale.oneYear());
   }
 
   /**
    * Aggregate the observations in this series to the given time scale.
-   * @param timeScale The time scale to aggregate up to.
+   * @param timeUnit The time scale to aggregate up to.
    * @return a new TimeSeries with the observations in this series aggregated to the given time scale.
    */
-  public final TimeSeries aggregate(final TimeUnit timeScale) {
-    return aggregate(timeScale, 1);
+  public final TimeSeries aggregate(final TimeUnit timeUnit) {
+    return aggregate(new TimeScale(timeUnit, 1));
   }
 
   /**
@@ -138,12 +153,11 @@ public final class TimeSeries extends DataSet {
    * monthly data to bi-yearly data, one could give a time argument of {@link TimeUnit#YEAR} and a periodLength argument
    * of 2.
    * 
-   * @param unitTime the unit of time that this series should be aggregated up to.
-   * @param unitTimeLength the number of time units in the unit of time given.
+   * @param timeScale the unit of time that this series should be aggregated up to.
    * @return A new TimeSeries aggregated up to the given unit of time.
    */
-  public final TimeSeries aggregate(final TimeUnit unitTime, final int unitTimeLength) {
-    final int period = (int) ((timeScale.frequencyPer(unitTime) / this.timeScaleLength) * unitTimeLength);
+  public final TimeSeries aggregate(final TimeScale timeScale) {
+    final int period = (int) (this.timeScale.frequencyPer(timeScale));
     if (period == 0) {
       throw new IllegalArgumentException("The given time scale was of a smaller magnitude than the original time scale."
           + " To aggregate a series, the time scale argument must be of a larger magnitude than the original.");
@@ -159,7 +173,7 @@ public final class TimeSeries extends DataSet {
       aggregated[i] = sum;
       obsTimes.add(this.observationTimes.get(i * period));
     }
-    return new TimeSeries(unitTime, obsTimes, unitTimeLength, aggregated);
+    return new TimeSeries(timeScale, obsTimes, aggregated);
   }
 
   /**
@@ -237,7 +251,7 @@ public final class TimeSeries extends DataSet {
           + " -1 and 2, but the provided parameter was equal to " + boxCoxLambda);
     }
     final double[] invBoxCoxed = DoubleFunctions.inverseBoxCox(this.series, boxCoxLambda);
-    return new TimeSeries(this.timeScale, this.observationTimes, this.timeScaleLength, invBoxCoxed);
+    return new TimeSeries(this.timeScale, this.observationTimes, invBoxCoxed);
   }
 
   /**
@@ -252,7 +266,7 @@ public final class TimeSeries extends DataSet {
     final int k = m / 2;
     final List<OffsetDateTime> times = this.observationTimes.subList(k, n - k);
     double[] secondAverage = firstAverage.movingAverage(2).series;
-    return new TimeSeries(this.timeScale, times, this.timeScaleLength, secondAverage);
+    return new TimeSeries(this.timeScale, times, secondAverage);
   }
 
   /**
@@ -285,7 +299,7 @@ public final class TimeSeries extends DataSet {
   public final TimeSeries difference(final int lag) {
     double[] diffed = differenceArray(lag);
     final List<OffsetDateTime> obsTimes = this.observationTimes.subList(lag, n);
-    return new TimeSeries(this.timeScale, obsTimes, this.timeScaleLength, diffed);
+    return new TimeSeries(this.timeScale, obsTimes, diffed);
   }
 
   /**
@@ -316,7 +330,7 @@ public final class TimeSeries extends DataSet {
       average[t] = sum / m;
     }
     final List<OffsetDateTime> times = this.observationTimes.subList(k + c - 1, n - k);
-    return new TimeSeries(this.timeScale, times, this.timeScaleLength, average);
+    return new TimeSeries(this.timeScale, times, average);
   }
 
   /**
@@ -325,16 +339,6 @@ public final class TimeSeries extends DataSet {
    */
   public final List<OffsetDateTime> observationTimes() {
     return this.observationTimes;
-  }
-
-  /**
-   * The total amount of time between observations, given in the time unit in which observations are recorded.
-   * For example, if observations are recorded semi-yearly and in quarterly units, then the time scale length
-   * is 2. On the other hand if they are recorded semi-yearly in monthly units, then the time scale length is 6.
-   * @return the total amount of time between observations, given in the time unit in which observations are recorded.
-   */
-  public final long timeScaleLength() {
-    return this.timeScaleLength;
   }
 
   /**
@@ -364,7 +368,7 @@ public final class TimeSeries extends DataSet {
     final double[] sliced = new double[end - start + 1];
     System.arraycopy(series, start, sliced, 0, end - start + 1);
     final List<OffsetDateTime> obsTimes = this.observationTimes.subList(start, end + 1);
-    return new TimeSeries(this.timeScale, obsTimes, this.timeScaleLength, sliced);
+    return new TimeSeries(this.timeScale, obsTimes, sliced);
   }
 
   /**
@@ -381,15 +385,7 @@ public final class TimeSeries extends DataSet {
     final double[] sliced = new double[end - start + 1];
     System.arraycopy(series, start - 1, sliced, 0, end - start + 1);
     final List<OffsetDateTime> obsTimes = this.observationTimes.subList(start - 1, end);
-    return new TimeSeries(this.timeScale, obsTimes, this.timeScaleLength, sliced);
-  }
-
-  /**
-   * Return the time scale at which observations of this series are made.
-   * @return the time scale at which observations of this series are made.
-   */
-  public final TimeUnit timeScale() {
-    return this.timeScale;
+    return new TimeSeries(this.timeScale, obsTimes, sliced);
   }
 
   /**
@@ -414,7 +410,7 @@ public final class TimeSeries extends DataSet {
           + " -1 and 2, but the provided parameter was equal to " + boxCoxLambda);
     }
     final double[] boxCoxed = DoubleFunctions.boxCox(this.series, boxCoxLambda);
-    return new TimeSeries(this.timeScale, this.observationTimes, this.timeScaleLength, boxCoxed);
+    return new TimeSeries(this.timeScale, this.observationTimes, boxCoxed);
   }
 
   private final double[] differenceArray(final int lag) {
@@ -555,14 +551,7 @@ public final class TimeSeries extends DataSet {
         return false;
     } else if (!observationTimes.equals(other.observationTimes))
       return false;
-    if (timeScaleLength != other.timeScaleLength)
-      return false;
     if (!Arrays.equals(series, other.series))
-      return false;
-    if (timeScale == null) {
-      if (other.timeScale != null)
-        return false;
-    } else if (!timeScale.equals(other.timeScale))
       return false;
     return true;
   }
@@ -576,16 +565,14 @@ public final class TimeSeries extends DataSet {
     result = prime * result + (int) (temp ^ (temp >>> 32));
     result = prime * result + n;
     result = prime * result + ((observationTimes == null) ? 0 : observationTimes.hashCode());
-    result = prime * result + (int) (timeScaleLength ^ (timeScaleLength >>> 32));
     result = prime * result + Arrays.hashCode(series);
-    result = prime * result + ((timeScale == null) ? 0 : timeScale.hashCode());
     return result;
   }
 
   @Override
   public String toString() {
     DateTimeFormatter dateFormatter;
-    switch (timeScale) {
+    switch (timeScale.timeUnit()) {
       case HOUR:
       case MINUTE:
       case SECOND:
@@ -631,10 +618,6 @@ public final class TimeSeries extends DataSet {
       }
       builder.append(observationTimes.get(n - 1).format(dateFormatter));
     }
-    builder.append("\nperiodLength: ").append(timeScaleLength).append(" " + timeScale);
-    if (timeScaleLength > 1) {
-      builder.append("S");
-    }
     return builder.append("\ntimeScale: ").append(timeScale).toString();
   }
  
@@ -644,7 +627,11 @@ public final class TimeSeries extends DataSet {
     for (int t = 0; t < subtracted.length; t++) {
       subtracted[t] = this.series[t] - otherSeries.series[t];
     }
-    return new TimeSeries(timeScale, observationTimes, timeScaleLength, subtracted);
+    return new TimeSeries(this.timeScale, observationTimes, subtracted);
+  }
+
+  public final TimeScale timeScale() {
+    return this.timeScale;
   }
 
 }

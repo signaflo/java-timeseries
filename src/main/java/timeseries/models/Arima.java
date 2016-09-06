@@ -4,7 +4,7 @@ import timeseries.TimeSeries;
 import timeseries.TimeScale;
 
 /**
- * A potentially seasonal AutoRegressive Integrated Moving Average (ARIMA) model. 
+ * A potentially seasonal Auto-Regressive Integrated Moving Average (ARIMA) model. 
  * This class is immutable and thread-safe.
  * 
  * @author Jacob Rachiele
@@ -38,7 +38,7 @@ public final class Arima {
   Arima(final TimeSeries observations, final ModelOrder order, final TimeScale seasonalCycle) {
     this.observations = observations;
     this.order = order;
-    this.cycleLength = (int)(observations.timeScale().frequencyPer(seasonalCycle) / observations.timeScaleLength());
+    this.cycleLength = (int)(observations.timeScale().frequencyPer(seasonalCycle));
     double[] initialParameters = setInitialParameters();
     System.out.println(initialParameters);
   }
@@ -47,7 +47,7 @@ public final class Arima {
     this.observations = observations;
     this.coeffs = coeffs;
     this.order = coeffs.extractModelOrder();
-    this.cycleLength = (int)(observations.timeScale().frequencyPer(seasonalCycle) / observations.timeScaleLength());
+    this.cycleLength = (int)(observations.timeScale().frequencyPer(seasonalCycle));
   }
 
   private final double[] setInitialParameters() {

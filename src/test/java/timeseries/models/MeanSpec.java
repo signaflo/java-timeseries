@@ -39,8 +39,8 @@ public class MeanSpec {
 	public final void whenMeanForecastComputedTimeScaleUnchanged() {
 		TimeSeries series = TestData.ausbeerSeries();
 		TimeSeries pointForecast = new MeanModel(series).pointForecast(6);
-		TimeUnit timeScale = TimeUnit.QUARTER;
-		assertThat(pointForecast.timeScale(), is(equalTo(timeScale)));
+		TimeUnit timeUnit = TimeUnit.QUARTER;
+		assertThat(pointForecast.timeScale().timeUnit(), is(equalTo(timeUnit)));
 	}
 
 }

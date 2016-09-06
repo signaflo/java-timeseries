@@ -47,10 +47,26 @@ public final class TimeScale {
   }
   
   /**
+   * Compute and return the number of times this TimeScale occurs in the given TimeScale.
+   * <p>
+   * For example, if this time scale is a month and the given time scale is half a year, the
+   * return value should equal 6, since a month occurs 6 times in one year. Note that
+   * for practical purposes the double returned by this method will very often be
+   * coerced to a long or integer.
+   * </p>
+   * @param otherTimeScale the time scale for which the frequency of occurrence of this time scale 
+   * is to be found.
+   * @return the number of times this TimeScale occurs in the provided TimeScale.
+   */
+  public double frequencyPer(final TimeScale otherTimeScale) {
+    return otherTimeScale.totalDuration() / this.totalDuration();
+  }
+  
+  /**
    * The total amount of time in this time scale measured in seconds, the base SI unit of time.
    * @return the total amount of time in this time scale measured in seconds.
    */
-  double totalDuration() {
+  public final double totalDuration() {
     
     double thisDuration = this.timeUnit.totalDuration();
     
