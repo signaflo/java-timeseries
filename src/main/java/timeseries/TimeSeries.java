@@ -95,7 +95,7 @@ public final class TimeSeries extends DataSet {
     dateTimes.add(startTime);
     for (int i = 1; i < series.length; i++) {
       dateTimes.add(
-          dateTimes.get(i - 1).plus(timeScale.unitLength() * timeScale.timeUnit().periodLength(),
+          dateTimes.get(i - 1).plus((long)timeScale.unitLength() * timeScale.timeUnit().periodLength(),
               timeScale.timeUnit().temporalUnit()));
     }
     this.observationTimes = Collections.unmodifiableList(dateTimes);

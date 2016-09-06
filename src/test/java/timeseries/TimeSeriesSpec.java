@@ -153,6 +153,6 @@ public class TimeSeriesSpec {
 
   @Test
   public void testTimeScale() {
-    System.out.println(TimeUnit.DAY.frequencyPer(TimeUnit.CENTURY));
+    System.out.println(new TimeScale(TimeUnit.WEEK, 2).frequencyPer(TimeScale.oneYear()));
   }
 }

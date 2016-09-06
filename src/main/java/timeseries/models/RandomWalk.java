@@ -114,7 +114,7 @@ public final class RandomWalk implements Model {
       forecast[t] = timeSeries.at(n - 1);
     }
     final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
-        .plus(timeScale.timeUnit().periodLength() * timeScale.unitLength(), timeScale.timeUnit().temporalUnit());
+        .plus((long)timeScale.unitLength() * timeScale.timeUnit().periodLength(), timeScale.timeUnit().temporalUnit());
     return new TimeSeries(timeScale, startTime, forecast);
   }
 

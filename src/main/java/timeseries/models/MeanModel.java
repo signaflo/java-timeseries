@@ -62,7 +62,7 @@ public final class MeanModel implements Model {
 
     final double[] forecasted = DoubleFunctions.fill(steps, this.mean);
     final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
-        .plus(timeScale.timeUnit().periodLength() * timeScale.unitLength(), timeScale.timeUnit().temporalUnit());
+        .plus((long)timeScale.unitLength() * timeScale.timeUnit().periodLength(), timeScale.timeUnit().temporalUnit());
     return new TimeSeries(timeScale, startTime, forecasted);
   }
   
