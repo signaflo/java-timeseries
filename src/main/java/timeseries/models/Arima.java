@@ -14,7 +14,7 @@ public final class Arima {
   private final TimeSeries observations;
   private TimeSeries fitted;
   private TimeSeries residuals;
-  final int cycleLength;
+  private final int cycleLength;
   // The number of parameters, degree of differencing, and constant flag.
   private final ModelOrder order;
 
@@ -27,7 +27,7 @@ public final class Arima {
   Arima(final TimeSeries observations, final ModelOrder order, final TimeUnit seasonalCycle) {
     this.observations = observations;
     this.order = order;
-    this.cycleLength = (int)(observations.timeScale().per(seasonalCycle) / observations.observationPeriod());
+    this.cycleLength = (int)(observations.timeScale().frequencyPer(seasonalCycle) / observations.timeScaleLength());
     double[] initialParameters = setInitialParameters();
     System.out.println(initialParameters);
   }
@@ -36,7 +36,7 @@ public final class Arima {
     this.observations = observations;
     this.coeffs = coeffs;
     this.order = coeffs.extractModelOrder();
-    this.cycleLength = (int)(observations.timeScale().per(seasonalCycle) / observations.observationPeriod());
+    this.cycleLength = (int)(observations.timeScale().frequencyPer(seasonalCycle) / observations.timeScaleLength());
   }
 
   private final double[] setInitialParameters() {

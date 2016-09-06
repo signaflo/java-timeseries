@@ -63,8 +63,8 @@ public final class TimeSeries extends DataSet {
    * @param timeScale The scale of time at which observations are made (or aggregated).
    * @param startTime The time at which the first observation was made. Usually a rough approximation.
    * @param timeScaleLength The length of time between observations measured in the units given by the
-   *        <code>timeScale</code> argument. For example, biyearly data could be created with a timeScale of
-   *        {@link TimeScale#YEAR} and a timeScaleLength of 2.
+   *        <code>timeScale</code> argument. For example, semi-yearly data could be created with a timeScale of
+   *        {@link TimeScale#QUARTER} and a timeScaleLength of 2.
    * @param series The data constituting this TimeSeries.
    */
   public TimeSeries(final TimeScale timeScale, final OffsetDateTime startTime, final long timeScaleLength,
@@ -135,11 +135,11 @@ public final class TimeSeries extends DataSet {
 
   /**
    * Aggregate the TimeSeries up to the given time scale with the specified period length. For example, to aggregate
-   * monthly data to biyearly data, one could give a time argument of {@link TimeScale#YEAR} and a periodLength argument
+   * monthly data to bi-yearly data, one could give a time argument of {@link TimeScale#YEAR} and a periodLength argument
    * of 2.
    * 
    * @param unitTime the unit of time that this series should be aggregated up to.
-   * @param unitTimeLength the length of a period in terms of the unit of time given.
+   * @param unitTimeLength the number of time units in the unit of time given.
    * @return A new TimeSeries aggregated up to the given unit of time.
    */
   public final TimeSeries aggregate(final TimeScale unitTime, final int unitTimeLength) {
@@ -329,11 +329,11 @@ public final class TimeSeries extends DataSet {
 
   /**
    * The total amount of time between observations, given in the time unit in which observations are recorded.
-   * For example, if observations are recorded semi-yearly and in quarterly units, then the observation period
-   * is 2. On the other hand if they are recorded semi-yearly in monthly units, then the observation period is 6.
+   * For example, if observations are recorded semi-yearly and in quarterly units, then the time scale length
+   * is 2. On the other hand if they are recorded semi-yearly in monthly units, then the time scale length is 6.
    * @return the total amount of time between observations, given in the time unit in which observations are recorded.
    */
-  public final long observationPeriod() {
+  public final long timeScaleLength() {
     return this.timeScaleLength;
   }
 

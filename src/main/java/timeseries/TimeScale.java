@@ -50,7 +50,7 @@ public enum TimeScale {
 
   }
   
-  public double per(final TimeUnit timeUnit) {
+  public double frequencyPer(final TimeUnit timeUnit) {
     return timeUnit.totalDuration() / this.totalDuration();
   }
 

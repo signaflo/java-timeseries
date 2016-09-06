@@ -43,7 +43,7 @@ public final class MeanModel implements Model {
     this.timeSeries = observed.copy();
     this.mean = this.timeSeries.mean();
     this.fittedSeries = new TimeSeries(observed.timeScale(), observed.observationTimes().get(0),
-        observed.observationPeriod(), DoubleFunctions.fill(observed.n(), this.mean));
+        observed.timeScaleLength(), DoubleFunctions.fill(observed.n(), this.mean));
   }
   
   /* (non-Javadoc)
@@ -57,7 +57,7 @@ public final class MeanModel implements Model {
   @Override
   public final TimeSeries pointForecast(final int steps) {
     int n = timeSeries.n();
-    long periodLength = timeSeries.observationPeriod();
+    long periodLength = timeSeries.timeScaleLength();
     TimeScale timeScale = timeSeries.timeScale();
 
     final double[] forecasted = DoubleFunctions.fill(steps, this.mean);
