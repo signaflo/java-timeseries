@@ -63,7 +63,7 @@ public final class RandomWalkForecast implements Forecast {
     for (int t = 0; t < steps; t++) {
       upperPredictionValues[t] = forecast.at(t) + criticalValue * Math.sqrt(t + 1);
     }
-    return new TimeSeries(forecast.timeScale(), forecast.observationTimes().get(0), forecast.periodLength(),
+    return new TimeSeries(forecast.timeScale(), forecast.observationTimes().get(0), forecast.observationPeriod(),
         upperPredictionValues);
   }
 
@@ -77,7 +77,7 @@ public final class RandomWalkForecast implements Forecast {
     for (int t = 0; t < steps; t++) {
       upperPredictionValues[t] = forecast.at(t) - criticalValue * Math.sqrt(t + 1);
     }
-    return new TimeSeries(forecast.timeScale(), forecast.observationTimes().get(0), forecast.periodLength(),
+    return new TimeSeries(forecast.timeScale(), forecast.observationTimes().get(0), forecast.observationPeriod(),
         upperPredictionValues);
   }
 
@@ -167,7 +167,7 @@ public final class RandomWalkForecast implements Forecast {
       errors[t] = criticalValue * Math.sqrt(t + 1);
     }
     return new TimeSeries(forecast.timeScale(), forecast.observationTimes().get(0), 
-        forecast.periodLength(), errors);
+        forecast.observationPeriod(), errors);
   }
 
 }

@@ -107,7 +107,7 @@ public final class RandomWalk implements Model {
   @Override
   public final TimeSeries pointForecast(final int steps) {
     int n = timeSeries.n();
-    long periodLength = timeSeries.periodLength();
+    long periodLength = timeSeries.observationPeriod();
     TimeScale timeScale = timeSeries.timeScale();
 
     double[] forecast = new double[steps];
@@ -232,7 +232,7 @@ public final class RandomWalk implements Model {
     for (int t = 1; t < timeSeries.n(); t++) {
       fitted[t] = timeSeries.at(t - 1);
     }
-    return new TimeSeries(timeSeries.timeScale(), timeSeries.observationTimes().get(0), timeSeries.periodLength(),
+    return new TimeSeries(timeSeries.timeScale(), timeSeries.observationTimes().get(0), timeSeries.observationPeriod(),
         fitted);
   }
 
@@ -241,7 +241,7 @@ public final class RandomWalk implements Model {
     for (int t = 1; t < timeSeries.n(); t++) {
       residuals[t] = timeSeries.at(t) - fittedSeries.at(t);
     }
-    return new TimeSeries(timeSeries.timeScale(), timeSeries.observationTimes().get(0), timeSeries.periodLength(),
+    return new TimeSeries(timeSeries.timeScale(), timeSeries.observationTimes().get(0), timeSeries.observationPeriod(),
         residuals);
   }
 

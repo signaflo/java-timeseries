@@ -45,9 +45,13 @@ public enum TimeScale {
     return this.periodLength;
   }
 
-  double per(final TimeScale otherTimeScale) {
+  public double per(final TimeScale otherTimeScale) {
     return otherTimeScale.totalDuration() / this.totalDuration();
 
+  }
+  
+  public double per(final TimeUnit timeUnit) {
+    return timeUnit.totalDuration() / this.totalDuration();
   }
 
   /**
