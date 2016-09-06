@@ -16,7 +16,7 @@ public class ArimaSpec {
     double[] sarCoeffs = new double[] {0.4, -0.2};
     Arima.ModelCoefficients modelCoeffs = new Arima.ModelCoefficients(arCoeffs, new double[] {}, sarCoeffs,
         new double[] {}, 0, 0, 0.0);
-    Arima model = new Arima(TestData.internetTraffic(), modelCoeffs, new TimeUnit(TimeScale.MILLISECOND, 100));
+    Arima model = new Arima(TestData.internetTraffic(), modelCoeffs, new TimeScale(TimeUnit.MILLISECOND, 100));
     System.out.println(Arrays.toString(model.expandArCoefficients()));
   }
 

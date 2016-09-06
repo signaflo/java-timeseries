@@ -40,7 +40,7 @@ import data.DoubleFunctions;
  */
 public final class TimeSeries extends DataSet {
 
-  private final TimeScale timeScale;
+  private final TimeUnit timeScale;
   private final int n;
   private final double mean;
   private final double[] series;
@@ -64,10 +64,10 @@ public final class TimeSeries extends DataSet {
    * @param startTime The time at which the first observation was made. Usually a rough approximation.
    * @param timeScaleLength The length of time between observations measured in the units given by the
    *        <code>timeScale</code> argument. For example, semi-yearly data could be created with a timeScale of
-   *        {@link TimeScale#QUARTER} and a timeScaleLength of 2.
+   *        {@link TimeUnit#QUARTER} and a timeScaleLength of 2.
    * @param series The data constituting this TimeSeries.
    */
-  public TimeSeries(final TimeScale timeScale, final OffsetDateTime startTime, final long timeScaleLength,
+  public TimeSeries(final TimeUnit timeScale, final OffsetDateTime startTime, final long timeScaleLength,
       final double... series) {
     super(series);
     this.series = series.clone();
@@ -79,7 +79,7 @@ public final class TimeSeries extends DataSet {
     dateTimes.add(startTime);
     for (int i = 1; i < series.length; i++) {
       dateTimes.add(
-          dateTimes.get(i - 1).plus((long) (timeScale.periodLength() * timeScaleLength), timeScale.timeUnit()));
+          dateTimes.get(i - 1).plus((long) (timeScale.periodLength() * timeScaleLength), timeScale.temporalUnit()));
     }
     this.observationTimes = Collections.unmodifiableList(dateTimes);
   }
@@ -91,10 +91,10 @@ public final class TimeSeries extends DataSet {
    * @param series the observations.
    */
   TimeSeries(final OffsetDateTime startTime, final double... series) {
-    this(TimeScale.MONTH, startTime, 1L, series);
+    this(TimeUnit.MONTH, startTime, 1L, series);
   }
 
-  private TimeSeries(final TimeScale timeScale, final List<OffsetDateTime> observationTimes, 
+  private TimeSeries(final TimeUnit timeScale, final List<OffsetDateTime> observationTimes, 
       final long timeScaleLength, final double... series) {
     super(series);
     this.series = series.clone();
@@ -121,7 +121,7 @@ public final class TimeSeries extends DataSet {
    * @return a new TimeSeries with the observations in this series aggregated to the yearly level.
    */
   public final TimeSeries aggregateToYears() {
-    return aggregate(TimeScale.YEAR, 1);
+    return aggregate(TimeUnit.YEAR, 1);
   }
 
   /**
@@ -129,21 +129,21 @@ public final class TimeSeries extends DataSet {
    * @param timeScale The time scale to aggregate up to.
    * @return a new TimeSeries with the observations in this series aggregated to the given time scale.
    */
-  public final TimeSeries aggregate(final TimeScale timeScale) {
+  public final TimeSeries aggregate(final TimeUnit timeScale) {
     return aggregate(timeScale, 1);
   }
 
   /**
    * Aggregate the TimeSeries up to the given time scale with the specified period length. For example, to aggregate
-   * monthly data to bi-yearly data, one could give a time argument of {@link TimeScale#YEAR} and a periodLength argument
+   * monthly data to bi-yearly data, one could give a time argument of {@link TimeUnit#YEAR} and a periodLength argument
    * of 2.
    * 
    * @param unitTime the unit of time that this series should be aggregated up to.
    * @param unitTimeLength the number of time units in the unit of time given.
    * @return A new TimeSeries aggregated up to the given unit of time.
    */
-  public final TimeSeries aggregate(final TimeScale unitTime, final int unitTimeLength) {
-    final int period = (int) ((timeScale.per(unitTime) / this.timeScaleLength) * unitTimeLength);
+  public final TimeSeries aggregate(final TimeUnit unitTime, final int unitTimeLength) {
+    final int period = (int) ((timeScale.frequencyPer(unitTime) / this.timeScaleLength) * unitTimeLength);
     if (period == 0) {
       throw new IllegalArgumentException("The given time scale was of a smaller magnitude than the original time scale."
           + " To aggregate a series, the time scale argument must be of a larger magnitude than the original.");
@@ -388,7 +388,7 @@ public final class TimeSeries extends DataSet {
    * Return the time scale at which observations of this series are made.
    * @return the time scale at which observations of this series are made.
    */
-  public final TimeScale timeScale() {
+  public final TimeUnit timeScale() {
     return this.timeScale;
   }
 

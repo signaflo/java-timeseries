@@ -1,10 +1,11 @@
 package timeseries.models;
 
 import timeseries.TimeSeries;
-import timeseries.TimeUnit;
+import timeseries.TimeScale;
 
 /**
- * A potentially seasonal Autoregressive Integrated Moving Average model. This class is immutable and thread-safe.
+ * A potentially seasonal AutoRegressive Integrated Moving Average (ARIMA) model. 
+ * This class is immutable and thread-safe.
  * 
  * @author Jacob Rachiele
  *
@@ -24,7 +25,17 @@ public final class Arima {
   private ModelCoefficients coeffs;
   
   // Note: no need to copy since TimeSeries and ModelOrder are immutable;
-  Arima(final TimeSeries observations, final ModelOrder order, final TimeUnit seasonalCycle) {
+  /**
+   * Create a new ARIMA model from the given observations, model order, and seasonal cycle.
+   * @param observations the time series of observations.
+   * @param order the order of the model.
+   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to 
+   * complete one cycle, <i>relative to</i> a particular unit of time. For example, 
+   * typical monthly data has a cycle of one year, hourly data likely has a cycle of one day,
+   * etc... For a non-typical example, one could specify a seasonal cycle of half a year
+   * using a time scale of six months, or, equivalently, two quarters.
+   */
+  Arima(final TimeSeries observations, final ModelOrder order, final TimeScale seasonalCycle) {
     this.observations = observations;
     this.order = order;
     this.cycleLength = (int)(observations.timeScale().frequencyPer(seasonalCycle) / observations.timeScaleLength());
@@ -32,7 +43,7 @@ public final class Arima {
     System.out.println(initialParameters);
   }
   
-  Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimeUnit seasonalCycle) {
+  Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimeScale seasonalCycle) {
     this.observations = observations;
     this.coeffs = coeffs;
     this.order = coeffs.extractModelOrder();
@@ -48,6 +59,9 @@ public final class Arima {
     return initParams;
   }
 
+  // Expand the AR coefficients by combining the non-seasonal and seasonal coefficients into a single
+  // array, which takes advantage of the fact that a seasonal AR model is a special case of a non-seasonal
+  // AR model with zero coefficients at the non-seasonal indices.
   final double[] expandArCoefficients() {
     double[] arCoeffs = coeffs.arCoeffs;
     double[] sarCoeffs = coeffs.sarCoeffs;
@@ -56,6 +70,9 @@ public final class Arima {
     for (int i = 0; i < arCoeffs.length; i++) {
       arSarCoeffs[i] = arCoeffs[i];
     }
+    
+    // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
+    // which arises because the model's ar and sar polynomials are multiplied together.
     for (int i = 0; i < sarCoeffs.length; i++) {
       arSarCoeffs[(i + 1) * cycleLength - 1] = sarCoeffs[i];
       for (int j = 0; j < arCoeffs.length; j++) {
@@ -87,6 +104,17 @@ public final class Arima {
     private final int Q;
     private final int constant;
 
+    /**
+     * Create a new ModelOrder using the provided number of autoregressive and moving-average parameters,
+     * as well as the degree of differencing and whether or not to fit a constant (or mean).
+     * @param p the number of non-seasonal autoregressive coefficients.
+     * @param d the degree of non-seasonal differencing.
+     * @param q the number of non-seasonal moving-average coefficients.
+     * @param P the number of seasonal autoregressive coefficients.
+     * @param D the degree of seasonal differencing.
+     * @param Q the number of seasonal moving-average coefficients.
+     * @param constant determines whether or not a constant (or mean) is fitted to the model. 
+     */
     public ModelOrder(final int p, final int d, final int q, final int P, final int D, final int Q,
         final boolean constant) {
       this.p = p;
@@ -104,6 +132,12 @@ public final class Arima {
     }
   }
 
+  /**
+   * Represents the autoregressive and moving-average cofficients, as well as the degree of differencing and
+   * the mean (or intercept) for a seasonal ARIMA model.
+   * @author Jacob Rachiele
+   *
+   */
   public static final class ModelCoefficients {
 
     private final double[] arCoeffs;
@@ -115,6 +149,17 @@ public final class Arima {
     private final double mean;
     private final double intercept;
 
+    /**
+     * Create a new ModelCoefficients object using the supplied coefficients, degrees of differencing, and
+     * mean.
+     * @param arCoeffs the non-seasonal autoregressive coefficients.
+     * @param maCoeffs the non-seasonal moving-average coefficients.
+     * @param sarCoeffs the seasonal autoregressive coefficients.
+     * @param smaCoeffs the seasonal moving-average coefficients.
+     * @param d the non-seasonal degree of differencing.
+     * @param D the seasonal degree of differencing.
+     * @param mean the process mean.
+     */
     public ModelCoefficients(final double[] arCoeffs, final double[] maCoeffs, final double[] sarCoeffs,
         final double[] smaCoeffs, final int d, final int D, final double mean) {
       this.arCoeffs = arCoeffs.clone();
@@ -138,6 +183,10 @@ public final class Arima {
       this.intercept = mean * (1 - arSum);
     }
 
+    /**
+     * Return the order of the ARIMA model corresponding to the model coefficients.
+     * @return the order of the ARIMA model corresponding to the model coefficients.
+     */
     public final ModelOrder extractModelOrder() {
       return new ModelOrder(arCoeffs.length, d, maCoeffs.length, sarCoeffs.length, D, smaCoeffs.length,
           (Math.abs(mean) > 1E-8));

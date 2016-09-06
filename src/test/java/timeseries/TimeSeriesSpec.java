@@ -128,7 +128,7 @@ public class TimeSeriesSpec {
   @Test
   public void whenTimeSeriesAggregatedDatesCorrect() {
     TimeSeries series = TestData.ausbeerSeries();
-    TimeSeries aggregated = series.aggregate(TimeScale.DECADE, 1);
+    TimeSeries aggregated = series.aggregate(TimeUnit.DECADE, 1);
     OffsetDateTime expectedStart = OffsetDateTime.of(LocalDateTime.of(1956, 1, 1, 0, 0), ZoneOffset.ofHours(0));
     OffsetDateTime expectedEnd = OffsetDateTime.of(LocalDateTime.of(1996, 1, 1, 0, 0), ZoneOffset.ofHours(0));
     assertThat(aggregated.observationTimes().get(0), is(equalTo(expectedStart)));
@@ -140,7 +140,7 @@ public class TimeSeriesSpec {
   public void whenWeeklySeriesCreatedResultCorrect() {
     TimeSeries series = TestData.sydneyAir();
     TimeSeries seriesOne = series.aggregateToYears();
-    TimeSeries seriesTwo = series.aggregate(TimeScale.YEAR);
+    TimeSeries seriesTwo = series.aggregate(TimeUnit.YEAR);
     assertThat(seriesOne, is(equalTo(seriesTwo)));
   }
   
@@ -153,6 +153,6 @@ public class TimeSeriesSpec {
 
   @Test
   public void testTimeScale() {
-    System.out.println(TimeScale.DAY.per(TimeScale.CENTURY));
+    System.out.println(TimeUnit.DAY.frequencyPer(TimeUnit.CENTURY));
   }
 }

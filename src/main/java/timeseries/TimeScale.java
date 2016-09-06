@@ -1,79 +1,72 @@
-/*
- * Copyright (c) 2016 Jacob Rachiele
- */
-
 package timeseries;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-
 /**
- * A set of enum constants representing standard time scales, raging from nanoseconds to centuries.
+ * Wraps a {@link TimeUnit} together with an integer unit length, allowing one to specify a broader
+ * range of time periods than using a TimeUnit alone.
+ * This class is immutable and thread-safe.
  * @author Jacob Rachiele
  *
  */
-public enum TimeScale {
-
-  CENTURY(ChronoUnit.CENTURIES, 1L),
-  DECADE(ChronoUnit.DECADES, 1L),
-  YEAR(ChronoUnit.YEARS, 1L),
-  QUARTER(ChronoUnit.MONTHS, 3L),
-  MONTH(ChronoUnit.MONTHS, 1L),
-  WEEK(ChronoUnit.WEEKS, 1L),
-  DAY(ChronoUnit.DAYS, 1L),
-  HOUR(ChronoUnit.HOURS, 1L),
-  MINUTE(ChronoUnit.MINUTES, 1L),
-  SECOND(ChronoUnit.SECONDS, 1L),
-  MILLISECOND(ChronoUnit.MILLIS, 1L),
-  MICROSECOND(ChronoUnit.MICROS, 1L),
-  NANOSECOND(ChronoUnit.NANOS, 1L);
-
-  private final TemporalUnit timeUnit;
-  private final long periodLength;
-
-  TimeScale(final TemporalUnit timeUnit, final long periodLength) {
+public final class TimeScale {
+  
+  private final TimeUnit timeUnit;
+  private final int unitLength;
+  
+  /**
+   * Construct a new TimeScale with the given unit of time and unit length.
+   * @param timeUnit the unit of time underlying this time scale
+   * @param unitLength the length of this unit of time relative to the given time scale.
+   */
+  public TimeScale(final TimeUnit timeUnit, final int unitLength) {
     this.timeUnit = timeUnit;
-    this.periodLength = periodLength;
-  }
-
-  public TemporalUnit timeUnit() {
-    return this.timeUnit;
-  }
-
-  public long periodLength() {
-    return this.periodLength;
-  }
-
-  public double per(final TimeScale otherTimeScale) {
-    return otherTimeScale.totalDuration() / this.totalDuration();
-
+    this.unitLength = unitLength;
   }
   
-  public double frequencyPer(final TimeUnit timeUnit) {
-    return timeUnit.totalDuration() / this.totalDuration();
+  /**
+   * The time scale underlying this unit of time.
+   * @return the time scale underlying this unit of time.
+   */
+  public final TimeUnit timeUnit() {
+    return this.timeUnit;
   }
-
+  
+  /**
+   * The length of this unit of time relative to the underlying time scale.
+   * @return the length of this unit of time relative to the underlying time scale.
+   */
+  public final int unitLength() {
+    return this.unitLength;
+  }
+  
+  /**
+   * Create and return a new TimeScale representing exactly one year.
+   * @return a new TimeScale representing exactly one year.
+   */
+  public static final TimeScale oneYear() {
+    return new TimeScale(TimeUnit.YEAR, 1);
+  }
+  
   /**
    * The total amount of time in this time scale measured in seconds, the base SI unit of time.
    * @return the total amount of time in this time scale measured in seconds.
    */
   double totalDuration() {
     
-    Duration thisDuration = this.timeUnit.getDuration();
+    double thisDuration = this.timeUnit.totalDuration();
     
     // Since the duration is measured in seconds and is treated by the Duration class as a long, we need
     //     to treat time scales less than one second as special cases and return the values ourselves.
-    switch (this) {
+    switch (this.timeUnit) {
       case NANOSECOND:
-        return 1E-9;
+        return 1E-9 * this.unitLength;
       case MICROSECOND:
-        return 1E-6;
+        return 1E-6 * this.unitLength;
       case MILLISECOND:
-        return 1E-3;
+        return 1E-3 * this.unitLength;
       default:
-        return thisDuration.getSeconds() * this.periodLength;
+        return thisDuration * this.unitLength;
     }
     
   }
+
 }

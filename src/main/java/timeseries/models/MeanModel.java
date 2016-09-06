@@ -23,7 +23,7 @@ import org.knowm.xchart.style.markers.Circle;
 import org.knowm.xchart.style.markers.None;
 
 import data.DoubleFunctions;
-import timeseries.TimeScale;
+import timeseries.TimeUnit;
 import timeseries.TimeSeries;
 
 /**
@@ -58,11 +58,11 @@ public final class MeanModel implements Model {
   public final TimeSeries pointForecast(final int steps) {
     int n = timeSeries.n();
     long periodLength = timeSeries.timeScaleLength();
-    TimeScale timeScale = timeSeries.timeScale();
+    TimeUnit timeScale = timeSeries.timeScale();
 
     final double[] forecasted = DoubleFunctions.fill(steps, this.mean);
     final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
-        .plus(periodLength * timeScale.periodLength(), timeScale.timeUnit());
+        .plus(periodLength * timeScale.periodLength(), timeScale.temporalUnit());
     return new TimeSeries(timeScale, startTime, periodLength, forecasted);
   }
   

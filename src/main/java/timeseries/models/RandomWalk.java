@@ -25,7 +25,7 @@ import org.knowm.xchart.style.markers.None;
 
 import stats.distributions.Distribution;
 import stats.distributions.Normal;
-import timeseries.TimeScale;
+import timeseries.TimeUnit;
 import timeseries.TimeSeries;
 
 /**
@@ -108,14 +108,14 @@ public final class RandomWalk implements Model {
   public final TimeSeries pointForecast(final int steps) {
     int n = timeSeries.n();
     long periodLength = timeSeries.timeScaleLength();
-    TimeScale timeScale = timeSeries.timeScale();
+    TimeUnit timeScale = timeSeries.timeScale();
 
     double[] forecast = new double[steps];
     for (int t = 0; t < steps; t++) {
       forecast[t] = timeSeries.at(n - 1);
     }
     final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
-        .plus(periodLength * timeScale.periodLength(), timeScale.timeUnit());
+        .plus(periodLength * timeScale.periodLength(), timeScale.temporalUnit());
     return new TimeSeries(timeScale, startTime, periodLength, forecast);
   }
 
