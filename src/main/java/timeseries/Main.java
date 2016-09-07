@@ -15,7 +15,7 @@ final class Main {
     Forecast fcst = model.forecast(12, 0.05);
     Model meanModel = new MeanModel(series);
     Forecast meanFcst = new MeanForecast(meanModel, 12, 0.05);
-    meanFcst.pastAndFuture();
+ 
     
   }
 

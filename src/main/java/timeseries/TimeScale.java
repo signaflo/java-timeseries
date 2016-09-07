@@ -1,7 +1,5 @@
 package timeseries;
 
-import java.time.Duration;
-
 /**
  * Wraps a {@link TimeUnit} together with an integer unit length, allowing one to specify a broader range of time
  * periods than using a TimeUnit alone. This class is immutable and thread-safe.
@@ -55,7 +53,7 @@ public final class TimeScale {
    * @return the number of times this TimeScale occurs in the provided TimeScale.
    */
   public double frequencyPer(final TimeScale otherTimeScale) {
-    return otherTimeScale.totalDuration() / this.totalDuration();
+    return otherTimeScale.totalSeconds() / this.totalSeconds();
   }
 
   /**
@@ -63,7 +61,7 @@ public final class TimeScale {
    * 
    * @return the total amount of time in this time scale measured in seconds.
    */
-  public final double totalDuration() {
+  public final double totalSeconds() {
 
     double thisDuration = this.timeUnit.totalDuration();
     return thisDuration * this.unitLength;

@@ -76,7 +76,7 @@ public enum TimeUnit {
    * @return the number of times this TimeUnit occurs in the provided TimeScale.
    */
   public double frequencyPer(final TimeScale timeScale) {
-    return timeScale.totalDuration() / this.totalDuration();
+    return timeScale.totalSeconds() / this.totalDuration();
   }
 
   /**
@@ -85,9 +85,8 @@ public enum TimeUnit {
    * @return the total amount of time in this time unit measured in seconds.
    */
   double totalDuration() {
-
+    
     Duration thisDuration = this.temporalUnit.getDuration();
-
     return thisDuration.getSeconds() * this.periodLength + ((thisDuration.getNano() * this.periodLength) / 1E9);
 
   }

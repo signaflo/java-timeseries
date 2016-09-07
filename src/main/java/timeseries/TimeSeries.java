@@ -55,7 +55,7 @@ public final class TimeSeries extends DataSet {
   public TimeSeries(final double... series) {
     this(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);
   }
-  
+
   /**
    * Construct a new TimeSeries using the given arguments.
    * 
@@ -72,8 +72,7 @@ public final class TimeSeries extends DataSet {
     List<OffsetDateTime> dateTimes = new ArrayList<>(series.length);
     dateTimes.add(startTime);
     for (int i = 1; i < series.length; i++) {
-      dateTimes.add(
-          dateTimes.get(i - 1).plus(timeUnit.periodLength(), timeUnit.temporalUnit()));
+      dateTimes.add(dateTimes.get(i - 1).plus(timeUnit.periodLength(), timeUnit.temporalUnit()));
     }
     this.observationTimes = Collections.unmodifiableList(dateTimes);
   }
@@ -94,9 +93,8 @@ public final class TimeSeries extends DataSet {
     List<OffsetDateTime> dateTimes = new ArrayList<>(series.length);
     dateTimes.add(startTime);
     for (int i = 1; i < series.length; i++) {
-      dateTimes.add(
-          dateTimes.get(i - 1).plus((long)timeScale.unitLength() * timeScale.timeUnit().periodLength(),
-              timeScale.timeUnit().temporalUnit()));
+      dateTimes.add(dateTimes.get(i - 1).plus((long) timeScale.unitLength() * timeScale.timeUnit().periodLength(),
+          timeScale.timeUnit().temporalUnit()));
     }
     this.observationTimes = Collections.unmodifiableList(dateTimes);
   }
@@ -111,8 +109,7 @@ public final class TimeSeries extends DataSet {
     this(TimeUnit.MONTH, startTime, series);
   }
 
-  private TimeSeries(final TimeScale timeScale, final List<OffsetDateTime> observationTimes, 
-      final double... series) {
+  private TimeSeries(final TimeScale timeScale, final List<OffsetDateTime> observationTimes, final double... series) {
     super(series);
     this.series = series.clone();
     this.n = series.length;
@@ -133,6 +130,7 @@ public final class TimeSeries extends DataSet {
 
   /**
    * Aggregate the observations in this series to the yearly level.
+   * 
    * @return a new TimeSeries with the observations in this series aggregated to the yearly level.
    */
   public final TimeSeries aggregateToYears() {
@@ -141,6 +139,7 @@ public final class TimeSeries extends DataSet {
 
   /**
    * Aggregate the observations in this series to the given time scale.
+   * 
    * @param timeUnit The time scale to aggregate up to.
    * @return a new TimeSeries with the observations in this series aggregated to the given time scale.
    */
@@ -256,6 +255,7 @@ public final class TimeSeries extends DataSet {
 
   /**
    * Return a moving average of order m if m is odd and of order 2 &times; m if m is even.
+   * 
    * @param m the order of the moving average.
    * @return a centered moving average of order m.
    */
@@ -293,6 +293,7 @@ public final class TimeSeries extends DataSet {
 
   /**
    * Difference this time series at the given lag and return the result in a new TimeSeries.
+   * 
    * @param lag the lag at which to take differences.
    * @return a new TimeSeries differenced at the given lag.
    */
@@ -304,6 +305,7 @@ public final class TimeSeries extends DataSet {
 
   /**
    * Difference this time series once at lag 1 and return the result in a new TimeSeries.
+   * 
    * @return a new TimeSeries differenced once at lag.
    */
   public final TimeSeries difference() {
@@ -335,6 +337,7 @@ public final class TimeSeries extends DataSet {
 
   /**
    * Return the list of observation times for this series.
+   * 
    * @return the list of observation times for this series.
    */
   public final List<OffsetDateTime> observationTimes() {
@@ -374,12 +377,11 @@ public final class TimeSeries extends DataSet {
   /**
    * Return a slice of this time series using R/Julia style indexing.
    * 
-   * @param start the beginning time index of the slice. The value at the time 
-   * index is included in the returned TimeSeries.
-   * @param end the ending time index of the slice. The value at the time index is 
-   * <i>not</i> included in the returned TimeSeries.
-   * @return a slice of this time series from start (inclusive) to end (exclusive) using
-   * R/Julia style indexing.
+   * @param start the beginning time index of the slice. The value at the time index is included in the returned
+   *        TimeSeries.
+   * @param end the ending time index of the slice. The value at the time index is <i>not</i> included in the returned
+   *        TimeSeries.
+   * @return a slice of this time series from start (inclusive) to end (exclusive) using R/Julia style indexing.
    */
   public final TimeSeries timeSlice(final int start, final int end) {
     final double[] sliced = new double[end - start + 1];
@@ -392,8 +394,8 @@ public final class TimeSeries extends DataSet {
    * Transform the series using a Box-Cox transformation with the given parameter value.
    * 
    * <p>
-   * Setting boxCoxLambda equal to 0
-   * corresponds to the natural logarithm while values other than 0 correspond to power transforms.
+   * Setting boxCoxLambda equal to 0 corresponds to the natural logarithm while values other than 0 correspond to power
+   * transforms.
    * </p>
    * <p>
    * See the definition given
@@ -440,8 +442,7 @@ public final class TimeSeries extends DataSet {
           seriesList.set(t, Double.NaN);
         }
       }
-      final XYChart chart = new XYChartBuilder().theme(ChartTheme.XChart).height(480).width(960).title("")
-          .build();
+      final XYChart chart = new XYChartBuilder().theme(ChartTheme.XChart).height(480).width(960).title("").build();
       final XYSeries xySeries = chart.addSeries("Series Values", xAxis, seriesList)
           .setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
       xySeries.setLineWidth(0.75f);
@@ -484,6 +485,7 @@ public final class TimeSeries extends DataSet {
     }).start();
 
   }
+
   /**
    * Display a plot of the sample autocorrelations up to the given lag.
    * 
@@ -620,7 +622,6 @@ public final class TimeSeries extends DataSet {
     }
     return builder.append("\ntimeScale: ").append(timeScale).toString();
   }
- 
 
   public final TimeSeries minus(final TimeSeries otherSeries) {
     final double[] subtracted = new double[this.series.length];
