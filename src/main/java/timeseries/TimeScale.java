@@ -144,9 +144,9 @@ public final class TimeScale {
   }
 
   /**
-   * Create and return a new TimeScale representing half of a century
+   * Create and return a new TimeScale representing one half of a century
    * 
-   * @return a new TimeScale representing half of a century.
+   * @return a new TimeScale representing one half of a century.
    */
   public static final TimeScale halfCentury() {
     return new TimeScale(TimeUnit.DECADE, 5);
@@ -162,18 +162,18 @@ public final class TimeScale {
   }
 
   /**
-   * Create and return a new TimeScale representing half on one hour.
+   * Create and return a new TimeScale representing one half of an hour.
    * 
-   * @return a new TimeScale representing half on one hour.
+   * @return a new TimeScale representing one half of an hour.
    */
   public static final TimeScale halfHour() {
     return new TimeScale(TimeUnit.MINUTE, 30);
   }
 
   /**
-   * Create and return a new TimeScale representing half of one day.
+   * Create and return a new TimeScale representing one half of a day.
    * 
-   * @return a new TimeScale representing half of one day.
+   * @return a new TimeScale representing one half of a day.
    */
   public static final TimeScale halfDay() {
     return new TimeScale(TimeUnit.HOUR, 12);
@@ -188,10 +188,20 @@ public final class TimeScale {
     return new TimeScale(TimeUnit.MONTH, 4);
   }
   
+  /**
+   * Create and return a new TimeScale representing one half of a second.
+   * 
+   * @return a new TimeScale representing one half of a second.
+   */
   public static final TimeScale halfSecond() {
     return new TimeScale(TimeUnit.MILLISECOND, 500);
   }
   
+  /**
+   * Create and return a new TimeScale representing one tenth of a second.
+   * 
+   * @return a new TimeScale representing one tenth of a second.
+   */
   public static final TimeScale oneTenthSecond() {
     return new TimeScale(TimeUnit.MILLISECOND, 100);
   }
