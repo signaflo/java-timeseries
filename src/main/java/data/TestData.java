@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-import timeseries.TimeScale;
+import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.TimeUnit;
 import timeseries.Ts;
@@ -98,7 +98,7 @@ public final class TestData {
         1.801, 1.727, 1.992, 1.865, 1.801, 1.661, 2.366, 2.003, 2.092, 1.703, 1.337, 1.985, 1.808, 1.839, 1.714, 1.73,
         1.725, 1.456, 1.447, 1.357, 1.28, 1.363, 1.228, 1.411, 1.13, 1.153, 1.257, 1.259, 1.153, 1.202, 1.185, 1.247,
         1.434, 1.45, 1.227, 1.245, 1.417, 1.458, 1.398, 1.423, 1.358, 1.488 };
-    return new TimeSeries(new TimeScale(TimeUnit.WEEK, 1),
+    return new TimeSeries(new TimePeriod(TimeUnit.WEEK, 1),
         OffsetDateTime.of(LocalDateTime.of(1987, 6, 22, 0, 0), ZoneOffset.ofHours(0)), syd);
   }
 
@@ -307,7 +307,7 @@ public final class TestData {
         3496.537, 3477.594, 3519.641, 3566.907, 3619.604, 3545.919, 3580.011, 3507.3, 3463.601, 3359.582, 3391.929,
         3364.103, 3344.854, 3265.992, 3230.704, 3208.588, 3254.183, 3192.484, 3130.113, 3166.313, 3085.524, 3017.947,
         3111.564, 3057.035, 3024.072, 2936.645, 2974.818, 3005.528, 3066.679, 3017.318, 2976.698, 2959.047, 2952.356 };
-    return new TimeSeries(new TimeScale(TimeUnit.MILLISECOND, 10),
+    return new TimeSeries(new TimePeriod(TimeUnit.MILLISECOND, 10),
         OffsetDateTime.of(LocalDateTime.of(2004, 11, 19, 9, 30), ZoneOffset.ofHours(0)), traffic);
   }
 

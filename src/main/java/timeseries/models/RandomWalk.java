@@ -25,7 +25,7 @@ import org.knowm.xchart.style.markers.None;
 
 import stats.distributions.Distribution;
 import stats.distributions.Normal;
-import timeseries.TimeScale;
+import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 
 /**
@@ -46,7 +46,7 @@ public final class RandomWalk implements Model {
    * @param observed the observed series.
    */
   public RandomWalk(final TimeSeries observed) {
-    this.timeSeries = observed.copy();
+    this.timeSeries = observed;
     this.fittedSeries = fitSeries();
     this.residuals = calculateResiduals();
   }
@@ -107,15 +107,15 @@ public final class RandomWalk implements Model {
   @Override
   public final TimeSeries pointForecast(final int steps) {
     int n = timeSeries.n();
-    TimeScale timeScale = timeSeries.timeScale();
+    TimePeriod timePeriod = timeSeries.timePeriod();
 
     double[] forecast = new double[steps];
     for (int t = 0; t < steps; t++) {
       forecast[t] = timeSeries.at(n - 1);
     }
     final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
-        .plus((long)timeScale.unitLength() * timeScale.timeUnit().periodLength(), timeScale.timeUnit().temporalUnit());
-    return new TimeSeries(timeScale, startTime, forecast);
+        .plus((long)timePeriod.unitLength() * timePeriod.timeUnit().periodLength(), timePeriod.timeUnit().temporalUnit());
+    return new TimeSeries(timePeriod, startTime, forecast);
   }
 
   @Override
@@ -130,7 +130,7 @@ public final class RandomWalk implements Model {
    */
   @Override
   public final TimeSeries timeSeries() {
-    return this.timeSeries.copy();
+    return this.timeSeries;
   }
 
   /*
@@ -140,7 +140,7 @@ public final class RandomWalk implements Model {
    */
   @Override
   public final TimeSeries fittedSeries() {
-    return this.fittedSeries.copy();
+    return this.fittedSeries;
   }
 
   /*
@@ -150,7 +150,7 @@ public final class RandomWalk implements Model {
    */
   @Override
   public final TimeSeries residuals() {
-    return this.residuals.copy();
+    return this.residuals;
   }
 
   /**
@@ -231,7 +231,7 @@ public final class RandomWalk implements Model {
     for (int t = 1; t < timeSeries.n(); t++) {
       fitted[t] = timeSeries.at(t - 1);
     }
-    return new TimeSeries(timeSeries.timeScale(), timeSeries.observationTimes().get(0),
+    return new TimeSeries(timeSeries.timePeriod(), timeSeries.observationTimes().get(0),
         fitted);
   }
 
@@ -240,7 +240,7 @@ public final class RandomWalk implements Model {
     for (int t = 1; t < timeSeries.n(); t++) {
       residuals[t] = timeSeries.at(t) - fittedSeries.at(t);
     }
-    return new TimeSeries(timeSeries.timeScale(), timeSeries.observationTimes().get(0),
+    return new TimeSeries(timeSeries.timePeriod(), timeSeries.observationTimes().get(0),
         residuals);
   }
 

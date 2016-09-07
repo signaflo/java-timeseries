@@ -67,7 +67,7 @@ public final class MeanForecast implements Forecast {
     for (int t = 0; t < steps; t++) {
       upperPredictionValues[t] = forecast.at(t) + criticalValue * fcstStdError;
     }
-    return new TimeSeries(forecast.timeScale(), forecast.observationTimes().get(0), upperPredictionValues);
+    return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
   }
   
   @Override
@@ -78,7 +78,7 @@ public final class MeanForecast implements Forecast {
     for (int t = 0; t < steps; t++) {
       upperPredictionValues[t] = forecast.at(t) - criticalValue * fcstStdError;
     }
-    return new TimeSeries(forecast.timeScale(), forecast.observationTimes().get(0), upperPredictionValues);
+    return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
   }
   
   @Override
@@ -161,7 +161,7 @@ public final class MeanForecast implements Forecast {
     for (int t = 0; t < errors.length; t++) {
       errors[t] = criticalValue * fcstStdError;
     }
-    return new TimeSeries(forecast.timeScale(), forecast.observationTimes().get(0), errors);
+    return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
   }
   
 }

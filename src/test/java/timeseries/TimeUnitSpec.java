@@ -8,17 +8,17 @@ import org.junit.Test;
 public class TimeUnitSpec {
   
   @Test
-  public void whenTimeUnitFrequencyTimeScaleComputedThenResultCorrect() {
+  public void whenTimeUnitFrequencyTimePeriodComputedThenResultCorrect() {
     TimeUnit timeUnit = TimeUnit.MONTH;
-    TimeScale timeScale = new TimeScale(TimeUnit.QUARTER, 2);
-    assertThat(timeUnit.frequencyPer(timeScale), is(equalTo(6.0)));
+    TimePeriod timePeriod = new TimePeriod(TimeUnit.QUARTER, 2);
+    assertThat(timeUnit.frequencyPer(timePeriod), is(equalTo(6.0)));
   }
 
   @Test
-  public void whenMillisecondTimeUnitFrequencyWithSecondsScaleThenResultCorrect() {
+  public void whenMillisecondTimeUnitFrequencyWithSecondsPeriodThenResultCorrect() {
     TimeUnit timeUnit = TimeUnit.MILLISECOND;
-    TimeScale timeScale = new TimeScale(TimeUnit.SECOND, 5);
-    assertThat(timeUnit.frequencyPer(timeScale), is(equalTo(5E3)));
+    TimePeriod timePeriod = new TimePeriod(TimeUnit.SECOND, 5);
+    assertThat(timeUnit.frequencyPer(timePeriod), is(equalTo(5E3)));
   }
 
   @Test
@@ -29,9 +29,9 @@ public class TimeUnitSpec {
   }
   
   @Test
-  public void whenNanoSecondTimeUnitFrequencyWithMicrosecondScaleThenResultCorrect() {
+  public void whenNanoSecondTimeUnitFrequencyWithMicrosecondPeriodThenResultCorrect() {
     TimeUnit nanosecond = TimeUnit.NANOSECOND;
-    TimeScale microsecond = new TimeScale(TimeUnit.MICROSECOND, 50);
+    TimePeriod microsecond = new TimePeriod(TimeUnit.MICROSECOND, 50);
     assertThat(nanosecond.frequencyPer(microsecond), is(closeTo(50E3, 1E-10)));
   }
 }

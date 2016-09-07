@@ -24,9 +24,7 @@ public final class Ts {
 	public static final TimeSeries newAnnualSeries(final int startYear, final double... series) {
 	  final LocalDateTime localDateTime = LocalDateTime.of(startYear, Month.JANUARY, 1, 0, 0);
 	  final OffsetDateTime startingInstant = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
-	  final TimeUnit timeUnit = TimeUnit.YEAR;
-	  final int periodLength = 1;
-	  return new TimeSeries(new TimeScale(timeUnit, periodLength), startingInstant, series);
+	  return new TimeSeries(TimePeriod.oneYear(), startingInstant, series);
 	}
 	
 	/**
@@ -44,7 +42,7 @@ public final class Ts {
 		final OffsetDateTime startingInstant = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
 		final TimeUnit timeUnit = TimeUnit.MONTH;
 		final int periodLength = 1;
-		return new TimeSeries(new TimeScale(timeUnit, periodLength), startingInstant, series);
+		return new TimeSeries(new TimePeriod(timeUnit, periodLength), startingInstant, series);
 	}
 	
 	/**
@@ -63,7 +61,7 @@ public final class Ts {
 				ZoneOffset.ofHours(ZONE_OFFSET));
 		final TimeUnit timeUnit = TimeUnit.MONTH;
 		final int periodLength = 1;
-		return new TimeSeries(new TimeScale(timeUnit, periodLength), startingInstant, series);
+		return new TimeSeries(new TimePeriod(timeUnit, periodLength), startingInstant, series);
 	}
 	
 	/**
@@ -82,7 +80,7 @@ public final class Ts {
 				ZoneOffset.ofHours(0));
 		final TimeUnit timeUnit = TimeUnit.QUARTER;
 		final int periodLength = 1;
-		return new TimeSeries(new TimeScale(timeUnit, periodLength), startingInstant, series);
+		return new TimeSeries(new TimePeriod(timeUnit, periodLength), startingInstant, series);
 	}
 
 }

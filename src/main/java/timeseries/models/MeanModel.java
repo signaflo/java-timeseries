@@ -24,7 +24,7 @@ import org.knowm.xchart.style.markers.None;
 
 import data.DoubleFunctions;
 
-import timeseries.TimeScale;
+import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 
 /**
@@ -41,9 +41,9 @@ public final class MeanModel implements Model {
   private final double mean;
 
   public MeanModel(final TimeSeries observed) {
-    this.timeSeries = observed.copy();
+    this.timeSeries = observed;
     this.mean = this.timeSeries.mean();
-    this.fittedSeries = new TimeSeries(observed.timeScale(), observed.observationTimes().get(0),
+    this.fittedSeries = new TimeSeries(observed.timePeriod(), observed.observationTimes().get(0),
          DoubleFunctions.fill(observed.n(), this.mean));
   }
   
@@ -58,12 +58,12 @@ public final class MeanModel implements Model {
   @Override
   public final TimeSeries pointForecast(final int steps) {
     int n = timeSeries.n();
-    TimeScale timeScale = timeSeries.timeScale();
+    TimePeriod timePeriod = timeSeries.timePeriod();
 
     final double[] forecasted = DoubleFunctions.fill(steps, this.mean);
     final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
-        .plus((long)timeScale.unitLength() * timeScale.timeUnit().periodLength(), timeScale.timeUnit().temporalUnit());
-    return new TimeSeries(timeScale, startTime, forecasted);
+        .plus((long)timePeriod.unitLength() * timePeriod.timeUnit().periodLength(), timePeriod.timeUnit().temporalUnit());
+    return new TimeSeries(timePeriod, startTime, forecasted);
   }
   
   @Override

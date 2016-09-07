@@ -1,7 +1,7 @@
 package timeseries.models;
 
 import timeseries.TimeSeries;
-import timeseries.TimeScale;
+import timeseries.TimePeriod;
 
 /**
  * A potentially seasonal Auto-Regressive Integrated Moving Average (ARIMA) model. 
@@ -33,21 +33,21 @@ public final class Arima {
    * complete one cycle, <i>relative to</i> a particular unit of time. For example, 
    * typical monthly data has a cycle of one year, hourly data likely has a cycle of one day,
    * etc... For a non-typical example, one could specify a seasonal cycle of half a year
-   * using a time scale of six months, or, equivalently, two quarters.
+   * using a time period of six months, or, equivalently, two quarters.
    */
-  Arima(final TimeSeries observations, final ModelOrder order, final TimeScale seasonalCycle) {
+  Arima(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle) {
     this.observations = observations;
     this.order = order;
-    this.cycleLength = (int)(observations.timeScale().frequencyPer(seasonalCycle));
+    this.cycleLength = (int)(observations.timePeriod().frequencyPer(seasonalCycle));
     double[] initialParameters = setInitialParameters();
     System.out.println(initialParameters);
   }
   
-  Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimeScale seasonalCycle) {
+  Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimePeriod seasonalCycle) {
     this.observations = observations;
     this.coeffs = coeffs;
     this.order = coeffs.extractModelOrder();
-    this.cycleLength = (int)(observations.timeScale().frequencyPer(seasonalCycle));
+    this.cycleLength = (int)(observations.timePeriod().frequencyPer(seasonalCycle));
   }
 
   private final double[] setInitialParameters() {

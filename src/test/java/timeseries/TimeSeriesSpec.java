@@ -152,11 +152,11 @@ public class TimeSeriesSpec {
   }
 
   @Test
-  public void testTimeScale() {
+  public void testTimePeriod() {
     double[] testData = TestData.ausbeer();
     OffsetDateTime start = TestData.ausbeerSeries().startTime();
-    TimeScale timeScale = new TimeScale(TimeUnit.MILLISECOND, (long)(15.7 * 1E3));
-    TimeSeries series = new TimeSeries(timeScale, start, testData);
+    TimePeriod timePeriod = new TimePeriod(TimeUnit.MILLISECOND, (long)(15.7 * 1E3));
+    TimeSeries series = new TimeSeries(timePeriod, start, testData);
     series.print();
   }
 }

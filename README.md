@@ -3,8 +3,9 @@ Time series analysis on the JVM.
 
 ##Features
 * Dedicated time series library.
-* Autocorrelation function and plot.
-* Random walk simulation.
+* Simple, intuitive, and powerful time modeling.
+* Autocorrelation function and ACF plot.
+* Random walk simulation and forecasting.
 * Box-Cox data transformations.
 * Much more to come...
 
