@@ -9,9 +9,10 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 
 /**
- * A set of constants representing standard time units, raging from nanoseconds to centuries. Note that this enum
- * essentially wraps the ChronoUnit enums, with a period length to allow for additional time units (most notably, a
- * quarter of a year).
+ * A set of constants representing standard time units, raging from nanoseconds to centuries. This class
+ * wraps a {@link ChronoUnit} together with a period length to create a broader set of time units than
+ * ChronoUnit provides and to provide some additional functionality. For even more fine-tuned time modeling
+ * use the {@link TimeScale} class.
  * 
  * @author Jacob Rachiele
  *
@@ -40,10 +41,18 @@ public enum TimeUnit {
     this.periodLength = periodLength;
   }
 
+  /**
+   * The TemporalUnit used as the basis for this TimeUnit.
+   * @return the TemporalUnit used as the basis for this TimeUnit.
+   */
   public TemporalUnit temporalUnit() {
     return this.temporalUnit;
   }
 
+  /**
+   * The length of this TimeUnit relative to the underlying TemporalUnit.
+   * @return the length of this TimeUnit relative to the underlying TemporalUnit.
+   */
   public long periodLength() {
     return this.periodLength;
   }

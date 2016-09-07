@@ -153,6 +153,10 @@ public class TimeSeriesSpec {
 
   @Test
   public void testTimeScale() {
-    System.out.println(new TimeScale(TimeUnit.WEEK, 2).frequencyPer(TimeScale.oneYear()));
+    double[] testData = TestData.ausbeer();
+    OffsetDateTime start = TestData.ausbeerSeries().startTime();
+    TimeScale timeScale = new TimeScale(TimeUnit.MILLISECOND, (long)(15.7 * 1E3));
+    TimeSeries series = new TimeSeries(timeScale, start, testData);
+    series.print();
   }
 }

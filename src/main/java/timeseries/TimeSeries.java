@@ -93,7 +93,7 @@ public final class TimeSeries extends DataSet {
     List<OffsetDateTime> dateTimes = new ArrayList<>(series.length);
     dateTimes.add(startTime);
     for (int i = 1; i < series.length; i++) {
-      dateTimes.add(dateTimes.get(i - 1).plus((long) timeScale.unitLength() * timeScale.timeUnit().periodLength(),
+      dateTimes.add(dateTimes.get(i - 1).plus(timeScale.unitLength() * timeScale.timeUnit().periodLength(),
           timeScale.timeUnit().temporalUnit()));
     }
     this.observationTimes = Collections.unmodifiableList(dateTimes);
@@ -422,6 +422,10 @@ public final class TimeSeries extends DataSet {
     }
     return differenced;
   }
+  
+  public final OffsetDateTime startTime() {
+    return this.observationTimes.get(0);
+  }
 
   // ********** Plots ********** //
 
@@ -620,7 +624,7 @@ public final class TimeSeries extends DataSet {
       }
       builder.append(observationTimes.get(n - 1).format(dateFormatter));
     }
-    return builder.append("\ntimeScale: ").append(timeScale).toString();
+    return builder.append("\ntimeScale: \n").append(timeScale).toString();
   }
 
   public final TimeSeries minus(final TimeSeries otherSeries) {

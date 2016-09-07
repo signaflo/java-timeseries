@@ -28,8 +28,8 @@ import timeseries.TimeScale;
 import timeseries.TimeSeries;
 
 /**
- * This time series model assumes that the series contains no underlying trend or seasonality, and that early values of
- * the series provide as much information as recent values.
+ * A time series model that assumes no trend or seasonal factors are present, and that puts as much weight
+ * on early values of the series as it does on recent values.
  * 
  * @author Jacob Rachiele
  *
