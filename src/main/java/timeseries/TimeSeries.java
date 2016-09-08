@@ -7,9 +7,10 @@ package timeseries;
 import java.awt.Color;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -64,17 +65,54 @@ public final class TimeSeries extends DataSet {
    * @param series The data underlying the time series.
    */
   public TimeSeries(final TimeUnit timeUnit, final OffsetDateTime startTime, final double... series) {
+    this(new TimePeriod(timeUnit, 1), startTime, series);
+  }
+  
+  /**
+   * Construct a new TimeSeries using the given arguments.
+   * 
+   * @param timeUnit The unit of time in which observations are made.
+   * @param startTime The time at which the first observation was made. The string must represent
+   * either a valid {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime,
+   * then the default UTC/Greenwich offset, i.e., an offset of 0, will be used.
+   * @param series The data underlying the time series.
+   */
+  public TimeSeries(final TimePeriod timePeriod, final String startTime, final double... series) {
     super(series);
     this.series = series.clone();
     this.n = series.length;
-    this.mean = super.mean();
-    this.timePeriod = new TimePeriod(timeUnit, 1);
+    this.mean  = super.mean();
+    this.timePeriod = timePeriod;
     List<OffsetDateTime> dateTimes = new ArrayList<>(series.length);
-    dateTimes.add(startTime);
+    
+    try {
+      dateTimes.add(OffsetDateTime.parse(startTime));
+    } catch (DateTimeParseException e) {
+      dateTimes.add(OffsetDateTime.of(LocalDateTime.parse(startTime), ZoneOffset.ofHours(0)));
+    }
+    
     for (int i = 1; i < series.length; i++) {
-      dateTimes.add(dateTimes.get(i - 1).plus(timeUnit.periodLength(), timeUnit.temporalUnit()));
+      dateTimes.add(dateTimes.get(i - 1).plus(totalPeriodLength(timePeriod),
+          timePeriod.timeUnit().temporalUnit()));
     }
     this.observationTimes = Collections.unmodifiableList(dateTimes);
+  }
+  
+  private final long totalPeriodLength(final TimePeriod timePeriod) {
+    return timePeriod.timeUnit().periodLength() * timePeriod.unitLength();
+  }
+  
+  /**
+   * Construct a new TimeSeries using the given arguments.
+   * 
+   * @param timeUnit The unit of time in which observations are made.
+   * @param startTime The time at which the first observation was made. The string must represent
+   * either a valid {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime,
+   * then the default UTC/Greenwich offset, i.e., an offset of 0, will be used.
+   * @param series The data underlying the time series.
+   */
+  public TimeSeries(final TimeUnit timeUnit, final String startTime, final double... series) {
+    this(new TimePeriod(timeUnit, 1), startTime, series);
   }
 
   /**
@@ -560,19 +598,6 @@ public final class TimeSeries extends DataSet {
 
   @Override
   public String toString() {
-    DateTimeFormatter dateFormatter;
-    switch (timePeriod.timeUnit()) {
-      case HOUR:
-      case MINUTE:
-      case SECOND:
-      case MILLISECOND:
-      case MICROSECOND:
-      case NANOSECOND:
-        dateFormatter = DateTimeFormatter.ISO_TIME;
-        break;
-      default:
-        dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    }
     NumberFormat numFormatter = new DecimalFormat("#0.0000");
     StringBuilder builder = new StringBuilder();
     builder.append("n: ").append(n).append("\nmean: ").append(numFormatter.format(mean)).append("\nseries: ");
@@ -594,18 +619,18 @@ public final class TimeSeries extends DataSet {
     builder.append("\nobservationTimes: ");
     if (series.length > 6) {
       for (OffsetDateTime date : observationTimes.subList(0, 3)) {
-        builder.append(date.format(dateFormatter)).append(", ");
+        builder.append(date.toString()).append(", ");
       }
       builder.append("..., ");
       for (OffsetDateTime date : observationTimes.subList(n - 3, n - 1)) {
-        builder.append(date.format(dateFormatter)).append(", ");
+        builder.append(date.toString()).append(", ");
       }
-      builder.append(observationTimes.get(n - 1).format(dateFormatter));
+      builder.append(observationTimes.get(n - 1).toString());
     } else {
       for (int i = 0; i < observationTimes.size() - 1; i++) {
-        builder.append(observationTimes.get(i).format(dateFormatter)).append(", ");
+        builder.append(observationTimes.get(i).toString()).append(", ");
       }
-      builder.append(observationTimes.get(n - 1).format(dateFormatter));
+      builder.append(observationTimes.get(n - 1).toString());
     }
     return builder.append("\ntimePeriod: \n").append(timePeriod).toString();
   }

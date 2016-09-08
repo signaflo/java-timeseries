@@ -154,7 +154,7 @@ public class TimeSeriesSpec {
   @Test
   public void testTimePeriod() {
     double[] testData = TestData.ausbeer();
-    OffsetDateTime start = TestData.ausbeerSeries().startTime();
+    String start = "1956-01-01";
     TimePeriod timePeriod = new TimePeriod(TimeUnit.MILLISECOND, (long)(15.7 * 1E3));
     TimeSeries series = new TimeSeries(timePeriod, start, testData);
     series.print();
