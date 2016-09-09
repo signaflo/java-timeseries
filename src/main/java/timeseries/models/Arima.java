@@ -1,11 +1,19 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ * 
+ * This file is licensed under the Apache License, Version 2.0, http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 package timeseries.models;
 
 import timeseries.TimeSeries;
 import timeseries.TimePeriod;
 
+import data.Statistics;
+
 /**
- * A potentially seasonal Auto-Regressive Integrated Moving Average (ARIMA) model. 
- * This class is immutable and thread-safe.
+ * A potentially seasonal Auto-Regressive Integrated Moving Average (ARIMA) model. This class is immutable and
+ * thread-safe.
  * 
  * @author Jacob Rachiele
  *
@@ -13,41 +21,50 @@ import timeseries.TimePeriod;
 public final class Arima {
 
   private final TimeSeries observations;
-  private TimeSeries fitted;
-  private TimeSeries residuals;
+  private final TimeSeries fitted;
+  private final TimeSeries residuals;
   private final int cycleLength;
+  
   // The number of parameters, degree of differencing, and constant flag.
   private final ModelOrder order;
-
-  private double mean;
-  // The intercept is equal to mean * (1 - (sum of AR coefficients))
-  private double intercept;
-  private ModelCoefficients coeffs;
+  private final ModelCoefficients coeffs;
+  private final double mean;
   
+  // The intercept is equal to mean * (1 - (sum of AR coefficients))
+  private final double intercept;
+  private final double[] arCoeffs;
+  private final double[] maCoeffs;
+
   // Note: no need to copy since TimeSeries and ModelOrder are immutable;
   /**
    * Create a new ARIMA model from the given observations, model order, and seasonal cycle.
+   * 
    * @param observations the time series of observations.
    * @param order the order of the model.
-   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to 
-   * complete one cycle, <i>relative to</i> a particular unit of time. For example, 
-   * typical monthly data has a cycle of one year, hourly data likely has a cycle of one day,
-   * etc... For a non-typical example, one could specify a seasonal cycle of half a year
-   * using a time period of six months, or, equivalently, two quarters.
+   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle,
+   *        <i>relative to</i> a particular unit of time. For example, typical monthly data has a cycle of one year,
+   *        hourly data likely has a cycle of one day, etc... For a non-typical example, one could specify a seasonal
+   *        cycle of half a year using a time period of six months, or, equivalently, two quarters.
    */
-  Arima(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle) {
-    this.observations = observations;
-    this.order = order;
-    this.cycleLength = (int)(observations.timePeriod().frequencyPer(seasonalCycle));
-    double[] initialParameters = setInitialParameters();
-    System.out.println(initialParameters);
-  }
-  
+  // Arima(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle) {
+  // this.observations = observations;
+  // this.order = order;
+  // this.cycleLength = (int)(observations.timePeriod().frequencyPer(seasonalCycle));
+  // double[] initialParameters = setInitialParameters();
+  // System.out.println(initialParameters);
+  // }
+
   Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimePeriod seasonalCycle) {
     this.observations = observations;
     this.coeffs = coeffs;
     this.order = coeffs.extractModelOrder();
-    this.cycleLength = (int)(observations.timePeriod().frequencyPer(seasonalCycle));
+    this.cycleLength = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
+    this.arCoeffs = expandArCoefficients();
+    this.maCoeffs = expandMaCoefficients();
+    this.mean = coeffs.mean;
+    this.intercept = mean * (1 - Statistics.sumOf(arCoeffs));
+    this.fitted = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fitCss());
+    this.residuals = this.observations.minus(this.fitted);
   }
 
   private final double[] setInitialParameters() {
@@ -66,11 +83,11 @@ public final class Arima {
     double[] arCoeffs = coeffs.arCoeffs;
     double[] sarCoeffs = coeffs.sarCoeffs;
     double[] arSarCoeffs = new double[arCoeffs.length + sarCoeffs.length * cycleLength];
-    
+
     for (int i = 0; i < arCoeffs.length; i++) {
       arSarCoeffs[i] = arCoeffs[i];
     }
-    
+
     // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
     // which arises because the model's ar and sar polynomials are multiplied together.
     for (int i = 0; i < sarCoeffs.length; i++) {
@@ -79,15 +96,65 @@ public final class Arima {
         arSarCoeffs[(i + 1) * cycleLength + j] = -sarCoeffs[i] * arCoeffs[j];
       }
     }
-    
+
     return arSarCoeffs;
   }
-  
-//  public static final TimeSeries simulate(final ModelCoefficients order, final int n) {
-//    final double[] series = new double[n];
-//
-//  }
 
+  // Expand the AR coefficients by combining the non-seasonal and seasonal coefficients into a single
+  // array, which takes advantage of the fact that a seasonal AR model is a special case of a non-seasonal
+  // AR model with zero coefficients at the non-seasonal indices.
+  final double[] expandMaCoefficients() {
+    double[] maCoeffs = coeffs.maCoeffs;
+    double[] smaCoeffs = coeffs.smaCoeffs;
+    double[] maSmaCoeffs = new double[maCoeffs.length + smaCoeffs.length * cycleLength];
+
+    for (int i = 0; i < maCoeffs.length; i++) {
+      maSmaCoeffs[i] = maCoeffs[i];
+    }
+
+    // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
+    // which arises because the model's ma and sma polynomials are multiplied together.
+    // In contrast to the ar polynomial, the ma and sma interaction maintains a positive sign.
+    for (int i = 0; i < smaCoeffs.length; i++) {
+      maSmaCoeffs[(i + 1) * cycleLength - 1] = smaCoeffs[i];
+      for (int j = 0; j < maCoeffs.length; j++) {
+        maSmaCoeffs[(i + 1) * cycleLength + j] = smaCoeffs[i] * maCoeffs[j];
+      }
+    }
+
+    return maSmaCoeffs;
+  }
+
+  // public static final TimeSeries simulate(final ModelCoefficients order, final int n) {
+  // final double[] series = new double[n];
+  //
+  // }
+
+  final double[] fitCss() {
+
+    final int p = this.coeffs.arCoeffs.length;
+    final int P = this.coeffs.sarCoeffs.length;
+
+    final int offset = p + P * this.cycleLength;
+
+    final double[] fitted = new double[this.observations.n()];
+    final double[] residuals = new double[this.observations.n()];
+
+    for (int t = offset; t < fitted.length; t++) {
+      for (int i = 0; i < this.arCoeffs.length; i++) {
+        fitted[t] += mean + arCoeffs[i] * (this.observations.at(t - i - 1) - mean);
+      }
+      residuals[t] = this.observations.at(t) - fitted[t];
+      for (int j = 0; j < this.maCoeffs.length; j++) {
+        fitted[t] += maCoeffs[j] * residuals[t - j - 1];
+      }
+    }
+    return fitted;
+  }
+
+  final double intercept() {
+    return this.intercept;
+  }
   /**
    * The order of an ARIMA model, consisting of the number of autoregressive and moving average parameters, along with
    * the degree of differencing and whether or not a constant is in the model. This class is immutable and thread-safe.
@@ -105,15 +172,16 @@ public final class Arima {
     private final int constant;
 
     /**
-     * Create a new ModelOrder using the provided number of autoregressive and moving-average parameters,
-     * as well as the degree of differencing and whether or not to fit a constant (or mean).
+     * Create a new ModelOrder using the provided number of autoregressive and moving-average parameters, as well as the
+     * degree of differencing and whether or not to fit a constant (or mean).
+     * 
      * @param p the number of non-seasonal autoregressive coefficients.
      * @param d the degree of non-seasonal differencing.
      * @param q the number of non-seasonal moving-average coefficients.
      * @param P the number of seasonal autoregressive coefficients.
      * @param D the degree of seasonal differencing.
      * @param Q the number of seasonal moving-average coefficients.
-     * @param constant determines whether or not a constant (or mean) is fitted to the model. 
+     * @param constant determines whether or not a constant (or mean) is fitted to the model.
      */
     public ModelOrder(final int p, final int d, final int q, final int P, final int D, final int Q,
         final boolean constant) {
@@ -133,8 +201,9 @@ public final class Arima {
   }
 
   /**
-   * Represents the autoregressive and moving-average cofficients, as well as the degree of differencing and
-   * the mean (or intercept) for a seasonal ARIMA model.
+   * Represents the autoregressive and moving-average cofficients, as well as the degree of differencing and the mean
+   * (or intercept) for a seasonal ARIMA model.
+   * 
    * @author Jacob Rachiele
    *
    */
@@ -147,11 +216,10 @@ public final class Arima {
     private final int d;
     private final int D;
     private final double mean;
-    private final double intercept;
 
     /**
-     * Create a new ModelCoefficients object using the supplied coefficients, degrees of differencing, and
-     * mean.
+     * Create a new ModelCoefficients object using the supplied coefficients, degrees of differencing, and mean.
+     * 
      * @param arCoeffs the non-seasonal autoregressive coefficients.
      * @param maCoeffs the non-seasonal moving-average coefficients.
      * @param sarCoeffs the seasonal autoregressive coefficients.
@@ -160,7 +228,7 @@ public final class Arima {
      * @param D the seasonal degree of differencing.
      * @param mean the process mean.
      */
-    public ModelCoefficients(final double[] arCoeffs, final double[] maCoeffs, final double[] sarCoeffs,
+    ModelCoefficients(final double[] arCoeffs, final double[] maCoeffs, final double[] sarCoeffs,
         final double[] smaCoeffs, final int d, final int D, final double mean) {
       this.arCoeffs = arCoeffs.clone();
       this.maCoeffs = maCoeffs.clone();
@@ -169,27 +237,82 @@ public final class Arima {
       this.d = d;
       this.D = D;
       this.mean = mean;
+    }
 
-      double arSum = 0.0;
-      for (int i = 0; i < arCoeffs.length; i++) {
-        arSum += arCoeffs[i];
-      }
-      for (int i = 0; i < sarCoeffs.length; i++) {
-        arSum += sarCoeffs[i];
-        for (int j = 0; j < arCoeffs.length; j++) {
-          arSum -= sarCoeffs[i] * arCoeffs[j];
-        }
-      }
-      this.intercept = mean * (1 - arSum);
+    private ModelCoefficients(Builder builder) {
+      this.arCoeffs = builder.arCoeffs.clone();
+      this.maCoeffs = builder.maCoeffs.clone();
+      this.sarCoeffs = builder.sarCoeffs.clone();
+      this.smaCoeffs = builder.smaCoeffs.clone();
+      this.d = builder.d;
+      this.D = builder.D;
+      this.mean = builder.mean;
     }
 
     /**
      * Return the order of the ARIMA model corresponding to the model coefficients.
+     * 
      * @return the order of the ARIMA model corresponding to the model coefficients.
      */
     public final ModelOrder extractModelOrder() {
       return new ModelOrder(arCoeffs.length, d, maCoeffs.length, sarCoeffs.length, D, smaCoeffs.length,
           (Math.abs(mean) > 1E-8));
+    }
+
+    public static final Builder newBuilder() {
+      return new Builder();
+    }
+
+    public static final class Builder {
+      private double[] arCoeffs = new double[] {};
+      private double[] maCoeffs = new double[] {};
+      private double[] sarCoeffs = new double[] {};
+      private double[] smaCoeffs = new double[] {};
+      private int d = 0;
+      private int D = 0;
+      private double mean = 0.0;
+
+      private Builder() {
+      }
+
+      Builder setArCoeffs(double[] arCoeffs) {
+        this.arCoeffs = arCoeffs;
+        return this;
+      }
+
+      Builder setSarCoeffs(double[] sarCoeffs) {
+        this.sarCoeffs = sarCoeffs;
+        return this;
+      }
+
+      Builder setMaCoeffs(double[] maCoeffs) {
+        this.maCoeffs = maCoeffs;
+        return this;
+      }
+
+      Builder setSmaCoeffs(double[] smaCoeffs) {
+        this.smaCoeffs = smaCoeffs;
+        return this;
+      }
+
+      Builder setDiff(int d) {
+        this.d = d;
+        return this;
+      }
+
+      Builder setSeasDiff(int D) {
+        this.D = D;
+        return this;
+      }
+
+      Builder setMean(double mean) {
+        this.mean = mean;
+        return this;
+      }
+
+      ModelCoefficients build() {
+        return new ModelCoefficients(this);
+      }
     }
 
   }

@@ -4,11 +4,11 @@ import static data.Operators.productOf;
 
 import java.util.Arrays;
 
-final class Statistics {
+public final class Statistics {
   
   private Statistics(){}
 
-	static final double sumOf(final double[] data) {
+	public static final double sumOf(final double[] data) {
 		double sum = 0.0;
 		for (int i = 0; i < data.length; i++) {
 			sum += data[i];

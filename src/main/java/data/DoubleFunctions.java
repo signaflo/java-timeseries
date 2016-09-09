@@ -3,6 +3,10 @@ package data;
 public final class DoubleFunctions {
 
   private DoubleFunctions() {}
+  
+  public static final double[] newArray(double... data) {
+    return data;
+  }
 
   public static final double[] fill(final int size, final double value) {
     final double[] filled = new double[size];
@@ -45,5 +49,14 @@ public final class DoubleFunctions {
       }
     }
     return invBoxCoxed;
+  }
+  
+  public static final double[] demean(final double[] data) {
+    final double mean = Statistics.meanOf(data);
+    final double[] demeaned = new double[data.length];
+    for (int t = 0; t < data.length; t++) {
+      demeaned[t] = data[t] - mean;
+    }
+    return demeaned;
   }
 }

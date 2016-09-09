@@ -71,7 +71,7 @@ public final class TimeSeries extends DataSet {
   /**
    * Construct a new TimeSeries using the given arguments.
    * 
-   * @param timeUnit The unit of time in which observations are made.
+   * @param timePeriod The period of time in which observations are made.
    * @param startTime The time at which the first observation was made. The string must represent
    * either a valid {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime,
    * then the default UTC/Greenwich offset, i.e., an offset of 0, will be used.
@@ -147,7 +147,7 @@ public final class TimeSeries extends DataSet {
     this(TimeUnit.MONTH, startTime, series);
   }
 
-  private TimeSeries(final TimePeriod timePeriod, final List<OffsetDateTime> observationTimes, final double... series) {
+  public TimeSeries(final TimePeriod timePeriod, final List<OffsetDateTime> observationTimes, final double... series) {
     super(series);
     this.series = series.clone();
     this.n = series.length;
@@ -295,6 +295,14 @@ public final class TimeSeries extends DataSet {
     final List<OffsetDateTime> times = this.observationTimes.subList(k, n - k);
     double[] secondAverage = firstAverage.movingAverage(2).series;
     return new TimeSeries(this.timePeriod, times, secondAverage);
+  }
+  
+  public final TimeSeries demean() {
+    final double[] demeaned = new double[this.series.length];
+    for (int t = 0; t < demeaned.length; t++) {
+      demeaned[t] = this.series[t] - this.mean;
+    }
+    return new TimeSeries(this.timePeriod, this.observationTimes, demeaned);
   }
 
   /**
