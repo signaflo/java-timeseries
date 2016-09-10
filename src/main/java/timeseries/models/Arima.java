@@ -28,7 +28,7 @@ import org.knowm.xchart.style.Styler.ChartTheme;
 import org.knowm.xchart.style.markers.Circle;
 import org.knowm.xchart.style.markers.None;
 
-import data.Statistics;
+import stats.Statistics;
 
 /**
  * A potentially seasonal Auto-Regressive Integrated Moving Average (ARIMA) model. This class is immutable and
@@ -60,7 +60,7 @@ public final class Arima {
    * Create a new ARIMA model from the given observations, model order, and seasonal cycle.
    * 
    * @param observations the time series of observations.
-   * @param order the order of the model.
+   * @param coeffs the parameter coefficients of the model.
    * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle,
    *        <i>relative to</i> a particular unit of time. For example, typical monthly data has a cycle of one year,
    *        hourly data likely has a cycle of one day, etc... For a non-typical example, one could specify a seasonal

@@ -1,4 +1,4 @@
-package data;
+package stats;
 
 import static data.Operators.productOf;
 
@@ -16,19 +16,20 @@ public final class Statistics {
 		return sum;
 	}
 
-	static final double meanOf(final double[] data) {
+	public static final double meanOf(final double[] data) {
 		final double sum = sumOf(data);
 		return sum/data.length;
 	}
 
-	static final double varianceOf(final double[] data) {
+	public static final double varianceOf(final double[] data) {
 		final int n = data.length;
 		return sumOfSquaredDifferences(data, meanOf(data))/(n - 1);
 	}
 
-	static final double stdDeviationOf(final double[] data) {
+	public static final double stdDeviationOf(final double[] data) {
 		return Math.sqrt(varianceOf(data));
 	}
+	
 	static final double sumOfSquared(final double[] data) {
 		return sumOf(squared(data));
 	}
@@ -53,17 +54,17 @@ public final class Statistics {
 		return differenced;
 	}
 
-	static final double covarianceOf(final double[] data, final double[] data2) {
+	public static final double covarianceOf(final double[] data, final double[] data2) {
 		return sumOf(productOf(differences(data, meanOf(data)),
 				differences(data2, meanOf(data2))))/(data.length-1);
 	}
 	
-	static final double correlationOf(final double[] data, final double[] data2) {
+	public static final double correlationOf(final double[] data, final double[] data2) {
 		return covarianceOf(data, data2)/(stdDeviationOf(data)*stdDeviationOf(data2));
 	}
 	
 	// Arrays.sort uses quicksort algorithm as of Java 8.
-	static final double medianOf(final double[] data) {
+	public static final double medianOf(final double[] data) {
 		double[] sorted = data.clone();
 		Arrays.sort(sorted);
 		if (sorted.length % 2 == 0) {

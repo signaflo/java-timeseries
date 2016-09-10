@@ -1,5 +1,7 @@
 package data;
 
+import stats.Statistics;
+
 final class Range {
 	
 	private final int[] range;

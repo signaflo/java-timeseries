@@ -1,5 +1,7 @@
 package data;
 
+import stats.Statistics;
+
 public final class DoubleFunctions {
 
   private DoubleFunctions() {}

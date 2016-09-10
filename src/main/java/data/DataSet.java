@@ -14,6 +14,8 @@ import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
 import org.knowm.xchart.style.Styler.ChartTheme;
 
+import stats.Statistics;
+
 /**
  * A collection of numerical observations.
  * @author Jacob Rachiele

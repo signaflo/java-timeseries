@@ -1,8 +1,8 @@
-package data;
+package stats;
 
 import org.junit.Test;
 
-import data.Statistics;
+import stats.Statistics;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
