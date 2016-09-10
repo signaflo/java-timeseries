@@ -313,11 +313,14 @@ public final class TimeSeries extends DataSet {
    * @return a new TimeSeries differenced the given number of times at the given lag.
    */
   public final TimeSeries difference(final int lag, final int times) {
-    TimeSeries diffed = difference(lag);
-    for (int i = 1; i < times; i++) {
-      diffed = diffed.difference(lag);
+    if (times > 0 ) {
+      TimeSeries diffed = difference(lag);
+      for (int i = 1; i < times; i++) {
+        diffed = diffed.difference(lag);
+      }
+      return diffed;
     }
-    return diffed;
+    return this;
   }
 
   /**

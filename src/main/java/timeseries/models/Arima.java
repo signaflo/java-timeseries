@@ -21,6 +21,7 @@ import data.Statistics;
 public final class Arima {
 
   private final TimeSeries observations;
+  private final TimeSeries diffedSeries;
   private final TimeSeries fitted;
   private final TimeSeries residuals;
   private final int cycleLength;
@@ -59,11 +60,12 @@ public final class Arima {
     this.coeffs = coeffs;
     this.order = coeffs.extractModelOrder();
     this.cycleLength = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
+    this.diffedSeries = observations.difference(1, order.d).difference(cycleLength, order.D);
     this.arCoeffs = expandArCoefficients();
     this.maCoeffs = expandMaCoefficients();
     this.mean = coeffs.mean;
     this.intercept = mean * (1 - Statistics.sumOf(arCoeffs));
-    this.fitted = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fitCss());
+    this.fitted = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fitCss(diffedSeries));
     this.residuals = this.observations.minus(this.fitted);
   }
 
@@ -71,7 +73,7 @@ public final class Arima {
     // Set initial constant to the mean and all other parameters to zero.
     double[] initParams = new double[order.sumARMA() + order.constant];
     if (order.constant == 1) {
-      initParams[initParams.length - 1] = observations.mean();
+      initParams[initParams.length - 1] = diffedSeries.mean();
     }
     return initParams;
   }
@@ -129,29 +131,50 @@ public final class Arima {
   // final double[] series = new double[n];
   //
   // }
-
-  final double[] fitCss() {
+  
+  final double[] fitCss(final TimeSeries diffedSeries) {
 
     final int p = this.coeffs.arCoeffs.length;
     final int P = this.coeffs.sarCoeffs.length;
 
     final int offset = p + P * this.cycleLength;
 
-    final double[] fitted = new double[this.observations.n()];
-    final double[] residuals = new double[this.observations.n()];
+    final double[] fitted = new double[diffedSeries.n()];
+    final double[] residuals = new double[diffedSeries.n()];
 
     for (int t = offset; t < fitted.length; t++) {
       for (int i = 0; i < this.arCoeffs.length; i++) {
-        fitted[t] += mean + arCoeffs[i] * (this.observations.at(t - i - 1) - mean);
+        fitted[t] += mean + arCoeffs[i] * (diffedSeries.at(t - i - 1) - mean);
       }
-      residuals[t] = this.observations.at(t) - fitted[t];
+      residuals[t] = diffedSeries.at(t) - fitted[t];
       for (int j = 0; j < this.maCoeffs.length; j++) {
         fitted[t] += maCoeffs[j] * residuals[t - j - 1];
       }
     }
-    return fitted;
+    return integrate(fitted);
   }
 
+  /*
+   * Start with the difference equation form of the model (Cryer and Chan 2008, 5.2):
+   * diffedSeries_t = ArmaProcess_t
+   * Then, subtracting diffedSeries_t from both sides, we have
+   * ArmaProcess_t - diffedSeries_t = 0
+   * Now add Y_t to both sides and rearrange terms to obtain
+   * Y_t = Y_t - diffedSeries_t + ArmaProcess_t
+   * Thus, our in-sample estimate of Y_t, the "integrated" series, is 
+   * Y_t(hat) = Y_t - diffedSeries_t + fittedArmaProcess_t
+   */
+  private final double[] integrate(final double[] fitted) {
+    final int offset = this.order.d + this.order.D * this.cycleLength;
+    final double[] integrated = new double[this.observations.n()];
+    for (int t = 0; t < offset; t++) {
+      integrated[t] = observations.at(t);
+    }
+    for (int t = offset; t < observations.n(); t++) {
+      integrated[t] = observations.at(t) - diffedSeries.at(t - offset) + fitted[t - offset];
+    }
+    return integrated;
+  }
   final double intercept() {
     return this.intercept;
   }
