@@ -1,22 +1,22 @@
 package timeseries;
 
+import static data.DoubleFunctions.newArray;
+
 import data.TestData;
-import timeseries.models.Forecast;
-import timeseries.models.MeanForecast;
-import timeseries.models.MeanModel;
-import timeseries.models.Model;
-import timeseries.models.RandomWalk;
+import timeseries.models.Arima;
+import timeseries.models.Arima.ModelCoefficients;
 
 final class Main {
 
   public static void main(String[] args) throws Exception {
-    TimeSeries series = TestData.ausbeerSeries();
-    Model model = new RandomWalk(series);
-    Forecast fcst = model.forecast(12, 0.05);
-    Model meanModel = new MeanModel(series);
-    Forecast meanFcst = new MeanForecast(meanModel, 12, 0.05);
- 
-    
+    TimeSeries series = TestData.ukcars();
+    double[] arCoeffs = newArray( -0.2552);
+    double[] sarCoeffs = newArray(-0.6188);
+    ModelCoefficients.Builder builder = ModelCoefficients.newBuilder();
+    ModelCoefficients modelCoeffs = builder.setArCoeffs(arCoeffs).setSarCoeffs(sarCoeffs)
+        .setDiff(1).setSeasDiff(1).build();
+    Arima model = new Arima(series, modelCoeffs, TimePeriod.oneYear());
+    model.plotFit();
   }
 
 }

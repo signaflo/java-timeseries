@@ -9,6 +9,25 @@ package timeseries.models;
 import timeseries.TimeSeries;
 import timeseries.TimePeriod;
 
+import java.awt.Color;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import org.knowm.xchart.XChartPanel;
+import org.knowm.xchart.XYChart;
+import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.XYSeries;
+import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
+import org.knowm.xchart.style.XYStyler;
+import org.knowm.xchart.style.Styler.ChartTheme;
+import org.knowm.xchart.style.markers.Circle;
+import org.knowm.xchart.style.markers.None;
+
 import data.Statistics;
 
 /**
@@ -55,7 +74,7 @@ public final class Arima {
   // System.out.println(initialParameters);
   // }
 
-  Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimePeriod seasonalCycle) {
+  public Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimePeriod seasonalCycle) {
     this.observations = observations;
     this.coeffs = coeffs;
     this.order = coeffs.extractModelOrder();
@@ -178,6 +197,61 @@ public final class Arima {
   final double intercept() {
     return this.intercept;
   }
+  
+  public final void plotFit() {
+
+    new Thread(() -> {
+      final List<Date> xAxis = new ArrayList<>(fitted.observationTimes().size());
+      for (OffsetDateTime dateTime : fitted.observationTimes()) {
+        xAxis.add(Date.from(dateTime.toInstant()));
+      }
+      List<Double> seriesList = com.google.common.primitives.Doubles.asList(observations.series());
+      List<Double> fittedList = com.google.common.primitives.Doubles.asList(fitted.series());
+      final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
+          .title("ARIMA Fitted vs Actual").build();
+      XYSeries fitSeries = chart.addSeries("Fitted Values", xAxis, fittedList);
+      XYSeries observedSeries = chart.addSeries("Actual Values", xAxis, seriesList);
+      XYStyler styler = chart.getStyler();
+      styler.setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line);
+      observedSeries.setLineWidth(0.75f);
+      observedSeries.setMarker(new None()).setLineColor(Color.RED);
+      fitSeries.setLineWidth(0.75f);
+      fitSeries.setMarker(new None()).setLineColor(Color.BLUE);
+
+      JPanel panel = new XChartPanel<>(chart);
+      JFrame frame = new JFrame("ARIMA Fit");
+      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      frame.add(panel);
+      frame.pack();
+      frame.setVisible(true);
+    }).start();
+
+  }
+  
+  public final void plotResiduals() {
+
+    new Thread(() -> {
+      final List<Date> xAxis = new ArrayList<>(fitted.observationTimes().size());
+      for (OffsetDateTime dateTime : fitted.observationTimes()) {
+        xAxis.add(Date.from(dateTime.toInstant()));
+      }
+      List<Double> seriesList = com.google.common.primitives.Doubles.asList(residuals.series());
+      final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
+          .title("ARIMA Residuals").build();
+      XYSeries residualSeries = chart.addSeries("Residuals", xAxis, seriesList);
+      residualSeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
+      residualSeries.setMarker(new Circle()).setMarkerColor(Color.RED);
+
+      JPanel panel = new XChartPanel<>(chart);
+      JFrame frame = new JFrame("ARIMA Residuals");
+      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      frame.add(panel);
+      frame.pack();
+      frame.setVisible(true);
+    }).start();
+
+  }
+  
   /**
    * The order of an ARIMA model, consisting of the number of autoregressive and moving average parameters, along with
    * the degree of differencing and whether or not a constant is in the model. This class is immutable and thread-safe.
@@ -298,42 +372,42 @@ public final class Arima {
       private Builder() {
       }
 
-      Builder setArCoeffs(double[] arCoeffs) {
+      public Builder setArCoeffs(double[] arCoeffs) {
         this.arCoeffs = arCoeffs;
         return this;
       }
 
-      Builder setSarCoeffs(double[] sarCoeffs) {
+      public Builder setSarCoeffs(double[] sarCoeffs) {
         this.sarCoeffs = sarCoeffs;
         return this;
       }
 
-      Builder setMaCoeffs(double[] maCoeffs) {
+      public Builder setMaCoeffs(double[] maCoeffs) {
         this.maCoeffs = maCoeffs;
         return this;
       }
 
-      Builder setSmaCoeffs(double[] smaCoeffs) {
+     public  Builder setSmaCoeffs(double[] smaCoeffs) {
         this.smaCoeffs = smaCoeffs;
         return this;
       }
 
-      Builder setDiff(int d) {
+      public Builder setDiff(int d) {
         this.d = d;
         return this;
       }
 
-      Builder setSeasDiff(int D) {
+      public Builder setSeasDiff(int D) {
         this.D = D;
         return this;
       }
 
-      Builder setMean(double mean) {
+      public Builder setMean(double mean) {
         this.mean = mean;
         return this;
       }
 
-      ModelCoefficients build() {
+      public ModelCoefficients build() {
         return new ModelCoefficients(this);
       }
     }
