@@ -30,7 +30,7 @@ public final class Statistics {
 		return Math.sqrt(varianceOf(data));
 	}
 	
-	static final double sumOfSquared(final double[] data) {
+	public static final double sumOfSquared(final double[] data) {
 		return sumOf(squared(data));
 	}
 	

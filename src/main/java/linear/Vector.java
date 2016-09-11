@@ -31,17 +31,60 @@ public final class Vector<T extends FieldElement<T>> {
     for (int i = 0; i < this.size(); i++) {
       summed.add(this.elements.get(i).plus(other.elements.get(i)));
     }
-    return new Vector<T>(Collections.unmodifiableList(summed));
+    return new Vector<T>(summed);
+  }
+  
+  public final Vector<T> minus(final Vector<T> other) {
+    final List<T> differenced = new ArrayList<T>(this.size());
+    for (int i = 0; i < this.size(); i++) {
+      differenced.add(this.elements.get(i).minus(other.elements.get(i)));
+    }
+    return new Vector<T>(differenced);
   }
   
   public final Vector<T> scaledBy(final T alpha) {
     final List<T> scaled = new ArrayList<T>(this.size());
-    for (int i = 0; i < scaled.size(); i++) {
+    for (int i = 0; i < this.size(); i++) {
       scaled.add(this.elements.get(i).times(alpha));
     }
-    return new Vector<T>(Collections.unmodifiableList(scaled));
+    return new Vector<T>(scaled);
   }
 
+  public final Vector<T> axpy(final Vector<T> other, final T alpha) {
+    final List<T> result = new ArrayList<T>(this.size());
+    for (int i = 0; i < this.size(); i++) {
+      result.add(this.elements.get(i).times(alpha).plus(other.elements.get(i)));
+    }
+    return new Vector<T>(result);
+  }
+  
+  public final T dotProduct(final Vector<T> other) {
+    if (this.size() > 0) {
+      T product = this.elements.get(0).times(other.elements.get(0).conjugate());
+      for (int t = 1; t < this.elements.size(); t++) {
+        product = product.plus(this.elements.get(t).times(other.elements.get(t).conjugate()));
+      }
+      return product;
+    }
+    throw new IllegalStateException("The dot product is undefined for zero length vectors.");
+  }
+  
+  public final double norm() {
+    return Math.sqrt(sumOfSquares());
+  }
+  
+  private final double sumOfSquares() {
+    if (this.size() > 0) {
+      double sum = Math.pow(this.elements.get(0).abs(), 2);
+      for (int i = 1; i < this.elements.size(); i++) {
+        sum += Math.pow(this.elements.get(i).abs(), 2);
+      }
+      return sum;
+    }
+    throw new IllegalStateException("sum of squares undefined for zero length vectors.");
+  }
+  
+  
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();

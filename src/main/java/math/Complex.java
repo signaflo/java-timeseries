@@ -5,6 +5,10 @@ public final class Complex implements FieldElement<Complex> {
   private final double real;
   private final double im;
   
+  public Complex() {
+    this(0.0, 0.0);
+  }
+  
   public Complex(final double real, final double im) {
     this.real = real;
     this.im = im;
@@ -14,6 +18,14 @@ public final class Complex implements FieldElement<Complex> {
   public final Complex plus(final Complex other) {
     return new Complex(this.real + other.real, this.im + other.im);
   }
+  
+  public final Complex plus(final double other) {
+    return new Complex(this.real + other, this.im);
+  }
+  
+  public final Complex minus(final Complex other) {
+    return new Complex(this.real - other.real, this.im - other.im);
+  }
 
   @Override
   public final Complex times(final Complex other) {
@@ -22,8 +34,28 @@ public final class Complex implements FieldElement<Complex> {
     return new Complex(realPart, imPart);
   }
   
+  public final Complex times(final double other) {
+    return new Complex(this.real * other, this.im * other);
+  }
+  
+  public final Complex dividedBy(final double other) {
+    return new Complex(this.real/other, this.im/other);
+  }
+  
+  public final Complex conjugate() {
+    return new Complex(this.real, -this.im);
+  }
+  
+  @Override
   public final double abs() {
     return Math.sqrt(real * real + im * im);
+  }
+  
+  @Override
+  public final Complex sqrt() {
+    final double r = abs();
+    final Complex zr = this.plus(r);
+    return zr.dividedBy(zr.abs()).times(Math.sqrt(r));
   }
   
   public final double real() {
@@ -33,6 +65,8 @@ public final class Complex implements FieldElement<Complex> {
   public final double im() {
     return this.im;
   }
+  
+  
 
   @Override
   public int hashCode() {
@@ -55,9 +89,9 @@ public final class Complex implements FieldElement<Complex> {
     if (getClass() != obj.getClass())
       return false;
     Complex other = (Complex) obj;
-    if (Double.doubleToLongBits(im) != Double.doubleToLongBits(other.im))
+    if (Math.abs(im - other.im) > Math.ulp(1.0))
       return false;
-    if (Double.doubleToLongBits(real) != Double.doubleToLongBits(other.real))
+    if (Math.abs(real - other.real) > Math.ulp(1.0))
       return false;
     return true;
   }

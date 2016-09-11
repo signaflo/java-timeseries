@@ -30,13 +30,43 @@ public final class Vector {
     return new Vector(summed);
   }
   
+  public final Vector minus(final Vector other) {
+    final double[] differenced = new double[this.size()];
+    for (int i = 0; i < differenced.length; i++) {
+      differenced[i] = this.elements[i] - other.elements[i];
+    }
+    return new Vector(differenced);
+  }
+  
   public final Vector scaledBy(final double alpha) {
     final double[] scaled = new double[this.size()];
     for (int i = 0; i < scaled.length; i++) {
       scaled[i] = alpha * this.elements[i];
     }
     return new Vector(scaled);
-    
+  }
+  
+  public final double dotProduct(final Vector other) {
+    if (other.elements.length > 0) {
+      double product = this.elements[0] * other.elements[0];
+      for (int i = 0; i < elements.length; i++) {
+        product += this.elements[i] * other.elements[i];
+      }
+      return product;
+    }
+    throw new IllegalArgumentException("The dot product is undefined for zero length vectors");
+  }
+  
+  public final Vector axpy(final Vector other, final double alpha) {
+    final double[] result = new double[this.size()];
+    for (int i = 0; i < result.length; i++) {
+      result[i] = alpha * this.elements[i] + other.elements[i];
+    }
+    return new Vector(result);
+  }
+  
+  public final double norm() {
+    return Math.sqrt(dotProduct(this));
   }
 
   @Override
