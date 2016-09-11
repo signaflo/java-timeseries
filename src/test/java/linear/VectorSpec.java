@@ -71,6 +71,16 @@ public class VectorSpec {
     assertThat(vec1.dotProduct(vec2), is(equalTo(new Complex(51.2, 22.0))));
   }
   
+  @Test
+  public void whenAxpyComputedResultCorrect() {
+    Vector<Complex> vec1 = testVecTwoElem();
+    Vector<Complex> vec2 = testVecTwoElem2();
+    Complex alpha = new Complex(7.0, 3.5);
+    Vector<Complex> axpy = vec1.axpy(vec2, alpha);
+    assertThat(axpy.at(0), is(equalTo(new Complex(5.9, 49.5))));
+    assertThat(axpy.at(1), is(equalTo(new Complex(7.75, 42.25))));
+  }
+  
   private final Vector<Complex> testVecFourElem() {
     Complex c1 = new Complex(3, 5);
     Complex c2 = new Complex(2.5, 4.5);
