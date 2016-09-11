@@ -33,4 +33,39 @@ public final class Complex implements FieldElement<Complex> {
   public final double im() {
     return this.im;
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    long temp;
+    temp = Double.doubleToLongBits(im);
+    result = prime * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(real);
+    result = prime * result + (int) (temp ^ (temp >>> 32));
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Complex other = (Complex) obj;
+    if (Double.doubleToLongBits(im) != Double.doubleToLongBits(other.im))
+      return false;
+    if (Double.doubleToLongBits(real) != Double.doubleToLongBits(other.real))
+      return false;
+    return true;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("(real: ").append(real).append(" im: ").append(im + ")");
+    return builder.toString();
+  }
 }
