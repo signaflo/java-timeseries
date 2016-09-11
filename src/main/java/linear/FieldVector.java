@@ -6,59 +6,101 @@ import java.util.List;
 
 import math.FieldElement;
 
-public final class Vector<T extends FieldElement<T>> {
+/**
+ * An immutable and thread-safe implementation of a vector backed by a list of {@link FieldElement}s.
+ * @author Jacob Rachiele
+ *
+ */
+public final class FieldVector<T extends FieldElement<T>> {
   
   public final List<T> elements;
   
-  public Vector(List<T> elements) {
+  /**
+   * Create a new vector using the provided elements.
+   * @param elements a list of elements constituting the elements of the new vector.
+   */
+  public FieldVector(List<T> elements) {
     this.elements = Collections.unmodifiableList(elements);
   }
   
+  /**
+   * The elements of the vector as a list of field elements.
+   * @return the elements of the vector as a list of field element.
+   */
   public final List<T> elements() {
     return this.elements;
   }
   
+  /**
+   * Return the element at index i, where indexing begins at 0.
+   * @param i the index of the element.
+   * @return the element at index i, where indexing begins at 0.
+   */
   public final T at(final int i) {
     return this.elements.get(i);
   }
   
+  /**
+   * The number of elements in this vector.
+   * @return the number of elements in this vector.
+   */
   public final int size() {
     return this.elements.size();
   }
   
-  public final Vector<T> plus(final Vector<T> other) {
+  /**
+   * Add this vector to the given vector and return the result in a new vector.
+   * @param other the vector to add to this vector.
+   * @return this vector added to the given vector.
+   */
+  public final FieldVector<T> plus(final FieldVector<T> other) {
     final List<T> summed = new ArrayList<T>(this.size());
     for (int i = 0; i < this.size(); i++) {
       summed.add(this.elements.get(i).plus(other.elements.get(i)));
     }
-    return new Vector<T>(summed);
+    return new FieldVector<T>(summed);
   }
   
-  public final Vector<T> minus(final Vector<T> other) {
+  /**
+   * Subtract the given vector from this vector and return the result in a new vector.
+   * @param other the vector to subtract from this vector.
+   * @return this vector subtracted by the given vector.
+   */
+  public final FieldVector<T> minus(final FieldVector<T> other) {
     final List<T> differenced = new ArrayList<T>(this.size());
     for (int i = 0; i < this.size(); i++) {
       differenced.add(this.elements.get(i).minus(other.elements.get(i)));
     }
-    return new Vector<T>(differenced);
+    return new FieldVector<T>(differenced);
   }
   
-  public final Vector<T> scaledBy(final T alpha) {
+  /**
+   * Scale this vector by the given scalar and return the result in a new vector.
+   * @param alpha the scalar to scale this vector by.
+   * @return this vector scaled by the given scalar.
+   */
+  public final FieldVector<T> scaledBy(final T alpha) {
     final List<T> scaled = new ArrayList<T>(this.size());
     for (int i = 0; i < this.size(); i++) {
       scaled.add(this.elements.get(i).times(alpha));
     }
-    return new Vector<T>(scaled);
+    return new FieldVector<T>(scaled);
   }
 
-  public final Vector<T> axpy(final Vector<T> other, final T alpha) {
+  final FieldVector<T> axpy(final FieldVector<T> other, final T alpha) {
     final List<T> result = new ArrayList<T>(this.size());
     for (int i = 0; i < this.size(); i++) {
       result.add(this.elements.get(i).times(alpha).plus(other.elements.get(i)));
     }
-    return new Vector<T>(result);
+    return new FieldVector<T>(result);
   }
   
-  public final T dotProduct(final Vector<T> other) {
+  /**
+   * Compute the dot product of this vector with the given vector.
+   * @param other the vector to take the dot product with.
+   * @return the dot product of this vector with the given vector.
+   */
+  public final T dotProduct(final FieldVector<T> other) {
     if (this.size() > 0) {
       T product = this.elements.get(0).times(other.elements.get(0).conjugate());
       for (int t = 1; t < this.elements.size(); t++) {
@@ -69,6 +111,10 @@ public final class Vector<T extends FieldElement<T>> {
     throw new IllegalStateException("The dot product is undefined for zero length vectors.");
   }
   
+  /**
+   * Compute the L2 length of this vector.
+   * @return the L2 length of this vector.
+   */
   public final double norm() {
     return Math.sqrt(sumOfSquares());
   }
@@ -108,7 +154,7 @@ public final class Vector<T extends FieldElement<T>> {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    Vector<?> other = (Vector<?>) obj;
+    FieldVector<?> other = (FieldVector<?>) obj;
     if (elements == null) {
       if (other.elements != null)
         return false;
