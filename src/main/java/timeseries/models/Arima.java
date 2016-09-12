@@ -43,7 +43,7 @@ public final class Arima {
   private final TimeSeries diffedSeries;
   private final TimeSeries fitted;
   private final TimeSeries residuals;
-  private final int cycleLength;
+  private final int seasonFrequency;
   
   // The number of parameters, degree of differencing, and constant flag.
   private final ModelOrder order;
@@ -78,8 +78,8 @@ public final class Arima {
     this.observations = observations;
     this.coeffs = coeffs;
     this.order = coeffs.extractModelOrder();
-    this.cycleLength = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
-    this.diffedSeries = observations.difference(1, order.d).difference(cycleLength, order.D);
+    this.seasonFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
+    this.diffedSeries = observations.difference(1, order.d).difference(seasonFrequency, order.D);
     this.arCoeffs = expandArCoefficients();
     this.maCoeffs = expandMaCoefficients();
     this.mean = coeffs.mean;
@@ -103,7 +103,7 @@ public final class Arima {
   final double[] expandArCoefficients() {
     double[] arCoeffs = coeffs.arCoeffs;
     double[] sarCoeffs = coeffs.sarCoeffs;
-    double[] arSarCoeffs = new double[arCoeffs.length + sarCoeffs.length * cycleLength];
+    double[] arSarCoeffs = new double[arCoeffs.length + sarCoeffs.length * seasonFrequency];
 
     for (int i = 0; i < arCoeffs.length; i++) {
       arSarCoeffs[i] = arCoeffs[i];
@@ -112,9 +112,9 @@ public final class Arima {
     // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
     // which arises because the model's ar and sar polynomials are multiplied together.
     for (int i = 0; i < sarCoeffs.length; i++) {
-      arSarCoeffs[(i + 1) * cycleLength - 1] = sarCoeffs[i];
+      arSarCoeffs[(i + 1) * seasonFrequency - 1] = sarCoeffs[i];
       for (int j = 0; j < arCoeffs.length; j++) {
-        arSarCoeffs[(i + 1) * cycleLength + j] = -sarCoeffs[i] * arCoeffs[j];
+        arSarCoeffs[(i + 1) * seasonFrequency + j] = -sarCoeffs[i] * arCoeffs[j];
       }
     }
 
@@ -127,7 +127,7 @@ public final class Arima {
   final double[] expandMaCoefficients() {
     double[] maCoeffs = coeffs.maCoeffs;
     double[] smaCoeffs = coeffs.smaCoeffs;
-    double[] maSmaCoeffs = new double[maCoeffs.length + smaCoeffs.length * cycleLength];
+    double[] maSmaCoeffs = new double[maCoeffs.length + smaCoeffs.length * seasonFrequency];
 
     for (int i = 0; i < maCoeffs.length; i++) {
       maSmaCoeffs[i] = maCoeffs[i];
@@ -137,9 +137,9 @@ public final class Arima {
     // which arises because the model's ma and sma polynomials are multiplied together.
     // In contrast to the ar polynomial, the ma and sma interaction maintains a positive sign.
     for (int i = 0; i < smaCoeffs.length; i++) {
-      maSmaCoeffs[(i + 1) * cycleLength - 1] = smaCoeffs[i];
+      maSmaCoeffs[(i + 1) * seasonFrequency - 1] = smaCoeffs[i];
       for (int j = 0; j < maCoeffs.length; j++) {
-        maSmaCoeffs[(i + 1) * cycleLength + j] = smaCoeffs[i] * maCoeffs[j];
+        maSmaCoeffs[(i + 1) * seasonFrequency + j] = smaCoeffs[i] * maCoeffs[j];
       }
     }
 
@@ -156,7 +156,7 @@ public final class Arima {
     final int p = this.coeffs.arCoeffs.length;
     final int P = this.coeffs.sarCoeffs.length;
 
-    final int offset = p + P * this.cycleLength;
+    final int offset = p + P * this.seasonFrequency;
 
     final double[] fitted = new double[diffedSeries.n()];
     final double[] residuals = new double[diffedSeries.n()];
@@ -184,7 +184,7 @@ public final class Arima {
    * Y_t(hat) = Y_t - diffedSeries_t + fittedArmaProcess_t
    */
   private final double[] integrate(final double[] fitted) {
-    final int offset = this.order.d + this.order.D * this.cycleLength;
+    final int offset = this.order.d + this.order.D * this.seasonFrequency;
     final double[] integrated = new double[this.observations.n()];
     for (int t = 0; t < offset; t++) {
       integrated[t] = observations.at(t);
