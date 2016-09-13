@@ -5,19 +5,19 @@ public final class StateSpaceARMA {
   private final double[] differencedSeries;
   private final double[] arParams;
   private final double[] maParams;
-  private final double[][] T;
-  private final double[] R;
-  private final double[] Z;
-  private final int r;
+  private final double[][] transitionMatrix;
+  private final double[] disturbanceVector;
+  private final double[] observationVector;
+  private final int r; // r = max(p, q + 1).
   
   public StateSpaceARMA(final double[] differencedSeries, final double[] arParams, final double[] maParams) {
     this.differencedSeries = differencedSeries.clone();
     this.arParams = arParams.clone();
     this.maParams = maParams.clone();
     r = Math.max(arParams.length, maParams.length + 1);
-    this.T = createTransitionMatrix();
-    this.R = createMovingAverageVector();
-    this.Z = createStateEffectsVector();
+    this.transitionMatrix = createTransitionMatrix();
+    this.disturbanceVector = createMovingAverageVector();
+    this.observationVector = createStateEffectsVector();
   }
   
   private final double[] createStateEffectsVector() {
@@ -62,38 +62,38 @@ public final class StateSpaceARMA {
     return r;
   }
   
-  public final double[] g() {
-    double[] g = new double[r];
+  private final double[] R() {
+    double[] R = new double[r];
     for (int i = 0; i < arParams.length; i++) {
-      g[i] = arParams[i];
+      R[i] = arParams[i];
     }
     for (int j = 0; j < maParams.length; j++) {
-      g[j] += maParams[j];
+      R[j] += maParams[j];
     }
-    return g;
+    return R;
   }
   
   public final double[][] V() {
-    double[] g = g();
-    double[][] H = new double[r][r];
+    double[] R = R();
+    double[][] V = new double[r][r];
     for (int i = 0; i < r; i++) {
       for (int j = 0; j < r; j++) {
-        H[i][j] = g[i] * g[j];
+        V[i][j] = R[i] * R[j];
       }
     }
-    return H;
+    return V;
   }
   
   public final double[][] transitionMatrix() {
-    return this.T.clone();
+    return this.transitionMatrix.clone();
   }
   
   public final double[] movingAverageVector() {
-    return this.R.clone();
+    return this.disturbanceVector.clone();
   }
   
   public final double[] stateEffectsVector() {
-    return this.Z.clone();
+    return this.observationVector.clone();
   }
 
   public final int r() {

@@ -1,88 +1,129 @@
 package timeseries.models;
 
+import static org.ejml.ops.CommonOps.add;
+import static org.ejml.ops.CommonOps.divide;
+import static org.ejml.ops.CommonOps.extractColumn;
+import static org.ejml.ops.CommonOps.fill;
+import static org.ejml.ops.CommonOps.identity;
+import static org.ejml.ops.CommonOps.invert;
+import static org.ejml.ops.CommonOps.kron;
+import static org.ejml.ops.CommonOps.mult;
+import static org.ejml.ops.CommonOps.multOuter;
+import static org.ejml.ops.CommonOps.scale;
+import static org.ejml.ops.CommonOps.subtract;
+import static org.ejml.ops.CommonOps.transpose;
+
 import org.ejml.data.DenseMatrix64F;
-import static org.ejml.ops.CommonOps.*;
+import org.ejml.data.RowD1Matrix64F;
+import org.ejml.equation.Equation;
 
 import timeseries.models.arima.StateSpaceARMA;
 
 public final class KalmanFilter {
   
   private final double[] y;
-  private final int r;
-  private final DenseMatrix64F Z;
-  private final DenseMatrix64F T;
-  private final DenseMatrix64F V;
-  private final DenseMatrix64F predictedState;
-  private final DenseMatrix64F filteredState;
-  private final DenseMatrix64F predictedCovariance;
-  private final DenseMatrix64F filteredCovariance;
-  private final double[] f;
-  private final double[] v;
-  private final DenseMatrix64F M; // Note that M is the first column of predictedCovariance;
+  private final int r; // r = max(p, q + 1);
+  private final DenseMatrix64F transitionFunction;
+  private final RowD1Matrix64F stateDisturbance;
+  private final RowD1Matrix64F predictedState;
+  private final RowD1Matrix64F filteredState;
+  private final DenseMatrix64F stateCovariancePrediction;
+  private final RowD1Matrix64F filteredStateCovariance;
+  private final double[] predictionErrorVariance;
+  private final double[] predictionError;
+  //M is the first column of the predictedCovariance matrix.
+  private final DenseMatrix64F predictedCovarianceFirstColumn; 
+  // We don't include Z. It is a row vector with a 1 in the first position and zeros
+  // elsewhere. Any of its transformations are done manually as documented below.
   
   KalmanFilter(final StateSpaceARMA ss) {
     this.y = ss.differencedSeries();
     this.r = ss.r();
-    this.Z = new DenseMatrix64F(1, r, true, ss.stateEffectsVector());
+    this.transitionFunction = new DenseMatrix64F(ss.transitionMatrix());
+    final RowD1Matrix64F R = new DenseMatrix64F(r, 1, true, ss.movingAverageVector());
+    this.stateDisturbance = new DenseMatrix64F(r, r);
+    multOuter(R, stateDisturbance);
     this.predictedState = new DenseMatrix64F(r, 1, true, new double[r]);
     this.filteredState = new DenseMatrix64F(r, 1, true, new double[r]);
-    this.predictedCovariance = identity(r);
-    this.filteredCovariance = identity(r);
-    this.T = new DenseMatrix64F(ss.transitionMatrix());
-    DenseMatrix64F R = new DenseMatrix64F(r, 1, true, ss.movingAverageVector());
-    this.V = new DenseMatrix64F(r, r);
-    multOuter(R, V);
-    this.f = new double[y.length];
-    this.v = new double[y.length];
+    this.stateCovariancePrediction = initializePredictedCovariance();
+    this.filteredStateCovariance = new DenseMatrix64F(r, r);
+    this.predictionErrorVariance = new double[y.length];
+    this.predictionError = new double[y.length];
     double[] mArray = new double[r];
     mArray[0] = 1.0;
-    this.M = new DenseMatrix64F(r, 1, true, mArray); 
+    this.predictedCovarianceFirstColumn = new DenseMatrix64F(r, 1, true, mArray);
+    filter();
   }
   
-  public final void filter() {
-    v[0] = y[0];
-    f[0] = 1.0; // f[t] is always the first element of column vector M;
+  private final DenseMatrix64F initializePredictedCovariance() {
+    final DenseMatrix64F P = new DenseMatrix64F(r * r, 1);
+    final RowD1Matrix64F id = identity(r * r);
+    final DenseMatrix64F kronT = new DenseMatrix64F(r * r, r * r);
+    kron(transitionFunction, transitionFunction, kronT);
+    final DenseMatrix64F idKronT = new DenseMatrix64F(r * r, r * r);
+    subtract(id, kronT, idKronT);
+    final DenseMatrix64F RQR = this.stateDisturbance.copy();
+    RQR.reshape(r * r, 1);
+    final boolean solved = invert(idKronT);
+    if (solved) {
+      mult(idKronT, RQR, P);
+    }
+    else {
+      fill(P, 1.0);
+    }
+    P.reshape(r, r);
+    return P;
+  }
+
+  private final void filter() {
+    
+    predictionError[0] = y[0];
+    // f[t] is always the first element of column vector M because f[t] = Z*M, where
+    // Z is a row vector with a 1 in the first (index 0) position and zeros elsewhere.
+    predictionErrorVariance[0] = predictedCovarianceFirstColumn.get(0);
     
     // Initialize filteredState.
-    DenseMatrix64F Mvf = this.M.copy();
-    scale(v[0], Mvf);
-    divide(Mvf, f[0]);
-    add(predictedState, Mvf, filteredState);
+    RowD1Matrix64F newInfo = this.predictedCovarianceFirstColumn.copy();
+    scale(predictionError[0], newInfo);
+    divide(newInfo, predictionErrorVariance[0]);
+    add(predictedState, newInfo, filteredState);
     
     // Initialize filteredCovariance.
-    final DenseMatrix64F MMf = new DenseMatrix64F(r, r);
-    multOuter(M, MMf);
-    divide(MMf, f[0]);
-    subtract(predictedCovariance, MMf, filteredCovariance);
+    final RowD1Matrix64F adjustedPredictionCovariance = new DenseMatrix64F(r, r);
+    multOuter(predictedCovarianceFirstColumn, adjustedPredictionCovariance);
+    divide(adjustedPredictionCovariance, predictionErrorVariance[0]);
+    subtract(stateCovariancePrediction, adjustedPredictionCovariance, filteredStateCovariance);
     
-    DenseMatrix64F TP = new DenseMatrix64F(r, r);
-    DenseMatrix64F TPT = new DenseMatrix64F(r, r);
-    DenseMatrix64F Ttranspose = T.copy();
+    final RowD1Matrix64F filteredCovarianceTransition = new DenseMatrix64F(r, r);
+    final RowD1Matrix64F stateCovarianceTransition = new DenseMatrix64F(r, r);
+    final DenseMatrix64F Ttranspose = transitionFunction.copy();
     transpose(Ttranspose);
+    
+    
     for (int t = 1; t < y.length; t++) {
       
-      // Update predicted state.
-      mult(T, filteredState, predictedState);
+      // Update predicted mean of the state vector.
+      mult(transitionFunction, filteredState, predictedState);
       
-      // Update predicted covariance.
-      mult(T, filteredCovariance, TP);
-      mult(TP, Ttranspose, TPT);
-      add(TPT, V, predictedCovariance);
+      // Update predicted covariance of the state vector.
+      mult(transitionFunction, filteredStateCovariance, filteredCovarianceTransition);
+      mult(filteredCovarianceTransition, Ttranspose, stateCovarianceTransition);
+      add(stateCovarianceTransition, stateDisturbance, stateCovariancePrediction);
       
-      v[t] = y[t] - predictedState.get(0);
-      extractColumn(predictedCovariance, 0, M);
-      f[t] = M.get(0);
+      predictionError[t] = y[t] - predictedState.get(0);
+      extractColumn(stateCovariancePrediction, 0, predictedCovarianceFirstColumn);
+      predictionErrorVariance[t] = predictedCovarianceFirstColumn.get(0);
       
       // Update filteredState.
-      Mvf = this.M.copy();
-      scale(v[t], Mvf);
-      divide(Mvf, f[t]);
-      add(predictedState, Mvf, filteredState);
+      newInfo = this.predictedCovarianceFirstColumn.copy();
+      scale(predictionError[t], newInfo);
+      divide(newInfo, predictionErrorVariance[t]);
+      add(predictedState, newInfo, filteredState);
       
       // Update filteredCovariance.
-      multOuter(M, MMf);
-      divide(MMf, f[t]);
-      subtract(predictedCovariance, MMf, filteredCovariance);
+      multOuter(predictedCovarianceFirstColumn, adjustedPredictionCovariance);
+      divide(adjustedPredictionCovariance, predictionErrorVariance[t]);
+      subtract(stateCovariancePrediction, adjustedPredictionCovariance, filteredStateCovariance);
     }
   }
   
