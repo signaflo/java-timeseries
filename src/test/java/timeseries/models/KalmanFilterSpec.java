@@ -9,9 +9,9 @@ public class KalmanFilterSpec {
 
   @Test
   public void testKalmanFilter() throws Exception {
-    double[] ar = new double[] {-0.03873153};
-    double[] ma = new double[] {-0.61187375};
-    double[] y = TestData.debitcards().difference(12).difference().series();
+    double[] ar = new double[] {0.3114114};
+    double[] ma = new double[] {-0.8373430,  0.0,  0.0,  0.3854193, -0.3227282};
+    double[] y = TestData.ukcars().difference().series();
     StateSpaceARMA ss = new StateSpaceARMA(y, ar, ma);
     KalmanFilter filter = new KalmanFilter(ss);
     new KalmanFilter(ss);

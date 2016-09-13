@@ -1,17 +1,6 @@
 package timeseries.models;
 
-import static org.ejml.ops.CommonOps.add;
-import static org.ejml.ops.CommonOps.divide;
-import static org.ejml.ops.CommonOps.extractColumn;
-import static org.ejml.ops.CommonOps.fill;
-import static org.ejml.ops.CommonOps.identity;
-import static org.ejml.ops.CommonOps.invert;
-import static org.ejml.ops.CommonOps.kron;
-import static org.ejml.ops.CommonOps.mult;
-import static org.ejml.ops.CommonOps.multOuter;
-import static org.ejml.ops.CommonOps.scale;
-import static org.ejml.ops.CommonOps.subtract;
-import static org.ejml.ops.CommonOps.transpose;
+import static org.ejml.ops.CommonOps.*;
 
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.data.RowD1Matrix64F;
@@ -27,7 +16,7 @@ public final class KalmanFilter {
   private final RowD1Matrix64F stateDisturbance;
   private final RowD1Matrix64F predictedState;
   private final RowD1Matrix64F filteredState;
-  private final DenseMatrix64F stateCovariancePrediction;
+  private final DenseMatrix64F predictedStateCovariance;
   private final RowD1Matrix64F filteredStateCovariance;
   private final double[] predictionErrorVariance;
   private final double[] predictionError;
@@ -45,13 +34,12 @@ public final class KalmanFilter {
     multOuter(R, stateDisturbance);
     this.predictedState = new DenseMatrix64F(r, 1, true, new double[r]);
     this.filteredState = new DenseMatrix64F(r, 1, true, new double[r]);
-    this.stateCovariancePrediction = initializePredictedCovariance();
+    this.predictedStateCovariance = initializePredictedCovariance();
     this.filteredStateCovariance = new DenseMatrix64F(r, r);
     this.predictionErrorVariance = new double[y.length];
     this.predictionError = new double[y.length];
-    double[] mArray = new double[r];
-    mArray[0] = 1.0;
-    this.predictedCovarianceFirstColumn = new DenseMatrix64F(r, 1, true, mArray);
+    this.predictedCovarianceFirstColumn = new DenseMatrix64F(r, 1);
+    extractColumn(predictedStateCovariance, 0, predictedCovarianceFirstColumn);
     filter();
   }
   
@@ -92,12 +80,12 @@ public final class KalmanFilter {
     final RowD1Matrix64F adjustedPredictionCovariance = new DenseMatrix64F(r, r);
     multOuter(predictedCovarianceFirstColumn, adjustedPredictionCovariance);
     divide(adjustedPredictionCovariance, predictionErrorVariance[0]);
-    subtract(stateCovariancePrediction, adjustedPredictionCovariance, filteredStateCovariance);
+    subtract(predictedStateCovariance, adjustedPredictionCovariance, filteredStateCovariance);
     
     final RowD1Matrix64F filteredCovarianceTransition = new DenseMatrix64F(r, r);
     final RowD1Matrix64F stateCovarianceTransition = new DenseMatrix64F(r, r);
-    final DenseMatrix64F Ttranspose = transitionFunction.copy();
-    transpose(Ttranspose);
+    final DenseMatrix64F transitionTranspose = transitionFunction.copy();
+    transpose(transitionTranspose);
     
     
     for (int t = 1; t < y.length; t++) {
@@ -107,11 +95,11 @@ public final class KalmanFilter {
       
       // Update predicted covariance of the state vector.
       mult(transitionFunction, filteredStateCovariance, filteredCovarianceTransition);
-      mult(filteredCovarianceTransition, Ttranspose, stateCovarianceTransition);
-      add(stateCovarianceTransition, stateDisturbance, stateCovariancePrediction);
+      mult(filteredCovarianceTransition, transitionTranspose, stateCovarianceTransition);
+      add(stateCovarianceTransition, stateDisturbance, predictedStateCovariance);
       
       predictionError[t] = y[t] - predictedState.get(0);
-      extractColumn(stateCovariancePrediction, 0, predictedCovarianceFirstColumn);
+      extractColumn(predictedStateCovariance, 0, predictedCovarianceFirstColumn);
       predictionErrorVariance[t] = predictedCovarianceFirstColumn.get(0);
       
       // Update filteredState.
@@ -123,7 +111,7 @@ public final class KalmanFilter {
       // Update filteredCovariance.
       multOuter(predictedCovarianceFirstColumn, adjustedPredictionCovariance);
       divide(adjustedPredictionCovariance, predictionErrorVariance[t]);
-      subtract(stateCovariancePrediction, adjustedPredictionCovariance, filteredStateCovariance);
+      subtract(predictedStateCovariance, adjustedPredictionCovariance, filteredStateCovariance);
     }
   }
   
