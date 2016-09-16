@@ -43,6 +43,10 @@ public class DataSet {
 	public final double sum() {
 		return Statistics.sumOf(this.data);
 	}
+	
+	public final double sumOfSquares() {
+	  return Statistics.sumOfSquared(this.data);
+	}
 
 	/**
 	 * The mean, or statistical average, of the observations.

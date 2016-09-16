@@ -653,6 +653,14 @@ public final class TimeSeries extends DataSet {
     }
     return new TimeSeries(this.timePeriod, observationTimes, subtracted);
   }
+  
+  public final TimeSeries minus(final double[] otherSeries) {
+    final double[] subtracted = new double[this.series.length];
+    for (int t = 0; t < subtracted.length; t++) {
+      subtracted[t] = this.series[t] - otherSeries[t];
+    }
+    return new TimeSeries(this.timePeriod, observationTimes, subtracted);
+  }
 
   public final TimePeriod timePeriod() {
     return this.timePeriod;

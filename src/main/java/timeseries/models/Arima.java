@@ -6,7 +6,12 @@
 
 package timeseries.models;
 
+import static stats.Statistics.sumOfSquared;
+import static stats.Statistics.sumOf;
+import static data.DoubleFunctions.slice;
+
 import timeseries.TimeSeries;
+import timeseries.models.arima.FittingStrategy;
 import timeseries.TimePeriod;
 
 import java.awt.Color;
@@ -28,7 +33,7 @@ import org.knowm.xchart.style.Styler.ChartTheme;
 import org.knowm.xchart.style.markers.Circle;
 import org.knowm.xchart.style.markers.None;
 
-import stats.Statistics;
+import data.Operators;
 
 /**
  * A potentially seasonal Auto-Regressive Integrated Moving Average (ARIMA) model. This class is immutable and
@@ -43,7 +48,8 @@ public final class Arima {
   private final TimeSeries diffedSeries;
   private final TimeSeries fitted;
   private final TimeSeries residuals;
-  private final int seasonFrequency;
+  private final double sigma2;
+  private final int seasonalFrequency;
   
   // The number of parameters, degree of differencing, and constant flag.
   private final ModelOrder order;
@@ -75,19 +81,53 @@ public final class Arima {
   // }
 
   public Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimePeriod seasonalCycle) {
+    this(observations, coeffs, seasonalCycle, FittingStrategy.USS);
+  }
+  
+  public Arima(final TimeSeries observations, final ModelCoefficients coeffs, 
+      final TimePeriod seasonalCycle, final FittingStrategy fittingStrategy) {
     this.observations = observations;
     this.coeffs = coeffs;
     this.order = coeffs.extractModelOrder();
-    this.seasonFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
-    this.diffedSeries = observations.difference(1, order.d).difference(seasonFrequency, order.D);
+    this.seasonalFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
+    this.diffedSeries = observations.difference(1, order.d).difference(seasonalFrequency, order.D);
     this.arCoeffs = expandArCoefficients();
     this.maCoeffs = expandMaCoefficients();
     this.mean = coeffs.mean;
-    this.intercept = mean * (1 - Statistics.sumOf(arCoeffs));
-    this.fitted = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fitCss(diffedSeries));
-    this.residuals = this.observations.minus(this.fitted);
-  }
+    this.intercept = mean * (1 - sumOf(arCoeffs));
+    
+    if (fittingStrategy == FittingStrategy.CSS) {
+      this.fitted = new TimeSeries(observations.timePeriod(), observations.observationTimes(),
+          fitCss(diffedSeries));
+      this.residuals = this.observations.minus(this.fitted);
+      this.sigma2 = sumOfSquared(residuals.series()) / observations.n();
+    }
+    else {
+      final double[] residuals = fitUss(diffedSeries);
+      this.sigma2 = sumOfSquared(residuals) / diffedSeries.n();
+      final double[] fittedArray = integrate(Operators.differenceOf(diffedSeries.series(), 
+          slice(residuals, 2 * arCoeffs.length, residuals.length)));
+      for (int i = 0; i < arCoeffs.length; i++) {
+        fittedArray[i] -= residuals[i + arCoeffs.length];
+      }
+      this.fitted = new TimeSeries(observations.timePeriod(), observations.observationTimes(),
+          fittedArray);
+      this.residuals = this.observations.minus(this.fitted);
+      System.out.println(this.residuals.sumOfSquares());
+    }
+    
 
+  }
+  
+  public final double sigma2() {
+    return this.sigma2;
+  }
+  
+  public final double logLikelihood() {
+    final int n = this.observations.n();
+    return (-n/2) * (Math.log(2 * Math.PI * this.sigma2) + 1);
+  }
+  
   private final double[] setInitialParameters() {
     // Set initial constant to the mean and all other parameters to zero.
     double[] initParams = new double[order.sumARMA() + order.constant];
@@ -103,7 +143,7 @@ public final class Arima {
   final double[] expandArCoefficients() {
     double[] arCoeffs = coeffs.arCoeffs;
     double[] sarCoeffs = coeffs.sarCoeffs;
-    double[] arSarCoeffs = new double[arCoeffs.length + sarCoeffs.length * seasonFrequency];
+    double[] arSarCoeffs = new double[arCoeffs.length + sarCoeffs.length * seasonalFrequency];
 
     for (int i = 0; i < arCoeffs.length; i++) {
       arSarCoeffs[i] = arCoeffs[i];
@@ -112,9 +152,9 @@ public final class Arima {
     // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
     // which arises because the model's ar and sar polynomials are multiplied together.
     for (int i = 0; i < sarCoeffs.length; i++) {
-      arSarCoeffs[(i + 1) * seasonFrequency - 1] = sarCoeffs[i];
+      arSarCoeffs[(i + 1) * seasonalFrequency - 1] = sarCoeffs[i];
       for (int j = 0; j < arCoeffs.length; j++) {
-        arSarCoeffs[(i + 1) * seasonFrequency + j] = -sarCoeffs[i] * arCoeffs[j];
+        arSarCoeffs[(i + 1) * seasonalFrequency + j] = -sarCoeffs[i] * arCoeffs[j];
       }
     }
 
@@ -127,7 +167,7 @@ public final class Arima {
   final double[] expandMaCoefficients() {
     double[] maCoeffs = coeffs.maCoeffs;
     double[] smaCoeffs = coeffs.smaCoeffs;
-    double[] maSmaCoeffs = new double[maCoeffs.length + smaCoeffs.length * seasonFrequency];
+    double[] maSmaCoeffs = new double[maCoeffs.length + smaCoeffs.length * seasonalFrequency];
 
     for (int i = 0; i < maCoeffs.length; i++) {
       maSmaCoeffs[i] = maCoeffs[i];
@@ -137,9 +177,9 @@ public final class Arima {
     // which arises because the model's ma and sma polynomials are multiplied together.
     // In contrast to the ar polynomial, the ma and sma interaction maintains a positive sign.
     for (int i = 0; i < smaCoeffs.length; i++) {
-      maSmaCoeffs[(i + 1) * seasonFrequency - 1] = smaCoeffs[i];
+      maSmaCoeffs[(i + 1) * seasonalFrequency - 1] = smaCoeffs[i];
       for (int j = 0; j < maCoeffs.length; j++) {
-        maSmaCoeffs[(i + 1) * seasonFrequency + j] = smaCoeffs[i] * maCoeffs[j];
+        maSmaCoeffs[(i + 1) * seasonalFrequency + j] = smaCoeffs[i] * maCoeffs[j];
       }
     }
 
@@ -153,10 +193,7 @@ public final class Arima {
   
   final double[] fitCss(final TimeSeries diffedSeries) {
 
-    final int p = this.coeffs.arCoeffs.length;
-    final int P = this.coeffs.sarCoeffs.length;
-
-    final int offset = p + P * this.seasonFrequency;
+    final int offset = arCoeffs.length;
 
     final double[] fitted = new double[diffedSeries.n()];
     final double[] residuals = new double[diffedSeries.n()];
@@ -172,6 +209,48 @@ public final class Arima {
     }
     return integrate(fitted);
   }
+  
+  final double[] fitUss(final TimeSeries diffedSeries) {
+    int n = diffedSeries.n();
+
+    final int m = arCoeffs.length;
+    
+    final double[] extendedFit = new double[2 * m + n];
+    final double[] extendedSeries = new double[2 * m + n];
+    final double[] residuals = new double[2 * m + n];
+    for (int i = 0; i < diffedSeries.n(); i++) {
+      extendedSeries[i] = diffedSeries.at(--n);
+    }
+    n = diffedSeries.n();
+    for (int t = n; t < n + 2 * m; t++) {
+      extendedSeries[t] = mean;
+      for (int i = 0; i < arCoeffs.length; i++) {
+        if (Math.abs(arCoeffs[i]) > 0) {
+          extendedSeries[t] += arCoeffs[i] * (extendedSeries[t - i - 1] - mean);
+        }
+      }
+    }
+    
+    n = extendedSeries.length;
+    for (int i = 0; i < m; i++) {
+      extendedFit[i] = extendedSeries[n - i - 1];
+    }
+    for (int t = m; t < n; t++) {
+      extendedFit[t] = mean;
+      for (int i = 0; i < arCoeffs.length; i++) {
+        if (Math.abs(arCoeffs[i]) > 0) {
+          extendedFit[t] += arCoeffs[i] * (extendedSeries[n - t + i] - mean);
+        }
+      }
+      for (int j = 0; j < Math.min(t, maCoeffs.length); j++) {
+        if (Math.abs(maCoeffs[j]) > 0) {
+          extendedFit[t] += maCoeffs[j] * residuals[t - j - 1];
+        }
+      }
+      residuals[t] = extendedSeries[n - t - 1] - extendedFit[t];
+    }
+    return residuals;
+  }
 
   /*
    * Start with the difference equation form of the model (Cryer and Chan 2008, 5.2):
@@ -184,7 +263,7 @@ public final class Arima {
    * Y_t(hat) = Y_t - diffedSeries_t + fittedArmaProcess_t
    */
   private final double[] integrate(final double[] fitted) {
-    final int offset = this.order.d + this.order.D * this.seasonFrequency;
+    final int offset = this.order.d + this.order.D * this.seasonalFrequency;
     final double[] integrated = new double[this.observations.n()];
     for (int t = 0; t < offset; t++) {
       integrated[t] = observations.at(t);

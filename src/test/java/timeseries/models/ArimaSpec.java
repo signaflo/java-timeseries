@@ -37,6 +37,9 @@ public class ArimaSpec {
         .setDiff(1).setSeasDiff(1).build();
     Arima model = new Arima(series, modelCoeffs, TimePeriod.oneYear());
     assertThat(model.intercept(), is(closeTo(0.00146, 1E-1)));
+    System.out.println(model.logLikelihood());
+    System.out.println(model.sigma2());
+    
   }
 
 }
