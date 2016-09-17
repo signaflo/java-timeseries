@@ -36,7 +36,7 @@ import org.knowm.xchart.style.markers.None;
 import data.Operators;
 
 /**
- * A potentially seasonal Auto-Regressive Integrated Moving Average (ARIMA) model. This class is immutable and
+ * A potentially seasonal autoregressive integrated moving average (ARIMA) model. This class is immutable and
  * thread-safe.
  * 
  * @author Jacob Rachiele
@@ -63,7 +63,7 @@ public final class Arima {
 
   // Note: no need to copy since TimeSeries and ModelOrder are immutable;
   /**
-   * Create a new ARIMA model from the given observations, model order, and seasonal cycle.
+   * Create a new ARIMA model from the given observations, model coefficients, and seasonal cycle.
    * 
    * @param observations the time series of observations.
    * @param coeffs the parameter coefficients of the model.
@@ -95,16 +95,18 @@ public final class Arima {
     this.maCoeffs = expandMaCoefficients();
     this.mean = coeffs.mean;
     this.intercept = mean * (1 - sumOf(arCoeffs));
-    
+    final FitStatistics fitStats;
     if (fittingStrategy == FittingStrategy.CSS) {
+      fitStats = fitCss();
       this.fitted = new TimeSeries(observations.timePeriod(), observations.observationTimes(),
-          fitCss(diffedSeries));
+          fitStats.fitted);
       this.residuals = this.observations.minus(this.fitted);
       this.sigma2 = sumOfSquared(residuals.series()) / observations.n();
     }
     else {
-      final double[] residuals = fitUss(diffedSeries);
-      this.sigma2 = sumOfSquared(residuals) / diffedSeries.n();
+      fitStats = fitUss();
+      final double[] residuals = fitStats.residuals;
+      this.sigma2 = fitStats.sigma2;
       final double[] fittedArray = integrate(Operators.differenceOf(diffedSeries.series(), 
           slice(residuals, 2 * arCoeffs.length, residuals.length)));
       for (int i = 0; i < arCoeffs.length; i++) {
@@ -115,8 +117,6 @@ public final class Arima {
       this.residuals = this.observations.minus(this.fitted);
       System.out.println(this.residuals.sumOfSquares());
     }
-    
-
   }
   
   public final double sigma2() {
@@ -191,12 +191,12 @@ public final class Arima {
   //
   // }
   
-  final double[] fitCss(final TimeSeries diffedSeries) {
-
+  final FitStatistics fitCss() {
     final int offset = arCoeffs.length;
-
-    final double[] fitted = new double[diffedSeries.n()];
-    final double[] residuals = new double[diffedSeries.n()];
+    final int n = diffedSeries.n();
+    
+    final double[] fitted = new double[n];
+    final double[] residuals = new double[n];
 
     for (int t = offset; t < fitted.length; t++) {
       for (int i = 0; i < this.arCoeffs.length; i++) {
@@ -207,12 +207,14 @@ public final class Arima {
         fitted[t] += maCoeffs[j] * residuals[t - j - 1];
       }
     }
-    return integrate(fitted);
+    
+    final double sigma2 = sumOfSquared(residuals) / diffedSeries.n();
+    final double logLikelihood = (-n/2) * (Math.log(2 * Math.PI * sigma2) + 1);
+    return new FitStatistics(sigma2, logLikelihood, residuals, fitted);
   }
   
-  final double[] fitUss(final TimeSeries diffedSeries) {
+  final FitStatistics fitUss() {
     int n = diffedSeries.n();
-
     final int m = arCoeffs.length;
     
     final double[] extendedFit = new double[2 * m + n];
@@ -221,6 +223,7 @@ public final class Arima {
     for (int i = 0; i < diffedSeries.n(); i++) {
       extendedSeries[i] = diffedSeries.at(--n);
     }
+    
     n = diffedSeries.n();
     for (int t = n; t < n + 2 * m; t++) {
       extendedSeries[t] = mean;
@@ -249,7 +252,11 @@ public final class Arima {
       }
       residuals[t] = extendedSeries[n - t - 1] - extendedFit[t];
     }
-    return residuals;
+    
+    n = diffedSeries.n();
+    final double sigma2 = sumOfSquared(residuals) / n;
+    final double logLikelihood = (-n/2) * (Math.log(2 * Math.PI * sigma2) + 1);
+    return new FitStatistics(sigma2, logLikelihood, residuals, extendedFit);
   }
 
   /*
@@ -490,7 +497,20 @@ public final class Arima {
         return new ModelCoefficients(this);
       }
     }
-
+  }
+  
+  static final class FitStatistics {
+    private final double sigma2;
+    private final double logLikelihood;
+    private final double[] residuals;
+    private final double[] fitted;
+    
+    FitStatistics(final double sigma2, final double logLikelihood, final double[] residuals, final double[] fitted) {
+      this.sigma2 = sigma2;
+      this.logLikelihood = logLikelihood;
+      this.residuals = residuals.clone();
+      this.fitted = fitted.clone();
+    }
   }
 
 }
