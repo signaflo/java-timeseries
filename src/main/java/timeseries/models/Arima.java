@@ -218,7 +218,7 @@ public final class Arima {
    * 
    * @return information about the model fit.
    */
-  public static final ModelInformation fitCss(final TimeSeries differencedSeries, final double[] arCoeffs, 
+  public static final ModelInformation fitCss(final TimeSeries differencedSeries, final double[] arCoeffs,
       final double[] maCoeffs, final double mean) {
     final int offset = arCoeffs.length;
     final int n = differencedSeries.n();
@@ -247,7 +247,7 @@ public final class Arima {
    * 
    * @return information about the model fit.
    */
-  public static final ModelInformation fitUss(final TimeSeries differencedSeries, final double[] arCoeffs, 
+  public static final ModelInformation fitUss(final TimeSeries differencedSeries, final double[] arCoeffs,
       final double[] maCoeffs, final double mean) {
     int n = differencedSeries.n();
     final int m = arCoeffs.length;
@@ -425,7 +425,6 @@ public final class Arima {
     private final double[] smaCoeffs;
     private final int d;
     private final int D;
-    private final int seasonalFrequency;
     private final double mean;
 
     /**
@@ -440,14 +439,13 @@ public final class Arima {
      * @param mean the process mean.
      */
     ModelCoefficients(final double[] arCoeffs, final double[] maCoeffs, final double[] sarCoeffs,
-        final double[] smaCoeffs, final int d, final int D, final double mean, final int seasonalFreq) {
+        final double[] smaCoeffs, final int d, final int D, final double mean) {
       this.arCoeffs = arCoeffs.clone();
       this.maCoeffs = maCoeffs.clone();
       this.sarCoeffs = sarCoeffs.clone();
       this.smaCoeffs = smaCoeffs.clone();
       this.d = d;
       this.D = D;
-      this.seasonalFrequency = seasonalFreq;
       this.mean = mean;
     }
 
@@ -458,7 +456,6 @@ public final class Arima {
       this.smaCoeffs = builder.smaCoeffs.clone();
       this.d = builder.d;
       this.D = builder.D;
-      this.seasonalFrequency = builder.seasonalFreq;
       this.mean = builder.mean;
     }
 
@@ -488,7 +485,6 @@ public final class Arima {
       private double[] smaCoeffs = new double[] {};
       private int d = 0;
       private int D = 0;
-      private int seasonalFreq = 1;
       private double mean = 0.0;
 
       private Builder() {
@@ -521,11 +517,6 @@ public final class Arima {
 
       public Builder setSeasDiff(int D) {
         this.D = D;
-        return this;
-      }
-      
-      public Builder setSeasonalFreq(int freq) {
-        this.seasonalFreq = freq;
         return this;
       }
 
@@ -567,9 +558,9 @@ public final class Arima {
       this.fitted = fitted.clone();
     }
   }
-  
+
   static final class OptimFunction implements MultivariateDoubleFunction {
-    
+
     private final TimeSeries differencedSeries;
     private final ModelOrder order;
     private final FittingStrategy fittingStrategy;
@@ -578,9 +569,9 @@ public final class Arima {
     private final double[] maParams;
     private final double[] sarParams;
     private final double[] smaParams;
-    
-    OptimFunction(final TimeSeries differencedSeries, final ModelOrder order, 
-        final FittingStrategy fittingStrategy, final int seasonalFrequency) {
+
+    OptimFunction(final TimeSeries differencedSeries, final ModelOrder order, final FittingStrategy fittingStrategy,
+        final int seasonalFrequency) {
       this.differencedSeries = differencedSeries;
       this.order = order;
       this.fittingStrategy = fittingStrategy;
@@ -590,7 +581,7 @@ public final class Arima {
       this.sarParams = new double[order.P];
       this.smaParams = new double[order.Q];
     }
-    
+
     @Override
     public final double at(final double... params) {
       for (int i = 0; i < order.p; i++) {
@@ -607,12 +598,13 @@ public final class Arima {
       }
       final double[] arCoeffs = Arima.expandArCoefficients(arParams, sarParams, seasonalFrequency);
       final double[] maCoeffs = Arima.expandMaCoefficients(maParams, smaParams, seasonalFrequency);
-      final double mean = (order.constant == 1)? params[params.length - 1] : 0.0;
-      final ModelInformation info = (fittingStrategy == FittingStrategy.CSS)? Arima.fitCss(differencedSeries, arCoeffs, maCoeffs, mean) :
-        Arima.fitUss(differencedSeries, arCoeffs, maCoeffs, mean);
+      final double mean = (order.constant == 1) ? params[params.length - 1] : 0.0;
+      final ModelInformation info = (fittingStrategy == FittingStrategy.CSS)
+          ? Arima.fitCss(differencedSeries, arCoeffs, maCoeffs, mean)
+          : Arima.fitUss(differencedSeries, arCoeffs, maCoeffs, mean);
       return 0.5 * Math.log(info.sigma2);
     }
-    
+
   }
 
 }

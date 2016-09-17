@@ -22,8 +22,7 @@ public class ArimaSpec {
     double[] arCoeffs = new double[] {0.5, -0.3};
     double[] sarCoeffs = new double[] {0.4, -0.2};
     Arima.ModelCoefficients modelCoeffs = new Arima.ModelCoefficients(arCoeffs, new double[] {}, sarCoeffs,
-        new double[] {}, 0, 0, 0.0, 
-        (int)TestData.internetTraffic().timePeriod().frequencyPer(new TimePeriod(TimeUnit.MILLISECOND, 100)));
+        new double[] {}, 0, 0, 0.0);
     Arima model = new Arima(TestData.internetTraffic(), modelCoeffs, new TimePeriod(TimeUnit.MILLISECOND, 100));
   }
   
@@ -34,7 +33,7 @@ public class ArimaSpec {
     double[] sarCoeffs = newArray(-0.6188);
     ModelCoefficients.Builder builder = ModelCoefficients.newBuilder();
     ModelCoefficients modelCoeffs = builder.setArCoeffs(arCoeffs).setSarCoeffs(sarCoeffs)
-        .setDiff(1).setSeasDiff(1).setSeasonalFreq(4).build();
+        .setDiff(1).setSeasDiff(1).build();
     Arima model = new Arima(series, modelCoeffs, TimePeriod.oneYear());
     assertThat(model.intercept(), is(closeTo(0.00146, 1E-1)));
     System.out.println(model.logLikelihood());
