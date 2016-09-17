@@ -11,6 +11,10 @@ public final class Vector {
 
   private final double[] elements;
   
+  public static final Vector newVector(double... elements) {
+    return new Vector(elements);
+  }
+  
   /**
    * Create a new vector using the provided elements.
    * @param elements the array of primitive doubles constituting the elements of the new vector.
@@ -66,6 +70,19 @@ public final class Vector {
     final double[] differenced = new double[this.size()];
     for (int i = 0; i < differenced.length; i++) {
       differenced[i] = this.elements[i] - other.elements[i];
+    }
+    return new Vector(differenced);
+  }
+  
+  /**
+   * Subtract the given vector from this vector and return the result in a new vector.
+   * @param other the vector to subtract from this vector.
+   * @return this vector subtracted by the given vector.
+   */
+  public final Vector minus(final double value) {
+    final double[] differenced = new double[this.size()];
+    for (int i = 0; i < differenced.length; i++) {
+      differenced[i] = this.elements[i] - value;
     }
     return new Vector(differenced);
   }

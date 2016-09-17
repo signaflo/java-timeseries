@@ -44,13 +44,17 @@ public class DataSet {
 		return Statistics.sumOf(this.data);
 	}
 	
+	/**
+	 * The sum of the squared observations.
+	 * @return the sum of the squared observations.
+	 */
 	public final double sumOfSquares() {
 	  return Statistics.sumOfSquared(this.data);
 	}
 
 	/**
-	 * The mean, or statistical average, of the observations.
-	 * @return the mean, or statistical average, of the observations.
+	 * The mean of the observations.
+	 * @return the mean of the observations.
 	 */
 	public final double mean() {
 		return Statistics.meanOf(this.data);

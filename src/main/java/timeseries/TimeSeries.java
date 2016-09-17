@@ -48,8 +48,8 @@ public final class TimeSeries extends DataSet {
   private final List<OffsetDateTime> observationTimes;
 
   /**
-   * Construct a new TimeSeries from the given data without regard to the times observations are made.
-   * Use this constructor if the dates and/or times associated with the observations do not matter.
+   * Construct a new TimeSeries from the given data without regard to the times observations are made. Use this
+   * constructor if the dates and/or times associated with the observations do not matter.
    * 
    * @param series the time series of observations.
    */
@@ -67,48 +67,47 @@ public final class TimeSeries extends DataSet {
   public TimeSeries(final TimeUnit timeUnit, final OffsetDateTime startTime, final double... series) {
     this(new TimePeriod(timeUnit, 1), startTime, series);
   }
-  
+
   /**
    * Construct a new TimeSeries using the given arguments.
    * 
    * @param timePeriod The period of time in which observations are made.
-   * @param startTime The time at which the first observation was made. The string must represent
-   * either a valid {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime,
-   * then the default UTC/Greenwich offset, i.e., an offset of 0, will be used.
+   * @param startTime The time at which the first observation was made. The string must represent either a valid
+   *        {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default UTC/Greenwich
+   *        offset, i.e., an offset of 0, will be used.
    * @param series The data underlying the time series.
    */
   public TimeSeries(final TimePeriod timePeriod, final String startTime, final double... series) {
     super(series);
     this.series = series.clone();
     this.n = series.length;
-    this.mean  = super.mean();
+    this.mean = super.mean();
     this.timePeriod = timePeriod;
     List<OffsetDateTime> dateTimes = new ArrayList<>(series.length);
-    
+
     try {
       dateTimes.add(OffsetDateTime.parse(startTime));
     } catch (DateTimeParseException e) {
       dateTimes.add(OffsetDateTime.of(LocalDateTime.parse(startTime), ZoneOffset.ofHours(0)));
     }
-    
+
     for (int i = 1; i < series.length; i++) {
-      dateTimes.add(dateTimes.get(i - 1).plus(totalPeriodLength(timePeriod),
-          timePeriod.timeUnit().temporalUnit()));
+      dateTimes.add(dateTimes.get(i - 1).plus(totalPeriodLength(timePeriod), timePeriod.timeUnit().temporalUnit()));
     }
     this.observationTimes = Collections.unmodifiableList(dateTimes);
   }
-  
+
   private final long totalPeriodLength(final TimePeriod timePeriod) {
     return timePeriod.timeUnit().periodLength() * timePeriod.unitLength();
   }
-  
+
   /**
    * Construct a new TimeSeries using the given arguments.
    * 
    * @param timeUnit The unit of time in which observations are made.
-   * @param startTime The time at which the first observation was made. The string must represent
-   * either a valid {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime,
-   * then the default UTC/Greenwich offset, i.e., an offset of 0, will be used.
+   * @param startTime The time at which the first observation was made. The string must represent either a valid
+   *        {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default UTC/Greenwich
+   *        offset, i.e., an offset of 0, will be used.
    * @param series The data underlying the time series.
    */
   public TimeSeries(final TimeUnit timeUnit, final String startTime, final double... series) {
@@ -186,8 +185,9 @@ public final class TimeSeries extends DataSet {
   public final TimeSeries aggregate(final TimePeriod timePeriod) {
     final int period = (int) (this.timePeriod.frequencyPer(timePeriod));
     if (period == 0) {
-      throw new IllegalArgumentException("The given time period was of a smaller magnitude than the original time period."
-          + " To aggregate a series, the time period argument must be of a larger magnitude than the original.");
+      throw new IllegalArgumentException(
+          "The given time period was of a smaller magnitude than the original time period."
+              + " To aggregate a series, the time period argument must be of a larger magnitude than the original.");
     }
     final List<OffsetDateTime> obsTimes = new ArrayList<>();
     double[] aggregated = new double[series.length / period];
@@ -296,7 +296,7 @@ public final class TimeSeries extends DataSet {
     double[] secondAverage = firstAverage.movingAverage(2).series;
     return new TimeSeries(this.timePeriod, times, secondAverage);
   }
-  
+
   public final TimeSeries demean() {
     final double[] demeaned = new double[this.series.length];
     for (int t = 0; t < demeaned.length; t++) {
@@ -313,7 +313,7 @@ public final class TimeSeries extends DataSet {
    * @return a new TimeSeries differenced the given number of times at the given lag.
    */
   public final TimeSeries difference(final int lag, final int times) {
-    if (times > 0 ) {
+    if (times > 0) {
       TimeSeries diffed = difference(lag);
       for (int i = 1; i < times; i++) {
         diffed = diffed.difference(lag);
@@ -454,7 +454,12 @@ public final class TimeSeries extends DataSet {
     }
     return differenced;
   }
-  
+
+  /**
+   * The time at which the first observation was made.
+   * 
+   * @return the time at which the first observation was made.
+   */
   public final OffsetDateTime startTime() {
     return this.observationTimes.get(0);
   }
@@ -653,7 +658,7 @@ public final class TimeSeries extends DataSet {
     }
     return new TimeSeries(this.timePeriod, observationTimes, subtracted);
   }
-  
+
   public final TimeSeries minus(final double[] otherSeries) {
     final double[] subtracted = new double[this.series.length];
     for (int t = 0; t < subtracted.length; t++) {

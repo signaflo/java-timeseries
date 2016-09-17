@@ -12,7 +12,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 /**
- * 
+ * A class for reading data from csv files.
  * @author Jacob Rachiele
  */
 public final class CsvReader {
@@ -22,6 +22,11 @@ public final class CsvReader {
   private final List<List<String>> parsedRecords;
   private final List<String> header;
   
+  /**
+   * Create a new csv reader using the given file path and header flag.
+   * @param csvFilePath the path to the file.
+   * @param headerRow indicates whether the file contains a header row.
+   */
   public CsvReader(final String csvFilePath, final boolean headerRow) {
     this.csvFile = new File(getClass().getClassLoader().getResource(csvFilePath).getFile());
     this.parser = getParser(csvFile);
@@ -75,18 +80,36 @@ public final class CsvReader {
     }
   }
   
+  /**
+   * The csv file.
+   * @return the csv file.
+   */
   public final File csvFile() {
     return this.csvFile;
   }
   
+  /**
+   * The data row-by-row.
+   * @return the data row-by-row.
+   */
   public final List<List<String>> getRows() {
     return this.parsedRecords;
   }
   
+  /**
+   * The ith row of data.
+   * @param i the index of the row.
+   * @return the ith row of data.
+   */
   public final List<String> getRow(final int i) {
     return this.parsedRecords.get(i);
   }
   
+  /**
+   * The ith column of data.
+   * @param i the index of the column.
+   * @return the ith column of data.
+   */
   public final List<String> getColumn(final int i) {
     List<String> column = new ArrayList<>(this.parsedRecords.size());
     for (List<String> record : parsedRecords) {
@@ -95,10 +118,18 @@ public final class CsvReader {
     return column;
   }
   
+  /**
+   * The header row.
+   * @return the header row.
+   */
   public final List<String> getHeader() {
     return this.header;
   }
   
+  /**
+   * The data column-by-column.
+   * @return the data column-by-column.
+   */
   public final List<List<String>> getColumns() {
     int nCols = this.parsedRecords.get(0).size();
     List<List<String>> columns = new ArrayList<>(nCols);

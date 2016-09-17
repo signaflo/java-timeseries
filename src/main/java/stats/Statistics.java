@@ -4,6 +4,7 @@ import static data.Operators.productOf;
 
 import java.util.Arrays;
 
+
 public final class Statistics {
   
   private Statistics(){}
