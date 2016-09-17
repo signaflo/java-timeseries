@@ -45,13 +45,13 @@ import data.Operators;
 public final class Arima {
 
   private final TimeSeries observations;
-  private final TimeSeries diffedSeries;
-  private final TimeSeries fitted;
+  private final TimeSeries differencedSeries;
+  private final TimeSeries fittedSeries;
   private final TimeSeries residuals;
-  private final double sigma2;
+  private final ModelInformation modelInfo;
   private final int seasonalFrequency;
   
-  // The number of parameters, degree of differencing, and constant flag.
+  // ModelOrder stores he number of parameters, degree of differencing, and constant flag.
   private final ModelOrder order;
   private final ModelCoefficients coeffs;
   private final double mean;
@@ -60,8 +60,7 @@ public final class Arima {
   private final double intercept;
   private final double[] arCoeffs;
   private final double[] maCoeffs;
-
-  // Note: no need to copy since TimeSeries and ModelOrder are immutable;
+  
   /**
    * Create a new ARIMA model from the given observations, model coefficients, and seasonal cycle.
    * 
@@ -79,60 +78,91 @@ public final class Arima {
   // double[] initialParameters = setInitialParameters();
   // System.out.println(initialParameters);
   // }
-
+  /**
+   * Create a new ARIMA model from the given observations, model coefficients, and seasonal cycle.
+   * This constructor sets the model's {@link FittingStrategy} to unconditional sum-of-squares.
+   * 
+   * @param observations the time series of observations.
+   * @param coeffs the parameter coefficients of the model.
+   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle,
+   *        For example, monthly or quarterly data typically has a cycle of one year,
+   *        hourly data may have a cycle of one day, etc... For less typical examples, one could specify a seasonal
+   *        cycle of half of a year, five milliseconds, or two decades.
+   */
   public Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimePeriod seasonalCycle) {
     this(observations, coeffs, seasonalCycle, FittingStrategy.USS);
   }
   
+  /**
+   * Create a new ARIMA model from the given observations, model coefficients, seasonal cycle.
+   * and fitting strategy.
+   * 
+   * @param observations the time series of observations.
+   * @param coeffs the parameter coefficients of the model.
+   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle,
+   *        For example, monthly or quarterly data typically has a cycle of one year,
+   *        hourly data may have a cycle of one day, etc... For less typical examples, one could specify a seasonal
+   *        cycle of half of a year, five milliseconds, or two decades.
+   * @param fittingStrategy the strategy to use to fit the model to the data. Results may differ from dataset to
+   *        dataset, but on average, unconditional sum-of-squares outperforms conditional sum-of-squares.
+   */
   public Arima(final TimeSeries observations, final ModelCoefficients coeffs, 
       final TimePeriod seasonalCycle, final FittingStrategy fittingStrategy) {
     this.observations = observations;
     this.coeffs = coeffs;
     this.order = coeffs.extractModelOrder();
     this.seasonalFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
-    this.diffedSeries = observations.difference(1, order.d).difference(seasonalFrequency, order.D);
+    this.differencedSeries = observations.difference(1, order.d).difference(seasonalFrequency, order.D);
     this.arCoeffs = expandArCoefficients();
     this.maCoeffs = expandMaCoefficients();
     this.mean = coeffs.mean;
     this.intercept = mean * (1 - sumOf(arCoeffs));
-    final FitStatistics fitStats;
     if (fittingStrategy == FittingStrategy.CSS) {
-      fitStats = fitCss();
-      this.fitted = new TimeSeries(observations.timePeriod(), observations.observationTimes(),
-          fitStats.fitted);
-      this.residuals = this.observations.minus(this.fitted);
-      this.sigma2 = sumOfSquared(residuals.series()) / observations.n();
+      modelInfo = fitCss();
+      this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(),
+          modelInfo.fitted);
+      this.residuals = this.observations.minus(this.fittedSeries);
     }
     else {
-      fitStats = fitUss();
-      final double[] residuals = fitStats.residuals;
-      this.sigma2 = fitStats.sigma2;
-      final double[] fittedArray = integrate(Operators.differenceOf(diffedSeries.series(), 
+      modelInfo = fitUss();
+      final double[] residuals = modelInfo.residuals;
+      final double[] fittedArray = integrate(Operators.differenceOf(differencedSeries.series(), 
           slice(residuals, 2 * arCoeffs.length, residuals.length)));
       for (int i = 0; i < arCoeffs.length; i++) {
         fittedArray[i] -= residuals[i + arCoeffs.length];
       }
-      this.fitted = new TimeSeries(observations.timePeriod(), observations.observationTimes(),
+      this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(),
           fittedArray);
-      this.residuals = this.observations.minus(this.fitted);
+      this.residuals = this.observations.minus(this.fittedSeries);
       System.out.println(this.residuals.sumOfSquares());
     }
   }
   
+  /**
+   * The maximum-likelihood estimate of the model variance, equal to the sum of squared residuals
+   * divided by the number of observations.
+   * @return the maximum-likelihood estimate of the model variance, equal to the sum of squared residuals
+   * divided by the number of observations.
+   */
   public final double sigma2() {
-    return this.sigma2;
+    return modelInfo.sigma2;
   }
   
+  /**
+   * The natural logarithm of the likelihood of the model parameters given the data. This is a partial
+   * likelihood in case the fitting strategy is conditional sum-of-squares or unconditional sum-of-squares,
+   * and the full likelihood in case the fitting strategy is maximum likelihood.
+   * @return The natural logarithm of the likelihood of the model parameters.
+   */
   public final double logLikelihood() {
-    final int n = this.observations.n();
-    return (-n/2) * (Math.log(2 * Math.PI * this.sigma2) + 1);
+    return modelInfo.logLikelihood;
   }
   
   private final double[] setInitialParameters() {
     // Set initial constant to the mean and all other parameters to zero.
     double[] initParams = new double[order.sumARMA() + order.constant];
     if (order.constant == 1) {
-      initParams[initParams.length - 1] = diffedSeries.mean();
+      initParams[initParams.length - 1] = differencedSeries.mean();
     }
     return initParams;
   }
@@ -185,46 +215,49 @@ public final class Arima {
 
     return maSmaCoeffs;
   }
-
-  // public static final TimeSeries simulate(final ModelCoefficients order, final int n) {
-  // final double[] series = new double[n];
-  //
-  // }
   
-  final FitStatistics fitCss() {
+  /**
+   * Fit the model using conditional sum-of-squares.
+   * @return information about the model fit.
+   */
+  final ModelInformation fitCss() {
     final int offset = arCoeffs.length;
-    final int n = diffedSeries.n();
+    final int n = differencedSeries.n();
     
     final double[] fitted = new double[n];
     final double[] residuals = new double[n];
 
     for (int t = offset; t < fitted.length; t++) {
       for (int i = 0; i < this.arCoeffs.length; i++) {
-        fitted[t] += mean + arCoeffs[i] * (diffedSeries.at(t - i - 1) - mean);
+        fitted[t] += mean + arCoeffs[i] * (differencedSeries.at(t - i - 1) - mean);
       }
-      residuals[t] = diffedSeries.at(t) - fitted[t];
+      residuals[t] = differencedSeries.at(t) - fitted[t];
       for (int j = 0; j < this.maCoeffs.length; j++) {
         fitted[t] += maCoeffs[j] * residuals[t - j - 1];
       }
     }
     
-    final double sigma2 = sumOfSquared(residuals) / diffedSeries.n();
+    final double sigma2 = sumOfSquared(residuals) / differencedSeries.n();
     final double logLikelihood = (-n/2) * (Math.log(2 * Math.PI * sigma2) + 1);
-    return new FitStatistics(sigma2, logLikelihood, residuals, fitted);
+    return new ModelInformation(sigma2, logLikelihood, residuals, fitted);
   }
   
-  final FitStatistics fitUss() {
-    int n = diffedSeries.n();
+  /**
+   * Fit the model using unconditional sum-of-squares, utilizing back-forecasting to estimate
+   * the residuals for the first few observations.
+   * @return information about the model fit.
+   */
+  final ModelInformation fitUss() {
+    int n = differencedSeries.n();
     final int m = arCoeffs.length;
-    
     final double[] extendedFit = new double[2 * m + n];
     final double[] extendedSeries = new double[2 * m + n];
     final double[] residuals = new double[2 * m + n];
-    for (int i = 0; i < diffedSeries.n(); i++) {
-      extendedSeries[i] = diffedSeries.at(--n);
+    for (int i = 0; i < differencedSeries.n(); i++) {
+      extendedSeries[i] = differencedSeries.at(--n);
     }
     
-    n = diffedSeries.n();
+    n = differencedSeries.n();
     for (int t = n; t < n + 2 * m; t++) {
       extendedSeries[t] = mean;
       for (int i = 0; i < arCoeffs.length; i++) {
@@ -253,10 +286,10 @@ public final class Arima {
       residuals[t] = extendedSeries[n - t - 1] - extendedFit[t];
     }
     
-    n = diffedSeries.n();
+    n = differencedSeries.n();
     final double sigma2 = sumOfSquared(residuals) / n;
     final double logLikelihood = (-n/2) * (Math.log(2 * Math.PI * sigma2) + 1);
-    return new FitStatistics(sigma2, logLikelihood, residuals, extendedFit);
+    return new ModelInformation(sigma2, logLikelihood, residuals, extendedFit);
   }
 
   /*
@@ -276,7 +309,7 @@ public final class Arima {
       integrated[t] = observations.at(t);
     }
     for (int t = offset; t < observations.n(); t++) {
-      integrated[t] = observations.at(t) - diffedSeries.at(t - offset) + fitted[t - offset];
+      integrated[t] = observations.at(t) - differencedSeries.at(t - offset) + fitted[t - offset];
     }
     return integrated;
   }
@@ -285,14 +318,13 @@ public final class Arima {
   }
   
   public final void plotFit() {
-
     new Thread(() -> {
-      final List<Date> xAxis = new ArrayList<>(fitted.observationTimes().size());
-      for (OffsetDateTime dateTime : fitted.observationTimes()) {
+      final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
+      for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
         xAxis.add(Date.from(dateTime.toInstant()));
       }
       List<Double> seriesList = com.google.common.primitives.Doubles.asList(observations.series());
-      List<Double> fittedList = com.google.common.primitives.Doubles.asList(fitted.series());
+      List<Double> fittedList = com.google.common.primitives.Doubles.asList(fittedSeries.series());
       final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
           .title("ARIMA Fitted vs Actual").build();
       XYSeries fitSeries = chart.addSeries("Fitted Values", xAxis, fittedList);
@@ -311,14 +343,12 @@ public final class Arima {
       frame.pack();
       frame.setVisible(true);
     }).start();
-
   }
   
   public final void plotResiduals() {
-
     new Thread(() -> {
-      final List<Date> xAxis = new ArrayList<>(fitted.observationTimes().size());
-      for (OffsetDateTime dateTime : fitted.observationTimes()) {
+      final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
+      for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
         xAxis.add(Date.from(dateTime.toInstant()));
       }
       List<Double> seriesList = com.google.common.primitives.Doubles.asList(residuals.series());
@@ -335,7 +365,6 @@ public final class Arima {
       frame.pack();
       frame.setVisible(true);
     }).start();
-
   }
   
   /**
@@ -385,7 +414,7 @@ public final class Arima {
 
   /**
    * Represents the autoregressive and moving-average cofficients, as well as the degree of differencing and the mean
-   * (or intercept) for a seasonal ARIMA model.
+   * for a seasonal ARIMA model.
    * 
    * @author Jacob Rachiele
    *
@@ -401,7 +430,8 @@ public final class Arima {
     private final double mean;
 
     /**
-     * Create a new ModelCoefficients object using the supplied coefficients, degrees of differencing, and mean.
+     * Create a structure holding the coefficients of an ARIMA model, the degrees of differencing,
+     * and the model mean.
      * 
      * @param arCoeffs the non-seasonal autoregressive coefficients.
      * @param maCoeffs the non-seasonal moving-average coefficients.
@@ -433,8 +463,7 @@ public final class Arima {
     }
 
     /**
-     * Return the order of the ARIMA model corresponding to the model coefficients.
-     * 
+     * The order of the ARIMA model corresponding to the model coefficients.
      * @return the order of the ARIMA model corresponding to the model coefficients.
      */
     public final ModelOrder extractModelOrder() {
@@ -442,10 +471,15 @@ public final class Arima {
           (Math.abs(mean) > 1E-8));
     }
 
+    /**
+     * Get a new builder for a ModelCoefficients object.
+     * @return a new builder for a ModelCoefficients object.
+     */
     public static final Builder newBuilder() {
       return new Builder();
     }
 
+    
     public static final class Builder {
       private double[] arCoeffs = new double[] {};
       private double[] maCoeffs = new double[] {};
@@ -455,8 +489,7 @@ public final class Arima {
       private int D = 0;
       private double mean = 0.0;
 
-      private Builder() {
-      }
+      private Builder() {}
 
       public Builder setArCoeffs(double[] arCoeffs) {
         this.arCoeffs = arCoeffs;
@@ -499,13 +532,25 @@ public final class Arima {
     }
   }
   
-  static final class FitStatistics {
+  /**
+   * A numerical description of an ARIMA model.
+   * @author Jacob Rachiele
+   *
+   */
+  static final class ModelInformation {
     private final double sigma2;
     private final double logLikelihood;
     private final double[] residuals;
     private final double[] fitted;
     
-    FitStatistics(final double sigma2, final double logLikelihood, final double[] residuals, final double[] fitted) {
+    /**
+     * Construct a new object with the provided set of data.
+     * @param sigma2 an estimate of the model variance.
+     * @param logLikelihood the natural logarithms of the likelihood of the model parameters.
+     * @param residuals the difference between the observations and the fitted values.
+     * @param fitted the values fitted by the model to the data.
+     */
+    ModelInformation(final double sigma2, final double logLikelihood, final double[] residuals, final double[] fitted) {
       this.sigma2 = sigma2;
       this.logLikelihood = logLikelihood;
       this.residuals = residuals.clone();
