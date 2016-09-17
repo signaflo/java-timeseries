@@ -65,4 +65,12 @@ public final class Operators {
     }
     return quotient;
   }
+  
+  public static final double[] scaled(final double[] original, final double alpha) {
+    final double[] scaled = new double[original.length];
+    for (int i = 0; i < original.length; i++) {
+      scaled[i] = original[i] * alpha;
+    }
+    return scaled;
+  }
 }
