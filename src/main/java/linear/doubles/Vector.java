@@ -2,6 +2,9 @@ package linear.doubles;
 
 import java.util.Arrays;
 
+import data.Operators;
+import stats.Statistics;
+
 /**
  * An immutable and thread-safe implementation of a real-valued vector backed by an array of primitive doubles.
  * @author Jacob Rachiele
@@ -116,6 +119,17 @@ public final class Vector {
     throw new IllegalArgumentException("The dot product is undefined for zero length vectors");
   }
   
+  public final Matrix outerProduct(final Vector other) {
+    double[] product = new double[elements.length * other.elements.length];
+    for (int i = 0; i < elements.length; i++) {
+      for (int j = 0; j < other.elements.length; j++) {
+        product[i * other.elements.length + j] = elements[i] * other.elements[j];
+      }
+    }
+    return new Matrix(elements.length, other.elements.length, product);
+    
+  }
+  
   final Vector axpy(final Vector other, final double alpha) {
     final double[] result = new double[this.size()];
     for (int i = 0; i < result.length; i++) {
@@ -130,6 +144,14 @@ public final class Vector {
    */
   public final double norm() {
     return Math.sqrt(dotProduct(this));
+  }
+  
+  public final double sum() {
+    return Statistics.sumOf(elements);
+  }
+  
+  public final double sumOfSquares() {
+    return Statistics.sumOfSquared(elements);
   }
 
   @Override

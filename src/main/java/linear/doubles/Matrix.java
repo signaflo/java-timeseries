@@ -54,6 +54,44 @@ public final class Matrix {
     return new Matrix(this.nrow, other.ncol, product);
   }
   
+  public final Vector times(final Vector vector) {
+    double[] elements = vector.elements();
+    if (this.ncol != elements.length) {
+      throw new IllegalArgumentException("The columns of this matrix must equal the rows of the vector. "
+          + "This matrix has " + this.ncol + " columns and the vector has " + elements.length + " rows.");
+    }
+    final double[] product = new double[this.nrow];
+    for (int i = 0; i < this.nrow; i++) {
+        for (int k = 0; k < this.ncol; k++) {
+          product[i] += this.data[i * this.ncol + k] * elements[k];
+        }
+    }
+    return new Vector(product);
+  }
+  
+  public final Matrix scaledBy(final double c) {
+    final double[] scaled = new double[this.data.length];
+    for (int i = 0; i < this.data.length; i++) {
+      scaled[i] = this.data[i] * c;
+    }
+    return new Matrix(this.nrow, this.ncol, scaled);
+  }
+  
+  public final Matrix minus(final Matrix other) {
+    if (this.nrow != other.nrow && this.ncol != other.ncol) {
+      throw new IllegalArgumentException("The dimensions of this matrix must equal the dimensions of the other matrix. "
+          + "This matrix has dimension (" + this.nrow + ", " + this.ncol + ") and the other matrix has dimension (" + other.nrow
+          + ", " + other.ncol + ")");
+    }
+    final double[] minus = new double[nrow * ncol];
+    for (int i = 0; i < nrow; i++) {
+      for (int j = 0; j < ncol; j++) {
+        minus[i * ncol + j] = this.data[i * ncol + j] - other.data[i * ncol + j];
+      }
+    }
+    return new Matrix(this.nrow, this.ncol, minus);
+  }
+  
   public final double[] data() {
     return this.data.clone();
   }

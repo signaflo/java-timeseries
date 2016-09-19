@@ -47,5 +47,14 @@ public final class MatrixSpec {
     final double[] expectedData = new double[] {30.0, 43.0, 23.0, 20.0, 22.25, 21.75, 20.0, 19.5, 24.5};
     assertThat(product.data(), is(equalTo(expectedData)));
   }
+  
+  @Test
+  public void whenMatrixVectorProductComputedResultCorrect() {
+    final Matrix matrix = new Matrix(3, 2, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
+    final Vector vector = new Vector(5.0, 9.0);
+    final Vector product = matrix.times(vector);
+    final double[] expectedData = new double[] {38.0, 30.0, 32.0};
+    assertThat(product.elements(), is(equalTo(expectedData)));
+  }
 
 }
