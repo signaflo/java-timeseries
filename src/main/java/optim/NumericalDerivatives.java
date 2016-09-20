@@ -57,6 +57,18 @@ public final class NumericalDerivatives {
     return newVector(partials);
   }
   
+  public static final Vector forwardDifferenceGradient(final MultivariateFunction f, final Vector point, 
+      final double h, final double functionValue) {
+    double[] newPoints = point.elements().clone();
+    final double[] partials = new double[point.size()];
+    for (int i = 0; i < partials.length; i++) {
+      newPoints[i] = point.at(i) + h;
+      partials[i] = (f.at(newVector(newPoints)) - functionValue) / h;
+      newPoints = point.elements().clone();
+    }
+    return newVector(partials);
+  }
+  
   public static final Vector centralDifferenceGradient(final MultivariateFunction f, final Vector point,
       final double h) {
     double[] forwardPoints = point.elements().clone();

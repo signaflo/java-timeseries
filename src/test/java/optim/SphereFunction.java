@@ -2,11 +2,12 @@ package optim;
 
 import linear.doubles.Vector;
 
-public final class SphereFunction extends AbstractMultivariateFunction implements MultivariateFunction {
+public final class SphereFunction extends AbstractMultivariateFunction {
 
   @Override
   public double at(Vector point) {
-    return point.at(0) * point.at(0) + point.at(1) * point.at(1);
+    functionEvaluations++;
+    return point.sumOfSquares();
   }
   
   @Override
