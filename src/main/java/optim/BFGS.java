@@ -7,6 +7,7 @@ import linear.doubles.Vector;
 public final class BFGS {
   
   private static final int size = 101;
+  
   private static final double c1 = 1E-4;
   private static final double c2 = 0.9;
   
@@ -15,7 +16,7 @@ public final class BFGS {
   private Vector[] gradient = new Vector[size];
   private Vector[] searchDirection = new Vector[size];
   private double[] stepSize = new double[size];
-  private double tol;
+  private final double tol;
   private double[] rho = new double[size];
   private Vector[] s = new Vector[size];
   private Vector[] y = new Vector[size];
@@ -30,17 +31,16 @@ public final class BFGS {
     this.tol = tol;
     this.H[0] = initialHessian;
     this.iterate[0] = startingPoint;
-    this.stepSize[0] = 1.0;
     int k = 0;
     double functionValue = f.at(startingPoint);
-    gradient[k] = f.gradientAt(startingPoint, functionValue);
+    gradient[k] = f.gradientAt(startingPoint);
     while (gradient[k].norm() > tol) {
       searchDirection[k] = (H[k].times(gradient[k]).scaledBy(-1.0));
+      stepSize[k] = updateStepSize(k, functionValue);
       iterate[k + 1] = iterate[k].plus(searchDirection[k].scaledBy(stepSize[k]));
-      stepSize[k + 1] = updateStepSize(k, functionValue);
       s[k] = iterate[k + 1].minus(iterate[k]);
       functionValue = f.at(iterate[k + 1]);
-      gradient[k + 1] = f.gradientAt(iterate[k + 1], functionValue);
+      gradient[k + 1] = f.gradientAt(iterate[k + 1]);
       y[k] = gradient[k + 1].minus(gradient[k]);
       rho[k] = 1 / y[k].dotProduct(s[k]);
       H[k + 1] = updateHessian(k);

@@ -1,5 +1,7 @@
 package linear.doubles;
 
+import java.util.Arrays;
+
 public final class Matrix {
   
   private final int nrow;
@@ -94,6 +96,11 @@ public final class Matrix {
   
   public final double[] data() {
     return this.data.clone();
+  }
+
+  @Override
+  public String toString() {
+    return "Matrix [nrow=" + nrow + ", ncol=" + ncol + ", data=" + Arrays.toString(data) + "]";
   }
 
 }

@@ -110,7 +110,7 @@ public final class Vector {
    */
   public final double dotProduct(final Vector other) {
     if (other.elements.length > 0) {
-      double product = this.elements[0] * other.elements[0];
+      double product = 0.0;
       for (int i = 0; i < elements.length; i++) {
         product += this.elements[i] * other.elements[i];
       }
