@@ -1,25 +1,28 @@
 package optim.doubles;
 
-import optim.MultivariateFunction;
-import static data.Operators.scaled;
-import static data.Operators.sumOf;
+import optim.AbstractFunction;
 
 public final class LineSearch {
   
-  final MultivariateFunction f;
-  final double[] gradient;
-  final double[] searchDirection;
-  final double constant;
-  final double stepLength;
+  final AbstractFunction f;
+  final double c1;
+  final double c2;
+  final double f0;
+  final double slope0;
+  final double alphaMin;
+  final double alphaMax;
+  double stepLength;
   
-  public LineSearch(final MultivariateFunction f, final double constant, final double[] gradient, final double[] searchDirection,
-      final double stepLength) {
+  public LineSearch(final AbstractFunction f, final double c1, final double c2, final double alphaMin, final double f0,
+          final double slope0) {
     this.f = f;
-    this.constant = constant;
-    this.stepLength = stepLength;
-    this.gradient = gradient.clone();
-    this.searchDirection = searchDirection.clone();
-    sumOf(gradient, scaled(searchDirection, stepLength));
+    this.c1 = c1;
+    this.c2 = c2;
+    this.f0 = f0;
+    this.slope0 = slope0;
+    this.alphaMin = alphaMin;
+    this.alphaMax = -1.0 / slope0;
+    
   }
 
 }
