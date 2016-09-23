@@ -37,17 +37,23 @@ public final class LineSearch {
   private final IntervalValues updateInterval(final IntervalValues alphas) {
     double alphaL = alphas.alphaL;
     double alphaU = alphas.alphaU;
-    double alphaT = getTrialValue(alphaL, alphaU);
+    double alphaT = alphas.alphaT;
+    double oldAlphaL;
 
     boolean continueUpdating = true;
     while (continueUpdating) {
+      // Case U1
       if (f.at(alphaT) > f.at(alphaL)) {
-        // alphaL stays the same and...
+        // alphaL stays the same and,
         alphaU = alphaT;
         continueUpdating = false;
+      // Case U2
       } else if (f.slopeAt(alphaT) * (alphaL - alphaT) > 0) {
+        // Safeguard condition 2.2 (p. 291)
+        oldAlphaL = alphaL;
         alphaL = alphaT;
-        alphaT = getTrialValue(alphaL, alphaU);
+        alphaT = Math.min(alphaT + DELTA_MAX * (alphaT - oldAlphaL), alphaMax);
+      // Case U3
       } else {
         alphaU = alphaL;
         alphaL = alphaT;
@@ -69,9 +75,30 @@ public final class LineSearch {
       alphaL = alphas.alphaL;
       alphaU = alphas.alphaU;
       k++;
+      if (psi.at(alphaK) > 0 || psiSlope.at(alphaK) >= 0) {
+        alphaK = getTrialValue(alphaMin, Math.max(DELTA_MIN * alphaK, alphaMin));
+      }
       alphaK = getTrialValue(alphaL, alphaU);
     }
     return alphas.alphaT;
+  }
+  
+  private final double quadraticMinimum(final double alpha) {
+    return -0.5 * (slope0 / (alpha - f0 - slope0));
+  }
+  
+  private final double cubicMinimum(final double alpha0, final double alpha1, final double phiAlpha0,
+      final double phiAlpha1) {
+    final double alpha0squared = alpha0 * alpha0;
+    final double alpha1squared = alpha1 * alpha1;
+    final double alpha0cubed = alpha0squared * alpha0;
+    final double alpha1cubed = alpha1squared * alpha1;
+    final double scaleFactor = 1 / (alpha0squared * alpha1squared * (alpha1 - alpha0));
+    final double a = scaleFactor * (alpha0squared * (phiAlpha1 - f0 - slope0 * alpha1)
+        + -alpha1squared * (phiAlpha0 - f0 - slope0 * alpha0));
+    final double b = scaleFactor * (-alpha0cubed * (phiAlpha1 - f0 - slope0 * alpha1)
+        + alpha1cubed * (phiAlpha0 - f0 - slope0 * alpha0));
+    return ((-b + Math.sqrt(b * b - 3 * a * slope0)) / (3 * a));
   }
 
   private final double getTrialValue(final double alphaL, final double alphaU) {
