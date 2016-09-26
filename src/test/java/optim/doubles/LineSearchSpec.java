@@ -15,5 +15,6 @@ public final class LineSearchSpec {
     final double c2 = 0.9;
     final double alphaMin = 0.0;
     LineSearch lineSearch = new LineSearch(f, c1, c2, alphaMin, f0, slope0);
+    lineSearch.search();
   }
 }
