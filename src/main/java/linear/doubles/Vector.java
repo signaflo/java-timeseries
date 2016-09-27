@@ -78,14 +78,14 @@ public final class Vector {
   }
   
   /**
-   * Subtract the given vector from this vector and return the result in a new vector.
-   * @param other the vector to subtract from this vector.
-   * @return this vector subtracted by the given vector.
+   * Subtract the given scalar from this vector and return the result in a new vector.
+   * @param scalar the scalar to subtract from this vector.
+   * @return this vector subtracted by the given scalar.
    */
-  public final Vector minus(final double value) {
+  public final Vector minus(final double scalar) {
     final double[] differenced = new double[this.size()];
     for (int i = 0; i < differenced.length; i++) {
-      differenced[i] = this.elements[i] - value;
+      differenced[i] = this.elements[i] - scalar;
     }
     return new Vector(differenced);
   }

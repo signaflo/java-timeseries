@@ -18,8 +18,6 @@ public final class LineSearch {
   private final double slope0;
   private final double alphaMin;
   private final double alphaMax;
-  private double stepLength;
-  private boolean searchStopped = false;
 
   public LineSearch(final AbstractFunction f, final double c1, final double c2, final double alphaMin, final double f0,
           final double slope0) {
@@ -32,7 +30,6 @@ public final class LineSearch {
     this.alphaMax = -1.0 / slope0;
     this.psi = (alpha) -> f.at(alpha) - f0 - c1 * alpha * slope0;
     this.psiSlope = (alpha) -> f.slopeAt(alpha) - c1 * slope0;
-
   }
 
   private final IntervalValues refineInterval(final IntervalValues alphas) {
@@ -107,13 +104,12 @@ public final class LineSearch {
     IntervalValues alphas = getInitialInterval(alphaL, alphaU, alphaK);
     if (alphas.alphaT == alphaMax) {
       if (psi.at(alphaMax) <= 0 && psiSlope.at(alphaMax) < 0) {
-        this.searchStopped = true;
         return alphaMax;
       }
     }
 
     int k = 0;
-    while (!converged() && k < MAX_UPDATE_ITERATIONS) {
+    while (!satisfiesStrongWolfeConditions(alphaK) && k < MAX_UPDATE_ITERATIONS) {
       alphas = refineInterval(alphas);
       alphaL = alphas.alphaL;
       alphaU = alphas.alphaU;
@@ -148,8 +144,9 @@ public final class LineSearch {
     return 1.0;
   }
 
-  private final boolean converged() {
-    return false;
+  private final boolean satisfiesStrongWolfeConditions(final double alpha) {
+    return f.at(alpha) <= f0 + c1 * alpha * slope0 &&
+            Math.abs(f.slopeAt(alpha)) <= c2 * Math.abs(slope0);
   }
 
   private final class IntervalValues {
