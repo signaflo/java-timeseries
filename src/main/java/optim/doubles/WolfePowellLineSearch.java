@@ -23,17 +23,17 @@ final class WolfePowellLineSearch {
     this.c2 = c2;
     this.f0 = f0;
     this.slope0 = slope0;
-    this.alphaMax = -1.0 / slope0;
+    this.alphaMax = 2.0;
   }
 
   final double search() {
-    double a = 0.0;
-    double b = alphaMax;
-    double fA = f0;
-    double dA = slope0;
+    double alpha1 = 0.0;
+    double alpha2 = alphaMax;
+    double f1 = f0;
+    double df1 = slope0;
     double fMax = f.at(alphaMax);
     double dMax = f.slopeAt(alphaMax);
-    CubicInterpolation interpolation = new CubicInterpolation(a, b, f0, fMax, slope0, dMax);
+    CubicInterpolation interpolation = new CubicInterpolation(alpha1, alpha2, f0, fMax, slope0, dMax);
     double alpha = interpolation.minimum();
     double alphaHat = 0.0;
     double fAlpha = f.at(alpha);
@@ -46,10 +46,16 @@ final class WolfePowellLineSearch {
         if (secondWolfeConditionSatisfied(dAlpha)) {
           return alpha;
         }
-        alphaHat = alpha + ((alpha - a) * dAlpha) / (slope0 - dAlpha);
-        a = alpha;
-        fA = fAlpha;
-        dA = dAlpha;
+        alphaHat = alpha + ((alpha - alpha1) * dAlpha) / (df1 - dAlpha);
+        alpha1 = alpha;
+        f1 = fAlpha;
+        df1 = dAlpha;
+        alpha = alphaHat;
+        fAlpha = f.at(alpha);
+      }
+      else {
+        alphaHat = alpha1 + 0.5 * ((alpha - alpha1) / (1 + ((f1 - fAlpha) / ((alpha - alpha1) * df1))));
+        alpha2 = alpha;
         alpha = alphaHat;
       }
       k++;
@@ -62,6 +68,6 @@ final class WolfePowellLineSearch {
   }
 
   private final boolean secondWolfeConditionSatisfied(final double derivAlpha) {
-    return Math.abs(derivAlpha) <= c2 * slope0;
+    return Math.abs(derivAlpha) <= c2 * Math.abs(slope0);
   }
 }
