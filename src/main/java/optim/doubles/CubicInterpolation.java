@@ -30,11 +30,5 @@ final class CubicInterpolation {
     if (x1 == x2) {
       throw new RuntimeException("The two x values cannot be the same. x1 and x2 were both equal to: " + x1);
     }
-    if (dydx2 <= 0) {
-      throw new RuntimeException("The slope at x2 must be positive. It was: " + dydx2);
-    }
-    if (dydx1 >= 0) {
-      throw new RuntimeException("The slope at x1 must be negative. It was: " + dydx1);
-    }
   }
 }

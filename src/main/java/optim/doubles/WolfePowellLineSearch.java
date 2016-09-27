@@ -23,46 +23,98 @@ final class WolfePowellLineSearch {
     this.c2 = c2;
     this.f0 = f0;
     this.slope0 = slope0;
-    this.alphaMax = 2.0;
+    this.alphaMax = 5.0;
   }
 
   final double search() {
-    double alpha1 = 0.0;
-    double alpha2 = alphaMax;
-    double f1 = f0;
-    double df1 = slope0;
-    double fMax = f.at(alphaMax);
-    double dMax = f.slopeAt(alphaMax);
-    CubicInterpolation interpolation = new CubicInterpolation(alpha1, alpha2, f0, fMax, slope0, dMax);
-    double alpha = interpolation.minimum();
-    double alphaHat = 0.0;
-    double fAlpha = f.at(alpha);
+    final double fAlphaMax = f.at(alphaMax);
+    final double dAlphaMax = f.slopeAt(alphaMax);
+    double alphaIMinus1 = 0.0;
+    CubicInterpolation interpolation = new CubicInterpolation(alphaIMinus1, alphaMax, f0, fAlphaMax, slope0, dAlphaMax);
+    double alphaI = interpolation.minimum();
+    double fAlphaI = 0.0;
     double dAlpha = 0.0;
-    
-    int k = 0;
-    while (k < MAX_UPDATE_ITERATIONS) {
-      if (firstWolfeConditionSatisfied(alpha, fAlpha)) {
-        dAlpha = f.slopeAt(alpha);
+
+    int i = 1;
+    while (i < MAX_UPDATE_ITERATIONS) {
+      fAlphaI = f.at(alphaI);
+      if (firstWolfeConditionSatisfied(alphaI, fAlphaI)) {
+        dAlpha = f.slopeAt(alphaI);
         if (secondWolfeConditionSatisfied(dAlpha)) {
-          return alpha;
+          return alphaI;
         }
-        alphaHat = alpha + ((alpha - alpha1) * dAlpha) / (df1 - dAlpha);
-        alpha1 = alpha;
-        f1 = fAlpha;
-        df1 = dAlpha;
-        alpha = alphaHat;
-        fAlpha = f.at(alpha);
+        if (dAlpha >= 0) {
+          return zoom(alphaI, alphaIMinus1);
+        }
+        alphaIMinus1 = alphaI;
+        alphaI = new CubicInterpolation(alphaIMinus1, alphaMax, fAlphaI, fAlphaMax, dAlpha, dAlphaMax).minimum();
       }
-      else {
-        alphaHat = alpha1 + 0.5 * ((alpha - alpha1) / (1 + ((f1 - fAlpha) / ((alpha - alpha1) * df1))));
-        alpha2 = alpha;
-        alpha = alphaHat;
+      else if (fAlphaI > f.at(alphaIMinus1) && i > 1) {
+        return zoom(alphaIMinus1, alphaI);
       }
-      k++;
+      i++;
     }
-    return alpha;
+    return alphaI;
   }
 
+  private final double zoom(double alphaLo, double alphaHi) {
+    double alphaTmp = 0.0;
+    double fAlphaTmp = 0.0;
+    double dAlphaTmp = 0.0;
+    if (alphaLo > alphaHi) {
+      alphaTmp = alphaLo;
+      alphaLo = alphaHi;
+      alphaHi = alphaTmp;
+    }
+    double alphaJ = 0.0;
+    double fAlphaJ = 0.0;
+    double dAlphaJ = 0.0;
+    double fAlphaLo = f.at(alphaLo);
+    double fAlphaHi = f.at(alphaHi);
+    double dAlphaLo = f.slopeAt(alphaLo);
+    double dAlphaHi = f.slopeAt(alphaHi);
+    
+    int k = 0; 
+    while (k < MAX_UPDATE_ITERATIONS) {
+      if (alphaLo > alphaHi) {
+        alphaTmp = alphaLo;
+        fAlphaTmp = fAlphaLo;
+        dAlphaTmp = dAlphaLo;
+        alphaLo = alphaHi;
+        fAlphaLo = fAlphaHi;
+        dAlphaLo = dAlphaHi;
+        alphaHi = alphaTmp;
+        fAlphaHi = fAlphaTmp;
+        dAlphaHi = dAlphaTmp;
+      }
+      
+      alphaJ = new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi,
+              dAlphaLo, dAlphaHi).minimum();
+      fAlphaJ = f.at(alphaJ);
+      if (firstWolfeConditionSatisfied(alphaJ, fAlphaJ) && fAlphaJ - fAlphaLo < 1E-8) {
+        dAlphaJ = f.slopeAt(alphaJ);
+        if (secondWolfeConditionSatisfied(dAlphaJ)) {
+          return alphaJ;
+        }
+         if ((dAlphaJ) * (alphaHi - alphaLo) >= 0) {
+          alphaHi = alphaLo;
+          fAlphaHi = fAlphaLo;
+          dAlphaHi = dAlphaLo;
+        }
+        alphaLo = alphaJ;
+        fAlphaLo = fAlphaJ;
+        dAlphaLo = dAlphaJ;
+      } else {
+        alphaHi = alphaJ;
+        fAlphaHi = fAlphaJ;
+        dAlphaHi = dAlphaJ; 
+      }
+     
+      k++;
+    }
+    return alphaJ;
+  }
+  
   private final boolean firstWolfeConditionSatisfied(final double alpha, final double fAlpha) {
     return fAlpha <= f0 + c1 * alpha * slope0;
   }
