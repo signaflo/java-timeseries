@@ -1,8 +1,6 @@
 package linear.doubles;
 
 import java.util.Arrays;
-
-import data.Operators;
 import stats.Statistics;
 
 /**

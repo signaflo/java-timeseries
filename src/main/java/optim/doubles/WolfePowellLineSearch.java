@@ -16,15 +16,16 @@ public final class WolfePowellLineSearch {
   private final double f0;
   private final double slope0;
   private final double alphaMax;
-
-  public WolfePowellLineSearch(final AbstractFunction f, final double c1, final double c2, final double f0,
-      final double slope0) {
-    this.f = f;
-    this.c1 = c1;
-    this.c2 = c2;
-    this.f0 = f0;
-    this.slope0 = slope0;
-    this.alphaMax = 20.0;
+  private final double alpha0;
+  
+  public WolfePowellLineSearch(final Builder builder) {
+    this.f = builder.f;
+    this.c1 = builder.c1;
+    this.c2 = builder.c2;
+    this.f0 = builder.f0;
+    this.slope0 = builder.slope0;
+    this.alphaMax = builder.alphaMax;
+    this.alpha0 = builder.alpha0;
   }
 
   public final double search() {
@@ -36,7 +37,7 @@ public final class WolfePowellLineSearch {
     // QuadraticInterpolation interpolation = new QuadraticInterpolation(alphaIMinus1, alphaMax, f0, fAlphaMax, slope0);
     // CubicInterpolation interpolation = new CubicInterpolation(alphaIMinus1, alphaMax, f0, fAlphaMax, slope0,
     // dAlphaMax);
-    double alphaI = 1/10.0; // interpolation.minimum();
+    double alphaI = alpha0; // interpolation.minimum();
     double fAlphaI = f.at(alphaI);
     double dAlpha = 0.0;
     double fAlphaIMinus1 = f0;
@@ -156,6 +157,7 @@ public final class WolfePowellLineSearch {
     return abs(derivAlpha) <= c2 * abs(slope0);
   }
 
+  // We pass in fAlphaL and fAlphaT, the function values at these points, to save unnecessary computations.
   private final IntervalValues updateInterval(final IntervalValues alphas, double fAlphaL, double fAlphaT) {
     double alphaL = alphas.alphaL;
     double alphaU = alphas.alphaU;
@@ -184,6 +186,7 @@ public final class WolfePowellLineSearch {
       alphaU = alphaL;
       alphaL = alphaT;
     }
+    // If none of the three conditionals above are true then we leave the interval unchanged.
     return new IntervalValues(alphaL, alphaU, alphaT);
   }
 
@@ -196,6 +199,51 @@ public final class WolfePowellLineSearch {
       this.alphaL = alphaL;
       this.alphaU = alphaU;
       this.alphaT = alphaT;
+    }
+  }
+  
+  public static final Builder newBuilder(final AbstractFunction f, final double f0, final double slope0) {
+    return new Builder(f, f0, slope0);
+  }
+  
+  public static final class Builder {
+    
+    private final AbstractFunction f;
+    private double c1 = 0.1;
+    private double c2 = 0.1;
+    private final double f0;
+    private final double slope0;
+    private double alphaMax = 1000.0;
+    private double alpha0 = 5.0;
+    
+    public Builder(AbstractFunction f, double f0, double slope0) {
+      this.f = f;
+      this.f0 = f0;
+      this.slope0 = slope0;
+    }
+    
+    public final Builder c1(double c1) {
+      this.c1 = c1;
+      return this;
+    }
+    
+    public final Builder c2(double c2) {
+      this.c2 = c2;
+      return this;
+    }
+    
+    public final Builder alphaMax(double alphaMax) {
+      this.alphaMax = alphaMax;
+      return this;
+    }
+    
+    public final Builder alpha0(double alpha0) {
+      this.alpha0 = alpha0;
+      return this;
+    }
+    
+    public final WolfePowellLineSearch build() {
+      return new WolfePowellLineSearch(this);
     }
   }
 }

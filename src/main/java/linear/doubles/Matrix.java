@@ -2,6 +2,11 @@ package linear.doubles;
 
 import java.util.Arrays;
 
+/**
+ * An immutable and thread-safe Matrix implementation.
+ * @author jrachiele
+ *
+ */
 public final class Matrix {
   
   private final int nrow;

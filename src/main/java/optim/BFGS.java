@@ -8,44 +8,44 @@ import optim.doubles.WolfePowellLineSearch;
 
 public final class BFGS {
   
-  private static final int size = 101;
-  
   private static final double c1 = 1E-4;
   private static final double c2 = 0.9;
   
   private final AbstractMultivariateFunction f;
-  private Vector[] iterate = new Vector[size];
-  private Vector[] gradient = new Vector[size];
-  private Vector[] searchDirection = new Vector[size];
-  private double[] stepSize = new double[size];
-  private final double tol;
-  private double[] rho = new double[size];
-  private Vector[] s = new Vector[size];
-  private Vector[] y = new Vector[size];
-  private Matrix[] B = new Matrix[size];
-  private Matrix[] H = new Matrix[size];
+  private Vector iterate;
+  private Vector nextIterate;
+  private Vector gradient;
+  private Vector nextGradient;
+  private Vector searchDirection;
+  private double stepSize = 0.0;
+  private double rho = 0.0;
+  private Vector s;
+  private Vector y;
+  private Matrix H;
   private final Matrix identity;
   
+  // Note that the objects we use are immutable and hence no copy operations are needed.
   public BFGS(final AbstractMultivariateFunction f, final Vector startingPoint,
       final double tol, final Matrix initialHessian) {
     this.f = f;
     this.identity = Matrices.identity(startingPoint.size());
-    this.tol = tol;
-    this.H[0] = initialHessian;
-    this.iterate[0] = startingPoint;
+    this.H = initialHessian;
+    this.iterate = startingPoint;
     int k = 0;
     double functionValue = f.at(startingPoint);
-    gradient[k] = f.gradientAt(startingPoint);
-    while (gradient[k].norm() > tol) {
-      searchDirection[k] = (H[k].times(gradient[k]).scaledBy(-1.0));
-      stepSize[k] = updateStepSize(k, functionValue);
-      iterate[k + 1] = iterate[k].plus(searchDirection[k].scaledBy(stepSize[k]));
-      s[k] = iterate[k + 1].minus(iterate[k]);
-      functionValue = f.at(iterate[k + 1]);
-      gradient[k + 1] = f.gradientAt(iterate[k + 1]);
-      y[k] = gradient[k + 1].minus(gradient[k]);
-      rho[k] = 1 / y[k].dotProduct(s[k]);
-      H[k + 1] = updateHessian(k);
+    gradient = f.gradientAt(startingPoint);
+    while (gradient.norm() > tol) {
+      searchDirection = (H.times(gradient).scaledBy(-1.0));
+      stepSize = updateStepSize(k, functionValue);
+      nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
+      s = nextIterate.minus(iterate);
+      functionValue = f.at(nextIterate);
+      nextGradient = f.gradientAt(nextIterate);
+      y = nextGradient.minus(gradient);
+      rho = 1 / y.dotProduct(s);
+      H = updateHessian(k);
+      iterate = nextIterate;
+      gradient = nextGradient;
       k += 1;
     }
   }
@@ -56,22 +56,22 @@ public final class BFGS {
   }
   
   private final double updateStepSize(final int k, final double functionValue) {
-    final double slope0 = gradient[k].dotProduct(searchDirection[k]);
-    final QuasiNewtonLineFunction lineFunction = new QuasiNewtonLineFunction(this.f, iterate[k], searchDirection[k]);
+    final double slope0 = gradient.dotProduct(searchDirection);
+    final QuasiNewtonLineFunction lineFunction = new QuasiNewtonLineFunction(this.f, iterate, searchDirection);
     final double alpha1 = lineFunction.at(1.0);
     if (alpha1 <= functionValue + c1 * slope0 && Math.abs(alpha1) <= c2 * Math.abs(slope0)) {
       return 1.0;
     }
-    WolfePowellLineSearch lineSearch = new WolfePowellLineSearch(lineFunction, c1, c2, 
-            functionValue, slope0);
+    WolfePowellLineSearch lineSearch = WolfePowellLineSearch.newBuilder(lineFunction, functionValue, slope0)
+            .c1(c1).c2(c2).build();
     return lineSearch.search();
   }
   
   private final Matrix updateHessian(final int k) {
-    Matrix piece1 = identity.minus(s[k].outerProduct(y[k]).scaledBy(rho[k]));
-    Matrix piece2 = identity.minus(y[k].outerProduct(s[k]).scaledBy(rho[k]));
-    Matrix piece3 = s[k].outerProduct(s[k]).scaledBy(rho[k]);
-    return piece1.times(H[k]).times(piece2).plus(piece3);
+    Matrix piece1 = identity.minus(s.outerProduct(y).scaledBy(rho));
+    Matrix piece2 = identity.minus(y.outerProduct(s).scaledBy(rho));
+    Matrix piece3 = s.outerProduct(s).scaledBy(rho);
+    return piece1.times(H).times(piece2).plus(piece3);
   }
 
 }
