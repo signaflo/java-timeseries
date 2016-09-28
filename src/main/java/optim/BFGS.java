@@ -4,7 +4,7 @@ import linear.doubles.Matrices;
 import linear.doubles.Matrix;
 import linear.doubles.Vector;
 import optim.doubles.QuasiNewtonLineFunction;
-import optim.doubles.WolfePowellLineSearch;
+import optim.doubles.StrongWolfeLineSearch;
 
 public final class BFGS {
   
@@ -62,7 +62,7 @@ public final class BFGS {
     if (alpha1 <= functionValue + c1 * slope0 && Math.abs(alpha1) <= c2 * Math.abs(slope0)) {
       return 1.0;
     }
-    WolfePowellLineSearch lineSearch = WolfePowellLineSearch.newBuilder(lineFunction, functionValue, slope0)
+    StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(lineFunction, functionValue, slope0)
             .c1(c1).c2(c2).build();
     return lineSearch.search();
   }

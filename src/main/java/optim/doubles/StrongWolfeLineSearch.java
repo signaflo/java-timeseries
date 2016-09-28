@@ -4,7 +4,7 @@ import static java.lang.Math.abs;
 import optim.AbstractFunction;
 import optim.Function;
 
-public final class WolfePowellLineSearch {
+public final class StrongWolfeLineSearch {
 
   private static final int MAX_UPDATE_ITERATIONS = 100;
   private static final double DELTA_MIN = 7.0 / 12.0;
@@ -16,33 +16,31 @@ public final class WolfePowellLineSearch {
   private final double f0;
   private final double slope0;
   private final double alphaMax;
-  private final double alpha0;
+  private final double alpha1;
   
-  public WolfePowellLineSearch(final Builder builder) {
+  public StrongWolfeLineSearch(final Builder builder) {
     this.f = builder.f;
     this.c1 = builder.c1;
     this.c2 = builder.c2;
     this.f0 = builder.f0;
     this.slope0 = builder.slope0;
     this.alphaMax = builder.alphaMax;
-    this.alpha0 = builder.alpha0;
+    this.alpha1 = builder.alpha0;
   }
 
   public final double search() {
-    final double fAlphaMax = f.at(alphaMax);
-    final double dAlphaMax = f.slopeAt(alphaMax);
     double alphaIMinus1 = 0.0;
     double alphaLo = 0.0;
     double alphaHi = 0.0;
     // QuadraticInterpolation interpolation = new QuadraticInterpolation(alphaIMinus1, alphaMax, f0, fAlphaMax, slope0);
     // CubicInterpolation interpolation = new CubicInterpolation(alphaIMinus1, alphaMax, f0, fAlphaMax, slope0,
     // dAlphaMax);
-    double alphaI = alpha0; // interpolation.minimum();
+    double alphaI = alpha1; // interpolation.minimum();
     double fAlphaI = f.at(alphaI);
     double dAlpha = 0.0;
     double fAlphaIMinus1 = f0;
 
-    IntervalValues alphaValues = updateInterval(new IntervalValues(alphaIMinus1, alphaMax, alphaI), f0, fAlphaI);
+    IntervalValues alphaValues = updateInterval(alphaIMinus1, alphaMax, alphaI, f0, fAlphaI);
     alphaLo = alphaValues.alphaL;
     alphaHi = alphaValues.alphaU;
     alphaI = alphaValues.alphaT;
@@ -61,7 +59,7 @@ public final class WolfePowellLineSearch {
         if (alphaI == alphaMax) {
           return alphaI;
         }
-        alphaI = new CubicInterpolation(alphaIMinus1, alphaMax, fAlphaI, fAlphaMax, dAlpha, dAlphaMax).minimum();
+        alphaI = alphaI / 2.0;
       } else if (fAlphaI > fAlphaIMinus1 && i > 1) {
         return zoom(alphaIMinus1, alphaI);
       }
@@ -158,30 +156,30 @@ public final class WolfePowellLineSearch {
   }
 
   // We pass in fAlphaL and fAlphaT, the function values at these points, to save unnecessary computations.
-  private final IntervalValues updateInterval(final IntervalValues alphas, double fAlphaL, double fAlphaT) {
-    double alphaL = alphas.alphaL;
-    double alphaU = alphas.alphaU;
-    double alphaT = alphas.alphaT;
-    double oldAlphaL = 0.0;
+  private final IntervalValues updateInterval(double alphaL, double alphaU, double alphaT, double fAlphaL, double fAlphaT) {
+    double oldAlphaT = 0.0;
     double dAlphaT = 0.0;
 
     // Case U1
     if (fAlphaT + slope0 * c1 * (alphaL - alphaT) > fAlphaL) {
       // alphaL stays the same and,
       alphaU = alphaT;
-      // Case U2
+      
+    // Case U2
     } else if (((dAlphaT = f.slopeAt(alphaT)) - c1 * slope0) * (alphaL - alphaT) > 0) {
+      
       // Safeguard condition 2.2 (p. 291)
-      oldAlphaL = alphaL;
+      oldAlphaT = alphaL;
       alphaL = alphaT;
-      alphaT = Math.min(alphaT + DELTA_MAX * (alphaT - oldAlphaL), alphaMax);
+      alphaT = Math.min(alphaT + DELTA_MAX * (alphaT - oldAlphaT), alphaMax);
       if (alphaT == alphaMax) {
         return (new IntervalValues(alphaL, alphaU, alphaT));
       }
       fAlphaL = fAlphaT;
       fAlphaT = f.at(alphaT);
-      return updateInterval(new IntervalValues(alphaL, alphaU, alphaT), fAlphaL, fAlphaT);
-      // Case U3
+      return updateInterval(alphaL, alphaU, alphaT, fAlphaL, fAlphaT);
+      
+    // Case U3
     } else if ((dAlphaT - c1 * slope0) * (alphaL - alphaT) < 0) {
       alphaU = alphaL;
       alphaL = alphaT;
@@ -242,8 +240,8 @@ public final class WolfePowellLineSearch {
       return this;
     }
     
-    public final WolfePowellLineSearch build() {
-      return new WolfePowellLineSearch(this);
+    public final StrongWolfeLineSearch build() {
+      return new StrongWolfeLineSearch(this);
     }
   }
 }
