@@ -18,13 +18,13 @@ public final class WolfePowellLineSearch {
   private final double alphaMax;
 
   public WolfePowellLineSearch(final AbstractFunction f, final double c1, final double c2, final double f0,
-          final double slope0) {
+      final double slope0) {
     this.f = f;
     this.c1 = c1;
     this.c2 = c2;
     this.f0 = f0;
     this.slope0 = slope0;
-    this.alphaMax = 5.0;
+    this.alphaMax = 20.0;
   }
 
   public final double search() {
@@ -33,19 +33,21 @@ public final class WolfePowellLineSearch {
     double alphaIMinus1 = 0.0;
     double alphaLo = 0.0;
     double alphaHi = 0.0;
-    //QuadraticInterpolation interpolation = new QuadraticInterpolation(alphaIMinus1, alphaMax, f0, fAlphaMax, slope0);
-    CubicInterpolation interpolation = new CubicInterpolation(alphaIMinus1, alphaMax, f0, fAlphaMax, slope0, dAlphaMax);
-    double alphaI = interpolation.minimum();
-    IntervalValues alphaValues = updateInterval(new IntervalValues(alphaIMinus1, alphaMax, alphaI));
+    // QuadraticInterpolation interpolation = new QuadraticInterpolation(alphaIMinus1, alphaMax, f0, fAlphaMax, slope0);
+    // CubicInterpolation interpolation = new CubicInterpolation(alphaIMinus1, alphaMax, f0, fAlphaMax, slope0,
+    // dAlphaMax);
+    double alphaI = 1/10.0; // interpolation.minimum();
+    double fAlphaI = f.at(alphaI);
+    double dAlpha = 0.0;
+    double fAlphaIMinus1 = f0;
+
+    IntervalValues alphaValues = updateInterval(new IntervalValues(alphaIMinus1, alphaMax, alphaI), f0, fAlphaI);
     alphaLo = alphaValues.alphaL;
     alphaHi = alphaValues.alphaU;
     alphaI = alphaValues.alphaT;
-    double fAlphaI = 0.0;
-    double dAlpha = 0.0;
 
     int i = 1;
     while (i < MAX_UPDATE_ITERATIONS) {
-      fAlphaI = f.at(alphaI);
       if (firstWolfeConditionSatisfied(alphaI, fAlphaI)) {
         dAlpha = f.slopeAt(alphaI);
         if (secondWolfeConditionSatisfied(dAlpha)) {
@@ -55,11 +57,17 @@ public final class WolfePowellLineSearch {
           return zoom(alphaI, alphaIMinus1);
         }
         alphaIMinus1 = alphaI;
+        if (alphaI == alphaMax) {
+          return alphaI;
+        }
         alphaI = new CubicInterpolation(alphaIMinus1, alphaMax, fAlphaI, fAlphaMax, dAlpha, dAlphaMax).minimum();
-      }
-      else if (fAlphaI > f.at(alphaIMinus1) && i > 1) {
+      } else if (fAlphaI > fAlphaIMinus1 && i > 1) {
         return zoom(alphaIMinus1, alphaI);
       }
+      alphaI = new CubicInterpolation(0.0, DELTA_MIN * alphaI, f0, f.at(DELTA_MIN * alphaI), slope0,
+          f.slopeAt(DELTA_MIN * alphaI)).minimum();
+      fAlphaI = f.at(alphaI);
+      fAlphaIMinus1 = fAlphaI;
       i++;
     }
     return alphaI;
@@ -86,10 +94,10 @@ public final class WolfePowellLineSearch {
     double dAlphaHi = f.slopeAt(alphaHi);
     double alphaC = 0.0;
     double alphaQ = 0.0;
-    double alphaS= 0.0;
-    final double decreaseFactor = 2.0/3.0;
-    
-    int k = 0; 
+    double alphaS = 0.0;
+    final double decreaseFactor = 2.0 / 3.0;
+
+    int k = 0;
     while (k < MAX_UPDATE_ITERATIONS) {
       if (alphaLo > alphaHi) {
         alphaTmp = alphaLo;
@@ -102,16 +110,14 @@ public final class WolfePowellLineSearch {
         fAlphaHi = fAlphaTmp;
         dAlphaHi = dAlphaTmp;
       }
-      
+
       if (intervalCount > 2) {
         alphaJ = (alphaLo + alphaHi) / 2.0;
         intervalCount = 0;
-      }
-      else if (fAlphaHi > fAlphaLo) {
-        alphaC = new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi,
-                dAlphaLo, dAlphaHi).minimum();
+      } else if (fAlphaHi > fAlphaLo) {
+        alphaC = new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum();
         alphaQ = new QuadraticInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo).minimum();
-        alphaJ = (abs(alphaC - alphaLo) < abs(alphaQ - alphaLo))? alphaC : 0.5 * (alphaQ + alphaC);
+        alphaJ = (abs(alphaC - alphaLo) < abs(alphaQ - alphaLo)) ? alphaC : 0.5 * (alphaQ + alphaC);
       }
       fAlphaJ = f.at(alphaJ);
       if (firstWolfeConditionSatisfied(alphaJ, fAlphaJ) && fAlphaJ - fAlphaLo < 1E-8) {
@@ -119,7 +125,7 @@ public final class WolfePowellLineSearch {
         if (secondWolfeConditionSatisfied(dAlphaJ)) {
           return alphaJ;
         }
-         if ((dAlphaJ) * (alphaHi - alphaLo) >= 0) {
+        if ((dAlphaJ) * (alphaHi - alphaLo) >= 0) {
           alphaHi = alphaLo;
           fAlphaHi = fAlphaLo;
           dAlphaHi = dAlphaLo;
@@ -130,7 +136,7 @@ public final class WolfePowellLineSearch {
       } else {
         alphaHi = alphaJ;
         fAlphaHi = fAlphaJ;
-        dAlphaHi = dAlphaJ; 
+        dAlphaHi = dAlphaJ;
       }
       oldIntervalLength = newIntervalLength;
       newIntervalLength = abs(alphaHi - alphaLo);
@@ -141,7 +147,7 @@ public final class WolfePowellLineSearch {
     }
     return alphaJ;
   }
-  
+
   private final boolean firstWolfeConditionSatisfied(final double alpha, final double fAlpha) {
     return fAlpha <= f0 + c1 * alpha * slope0;
   }
@@ -149,37 +155,38 @@ public final class WolfePowellLineSearch {
   private final boolean secondWolfeConditionSatisfied(final double derivAlpha) {
     return abs(derivAlpha) <= c2 * abs(slope0);
   }
-  
-  private final IntervalValues updateInterval(final IntervalValues alphas) {
+
+  private final IntervalValues updateInterval(final IntervalValues alphas, double fAlphaL, double fAlphaT) {
     double alphaL = alphas.alphaL;
     double alphaU = alphas.alphaU;
     double alphaT = alphas.alphaT;
     double oldAlphaL = 0.0;
-    double alphaTSlope = 0.0;
+    double dAlphaT = 0.0;
 
-    boolean continueUpdating = true;
-    while (continueUpdating) {
-      // Case U1
-      if (f.at(alphaT) + slope0 * c1 * (alphaL - alphaT) > f.at(alphaL)) {
-        // alphaL stays the same and,
-        alphaU = alphaT;
-        continueUpdating = false;
+    // Case U1
+    if (fAlphaT + slope0 * c1 * (alphaL - alphaT) > fAlphaL) {
+      // alphaL stays the same and,
+      alphaU = alphaT;
       // Case U2
-      } else if (((alphaTSlope = f.slopeAt(alphaT)) - c1 * slope0) * (alphaL - alphaT) > 0) {
-        // Safeguard condition 2.2 (p. 291)
-        oldAlphaL = alphaL;
-        alphaL = alphaT;
-        alphaT = Math.min(alphaT + DELTA_MAX * (alphaT - oldAlphaL), alphaMax);
-      // Case U3
-      } else if ((alphaTSlope - c1 * slope0) * (alphaL - alphaT) < 0){
-        alphaU = alphaL;
-        alphaL = alphaT;
-        continueUpdating = false;
+    } else if (((dAlphaT = f.slopeAt(alphaT)) - c1 * slope0) * (alphaL - alphaT) > 0) {
+      // Safeguard condition 2.2 (p. 291)
+      oldAlphaL = alphaL;
+      alphaL = alphaT;
+      alphaT = Math.min(alphaT + DELTA_MAX * (alphaT - oldAlphaL), alphaMax);
+      if (alphaT == alphaMax) {
+        return (new IntervalValues(alphaL, alphaU, alphaT));
       }
+      fAlphaL = fAlphaT;
+      fAlphaT = f.at(alphaT);
+      return updateInterval(new IntervalValues(alphaL, alphaU, alphaT), fAlphaL, fAlphaT);
+      // Case U3
+    } else if ((dAlphaT - c1 * slope0) * (alphaL - alphaT) < 0) {
+      alphaU = alphaL;
+      alphaL = alphaT;
     }
     return new IntervalValues(alphaL, alphaU, alphaT);
   }
-  
+
   private final class IntervalValues {
     private final double alphaL;
     private final double alphaU;

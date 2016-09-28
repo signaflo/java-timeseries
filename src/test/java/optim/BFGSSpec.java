@@ -13,6 +13,7 @@ public final class BFGSSpec {
     final double tol = 1E-6;
     BFGS solver = new BFGS(f, startingPoint, tol);
     System.out.println(f.functionEvaluations);
+    System.out.println(f.gradientEvalutations);
   }
 
 

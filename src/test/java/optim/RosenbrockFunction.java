@@ -20,6 +20,7 @@ public final class RosenbrockFunction extends AbstractMultivariateFunction {
   
   @Override
   public final Vector gradientAt(final Vector point) {
+    gradientEvalutations++;
     final double x = point.at(0);
     final double y = point.at(1);
     final double gx = -400 * x * (y - x * x) - 2 * (1 - x);
