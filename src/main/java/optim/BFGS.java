@@ -3,6 +3,8 @@ package optim;
 import linear.doubles.Matrices;
 import linear.doubles.Matrix;
 import linear.doubles.Vector;
+import optim.doubles.QuasiNewtonLineFunction;
+import optim.doubles.WolfePowellLineSearch;
 
 public final class BFGS {
   
@@ -54,9 +56,15 @@ public final class BFGS {
   }
   
   private final double updateStepSize(final int k, final double functionValue) {
-    LineSearch lineSearch = new LineSearch(f, functionValue, c1, c2, gradient[k], iterate[k], 
-        searchDirection[k], 1.0);
-    return lineSearch.computeAlpha();
+    final double slope0 = gradient[k].dotProduct(searchDirection[k]);
+    final QuasiNewtonLineFunction lineFunction = new QuasiNewtonLineFunction(this.f, iterate[k], searchDirection[k]);
+    final double alpha1 = lineFunction.at(1.0);
+    if (alpha1 <= functionValue + c1 * slope0 && Math.abs(alpha1) <= c2 * Math.abs(slope0)) {
+      return 1.0;
+    }
+    WolfePowellLineSearch lineSearch = new WolfePowellLineSearch(lineFunction, c1, c2, 
+            functionValue, slope0);
+    return lineSearch.search();
   }
   
   private final Matrix updateHessian(final int k) {

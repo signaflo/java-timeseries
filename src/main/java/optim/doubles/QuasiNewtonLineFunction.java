@@ -4,7 +4,7 @@ import linear.doubles.Vector;
 import optim.AbstractFunction;
 import optim.AbstractMultivariateFunction;
 
-final class QuasiNewtonLineFunction extends AbstractFunction {
+public final class QuasiNewtonLineFunction extends AbstractFunction {
   
   private final AbstractMultivariateFunction f;
   private final Vector x;

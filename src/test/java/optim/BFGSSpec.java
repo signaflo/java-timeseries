@@ -9,7 +9,7 @@ public final class BFGSSpec {
   @Test
   public void testBFGS() {
     AbstractMultivariateFunction f = new RosenbrockFunction();
-    Vector startingPoint = new Vector(-1.0, 0.5);
+    Vector startingPoint = new Vector(0.5, 1.5);
     final double tol = 1E-6;
     BFGS solver = new BFGS(f, startingPoint, tol);
     System.out.println(f.functionEvaluations);
