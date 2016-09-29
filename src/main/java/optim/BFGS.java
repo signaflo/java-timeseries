@@ -26,20 +26,24 @@ public final class BFGS {
   
   // Note that the objects we use are immutable and hence no copy operations are needed.
   public BFGS(final AbstractMultivariateFunction f, final Vector startingPoint,
-      final double tol, final Matrix initialHessian) {
+      final double gradientTolerance, final double pointTolerance, final Matrix initialHessian) {
     this.f = f;
     this.identity = Matrices.identity(startingPoint.size());
     this.H = initialHessian;
     this.iterate = startingPoint;
     int k = 0;
+    double priorFunctionValue = Double.POSITIVE_INFINITY;
     double functionValue = f.at(startingPoint);
+    double functionChange = priorFunctionValue - functionValue;
     gradient = f.gradientAt(startingPoint);
-    while (gradient.norm() > tol) {
+    while (gradient.norm() > gradientTolerance && functionValue > pointTolerance) {
       searchDirection = (H.times(gradient).scaledBy(-1.0));
       stepSize = updateStepSize(k, functionValue);
       nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
       s = nextIterate.minus(iterate);
+      priorFunctionValue = functionValue;
       functionValue = f.at(nextIterate);
+      functionChange = Math.abs(priorFunctionValue - functionValue);
       nextGradient = f.gradientAt(nextIterate);
       y = nextGradient.minus(gradient);
       rho = 1 / y.dotProduct(s);
@@ -51,8 +55,8 @@ public final class BFGS {
   }
   
   public BFGS(final AbstractMultivariateFunction f, final Vector startingPoint,
-      final double tol) {
-    this(f, startingPoint, tol, Matrices.identity(startingPoint.size()));
+      final double gradientTolerance, double pointChangeTolerance) {
+    this(f, startingPoint, gradientTolerance, pointChangeTolerance, Matrices.identity(startingPoint.size()));
   }
   
   private final double updateStepSize(final int k, final double functionValue) {
@@ -63,7 +67,7 @@ public final class BFGS {
       return 1.0;
     }
     StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(lineFunction, functionValue, slope0)
-            .c1(c1).c2(c2).build();
+            .c1(c1).c2(c2).alpha0(15.0).build();
     return lineSearch.search();
   }
   

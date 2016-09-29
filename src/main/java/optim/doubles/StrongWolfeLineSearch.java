@@ -15,8 +15,19 @@ public final class StrongWolfeLineSearch {
   private final double c2;
   private final double f0;
   private final double slope0;
+  private final double alphaMin = 1E-4;
   private final double alphaMax;
-  private final double alpha1;
+  private final double alpha0;
+  
+  private double oldAlphaT = 0.0;
+  private double alphaT = 0.0;
+  private double newAlphaT = 0.0;
+
+  private double fAlphaT = 0.0;
+  private double dAlphaT = 0.0;
+  private double fNewAlphaT = 0.0;
+  private double dNewAlphaT = 0.0;
+  
 
   public StrongWolfeLineSearch(final Builder builder) {
     this.f = builder.f;
@@ -25,99 +36,75 @@ public final class StrongWolfeLineSearch {
     this.f0 = builder.f0;
     this.slope0 = builder.slope0;
     this.alphaMax = builder.alphaMax;
-    this.alpha1 = builder.alpha0;
+    this.alpha0 = builder.alpha0;
   }
 
   public final double search() {
-
-    double alphaT = 0.0;
-    double newAlphaT = alpha1;
-    double alphaL = 0.0;
-    double newAlphaL = 1E-3;
-    double alphaU = 0.0;
-    double newAlphaU = alphaMax;
-
-    double fAlphaT = f.at(newAlphaT);
-    double dAlphaT = 0.0;
-    double fAlphaL = f.at(newAlphaL);
-    double fAlphaU = 0.0;
-    double dAlphaL = 0.0;
-    double dAlphaU = 0.0;
+    fNewAlphaT = f0;
+    newAlphaT = alpha0;
     
-    double[] interval = updateInterval(newAlphaL, newAlphaU, newAlphaT, fAlphaL, fAlphaT);
-    newAlphaL = interval[0]; newAlphaU = interval[1];
-    fAlphaL = f.at(newAlphaL);
-    fAlphaU = f.at(newAlphaU);
-    dAlphaL = f.slopeAt(newAlphaL);
-    dAlphaU = f.slopeAt(newAlphaU);
-    
-    newAlphaT = new CubicInterpolation(newAlphaL, newAlphaU, fAlphaL, fAlphaU, dAlphaL, dAlphaU).minimum();
-
-    int k = 1;
-    while (k < MAX_UPDATE_ITERATIONS) {
+    int i = 1;   
+    while (i < MAX_UPDATE_ITERATIONS) {
+      fAlphaT = fNewAlphaT;
+      dAlphaT = dNewAlphaT;
+      fNewAlphaT = f.at(newAlphaT);
+      dNewAlphaT = f.slopeAt(newAlphaT);
+      if (fAlphaT > f0 + c1 * newAlphaT * slope0 || fNewAlphaT >= fAlphaT && i > 1) {
+        return zoom(alphaT, newAlphaT, fAlphaT, fNewAlphaT, dAlphaT, dNewAlphaT);
+      }
+      //dNewAlphaT = f.slopeAt(newAlphaT);
+      if (abs(dNewAlphaT) <= -c2 * slope0) {
+        return newAlphaT;
+      }
+      if (dNewAlphaT >= 0) {
+        return zoom(newAlphaT, alphaT, fNewAlphaT, fAlphaT, dNewAlphaT, dAlphaT);
+      }
+      oldAlphaT = alphaT;
       alphaT = newAlphaT;
-      alphaL = newAlphaL;
-      alphaU = newAlphaU;
-      
-      fAlphaT = f.at(alphaT);
-      dAlphaT = f.slopeAt(alphaT);
-      if (firstWolfeConditionSatisfied(alphaT, fAlphaT) && secondWolfeConditionSatisfied(dAlphaT)) {
-        return alphaT;
-      }
-      else {
-        interval = updateInterval(alphaL, alphaU, alphaT, fAlphaL, fAlphaT);
-        newAlphaL = interval[0]; newAlphaU = interval[1];
-        fAlphaL = f.at(alphaL);
-        //fAlphaU = f.at(alphaU);
-        dAlphaL = f.slopeAt(alphaL);
-        //dAlphaU = f.slopeAt(alphaU);
-        newAlphaT = new CubicInterpolation(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT).minimum();
-        k++;
-      }
+      // Safeguard condition 2.2 since alphaT is increasing.
+      newAlphaT = Math.min(alphaT + DELTA_MAX * (alphaT - oldAlphaT), alphaMax);
+      i++;
     }
     return newAlphaT;
   }
-
-  private final boolean firstWolfeConditionSatisfied(final double alpha, final double fAlpha) {
-    return fAlpha <= f0 + c1 * alpha * slope0;
-  }
-
-  private final boolean secondWolfeConditionSatisfied(final double derivAlpha) {
-    return (abs(derivAlpha) -  c2 * abs(slope0)) <= 1E-12;
-  }
-
-  // We pass in fAlphaL and fAlphaT, the function values at these points, to save unnecessary computations.
-  private final double[] updateInterval(double alphaL, double alphaU, double alphaT, double fAlphaL,
-      double fAlphaT) {
-    double oldAlphaT = 0.0;
-    double dAlphaT = 0.0;
-    // Case U1
-    if (fAlphaT + slope0 * c1 * (alphaL - alphaT) > fAlphaL) {
-      // alphaL stays the same and,
-      alphaU = alphaT;
-    } else if (((dAlphaT = f.slopeAt(alphaT)) - c1 * slope0) * (alphaL - alphaT) > 0) {
-      // Safeguard condition 2.2 (p. 291)
-      oldAlphaT = alphaL;
-      alphaL = alphaT;
-      alphaT = Math.min(alphaT + DELTA_MAX * (alphaT - oldAlphaT), alphaMax);
-      if (alphaT == alphaMax) {
-        return (new double[] {alphaL, alphaU});
+  
+  private final double zoom(double alphaLo, double alphaHi, double fAlphaLo,
+          double fAlphaHi, double dAlphaLo, double dAlphaHi) {
+    double alphaJ = 0.0;
+    double fAlphaJ = 0.0;
+    double dAlphaJ = 0.0;
+    
+    int k = 1;
+    while (k < MAX_UPDATE_ITERATIONS) {
+      alphaJ = Math.max(alphaMin, new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum());
+      fAlphaJ = f.at(alphaJ);
+      dAlphaJ = f.slopeAt(alphaJ);
+      if (fAlphaJ > f0 + c1 * alphaJ * slope0 || fAlphaJ >= fAlphaLo) {
+        alphaHi = alphaJ;
+        fAlphaHi = fAlphaJ;
+        dAlphaHi = dAlphaJ;
+      } else {
+        if (abs(dAlphaJ) <= -c2 * slope0) {
+          return alphaJ;
+        }
+        if (dAlphaJ * (alphaHi - alphaLo) >= 0) {
+          alphaHi = alphaLo;
+          fAlphaHi = fAlphaLo;
+          dAlphaHi = dAlphaLo;
+        }
+        alphaLo = alphaJ;
+        fAlphaLo = fAlphaJ;
+        dAlphaLo = dAlphaJ;
       }
-      fAlphaL = fAlphaT;
-      fAlphaT = f.at(alphaT);
-      return updateInterval(alphaL, alphaU, alphaT, fAlphaL, fAlphaT);
-
-      // Case U3
-    } else if ((dAlphaT - c1 * slope0) * (alphaL - alphaT) < 0) {
-      alphaU = alphaL;
-      alphaL = alphaT;
+      k++;
     }
-    // If none of the three conditionals above are true then we leave the interval unchanged.
-    if (alphaL < alphaU) {
-      return new double[] {alphaL, alphaU};
-    }
-    return new double[] {alphaU, alphaL};
+    return alphaJ;
   }
+  
+//  private final double getTrialValue(final double alphaLo, final double alphaHi, double fAlphaLo,
+//          double fAlphaHi, double dAlphaLo, double dAlphaHi) {
+//    return new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum();
+//  }
 
   public static final Builder newBuilder(final AbstractFunction f, final double f0, final double slope0) {
     return new Builder(f, f0, slope0);
