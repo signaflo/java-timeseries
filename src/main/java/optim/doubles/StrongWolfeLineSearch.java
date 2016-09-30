@@ -142,8 +142,8 @@ public final class StrongWolfeLineSearch {
   public static final class Builder {
 
     private final AbstractFunction f;
-    private double c1 = 0.1;
-    private double c2 = 0.1;
+    private double c1 = 1E-4;
+    private double c2 = 0.9;
     private final double f0;
     private final double slope0;
     private double alphaMax = 1000.0;
