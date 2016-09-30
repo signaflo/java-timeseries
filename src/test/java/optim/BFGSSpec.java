@@ -18,5 +18,4 @@ public final class BFGSSpec {
     System.out.println(f.gradientEvalutations);
   }
 
-
 }

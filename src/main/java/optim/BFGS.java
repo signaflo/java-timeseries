@@ -70,7 +70,7 @@ public final class BFGS {
       return 1.0;
     }
     StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(lineFunction, functionValue, slope0)
-            .c1(c1).c2(c2).alpha0(0.1).build();
+            .c1(c1).c2(c2).alphaMax(1000).alpha0(0.15).build();
     return lineSearch.search();
   }
   
@@ -87,6 +87,10 @@ public final class BFGS {
   
   public final Vector iterate() {
     return this.iterate;
+  }
+  
+  public final Matrix inverseHessian() {
+    return this.H;
   }
 
 }
