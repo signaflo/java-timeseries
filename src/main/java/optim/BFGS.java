@@ -34,16 +34,18 @@ public final class BFGS {
     int k = 0;
     double priorFunctionValue = Double.POSITIVE_INFINITY;
     double functionValue = f.at(startingPoint);
-    double functionChange = priorFunctionValue - functionValue;
+    double absoluteChange = Double.MAX_VALUE;
+    double relativeChange = Double.MAX_VALUE;
     gradient = f.gradientAt(startingPoint);
-    while (gradient.norm() > gradientTolerance && functionValue > pointTolerance) {
+    while (gradient.norm() > gradientTolerance && absoluteChange > pointTolerance && relativeChange > pointTolerance) {
       searchDirection = (H.times(gradient).scaledBy(-1.0));
       stepSize = updateStepSize(k, functionValue);
       nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
       s = nextIterate.minus(iterate);
       priorFunctionValue = functionValue;
       functionValue = f.at(nextIterate);
-      functionChange = Math.abs(priorFunctionValue - functionValue);
+      absoluteChange = Math.abs(priorFunctionValue - functionValue);
+      relativeChange = Math.abs((priorFunctionValue - functionValue) / priorFunctionValue);
       nextGradient = f.gradientAt(nextIterate);
       y = nextGradient.minus(gradient);
       rho = 1 / y.dotProduct(s);
@@ -67,7 +69,7 @@ public final class BFGS {
       return 1.0;
     }
     StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(lineFunction, functionValue, slope0)
-            .c1(c1).c2(c2).alpha0(15.0).build();
+            .c1(c1).c2(c2).alpha0(20.0).build();
     return lineSearch.search();
   }
   

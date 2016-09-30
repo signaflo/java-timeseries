@@ -15,7 +15,7 @@ public final class StrongWolfeLineSearch {
   private final double c2;
   private final double f0;
   private final double slope0;
-  private final double alphaMin = 1E-4;
+  private final double alphaMin = 1E-6;
   private final double alphaMax;
   private final double alpha0;
   
@@ -76,7 +76,10 @@ public final class StrongWolfeLineSearch {
     
     int k = 1;
     while (k < MAX_UPDATE_ITERATIONS) {
-      alphaJ = Math.max(alphaMin, new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum());
+      alphaJ = new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum();
+      if (alphaJ < alphaMin) {
+        alphaJ = (alphaLo + alphaHi) / 2.0;
+      }
       fAlphaJ = f.at(alphaJ);
       dAlphaJ = f.slopeAt(alphaJ);
       if (fAlphaJ > f0 + c1 * alphaJ * slope0 || fAlphaJ >= fAlphaLo) {
@@ -96,6 +99,9 @@ public final class StrongWolfeLineSearch {
         fAlphaLo = fAlphaJ;
         dAlphaLo = dAlphaJ;
       }
+//      if (fAlphaLo > fAlphaHi) {
+//        throw new RuntimeException("The function value at alphaLo should never be higher than the function value at alphaHi");
+//      }
       k++;
     }
     return alphaJ;
