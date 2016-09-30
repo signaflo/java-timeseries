@@ -17,6 +17,7 @@ public final class BFGS {
   private Vector gradient;
   private Vector nextGradient;
   private Vector searchDirection;
+  private double functionValue = 0.0;
   private double stepSize = 0.0;
   private double rho = 0.0;
   private Vector s;
@@ -33,7 +34,7 @@ public final class BFGS {
     this.iterate = startingPoint;
     int k = 0;
     double priorFunctionValue = Double.POSITIVE_INFINITY;
-    double functionValue = f.at(startingPoint);
+    functionValue = f.at(startingPoint);
     double absoluteChange = Double.MAX_VALUE;
     double relativeChange = Double.MAX_VALUE;
     gradient = f.gradientAt(startingPoint);
@@ -69,7 +70,7 @@ public final class BFGS {
       return 1.0;
     }
     StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(lineFunction, functionValue, slope0)
-            .c1(c1).c2(c2).alpha0(20.0).build();
+            .c1(c1).c2(c2).alpha0(0.1).build();
     return lineSearch.search();
   }
   
@@ -78,6 +79,14 @@ public final class BFGS {
     Matrix piece2 = identity.minus(y.outerProduct(s).scaledBy(rho));
     Matrix piece3 = s.outerProduct(s).scaledBy(rho);
     return piece1.times(H).times(piece2).plus(piece3);
+  }
+  
+  public final double functionValue() {
+    return this.functionValue;
+  }
+  
+  public final Vector iterate() {
+    return this.iterate;
   }
 
 }

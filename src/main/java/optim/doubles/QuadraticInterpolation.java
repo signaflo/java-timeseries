@@ -51,8 +51,70 @@ final class QuadraticInterpolation {
 
   static final double threePointMinimum(final double x1, final double x2, final double x3, final double y1,
       final double y2, final double y3) {
-    final double top = (y1 - y2) * (x2 - x3) * (x3 - x1);
-    final double bottom = y1 * (x2 - x3) + y2 * (x3 - x1) + y3 * (x1 - x2);
-    return 0.5 * (x1 + x2 + (top / bottom));
+    final double a1;
+    final double a2;
+    final double a3;
+    final double b1;
+    final double b2;
+    final double b3;
+    
+    if (x1 <= x2) {
+      if (x1 <= x3) {
+        if (x2 <= x3) {
+          a1 = x1;
+          a2 = x2;
+          a3 = x3;
+          b1 = y1;
+          b2 = y2;
+          b3 = y3;
+        }
+        else {
+          a1 = x1;
+          a2 = x3;
+          a3 = x2;
+          b1 = y1;
+          b2 = y3;
+          b3 = y2;
+        }
+      }
+      else {
+        a1 = x3;
+        a2 = x1;
+        a3 = x2;
+        b1 = y3;
+        b2 = y1;
+        b3 = y2;
+      }
+    }
+    else if (x2 <= x3) {
+      if (x1 <= x3) {
+        a1 = x2;
+        a2 = x1;
+        a3 = x3;
+        b1 = y2;
+        b2 = y1;
+        b3 = y3;
+      }
+      else {
+        a1 = x2;
+        a2 = x3;
+        a3 = x1;
+        b1 = y2;
+        b2 = y3;
+        b3 = y1;
+      }
+    }
+    else {
+      a1 = x3;
+      a2 = x2;
+      a3 = x1;
+      b1 = y3;
+      b2 = y2;
+      b3 = y1;
+    }
+    final double top = (b1 - b2) * (a2 - a3) * (a3 - a1);
+    final double bottom = b1 * (a2 - a3) + b2 * (a3 - a1) + b3 * (a1 - a2);
+    return 0.5 * (a1 + a2 + (top / bottom));
   }
+  
 }

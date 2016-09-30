@@ -44,4 +44,11 @@ final class CubicInterpolation {
       throw new RuntimeException("The two x values cannot be the same. x1 and x2 were both equal to: " + x1);
     }
   }
+  
+  static final double nocedalFunction(final double x1, final double x2, final double y1, final double y2, final double dydx1,
+      final double dydx2) {
+    final double d1 = dydx2 + dydx1 - 3 * ((y2 - y1) / (x2 - x1));
+    final double d2 = Math.signum(x1 - x2) * Math.sqrt(d1 * d1 - dydx2 * dydx1);
+    return x1 - (x1 - x2) * ((dydx1 + d2 - d1) / (dydx1 - dydx2 + 2*d2));
+  }
 }
