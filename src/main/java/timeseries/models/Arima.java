@@ -109,8 +109,11 @@ public final class Arima {
   private Matrix getInitialHessian(final double[] initParams) {
     final int n = initParams.length;
     final Matrix.IdentityBuilder builder = new Matrix.IdentityBuilder(n);
-    final double meanParScale = 10 * differencedSeries.stdDeviation() / Math.sqrt(differencedSeries.n());
-    return builder.set(n - 1, n - 1, meanParScale).build();
+    if (order.constant == 1) {
+      final double meanParScale = 10 * differencedSeries.stdDeviation() / Math.sqrt(differencedSeries.n());
+      return builder.set(n - 1, n - 1, meanParScale).build();
+    }
+    return builder.build();
   }
   /**
    * Create a new ARIMA model from the given observations, model coefficients, and seasonal cycle. This constructor sets
