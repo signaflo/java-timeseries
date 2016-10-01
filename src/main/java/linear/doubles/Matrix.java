@@ -107,5 +107,28 @@ public final class Matrix {
   public String toString() {
     return "Matrix [nrow=" + nrow + ", ncol=" + ncol + ", data=" + Arrays.toString(data) + "]";
   }
+  
+  public static final class IdentityBuilder {
+    
+    final int n;
+    final double[] data;
+    
+    public IdentityBuilder(final int n) {
+      this.n = n;
+      this.data = new double[n * n];
+      for (int i = 0; i < n; i++) {
+        this.data[i * n + i] = 1.0;
+      }
+    }
+    
+    public final IdentityBuilder setElement(final int i, final int j, final double value) {
+      this.data[i * n + j] = value;
+      return this;
+    }
+    
+    public final Matrix build() {
+      return new Matrix(n, n, data);
+    }
+  }
 
 }

@@ -56,5 +56,12 @@ public final class MatrixSpec {
     final double[] expectedData = new double[] {38.0, 30.0, 32.0};
     assertThat(product.elements(), is(equalTo(expectedData)));
   }
+  
+  @Test
+  public void testMatrixCreation() {
+    final Matrix.IdentityBuilder builder = new Matrix.IdentityBuilder(3);
+    final Matrix matrix = builder.setElement(1, 2, 3.0).build();
+    System.out.println(matrix);
+  }
 
 }

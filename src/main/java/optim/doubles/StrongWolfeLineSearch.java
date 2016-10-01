@@ -147,7 +147,7 @@ public final class StrongWolfeLineSearch {
     private final double f0;
     private final double slope0;
     private double alphaMax = 1000.0;
-    private double alpha0 = 5.0;
+    private double alpha0 = 2.0;
 
     public Builder(AbstractFunction f, double f0, double slope0) {
       this.f = f;
