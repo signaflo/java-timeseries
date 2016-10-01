@@ -99,6 +99,14 @@ public final class Matrix {
     return new Matrix(this.nrow, this.ncol, minus);
   }
   
+  public final double[] diagonal() {
+    final double[] diag = new double[Math.min(nrow, ncol)];
+    for (int i = 0; i < diag.length; i++) {
+      diag[i] = data[i * ncol + i];
+    }
+    return diag;
+  }
+  
   public final double[] data() {
     return this.data.clone();
   }

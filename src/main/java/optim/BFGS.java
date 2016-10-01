@@ -8,8 +8,8 @@ import optim.doubles.StrongWolfeLineSearch;
 
 public final class BFGS {
   
-  private static final double c1 = 1E-4;
-  private static final double c2 = 0.9;
+  private static final double c1 = 1E-3;
+  private static final double c2 = 0.5;
   
   private final AbstractMultivariateFunction f;
   private Vector iterate;
@@ -37,7 +37,7 @@ public final class BFGS {
     functionValue = f.at(startingPoint);
     double absoluteChange = Double.MAX_VALUE;
     double relativeChange = Double.MAX_VALUE;
-    gradient = f.gradientAt(startingPoint);
+    gradient = f.gradientAt(startingPoint, functionValue);
     while (gradient.norm() > gradientTolerance && absoluteChange > pointTolerance && relativeChange > pointTolerance) {
       searchDirection = (H.times(gradient).scaledBy(-1.0));
       stepSize = updateStepSize(k, functionValue);
@@ -47,7 +47,7 @@ public final class BFGS {
       functionValue = f.at(nextIterate);
       absoluteChange = Math.abs(priorFunctionValue - functionValue);
       relativeChange = Math.abs((priorFunctionValue - functionValue) / priorFunctionValue);
-      nextGradient = f.gradientAt(nextIterate);
+      nextGradient = f.gradientAt(nextIterate, functionValue);
       y = nextGradient.minus(gradient);
       rho = 1 / y.dotProduct(s);
       H = updateHessian(k);
@@ -65,12 +65,8 @@ public final class BFGS {
   private final double updateStepSize(final int k, final double functionValue) {
     final double slope0 = gradient.dotProduct(searchDirection);
     final QuasiNewtonLineFunction lineFunction = new QuasiNewtonLineFunction(this.f, iterate, searchDirection);
-    final double alpha1 = lineFunction.at(1.0);
-    if (alpha1 <= functionValue + c1 * slope0 && Math.abs(alpha1) <= c2 * Math.abs(slope0)) {
-      return 1.0;
-    }
     StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(lineFunction, functionValue, slope0)
-            .c1(c1).c2(c2).alphaMax(1000).alpha0(0.15).build();
+            .c1(c1).c2(c2).alphaMax(1000).alpha0(1.0).build();
     return lineSearch.search();
   }
   

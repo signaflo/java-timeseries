@@ -1,10 +1,9 @@
 package timeseries.models;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
 import static data.DoubleFunctions.newArray;
-import java.util.Arrays;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.is;
 
 import org.junit.Test;
 
@@ -12,8 +11,7 @@ import data.TestData;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.TimeUnit;
-
-import timeseries.models.Arima.ModelCoefficients;
+import timeseries.models.Arima.ModelOrder;
 
 public class ArimaSpec {
   
@@ -31,13 +29,13 @@ public class ArimaSpec {
     TimeSeries series = TestData.ukcars();
     double[] arCoeffs = newArray( -0.2552);
     double[] sarCoeffs = newArray(-0.6188);
-    ModelCoefficients.Builder builder = ModelCoefficients.newBuilder();
-    ModelCoefficients modelCoeffs = builder.setArCoeffs(arCoeffs).setSarCoeffs(sarCoeffs)
-        .setDiff(1).setSeasDiff(1).build();
-    Arima model = new Arima(series, modelCoeffs, TimePeriod.oneYear());
-    assertThat(model.intercept(), is(closeTo(0.00146, 1E-1)));
-    System.out.println(model.logLikelihood());
-    System.out.println(model.sigma2());
+    ModelOrder order = new ModelOrder(1, 0, 0, 1, 0, 0, true);
+    Arima model = new Arima(series, order, TimePeriod.oneYear());
+    new Arima(series, order, TimePeriod.oneYear());
+    new Arima(series, order, TimePeriod.oneYear());
+    //assertThat(model.intercept(), is(closeTo(0.00146, 1E-1)));
+//    System.out.println(model.logLikelihood());
+//    System.out.println(model.sigma2());
     
   }
 

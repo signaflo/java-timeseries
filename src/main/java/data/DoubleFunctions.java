@@ -88,6 +88,14 @@ public final class DoubleFunctions {
     return invBoxCoxed;
   }
   
+  public static final double[] sqrt(final double[] data) {
+    final double[] sqrtData = new double[data.length];
+    for (int i = 0; i < sqrtData.length; i++) {
+      sqrtData[i] = Math.sqrt(data[i]);
+    }
+    return sqrtData;
+  }
+  
   /**
    * Remove the mean form the given data and return the result in a new array.
    * @param data the data to remove the mean from.
