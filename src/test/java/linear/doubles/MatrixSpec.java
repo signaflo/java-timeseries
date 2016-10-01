@@ -60,7 +60,7 @@ public final class MatrixSpec {
   @Test
   public void testMatrixCreation() {
     final Matrix.IdentityBuilder builder = new Matrix.IdentityBuilder(3);
-    final Matrix matrix = builder.setElement(1, 2, 3.0).build();
+    final Matrix matrix = builder.set(1, 2, 3.0).set(1, 0, 4.5).build();
     System.out.println(matrix);
   }
 

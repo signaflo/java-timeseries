@@ -121,7 +121,7 @@ public final class Matrix {
       }
     }
     
-    public final IdentityBuilder setElement(final int i, final int j, final double value) {
+    public final IdentityBuilder set(final int i, final int j, final double value) {
       this.data[i * n + j] = value;
       return this;
     }
