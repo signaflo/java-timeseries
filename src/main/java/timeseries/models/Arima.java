@@ -55,7 +55,7 @@ public final class Arima {
   private final TimeSeries residuals;
   private final int seasonalFrequency;
 
-  // ModelOrder stores he number of parameters, degree of differencing, and constant flag.
+  // ModelOrder stores the number of parameters, degree of differencing, and constant flag.
   private final ModelOrder order;
   private final ModelCoefficients coeffs;
   private final ModelInformation modelInfo;
@@ -76,54 +76,45 @@ public final class Arima {
    *        hourly data likely has a cycle of one day, etc... For a non-typical example, one could specify a seasonal
    *        cycle of half a year using a time period of six months, or, equivalently, two quarters.
    */
-   Arima(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle) {
-   this.observations = observations;
-   this.order = order;
-   this.seasonalFrequency = (int)(observations.timePeriod().frequencyPer(seasonalCycle));
-   this.differencedSeries = observations.difference(1, order.d).difference(seasonalFrequency, order.D);
-   final Vector initParams = new Vector(getInitialParameters());
-   final Matrix initHessian = getInitialHessian(initParams.elements());
-   final AbstractMultivariateFunction function = new OptimFunction(differencedSeries, order, 
-       FittingStrategy.USS, seasonalFrequency);
-   final long start = System.currentTimeMillis();
-   final BFGS optimizer = new BFGS(function, initParams, 1e-8, 1e-8, initHessian);
-   long end = System.currentTimeMillis();
-   System.out.println(end - start + " milliseconds.");
-   final Vector optimizedParams = optimizer.iterate();
-   final Matrix inverseHessian = optimizer.inverseHessian();
-   final double[] stdErrors = DoubleFunctions.sqrt(inverseHessian.scaledBy((1.0)/differencedSeries.n()).diagonal());
-   System.out.println(function.functionEvaluations());
-   System.out.println(function.gradientEvaluations());
-   System.out.println(optimizedParams);
-   System.out.println(Arrays.toString(stdErrors));
-   this.residuals = null;
-   this.fittedSeries = null;
-   this.coeffs = null;
-   this.arCoeffs = null;
-   this.maCoeffs = null;
-   this.mean = 0.0;
-   this.intercept = 0.0;
-   this.modelInfo = null;
-   }
-   
-  private Matrix getInitialHessian(final double[] initParams) {
-    final int n = initParams.length;
-    final Matrix.IdentityBuilder builder = new Matrix.IdentityBuilder(n);
-    if (order.constant == 1) {
-      final double meanParScale = 10 * differencedSeries.stdDeviation() / Math.sqrt(differencedSeries.n());
-      return builder.set(n - 1, n - 1, meanParScale).build();
-    }
-    return builder.build();
+  Arima(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle) {
+    this.observations = observations;
+    this.order = order;
+    this.seasonalFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
+    this.differencedSeries = observations.difference(1, order.d).difference(seasonalFrequency, order.D);
+    final Vector initParams = new Vector(getInitialParameters());
+    final Matrix initHessian = getInitialHessian(initParams.elements());
+    final AbstractMultivariateFunction function = new OptimFunction(differencedSeries, order, FittingStrategy.USS,
+        seasonalFrequency);
+    final long start = System.currentTimeMillis();
+    final BFGS optimizer = new BFGS(function, initParams, 1e-8, 1e-8, initHessian);
+    long end = System.currentTimeMillis();
+    System.out.println(end - start + " milliseconds.");
+    final Vector optimizedParams = optimizer.iterate();
+    final Matrix inverseHessian = optimizer.inverseHessian();
+    final double[] stdErrors = DoubleFunctions.sqrt(inverseHessian.scaledBy((1.0) / differencedSeries.n()).diagonal());
+    System.out.println(function.functionEvaluations());
+    System.out.println(function.gradientEvaluations());
+    System.out.println(optimizedParams);
+    System.out.println(Arrays.toString(stdErrors));
+    this.residuals = null;
+    this.fittedSeries = null;
+    this.coeffs = null;
+    this.arCoeffs = null;
+    this.maCoeffs = null;
+    this.mean = 0.0;
+    this.intercept = 0.0;
+    this.modelInfo = null;
   }
+
   /**
    * Create a new ARIMA model from the given observations, model coefficients, and seasonal cycle. This constructor sets
    * the model's {@link FittingStrategy} to unconditional sum-of-squares.
    * 
    * @param observations the time series of observations.
    * @param coeffs the parameter coefficients of the model.
-   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle, For
+   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle. For
    *        example, monthly or quarterly data typically has a cycle of one year, hourly data may have a cycle of one
-   *        day, etc... For less typical examples, one could specify a seasonal cycle of half of a year, five
+   *        day, etc... For less typical situations, one could specify a seasonal cycle of, e.g., half of a year, five
    *        milliseconds, or two decades.
    */
   public Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimePeriod seasonalCycle) {
@@ -135,9 +126,9 @@ public final class Arima {
    * 
    * @param observations the time series of observations.
    * @param coeffs the parameter coefficients of the model.
-   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle, For
+   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle. For
    *        example, monthly or quarterly data typically has a cycle of one year, hourly data may have a cycle of one
-   *        day, etc... For less typical examples, one could specify a seasonal cycle of half of a year, five
+   *        day, etc... For less typical situations, one could specify a seasonal cycle of, e.g., half of a year, five
    *        milliseconds, or two decades.
    * @param fittingStrategy the strategy to use to fit the model to the data. Results may differ from dataset to
    *        dataset, but on average, unconditional sum-of-squares outperforms conditional sum-of-squares.
@@ -193,6 +184,16 @@ public final class Arima {
     return modelInfo.logLikelihood;
   }
 
+  private Matrix getInitialHessian(final double[] initParams) {
+    final int n = initParams.length;
+    final Matrix.IdentityBuilder builder = new Matrix.IdentityBuilder(n);
+    if (order.constant == 1) {
+      final double meanParScale = 10 * differencedSeries.stdDeviation() / Math.sqrt(differencedSeries.n());
+      return builder.set(n - 1, n - 1, meanParScale).build();
+    }
+    return builder.build();
+  }
+
   private final double[] getInitialParameters() {
     // Set initial constant to the mean and all other parameters to zero.
     double[] initParams = new double[order.sumARMA() + order.constant];
@@ -205,7 +206,7 @@ public final class Arima {
   // Expand the AR coefficients by combining the non-seasonal and seasonal coefficients into a single
   // array, which takes advantage of the fact that a seasonal AR model is a special case of a non-seasonal
   // AR model with zero coefficients at the non-seasonal indices.
-  public static final double[] expandArCoefficients(final double[] arCoeffs, final double[] sarCoeffs,
+  static final double[] expandArCoefficients(final double[] arCoeffs, final double[] sarCoeffs,
       final int seasonalFrequency) {
     double[] arSarCoeffs = new double[arCoeffs.length + sarCoeffs.length * seasonalFrequency];
 
@@ -228,7 +229,7 @@ public final class Arima {
   // Expand the AR coefficients by combining the non-seasonal and seasonal coefficients into a single
   // array, which takes advantage of the fact that a seasonal AR model is a special case of a non-seasonal
   // AR model with zero coefficients at the non-seasonal indices.
-  public static final double[] expandMaCoefficients(final double[] maCoeffs, final double[] smaCoeffs,
+  static final double[] expandMaCoefficients(final double[] maCoeffs, final double[] smaCoeffs,
       final int seasonalFrequency) {
     double[] maSmaCoeffs = new double[maCoeffs.length + smaCoeffs.length * seasonalFrequency];
 
@@ -238,7 +239,7 @@ public final class Arima {
 
     // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
     // which arises because the model's ma and sma polynomials are multiplied together.
-    // In contrast to the ar polynomial, the ma and sma interaction maintains a positive sign.
+    // In contrast to the ar polynomial, the ma and sma product maintains a positive sign.
     for (int i = 0; i < smaCoeffs.length; i++) {
       maSmaCoeffs[(i + 1) * seasonalFrequency - 1] = smaCoeffs[i];
       for (int j = 0; j < maCoeffs.length; j++) {
@@ -253,7 +254,7 @@ public final class Arima {
    * 
    * @return information about the model fit.
    */
-  public static final ModelInformation fitCss(final TimeSeries differencedSeries, final double[] arCoeffs,
+  static final ModelInformation fitCss(final TimeSeries differencedSeries, final double[] arCoeffs,
       final double[] maCoeffs, final double mean) {
     final int offset = arCoeffs.length;
     final int n = differencedSeries.n();
@@ -278,11 +279,12 @@ public final class Arima {
 
   /**
    * Fit the model using unconditional sum-of-squares, utilizing back-forecasting to estimate the residuals for the
-   * first few observations.
+   * first few observations. This method, compared to conditional sum-of-squares, often gives estimates much closer 
+   * to those obtained from maximum-likelihood fitting, especially for shorter series.
    * 
    * @return information about the model fit.
    */
-  public static final ModelInformation fitUss(final TimeSeries differencedSeries, final double[] arCoeffs,
+  static final ModelInformation fitUss(final TimeSeries differencedSeries, final double[] arCoeffs,
       final double[] maCoeffs, final double mean) {
     int n = differencedSeries.n();
     final int m = arCoeffs.length;
@@ -329,10 +331,10 @@ public final class Arima {
   }
 
   /*
-   * Start with the difference equation form of the model (Cryer and Chan 2008, 5.2): diffedSeries_t = ArmaProcess_t
-   * Then, subtracting diffedSeries_t from both sides, we have ArmaProcess_t - diffedSeries_t = 0 Now add Y_t to both
-   * sides and rearrange terms to obtain Y_t = Y_t - diffedSeries_t + ArmaProcess_t Thus, our in-sample estimate of Y_t,
-   * the "integrated" series, is Y_t(hat) = Y_t - diffedSeries_t + fittedArmaProcess_t
+   * Start with the difference equation form of the model (Cryer and Chan 2008, 5.2): diffedSeries_t = ArmaProcess_t.
+   * Then, subtracting diffedSeries_t from both sides, we have ArmaProcess_t - diffedSeries_t = 0. Now add Y_t to both
+   * sides and rearrange terms to obtain Y_t = Y_t - diffedSeries_t + ArmaProcess_t. Thus, our in-sample estimate of
+   * Y_t, the "integrated" series, is Y_t(hat) = Y_t - diffedSeries_t + fittedArmaProcess_t
    */
   private final double[] integrate(final double[] fitted) {
     final int offset = this.order.d + this.order.D * this.seasonalFrequency;
@@ -346,7 +348,12 @@ public final class Arima {
     return integrated;
   }
 
-  final double intercept() {
+  /**
+   * The model intercept term. Note that this is <i>not</i> the model mean, as in R, but the actual intercept.
+   * 
+   * @return the model intercept term.
+   */
+  public final double intercept() {
     return this.intercept;
   }
 

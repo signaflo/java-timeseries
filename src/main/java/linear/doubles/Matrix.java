@@ -45,6 +45,11 @@ public final class Matrix {
     return new Matrix(this.nrow, this.ncol, sum);
   }
   
+  /**
+   * Multiply this matrix by the given matrix and return the result in a new Matrix.
+   * @param other the matrix to multiply this one by.
+   * @return a new matrix that is the product of this one with the given one.
+   */
   public final Matrix times(final Matrix other) {
     if (this.ncol != other.nrow) {
       throw new IllegalArgumentException("The columns of this matrix must equal the rows of the other matrix. "
@@ -116,6 +121,12 @@ public final class Matrix {
     return "Matrix [nrow=" + nrow + ", ncol=" + ncol + ", data=" + Arrays.toString(data) + "]";
   }
   
+  /**
+   * A class that allows one to start with an identity matrix, then set specific elements before creating
+   * an immutable Matrix.
+   * @author Jacob Rachiele
+   *
+   */
   public static final class IdentityBuilder {
     
     final int n;

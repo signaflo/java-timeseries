@@ -17,7 +17,7 @@ public final class StrongWolfeLineSearch {
   private final double alphaMin = 1E-6;
   private final double alphaMax;
   private final double alpha0;
-  
+
   private double oldAlphaT = 0.0;
   private double alphaT = 0.0;
   private double newAlphaT = 0.0;
@@ -26,10 +26,9 @@ public final class StrongWolfeLineSearch {
   private double dAlphaT = 0.0;
   private double fNewAlphaT = 0.0;
   private double dNewAlphaT = 0.0;
-  
+
   private double gradientTolerance = 1E-8;
   int m = 0;
-  
 
   public StrongWolfeLineSearch(final Builder builder) {
     this.f = builder.f;
@@ -45,8 +44,8 @@ public final class StrongWolfeLineSearch {
     fNewAlphaT = f0;
     dNewAlphaT = slope0;
     newAlphaT = alpha0;
-    
-    int i = 1;   
+
+    int i = 1;
     while (i < MAX_UPDATE_ITERATIONS) {
       m++;
       fAlphaT = fNewAlphaT;
@@ -56,7 +55,7 @@ public final class StrongWolfeLineSearch {
       if (fNewAlphaT > f0 + c1 * newAlphaT * slope0 || fNewAlphaT >= fAlphaT && i > 1) {
         return zoom(alphaT, newAlphaT, fAlphaT, fNewAlphaT, dAlphaT, dNewAlphaT);
       }
-      //dNewAlphaT = f.slopeAt(newAlphaT);
+      // dNewAlphaT = f.slopeAt(newAlphaT);
       if (abs(dNewAlphaT) <= -c2 * slope0) {
         return newAlphaT;
       }
@@ -71,21 +70,21 @@ public final class StrongWolfeLineSearch {
     }
     return newAlphaT;
   }
-  
-  private final double zoom(double alphaLo, double alphaHi, double fAlphaLo,
-          double fAlphaHi, double dAlphaLo, double dAlphaHi) {
+
+  private final double zoom(double alphaLo, double alphaHi, double fAlphaLo, double fAlphaHi, double dAlphaLo,
+      double dAlphaHi) {
     double alphaJ = 0.0;
     double fAlphaJ = 0.0;
-    double dAlphaJ = 1.0;  
-//    double mid = 0.0;
-//    double fMid = 0.0;
-    
+    double dAlphaJ = 1.0;
+    // double mid = 0.0;
+    // double fMid = 0.0;
+
     int k = 1;
     while (k < MAX_UPDATE_ITERATIONS && abs(dAlphaJ) > gradientTolerance) {
       m++;
-//      mid = 0.80*alphaLo + 0.2*alphaHi;
-//      fMid = f.at(mid);
-//      alphaJ = QuadraticInterpolation.threePointMinimum(alphaLo, mid, alphaHi, fAlphaLo, fMid, fAlphaHi);
+      // mid = 0.80*alphaLo + 0.2*alphaHi;
+      // fMid = f.at(mid);
+      // alphaJ = QuadraticInterpolation.threePointMinimum(alphaLo, mid, alphaHi, fAlphaLo, fMid, fAlphaHi);
       alphaJ = getTrialValue(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi);
       if (alphaJ < alphaMin) {
         alphaJ = 0.8 * alphaLo + 0.2 * alphaHi;
@@ -96,7 +95,7 @@ public final class StrongWolfeLineSearch {
         alphaHi = alphaJ;
         fAlphaHi = fAlphaJ;
         dAlphaHi = dAlphaJ;
-      } else {  
+      } else {
         if (abs(dAlphaJ) <= -c2 * slope0) {
           return alphaJ;
         }
@@ -113,20 +112,20 @@ public final class StrongWolfeLineSearch {
     }
     return alphaJ;
   }
-  
-  private final double getTrialValue(final double alphaLo, final double alphaHi, double fAlphaLo,
-          double fAlphaHi, double dAlphaLo, double dAlphaHi) {
+
+  private final double getTrialValue(final double alphaLo, final double alphaHi, double fAlphaLo, double fAlphaHi,
+      double dAlphaLo, double dAlphaHi) {
     final double alphaC;
     final double alphaQ;
     final double alphaS;
     if (fAlphaHi > fAlphaLo) {
       alphaC = new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum();
       alphaQ = new QuadraticInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo).minimum();
-      return (abs(alphaC - alphaLo) < abs(alphaQ - alphaLo))? alphaC : 0.5 * (alphaQ + alphaC);
+      return (abs(alphaC - alphaLo) < abs(alphaQ - alphaLo)) ? alphaC : 0.5 * (alphaQ + alphaC);
     } else if (dAlphaLo * dAlphaHi < 0) {
       alphaC = new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum();
       alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaLo, alphaHi, dAlphaLo, dAlphaHi);
-      return (abs(alphaC - alphaHi) >= abs(alphaS - alphaHi))? alphaC : alphaS;
+      return (abs(alphaC - alphaHi) >= abs(alphaS - alphaHi)) ? alphaC : alphaS;
     } else if (abs(dAlphaHi) <= abs(dAlphaLo)) {
       alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaLo, alphaHi, dAlphaLo, dAlphaHi);
       return alphaS;

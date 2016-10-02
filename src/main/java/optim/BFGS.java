@@ -71,10 +71,10 @@ public final class BFGS {
   }
   
   private final Matrix updateHessian(final int k) {
-    Matrix piece1 = identity.minus(s.outerProduct(y).scaledBy(rho));
-    Matrix piece2 = identity.minus(y.outerProduct(s).scaledBy(rho));
-    Matrix piece3 = s.outerProduct(s).scaledBy(rho);
-    return piece1.times(H).times(piece2).plus(piece3);
+    Matrix a = identity.minus(s.outerProduct(y).scaledBy(rho));
+    Matrix b = identity.minus(y.outerProduct(s).scaledBy(rho));
+    Matrix c = s.outerProduct(s).scaledBy(rho);
+    return a.times(H).times(b).plus(c);
   }
   
   public final double functionValue() {

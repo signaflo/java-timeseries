@@ -26,10 +26,10 @@ public class ArimaSpec {
   
   @Test
   public void whenArimaModelFitKnownCoefficientsInterceptCorrect() {
-    TimeSeries series = TestData.livestock();
+    TimeSeries series = TestData.ausbeerSeries();
     double[] arCoeffs = newArray( -0.2552);
     double[] sarCoeffs = newArray(-0.6188);
-    ModelOrder order = new ModelOrder(1, 1, 1, 0, 0, 0, false);
+    ModelOrder order = new ModelOrder(1, 1, 1, 1, 1, 0, false);
     Arima model = new Arima(series, order, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());

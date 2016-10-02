@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -83,16 +85,23 @@ public final class TimeSeries extends DataSet {
     this.n = series.length;
     this.mean = super.mean();
     this.timePeriod = timePeriod;
+    Map<OffsetDateTime, Integer> dateTimeIndex = new HashMap<>(series.length);
     List<OffsetDateTime> dateTimes = new ArrayList<>(series.length);
-
+    OffsetDateTime dateTime;
     try {
-      dateTimes.add(OffsetDateTime.parse(startTime));
+      dateTime = OffsetDateTime.parse(startTime);
+      dateTimes.add(dateTime);
+      dateTimeIndex.put(dateTime, 0);
     } catch (DateTimeParseException e) {
-      dateTimes.add(OffsetDateTime.of(LocalDateTime.parse(startTime), ZoneOffset.ofHours(0)));
+      dateTime = OffsetDateTime.of(LocalDateTime.parse(startTime), ZoneOffset.ofHours(0));
+      dateTimes.add(dateTime);
+      dateTimeIndex.put(dateTime, 0);
     }
 
     for (int i = 1; i < series.length; i++) {
-      dateTimes.add(dateTimes.get(i - 1).plus(totalPeriodLength(timePeriod), timePeriod.timeUnit().temporalUnit()));
+      dateTime = dateTimes.get(i - 1).plus(totalPeriodLength(timePeriod), timePeriod.timeUnit().temporalUnit());
+      dateTimes.add(dateTime);
+      dateTimeIndex.put(dateTime, i);
     }
     this.observationTimes = Collections.unmodifiableList(dateTimes);
   }
