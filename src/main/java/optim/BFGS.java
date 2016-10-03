@@ -8,8 +8,8 @@ import optim.doubles.StrongWolfeLineSearch;
 
 public final class BFGS {
   
-  private static final double c1 = 1E-3;
-  private static final double c2 = 0.5;
+  private static final double c1 = 1E-4;
+  private static final double c2 = 0.9;
   
   private final AbstractMultivariateFunction f;
   private Vector iterate;

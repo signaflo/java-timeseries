@@ -29,7 +29,7 @@ public class ArimaSpec {
     TimeSeries series = TestData.ausbeerSeries();
     double[] arCoeffs = newArray( -0.2552);
     double[] sarCoeffs = newArray(-0.6188);
-    ModelOrder order = new ModelOrder(1, 1, 1, 1, 1, 0, false);
+    ModelOrder order = new ModelOrder(1, 1, 1, 0, 1, 0, false);
     Arima model = new Arima(series, order, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());

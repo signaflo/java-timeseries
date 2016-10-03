@@ -329,6 +329,24 @@ public final class Arima {
     final double logLikelihood = (-n / 2) * (Math.log(2 * Math.PI * sigma2) + 1);
     return new ModelInformation(sigma2, logLikelihood, residuals, extendedFit);
   }
+  
+  public final double[] forecast(final int steps) {
+    final int n = differencedSeries.n();
+    final double[] resid = this.residuals.series();
+    final double[] fcst = new double[n + steps];
+    System.arraycopy(differencedSeries.series(), 0, fcst, 0, n);
+    for (int t = 0; t < steps; t++) {
+      fcst[n + t] += mean;
+      for (int i = 0; i < arCoeffs.length; i++) {
+        fcst[n + t] += arCoeffs[i] * (fcst[n + t - i] - mean);
+      }
+      for (int j = 0; j < maCoeffs.length; j++) {
+        fcst[n + t] += maCoeffs[j] * resid[n + t - j];
+      }
+    }
+    return slice(fcst, n - 1, n + steps - 1);
+  }
+  
 
   /*
    * Start with the difference equation form of the model (Cryer and Chan 2008, 5.2): diffedSeries_t = ArmaProcess_t.
