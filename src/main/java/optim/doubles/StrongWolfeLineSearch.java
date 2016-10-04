@@ -14,7 +14,7 @@ public final class StrongWolfeLineSearch {
   private final double c2;
   private final double f0;
   private final double slope0;
-  private final double alphaMin = 1E-6;
+  private final double alphaMin = 1E-3;
   private final double alphaMax;
   private final double alpha0;
 
@@ -51,6 +51,9 @@ public final class StrongWolfeLineSearch {
       fAlphaT = fNewAlphaT;
       dAlphaT = dNewAlphaT;
       fNewAlphaT = f.at(newAlphaT);
+      if (abs(fNewAlphaT) == Double.POSITIVE_INFINITY) {
+        return alphaMin;
+      }
       dNewAlphaT = f.slopeAt(newAlphaT);
       if (fNewAlphaT > f0 + c1 * newAlphaT * slope0 || fNewAlphaT >= fAlphaT && i > 1) {
         return zoom(alphaT, newAlphaT, fAlphaT, fNewAlphaT, dAlphaT, dNewAlphaT);

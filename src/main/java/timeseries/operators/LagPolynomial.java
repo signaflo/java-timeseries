@@ -19,6 +19,10 @@ public class LagPolynomial {
     this.degree = parameters.length;
   }
   
+  public static final LagPolynomial firstDifference() {
+    return new LagPolynomial(-1.0);
+  }
+  
   public final double[] parameters() {
     return this.parameters.clone();
   }
@@ -42,6 +46,14 @@ public class LagPolynomial {
   }
   
   public double applyInverse(final TimeSeries timeSeries, final int index) {
+    double value = 0.0;
+    for (int i = 0; i < parameters.length; i++) {
+      value -= parameters[i] * LagOperator.apply(timeSeries, index, i + 1);
+    }
+    return value;
+  }
+  
+  public double applyInverse(final double[] timeSeries, final int index) {
     double value = 0.0;
     for (int i = 0; i < parameters.length; i++) {
       value -= parameters[i] * LagOperator.apply(timeSeries, index, i + 1);

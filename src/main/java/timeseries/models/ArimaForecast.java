@@ -1,5 +1,6 @@
 package timeseries.models;
 
-public class ArimaForecast {
+public final class ArimaForecast {
+  
 
 }

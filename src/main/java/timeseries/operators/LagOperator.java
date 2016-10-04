@@ -24,5 +24,9 @@ public final class LagOperator {
   public static final double apply(final TimeSeries series, final int index, final int times) {
     return series.at(index - times);
   }
+  
+  public static final double apply(final double[] series, final int index, final int times) {
+    return series[index - times];
+  }
 
 }

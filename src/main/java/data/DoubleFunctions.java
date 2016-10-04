@@ -109,4 +109,12 @@ public final class DoubleFunctions {
     }
     return demeaned;
   }
+  
+  public static final double[] negativeOf(final double[] data) {
+    final double[] negative = new double[data.length];
+    for (int i = 0; i < negative.length; i++) {
+      negative[i] = -data[i];
+    }
+    return negative;
+  }
 }

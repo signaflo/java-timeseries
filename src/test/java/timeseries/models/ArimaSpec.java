@@ -5,6 +5,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 import data.TestData;
@@ -25,14 +27,14 @@ public class ArimaSpec {
   }
   
   @Test
-  public void whenArimaModelFitKnownCoefficientsInterceptCorrect() {
-    TimeSeries series = TestData.ausbeerSeries();
-    double[] arCoeffs = newArray( -0.2552);
-    double[] sarCoeffs = newArray(-0.6188);
-    ModelOrder order = new ModelOrder(1, 1, 1, 0, 1, 0, false);
+  public void whenArimaModelFitKnownCoefficientsInterceptCorrect() throws Exception {
+    TimeSeries series = TestData.livestock();
+    ModelOrder order = new ModelOrder(1, 1, 1, 0, 0, 0, false);
     Arima model = new Arima(series, order, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());
+    System.out.println(Arrays.toString(model.forecast(10)));
+    //Thread.sleep(50000L);
     //assertThat(model.intercept(), is(closeTo(0.00146, 1E-1)));
 //    System.out.println(model.logLikelihood());
 //    System.out.println(model.sigma2());
