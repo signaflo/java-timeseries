@@ -2,12 +2,12 @@
 Time series analysis on the JVM.
 
 ##Features
+* Seasonal ARIMA models and forecasting.
 * Dedicated time series library.
 * Simple, intuitive, and powerful time modeling.
 * Autocorrelation function and ACF plot.
 * Random walk simulation and forecasting.
 * Box-Cox data transformations.
-* Much more to come...
 
 ##Credits
 | Library | Category | License |
