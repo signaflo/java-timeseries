@@ -353,9 +353,9 @@ public final class Arima {
         fcst[m + t] += arCoeffs[i] * diffedFcst[m + t - i - d - 1];
         fcst[m + t] += lagPolynomial.applyInverse(fcst, m + t);
       }
-      for (int j = 0; j < maCoeffs.length; j++) {
-        diffedFcst[n + t] += maCoeffs[j] * resid[m + t - j - 1];
-        fcst[m + t] += maCoeffs[j] * resid[m + t - j - 1];
+      for (int j = maCoeffs.length; j > 0 && t - j < 0; j--) {
+        diffedFcst[n + t] += maCoeffs[j - 1] * resid[m + t - j];
+        fcst[m + t] += maCoeffs[j - 1] * resid[m + t - j];
       }
     }
     return slice(diffedFcst, n, n + steps);
