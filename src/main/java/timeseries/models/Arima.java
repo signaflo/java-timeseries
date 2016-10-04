@@ -358,7 +358,7 @@ public final class Arima {
         fcst[m + t] += maCoeffs[j - 1] * resid[m + t - j];
       }
     }
-    return slice(diffedFcst, n, n + steps);
+    return slice(fcst, m, m + steps);
   }
   
 
@@ -588,22 +588,22 @@ public final class Arima {
       private Builder() {
       }
 
-      public Builder setArCoeffs(double[] arCoeffs) {
+      public Builder setArCoeffs(double... arCoeffs) {
         this.arCoeffs = arCoeffs;
         return this;
       }
 
-      public Builder setSarCoeffs(double[] sarCoeffs) {
+      public Builder setSarCoeffs(double... sarCoeffs) {
         this.sarCoeffs = sarCoeffs;
         return this;
       }
 
-      public Builder setMaCoeffs(double[] maCoeffs) {
+      public Builder setMaCoeffs(double... maCoeffs) {
         this.maCoeffs = maCoeffs;
         return this;
       }
 
-      public Builder setSmaCoeffs(double[] smaCoeffs) {
+      public Builder setSmaCoeffs(double... smaCoeffs) {
         this.smaCoeffs = smaCoeffs;
         return this;
       }

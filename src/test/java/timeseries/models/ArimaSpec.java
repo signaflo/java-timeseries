@@ -13,6 +13,7 @@ import data.TestData;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.TimeUnit;
+import timeseries.models.Arima.ModelCoefficients;
 import timeseries.models.Arima.ModelOrder;
 
 public class ArimaSpec {
@@ -30,7 +31,9 @@ public class ArimaSpec {
   public void whenArimaModelFitKnownCoefficientsInterceptCorrect() throws Exception {
     TimeSeries series = TestData.livestock();
     ModelOrder order = new ModelOrder(1, 1, 1, 0, 0, 0, false);
-    Arima model = new Arima(series, order, TimePeriod.oneYear());
+    ModelCoefficients coeffs = ModelCoefficients.newBuilder().setArCoeffs(0.6480679).setMaCoeffs(-0.5035514).
+        setDiff(1).build();
+    Arima model = new Arima(series, coeffs, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());
     System.out.println(Arrays.toString(model.forecast(10)));
