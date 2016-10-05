@@ -7,7 +7,6 @@
 package timeseries.models;
 
 import static data.DoubleFunctions.slice;
-import static data.DoubleFunctions.negativeOf;
 import static stats.Statistics.sumOf;
 import static stats.Statistics.sumOfSquared;
 
@@ -31,7 +30,6 @@ import org.knowm.xchart.style.XYStyler;
 import org.knowm.xchart.style.markers.Circle;
 import org.knowm.xchart.style.markers.None;
 
-import data.DoubleFunctions;
 import data.Operators;
 import linear.doubles.Matrix;
 import linear.doubles.Vector;
@@ -90,9 +88,9 @@ public final class Arima implements Model {
         seasonalFrequency);
     final BFGS optimizer = new BFGS(function, initParams, 1e-8, 1e-8, initHessian);
     final Vector optimizedParams = optimizer.parameters();
-    final Matrix inverseHessian = optimizer.inverseHessian();
+    //final Matrix inverseHessian = optimizer.inverseHessian();
     
-    final double[] stdErrors = DoubleFunctions.sqrt(inverseHessian.scaledBy((1.0) / differencedSeries.n()).diagonal());
+    //final double[] stdErrors = DoubleFunctions.sqrt(inverseHessian.scaledBy((1.0) / differencedSeries.n()).diagonal());
     final double[] arCoeffs = getArCoeffs(optimizedParams);
     final double[] maCoeffs = getMaCoeffs(optimizedParams);
     final double[] sarCoeffs = getSarCoeffs(optimizedParams);
