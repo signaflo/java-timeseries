@@ -1,16 +1,30 @@
 package timeseries.operators;
 
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 
 import data.DoubleFunctions;
 import timeseries.TimeSeries;
 
+/**
+ * Represents the lag polynomial as described by Harvey (1989, equation 2.1.3). The polynomial is taken in the
+ * lag operator, but is algebraically equivalent to a real or complex polynomial.
+ * See <a target="_blank" href="https://goo.gl/1eLYnF">
+ * Harvey's Forecasting, structural time series models and the Kalman filter</a>
+ * @author jrachiele
+ *
+ */
 public class LagPolynomial {
   
   final double[] parameters;
   final double[] coefficients;
   final int degree;
   
+  /**
+   * Construct a new lag polynomial from the given parameters. Note that the parameters given here are not the 
+   * same as the coefficients of the polynomial since the coefficient at the zero-degreee term is always equal to 1.
+   * @param parameters
+   */
   LagPolynomial(final double... parameters) {
     this.parameters = parameters.clone();
     this.coefficients = new double[parameters.length + 1];
@@ -21,11 +35,23 @@ public class LagPolynomial {
     this.degree = parameters.length;
   }
   
+  /**
+   * Create and return a new lag polynomial representing the first difference operator.
+   * @return a new lag polynomial representing the first difference operator.
+   */
   public static final LagPolynomial firstDifference() {
     return new LagPolynomial(-1.0);
   }
   
+  /**
+   * Create and return a new lag polynomial representing an arbitrary number of differences.
+   * @param d the number of differences. An integer greater than or equal to 0.
+   * @return a new lag polynomial representing an arbitrary number of differences.
+   */
   public static final LagPolynomial differences(final int d) {
+    if (d < 0) {
+      throw new RuntimeException("The degree of differencing must be greater than or equal to 0, but was " + d);
+    }
     if (d > 0) {
       LagPolynomial diff = LagPolynomial.firstDifference();
       for (int i = 1; i < d; i++) {
@@ -37,10 +63,20 @@ public class LagPolynomial {
     }
   }
   
+  /**
+   * Create and return a new moving average lag polynomial.
+   * @param parameters the moving average parameters of an ARIMA model.
+   * @return a new moving average lag polynomial.
+   */
   public static final LagPolynomial movingAverage(double... parameters) {
     return new MovingAveragePolynomial(parameters);
   }
   
+  /**
+   * Create and return a new autoregressive lag polynomial.
+   * @param parameters the autoregressive parameters of an ARIMA model.
+   * @return a new autoregressive lag polynomial.
+   */
   public static final LagPolynomial autoRegressive(double... parameters) {
     final double[] inverseParams = new double[parameters.length];
     for (int i = 0; i < inverseParams.length; i++) {
@@ -49,6 +85,11 @@ public class LagPolynomial {
     return new LagPolynomial(inverseParams);
   }
   
+  /**
+   * Multiply this polynomial by another lag polynomial and return the result in a new lag polynomial.
+   * @param other the polynomial to multiply this one with.
+   * @return the product of this polynomial with the given polynomial.
+   */
   public final LagPolynomial times(final LagPolynomial other) {
     final double[] newParams = new double[this.degree + other.degree + 1];
     for (int i = 0; i < coefficients.length; i++) {
@@ -59,6 +100,12 @@ public class LagPolynomial {
     return new LagPolynomial(DoubleFunctions.slice(newParams, 1, newParams.length));
   }
   
+  /**
+   * Apply this lag polynomial to a time series at the given index. 
+   * @param timeSeries the time series containing the index to apply this lag polynomial to.
+   * @param index the index of the series to apply the lag polynomial at.
+   * @return the result of applying this lag polynomial to the given time series at the given index.
+   */
   public final double apply(final TimeSeries timeSeries, final int index) {
     double value = 0.0;
     for (int i = 0; i < coefficients.length; i++) {
@@ -67,10 +114,32 @@ public class LagPolynomial {
     return value;
   }
   
+  /**
+   * Apply this lag polynomial to a time series at the given index. 
+   * @param timeSeries the time series containing the index to apply this lag polynomial to.
+   * @param dateTime the date and time of the series to apply the lag polynomial at.
+   * @return the result of applying this lag polynomial to the given time series at the given date and time.
+   */
+  public final double apply(final TimeSeries timeSeries, final OffsetDateTime dateTime) {
+    double value = 0.0;
+    for (int i = 0; i < coefficients.length; i++) {
+      value += this.coefficients[i] * LagOperator.apply(timeSeries, dateTime, i);
+    }
+    return value;
+  }
+  
   public double applyInverse(final TimeSeries timeSeries, final int index) {
     double value = 0.0;
     for (int i = 0; i < parameters.length; i++) {
       value -= parameters[i] * LagOperator.apply(timeSeries, index, i + 1);
+    }
+    return value;
+  }
+  
+  public double applyInverse(final TimeSeries timeSeries, OffsetDateTime dateTime) {
+    double value = 0.0;
+    for (int i = 0; i < parameters.length; i++) {
+      value -= parameters[i] * LagOperator.apply(timeSeries, dateTime, i + 1);
     }
     return value;
   }

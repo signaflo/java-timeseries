@@ -48,6 +48,7 @@ public final class TimeSeries extends DataSet {
   private final double mean;
   private final double[] series;
   private final List<OffsetDateTime> observationTimes;
+  private final Map<OffsetDateTime, Integer> dateTimeIndex;
 
   /**
    * Construct a new TimeSeries from the given data without regard to the times observations are made. Use this
@@ -104,6 +105,7 @@ public final class TimeSeries extends DataSet {
       dateTimeIndex.put(dateTime, i);
     }
     this.observationTimes = Collections.unmodifiableList(dateTimes);
+    this.dateTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
   }
 
   private final long totalPeriodLength(final TimePeriod timePeriod) {
@@ -137,12 +139,18 @@ public final class TimeSeries extends DataSet {
     this.mean = super.mean();
     this.timePeriod = timePeriod;
     List<OffsetDateTime> dateTimes = new ArrayList<>(series.length);
+    Map<OffsetDateTime, Integer> dateTimeIndex = new HashMap<>(series.length);
     dateTimes.add(startTime);
+    dateTimeIndex.put(startTime, 0);
+    OffsetDateTime dateTime;
     for (int i = 1; i < series.length; i++) {
-      dateTimes.add(dateTimes.get(i - 1).plus(timePeriod.unitLength() * timePeriod.timeUnit().periodLength(),
-          timePeriod.timeUnit().temporalUnit()));
+      dateTime = dateTimes.get(i - 1).plus(timePeriod.unitLength() * timePeriod.timeUnit().periodLength(),
+              timePeriod.timeUnit().temporalUnit());
+      dateTimes.add(dateTime);
+      dateTimeIndex.put(dateTime, i);
     }
     this.observationTimes = Collections.unmodifiableList(dateTimes);
+    this.dateTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
   }
 
   /**
@@ -162,6 +170,12 @@ public final class TimeSeries extends DataSet {
     this.mean = super.mean();
     this.timePeriod = timePeriod;
     this.observationTimes = Collections.unmodifiableList(observationTimes);
+    Map<OffsetDateTime, Integer> dateTimeIndex = new HashMap<>(series.length);
+    int i = 0;
+    for (OffsetDateTime dt : observationTimes) {
+      dateTimeIndex.put(dt, i++);
+    }
+    this.dateTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
   }
 
   /**
@@ -220,6 +234,16 @@ public final class TimeSeries extends DataSet {
    */
   public final double at(final int index) {
     return this.series[index];
+  }
+  
+  /**
+   * Return the value of the time series at the given date and time.
+   * 
+   * @param dateTime the date and time of the value to return.
+   * @return the value of the time series at the given date and time.
+   */
+  public final double at(final OffsetDateTime dateTime) {
+    return this.series[dateTimeIndex.get(dateTime)];
   }
 
   /**
@@ -383,6 +407,10 @@ public final class TimeSeries extends DataSet {
    */
   public final List<OffsetDateTime> observationTimes() {
     return this.observationTimes;
+  }
+  
+  public final Map<OffsetDateTime, Integer> dateTimeIndex() {
+    return this.dateTimeIndex;
   }
 
   /**
