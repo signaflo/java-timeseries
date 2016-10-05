@@ -81,7 +81,7 @@ public final class BFGS {
     return this.functionValue;
   }
   
-  public final Vector iterate() {
+  public final Vector parameters() {
     return this.iterate;
   }
   

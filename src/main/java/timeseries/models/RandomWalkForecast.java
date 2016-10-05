@@ -32,7 +32,7 @@ public final class RandomWalkForecast implements Forecast {
   private final double criticalValue;
   private final TimeSeries fcstErrors;
 
-  public RandomWalkForecast(final Model model, final int steps, final double alpha) {
+  public RandomWalkForecast(final RandomWalk model, final int steps, final double alpha) {
     this.model = model;
     this.forecast = model.pointForecast(steps);
     this.criticalValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
@@ -80,10 +80,15 @@ public final class RandomWalkForecast implements Forecast {
     return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0),
         upperPredictionValues);
   }
+  
+  private TimeSeries getFcstErrors() {
+    double[] errors = new double[forecast.n()];
+    for (int t = 0; t < errors.length; t++) {
+      errors[t] = criticalValue * Math.sqrt(t + 1);
+    }
+    return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
+  }
 
-  /* (non-Javadoc)
-   * @see timeseries.models.Forecast#pastAndFuture()
-   */
   @Override
   public final void pastAndFuture() {
     new Thread(() -> {
@@ -124,12 +129,8 @@ public final class RandomWalkForecast implements Forecast {
     }).start();
   }
 
-  /* (non-Javadoc)
-   * @see timeseries.models.Forecast#plot()
-   */
   @Override
   public final void plot() {
-    
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       for (OffsetDateTime dateTime : forecast.observationTimes()) {
@@ -160,13 +161,4 @@ public final class RandomWalkForecast implements Forecast {
       frame.setVisible(true);
     }).start();
   }
-  
-  private TimeSeries getFcstErrors() {
-    double[] errors = new double[forecast.n()];
-    for (int t = 0; t < errors.length; t++) {
-      errors[t] = criticalValue * Math.sqrt(t + 1);
-    }
-    return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
-  }
-
 }

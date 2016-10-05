@@ -1,22 +1,20 @@
 package timeseries;
 
-import static data.DoubleFunctions.newArray;
-
 import data.TestData;
 import timeseries.models.Arima;
-import timeseries.models.Arima.ModelCoefficients;
+import timeseries.models.ArimaForecast;
+import timeseries.models.Arima.ModelOrder;
+import timeseries.models.Forecast;
+import timeseries.models.Model;
 
 final class Main {
 
   public static void main(String[] args) throws Exception {
-    TimeSeries series = TestData.ukcars();
-    double[] arCoeffs = newArray( -0.2552);
-    double[] sarCoeffs = newArray(-0.6188);
-    ModelCoefficients.Builder builder = ModelCoefficients.newBuilder();
-    ModelCoefficients modelCoeffs = builder.setArCoeffs(arCoeffs).setSarCoeffs(sarCoeffs)
-        .setDiff(1).setSeasDiff(1).build();
-    Arima model = new Arima(series, modelCoeffs, TimePeriod.oneYear());
-    model.plotFit();
+    TimeSeries series = TestData.livestock();
+    ModelOrder order = new ModelOrder(1, 1, 1, 0, 0, 0, false);
+    Model model = new Arima(series, order, TimePeriod.oneYear());
+    Forecast fcst = new ArimaForecast(model, 12, 0.05);
+    fcst.plot();
   }
 
 }
