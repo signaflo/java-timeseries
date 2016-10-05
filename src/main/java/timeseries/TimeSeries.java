@@ -51,10 +51,10 @@ public final class TimeSeries extends DataSet {
   private final Map<OffsetDateTime, Integer> dateTimeIndex;
 
   /**
-   * Construct a new TimeSeries from the given data without regard to the times observations are made. Use this
-   * constructor if the dates and/or times associated with the observations do not matter.
+   * Construct a new TimeSeries from the given data without regard to when the observations were made. Use this
+   * constructor if the dates and times associated with the observations do not matter.
    * 
-   * @param series the time series of observations.
+   * @param series the observation data.
    */
   public TimeSeries(final double... series) {
     this(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);
@@ -63,9 +63,9 @@ public final class TimeSeries extends DataSet {
   /**
    * Construct a new TimeSeries using the given arguments.
    * 
-   * @param timeUnit The unit of time in which observations are made.
-   * @param startTime The time at which the first observation was made. May be an approximation.
-   * @param series The data underlying the time series.
+   * @param timeUnit the unit of time in which observations are made.
+   * @param startTime the time at which the first observation was made. May be an approximation.
+   * @param series the observation data.
    */
   public TimeSeries(final TimeUnit timeUnit, final OffsetDateTime startTime, final double... series) {
     this(new TimePeriod(timeUnit, 1), startTime, series);
@@ -74,11 +74,11 @@ public final class TimeSeries extends DataSet {
   /**
    * Construct a new TimeSeries using the given arguments.
    * 
-   * @param timePeriod The period of time in which observations are made.
-   * @param startTime The time at which the first observation was made. The string must represent either a valid
+   * @param timePeriod the period of time at which observations are made.
+   * @param startTime the time at which the first observation was made. The string must represent either a valid
    *        {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default UTC/Greenwich
    *        offset, i.e., an offset of 0, will be used.
-   * @param series The data underlying the time series.
+   * @param series the observation data.
    */
   public TimeSeries(final TimePeriod timePeriod, final String startTime, final double... series) {
     super(series);
@@ -108,18 +108,14 @@ public final class TimeSeries extends DataSet {
     this.dateTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
   }
 
-  private final long totalPeriodLength(final TimePeriod timePeriod) {
-    return timePeriod.timeUnit().periodLength() * timePeriod.unitLength();
-  }
-
   /**
    * Construct a new TimeSeries using the given arguments.
    * 
-   * @param timeUnit The unit of time in which observations are made.
-   * @param startTime The time at which the first observation was made. The string must represent either a valid
+   * @param timeUnit the unit of time in which observations are made.
+   * @param startTime the time at which the first observation was made. The string must represent either a valid
    *        {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default UTC/Greenwich
    *        offset, i.e., an offset of 0, will be used.
-   * @param series The data underlying the time series.
+   * @param series the observation data.
    */
   public TimeSeries(final TimeUnit timeUnit, final String startTime, final double... series) {
     this(new TimePeriod(timeUnit, 1), startTime, series);
@@ -128,9 +124,9 @@ public final class TimeSeries extends DataSet {
   /**
    * Construct a new TimeSeries using the given arguments.
    * 
-   * @param timePeriod The time period in which observations are made.
-   * @param startTime The time at which the first observation was made. Usually a rough approximation.
-   * @param series The data underlying the time series.
+   * @param timePeriod the time period at which observations are made.
+   * @param startTime the time at which the first observation was made. Usually a rough approximation.
+   * @param series the observation data.
    */
   public TimeSeries(final TimePeriod timePeriod, final OffsetDateTime startTime, final double... series) {
     super(series);
@@ -154,15 +150,21 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Construct a new TimeSeries from the given data with the supplied start time.
+   * Construct a new time series from the given data with the supplied start time.
    * 
    * @param startTime the time of the first observation.
-   * @param series the observations.
+   * @param series the observation data.
    */
   TimeSeries(final OffsetDateTime startTime, final double... series) {
     this(TimeUnit.MONTH, startTime, series);
   }
 
+  /**
+   * Construct a new time series with the given time period, observation times, and observation data.
+   * @param timePeriod The time period at which observations are made.
+   * @param observationTimes the sequence of dates and times at which the observations are made.
+   * @param series the observation data.
+   */
   public TimeSeries(final TimePeriod timePeriod, final List<OffsetDateTime> observationTimes, final double... series) {
     super(series);
     this.series = series.clone();
@@ -198,12 +200,10 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Aggregate the TimeSeries up to the given time period with the specified period length. For example, to aggregate
-   * monthly data to bi-yearly data, one could give a time argument of {@link TimeUnit#YEAR} and a periodLength argument
-   * of 2.
+   * Aggregate the time series up to the given time period.
    * 
-   * @param timePeriod the unit of time that this series should be aggregated up to.
-   * @return A new TimeSeries aggregated up to the given unit of time.
+   * @param timePeriod the time series that the observations should be aggregated up to.
+   * @return A new TimeSeries aggregated up to the given time period.
    */
   public final TimeSeries aggregate(final TimePeriod timePeriod) {
     final int period = (int) (this.timePeriod.frequencyPer(timePeriod));
@@ -227,7 +227,7 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Return the value of the time series at the given index.
+   * Retrieve the value of the time series at the given index.
    * 
    * @param index the index of the value to return.
    * @return the value of the time series at the given index.
@@ -237,7 +237,7 @@ public final class TimeSeries extends DataSet {
   }
   
   /**
-   * Return the value of the time series at the given date and time.
+   * Retrieve the value of the time series at the given date and time.
    * 
    * @param dateTime the date and time of the value to return.
    * @return the value of the time series at the given date and time.
@@ -401,7 +401,7 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Return the list of observation times for this series.
+   * Retrieve the list of observation times for this series.
    * 
    * @return the list of observation times for this series.
    */
@@ -421,7 +421,7 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * The time series of observations.
+   * Retrieve the time series of observations.
    * 
    * @return the time series of observations.
    */
@@ -457,6 +457,10 @@ public final class TimeSeries extends DataSet {
     System.arraycopy(series, start - 1, sliced, 0, end - start + 1);
     final List<OffsetDateTime> obsTimes = this.observationTimes.subList(start - 1, end);
     return new TimeSeries(this.timePeriod, obsTimes, sliced);
+  }
+  
+  private final long totalPeriodLength(final TimePeriod timePeriod) {
+    return timePeriod.timeUnit().periodLength() * timePeriod.unitLength();
   }
 
   /**
@@ -500,9 +504,28 @@ public final class TimeSeries extends DataSet {
   public final OffsetDateTime startTime() {
     return this.observationTimes.get(0);
   }
+  
+  public final TimeSeries minus(final TimeSeries otherSeries) {
+    final double[] subtracted = new double[this.series.length];
+    for (int t = 0; t < subtracted.length; t++) {
+      subtracted[t] = this.series[t] - otherSeries.series[t];
+    }
+    return new TimeSeries(this.timePeriod, observationTimes, subtracted);
+  }
+
+  public final TimeSeries minus(final double[] otherSeries) {
+    final double[] subtracted = new double[this.series.length];
+    for (int t = 0; t < subtracted.length; t++) {
+      subtracted[t] = this.series[t] - otherSeries[t];
+    }
+    return new TimeSeries(this.timePeriod, observationTimes, subtracted);
+  }
+
+  public final TimePeriod timePeriod() {
+    return this.timePeriod;
+  }
 
   // ********** Plots ********** //
-
   /**
    * Display a line plot connecting the observation times to the measurements.
    */
@@ -608,11 +631,10 @@ public final class TimeSeries extends DataSet {
       frame.pack();
       frame.setVisible(true);
     }).run();
-
   }
-
   // ********** Plots ********** //
 
+  // ********** Boiler Plate ********** //
   @Override
   public boolean equals(Object obj) {
     if (this == obj)
@@ -687,25 +709,5 @@ public final class TimeSeries extends DataSet {
     }
     return builder.append("\ntimePeriod: \n").append(timePeriod).toString();
   }
-
-  public final TimeSeries minus(final TimeSeries otherSeries) {
-    final double[] subtracted = new double[this.series.length];
-    for (int t = 0; t < subtracted.length; t++) {
-      subtracted[t] = this.series[t] - otherSeries.series[t];
-    }
-    return new TimeSeries(this.timePeriod, observationTimes, subtracted);
-  }
-
-  public final TimeSeries minus(final double[] otherSeries) {
-    final double[] subtracted = new double[this.series.length];
-    for (int t = 0; t < subtracted.length; t++) {
-      subtracted[t] = this.series[t] - otherSeries[t];
-    }
-    return new TimeSeries(this.timePeriod, observationTimes, subtracted);
-  }
-
-  public final TimePeriod timePeriod() {
-    return this.timePeriod;
-  }
-
+  //********** Boiler Plate ********** //
 }

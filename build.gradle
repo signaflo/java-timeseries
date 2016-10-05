@@ -23,7 +23,7 @@ task generateJavadoc(type: Javadoc) {
   classpath = sourceSets.main.compileClasspath
   options.memberLevel = JavadocMemberLevel.PUBLIC
   options {
-    links "https://docs.oracle.com/javase/8/docs/api/"
+      links "https://docs.oracle.com/javase/8/docs/api/"
   }
 }
 
