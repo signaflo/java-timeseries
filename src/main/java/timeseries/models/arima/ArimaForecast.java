@@ -1,4 +1,4 @@
-package timeseries.models;
+package timeseries.models.arima;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -23,17 +23,19 @@ import com.google.common.primitives.Doubles;
 
 import stats.distributions.Normal;
 import timeseries.TimeSeries;
+import timeseries.models.Forecast;
+import timeseries.operators.LagPolynomial;
 
 public final class ArimaForecast implements Forecast {
   
-  private final Model model;
+  private final Arima model;
   private final TimeSeries forecast;
   private final TimeSeries upperValues;
   private final TimeSeries lowerValues;
   private final double criticalValue;
   private final TimeSeries fcstErrors;
 
-  public ArimaForecast(final Model model, final int steps, final double alpha) {
+  public ArimaForecast(final Arima model, final int steps, final double alpha) {
     this.model = model;
     this.forecast = model.pointForecast(steps);
     this.criticalValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
@@ -85,6 +87,12 @@ public final class ArimaForecast implements Forecast {
       errors[t] = criticalValue * Math.sqrt(t + 1);
     }
     return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
+  }
+  
+  private double[] getPsiCoefficients() {
+    LagPolynomial arPoly = LagPolynomial.autoRegressive(model.arSarCoefficients());
+    LagPolynomial diffPoly = LagPolynomial.firstDifference();
+    return null;
   }
   
   @Override

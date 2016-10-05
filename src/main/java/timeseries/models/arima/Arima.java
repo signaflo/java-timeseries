@@ -4,7 +4,7 @@
  * This file is licensed under the Apache License, Version 2.0, http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package timeseries.models;
+package timeseries.models.arima;
 
 import static data.DoubleFunctions.slice;
 import static stats.Statistics.sumOf;
@@ -37,7 +37,8 @@ import optim.AbstractMultivariateFunction;
 import optim.BFGS;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
-import timeseries.models.arima.FittingStrategy;
+import timeseries.models.Forecast;
+import timeseries.models.Model;
 import timeseries.operators.LagPolynomial;
 
 /**
@@ -193,6 +194,14 @@ public final class Arima implements Model {
    */
   public final double logLikelihood() {
     return modelInfo.logLikelihood;
+  }
+  
+  public final double[] arSarCoefficients() {
+    return this.arSarCoeffs.clone();
+  }
+  
+  public final double[] maSmaCoefficients() {
+    return this.maSmaCoeffs.clone();
   }
 
   private Matrix getInitialHessian(final double[] initParams) {

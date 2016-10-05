@@ -3,6 +3,10 @@ package timeseries.operators;
 import timeseries.TimeSeries;
 
 public final class MovingAveragePolynomial extends LagPolynomial {
+  
+  public MovingAveragePolynomial(final double... parameters) {
+    super(parameters);
+  }
 
   @Override
   public double applyInverse(final TimeSeries timeSeries, final int index) {
