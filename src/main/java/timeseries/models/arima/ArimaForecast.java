@@ -45,6 +45,10 @@ public final class ArimaForecast implements Forecast {
     this.lowerValues = computeLowerPredictionValues(steps, alpha);
   }
   
+  public ArimaForecast(final Arima model, final int steps) {
+    this(model, steps, 0.05);
+  }
+  
   @Override
   public final TimeSeries forecast() {
     return this.forecast;
@@ -87,7 +91,8 @@ public final class ArimaForecast implements Forecast {
   private final double[] getPsiCoefficients() {
     LagPolynomial arPoly = LagPolynomial.autoRegressive(model.arSarCoefficients());
     LagPolynomial diffPoly = LagPolynomial.differences(model.order().d);
-    double[] phi = diffPoly.times(arPoly).inverseParams();
+    LagPolynomial seasDiffPoly = LagPolynomial.seasonalDifferences(model.seasonalFrequency(), model.order().D);
+    double[] phi = diffPoly.times(seasDiffPoly).times(arPoly).inverseParams();
     double[] theta = model.maSmaCoefficients();
     final double[] psi = new double[this.forecast.n()];
     psi[0] = 1.0;
@@ -122,7 +127,7 @@ public final class ArimaForecast implements Forecast {
   }
   
   @Override
-  public final void pastAndFuture() {
+  public final void plot() {
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().n());
@@ -147,10 +152,10 @@ public final class ArimaForecast implements Forecast {
       forecastSeries.setMarker(new Circle());
       forecastSeries.setMarkerColor(Color.BLUE);
 
-      observationSeries.setLineWidth(0.75f);
-      forecastSeries.setLineWidth(1.5f);
+      observationSeries.setLineWidth(1.0f);
+      forecastSeries.setLineWidth(1.0f);
 
-      chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.RED);
+      chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.DARK_GRAY);
       observationSeries.setLineColor(Color.BLACK);
       forecastSeries.setLineColor(Color.BLUE);
 
@@ -164,7 +169,7 @@ public final class ArimaForecast implements Forecast {
   }
 
   @Override
-  public final void plot() {   
+  public final void plotForecast() {   
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       for (OffsetDateTime dateTime : forecast.observationTimes()) {

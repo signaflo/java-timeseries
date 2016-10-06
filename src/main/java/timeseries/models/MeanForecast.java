@@ -82,7 +82,7 @@ public final class MeanForecast implements Forecast {
   }
   
   @Override
-  public final void plot() {
+  public final void plotForecast() {
     
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
@@ -117,7 +117,7 @@ public final class MeanForecast implements Forecast {
   }
   
   @Override
-  public final void pastAndFuture() {
+  public final void plot() {
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().n());

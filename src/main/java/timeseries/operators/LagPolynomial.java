@@ -43,6 +43,27 @@ public class LagPolynomial {
     return new LagPolynomial(-1.0);
   }
   
+  public static final LagPolynomial firstSeasonalDifference(final int seasonalLag) {
+    double[] poly = new double[seasonalLag];
+    poly[seasonalLag - 1] = -1.0;
+    return new LagPolynomial(poly);
+  }
+  
+  public static final LagPolynomial seasonalDifferences(final int seasonalLag, final int D) {
+    if (D < 0) {
+      throw new RuntimeException("The degree of differencing must be greater than or equal to 0, but was " + D);
+    }
+    if (D > 0) {
+      LagPolynomial diff = LagPolynomial.firstSeasonalDifference(seasonalLag);
+      for (int i = 1; i < D; i++) {
+        diff = diff.times(diff);
+      }
+      return diff;
+    } else {
+      return new LagPolynomial();
+    }
+  }
+  
   /**
    * Create and return a new lag polynomial representing an arbitrary number of differences.
    * @param d the number of differences. An integer greater than or equal to 0.

@@ -203,6 +203,10 @@ public final class Arima implements Model {
   public final double sigma2() {
     return modelInfo.sigma2;
   }
+  
+  public final int seasonalFrequency() {
+    return this.seasonalFrequency;
+  }
 
   /**
    * Retrieve the coefficients of this ARIMA model.
@@ -441,6 +445,7 @@ public final class Arima implements Model {
 
   public final double[] forecast(final int steps) {
     final int d = order.d;
+    final int D = order.D;
     final int n = differencedSeries.n();
     final int m = observations.n();
     final double[] resid = this.residuals.series();
@@ -448,14 +453,16 @@ public final class Arima implements Model {
     final double[] fcst = new double[m + steps];
     System.arraycopy(differencedSeries.series(), 0, diffedFcst, 0, n);
     System.arraycopy(observations.series(), 0, fcst, 0, m);
-    LagPolynomial lagPolynomial = LagPolynomial.differences(d);
+    LagPolynomial diffPolynomial = LagPolynomial.differences(d);
+    LagPolynomial seasDiffPolynomial = LagPolynomial.seasonalDifferences(seasonalFrequency, D);
+    LagPolynomial lagPolyomial = diffPolynomial.times(seasDiffPolynomial);
     for (int t = 0; t < steps; t++) {
       diffedFcst[n + t] = mean;
       fcst[m + t] = mean;
-      fcst[m + t] += lagPolynomial.applyInverse(fcst, m + t);
+      fcst[m + t] += lagPolyomial.applyInverse(fcst, m + t);
       for (int i = 0; i < arSarCoeffs.length; i++) {
         diffedFcst[n + t] += arSarCoeffs[i] * (diffedFcst[n + t - i - 1] - mean);
-        fcst[m + t] += arSarCoeffs[i] * diffedFcst[m + t - i - d - 1];
+        fcst[m + t] += arSarCoeffs[i] * (diffedFcst[n + t - i - 1] - mean);
       }
       for (int j = maSmaCoeffs.length; j > 0 && t - j < 0; j--) {
         diffedFcst[n + t] += maSmaCoeffs[j - 1] * resid[m + t - j];
