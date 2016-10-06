@@ -403,10 +403,46 @@ public final class Arima implements Model {
   }
 
   /**
-   * Forecast the given number of steps ahead using this fitted model.
-   * @param steps the number of steps ahead to forecast.
-   * @return a new forecast for the given number of steps ahead.
+   * The model intercept term. Note that this is <i>not</i> the model mean, as in R, but the actual intercept.
+   * 
+   * @return the model intercept term.
    */
+  public final double intercept() {
+    return this.intercept;
+  }
+
+  private double[] getSarCoeffs(final Vector optimizedParams) {
+    final double[] sarCoeffs = new double[order.P];
+    for (int i = 0; i < order.P; i++) {
+      sarCoeffs[i] = optimizedParams.at(i + order.p + order.q);
+    }
+    return sarCoeffs;
+  }
+
+  private double[] getSmaCoeffs(final Vector optimizedParams) {
+    final double[] smaCoeffs = new double[order.Q];
+    for (int i = 0; i < order.Q; i++) {
+      smaCoeffs[i] = optimizedParams.at(i + order.p + order.q + order.P);
+    }
+    return smaCoeffs;
+  }
+
+  private double[] getArCoeffs(final Vector optimizedParams) {
+    final double[] arCoeffs = new double[order.p];
+    for (int i = 0; i < order.p; i++) {
+      arCoeffs[i] = optimizedParams.at(i);
+    }
+    return arCoeffs;
+  }
+
+  private double[] getMaCoeffs(final Vector optimizedParams) {
+    final double[] arCoeffs = new double[order.q];
+    for (int i = 0; i < order.q; i++) {
+      arCoeffs[i] = optimizedParams.at(i + order.p);
+    }
+    return arCoeffs;
+  }
+
   public final double[] forecast(final int steps) {
     final int d = order.d;
     final int D = order.D;
@@ -465,92 +501,6 @@ public final class Arima implements Model {
   @Override
   public TimeSeries residuals() {
     return this.residuals;
-  }
-  
-  /**
-   * The model intercept term. Note that this is <i>not</i> the model mean, as in R, but the actual intercept.
-   * 
-   * @return the model intercept term.
-   */
-  public final double intercept() {
-    return this.intercept;
-  }
-  
-  /**
-   * The maximum-likelihood estimate of the model variance, equal to the sum of squared residuals divided by the number
-   * of observations.
-   * 
-   * @return the maximum-likelihood estimate of the model variance, equal to the sum of squared residuals divided by the
-   *         number of observations.
-   */
-  public final double sigma2() {
-    return modelInfo.sigma2;
-  }
-
-  /**
-   * Retrieve the coefficients of this ARIMA model.
-   * 
-   * @return the coefficients of this ARIMA model.
-   */
-  public final ModelCoefficients coefficients() {
-    return this.modelCoefficients;
-  }
-  
-  /**
-   * Retrieve the order of this ARIMA model.
-   * 
-   * @return the order of this ARIMA model.
-   */
-  public final ModelOrder order() {
-    return this.order;
-  }
-  /**
-   * The natural logarithm of the likelihood of the model parameters given the data.
-   * 
-   * @return the natural logarithm of the likelihood of the model parameters.
-   */
-  public final double logLikelihood() {
-    return modelInfo.logLikelihood;
-  }
-
-  public final double[] arSarCoefficients() {
-    return this.arSarCoeffs.clone();
-  }
-
-  public final double[] maSmaCoefficients() {
-    return this.maSmaCoeffs.clone();
-  }
-  
-  private double[] getSarCoeffs(final Vector optimizedParams) {
-    final double[] sarCoeffs = new double[order.P];
-    for (int i = 0; i < order.P; i++) {
-      sarCoeffs[i] = optimizedParams.at(i + order.p + order.q);
-    }
-    return sarCoeffs;
-  }
-
-  private double[] getSmaCoeffs(final Vector optimizedParams) {
-    final double[] smaCoeffs = new double[order.Q];
-    for (int i = 0; i < order.Q; i++) {
-      smaCoeffs[i] = optimizedParams.at(i + order.p + order.q + order.P);
-    }
-    return smaCoeffs;
-  }
-
-  private double[] getArCoeffs(final Vector optimizedParams) {
-    final double[] arCoeffs = new double[order.p];
-    for (int i = 0; i < order.p; i++) {
-      arCoeffs[i] = optimizedParams.at(i);
-    }
-    return arCoeffs;
-  }
-
-  private double[] getMaCoeffs(final Vector optimizedParams) {
-    final double[] arCoeffs = new double[order.q];
-    for (int i = 0; i < order.q; i++) {
-      arCoeffs[i] = optimizedParams.at(i + order.p);
-    }
-    return arCoeffs;
   }
 
   public final void plotFit() {

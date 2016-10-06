@@ -12,7 +12,6 @@ import org.junit.Test;
 import data.TestData;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
-import timeseries.models.Forecast;
 import timeseries.models.arima.Arima;
 import timeseries.models.arima.Arima.ModelCoefficients;
 import timeseries.models.arima.Arima.ModelOrder;
@@ -37,8 +36,7 @@ public class ArimaSpec {
     Arima model = new Arima(series, coeffs, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());
-    ArimaForecast fcst = new ArimaForecast(model, 12, 0.05);
-    System.out.println(Arrays.toString(fcst.getPsiCoefficients()));
+    System.out.println(Arrays.toString(model.forecast(10)));
   }
   
   @Test
