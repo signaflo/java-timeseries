@@ -11,6 +11,7 @@ import org.junit.Test;
 import data.TestData;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
+import timeseries.models.Forecast;
 import timeseries.models.arima.Arima;
 import timeseries.models.arima.Arima.ModelCoefficients;
 import timeseries.models.arima.Arima.ModelOrder;
@@ -29,13 +30,14 @@ public class ArimaSpec {
   @Test
   public void whenArimaModelForecastThenForecastValuesCorrect() throws Exception {
     TimeSeries series = TestData.livestock();
-    ModelOrder order = new ModelOrder(1, 2, 0, 0, 0, 0, false);
-    ModelCoefficients coeffs = ModelCoefficients.newBuilder().setArCoeffs(-0.4766938)//.setMaCoeffs(-0.5035514)
-        .setDiff(2).build();
+    ModelOrder order = new ModelOrder(2, 0, 1, 0, 0, 0, false);
+    ModelCoefficients coeffs = ModelCoefficients.newBuilder().setArCoeffs(-0.2, -0.7)
+            .setMaCoeffs(-0.6).setDiff(0).build();
     Arima model = new Arima(series, coeffs, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());
-    System.out.println(Arrays.toString(model.forecast(10)));
+    ArimaForecast fcst = new ArimaForecast(model, 12, 0.05);
+    System.out.println(Arrays.toString(fcst.getPsiCoefficients()));
   }
 
 }

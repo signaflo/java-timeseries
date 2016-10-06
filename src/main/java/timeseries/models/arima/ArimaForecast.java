@@ -89,26 +89,25 @@ public final class ArimaForecast implements Forecast {
     return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
   }
   
-  private double[] getPsiCoefficients() {
+  double[] getPsiCoefficients() {
     LagPolynomial arPoly = LagPolynomial.autoRegressive(model.arSarCoefficients());
     LagPolynomial diffPoly = LagPolynomial.differences(model.order().d);
     LagPolynomial arDiffPoly = diffPoly.times(arPoly);
     final double[] theta = model.maSmaCoefficients();
     final double[] phi = arDiffPoly.inverseParams();
     final double[] psi = new double[Math.max(model.arSarCoefficients().length + model.order().d + model.order().D,
-            theta.length)];
+            theta.length) + 1];
     if (psi.length > 0) {
       psi[0] = 1.0;
     }
-    for (int i = 1; i < theta.length; i++) {
-      psi[i] = theta[i];
+    for (int i = 0; i < theta.length; i++) {
+      psi[i + 1] = theta[i];
     }
     for (int j = 1; j < psi.length; j++) {
       for (int i = 0; i < j; i++) {
-        psi[j] += psi[j - 1] * phi[i];
+        psi[j] += psi[j - i - 1] * phi[i];
       }
     }
-    
     return psi;
   }
   
