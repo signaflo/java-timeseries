@@ -156,6 +156,14 @@ public class LagPolynomial {
     return this.parameters.clone();
   }
   
+  public final double[] inverseParams() {
+    final double[] invParams = new double[parameters.length];
+    for (int i = 0; i < invParams.length; i++) {
+      invParams[i] = -parameters[i];
+    }
+    return invParams;
+  }
+  
   final double[] coefficients() {
     return this.coefficients.clone();
   }

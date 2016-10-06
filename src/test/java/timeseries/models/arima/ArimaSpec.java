@@ -29,10 +29,10 @@ public class ArimaSpec {
   @Test
   public void whenArimaModelForecastThenForecastValuesCorrect() throws Exception {
     TimeSeries series = TestData.livestock();
-    ModelOrder order = new ModelOrder(1, 1, 1, 0, 0, 0, false);
-    ModelCoefficients coeffs = ModelCoefficients.newBuilder().setArCoeffs(0.6480679).setMaCoeffs(-0.5035514).
-        setDiff(1).build();
-    Arima model = new Arima(series, order, TimePeriod.oneYear());
+    ModelOrder order = new ModelOrder(1, 2, 0, 0, 0, 0, false);
+    ModelCoefficients coeffs = ModelCoefficients.newBuilder().setArCoeffs(-0.4766938)//.setMaCoeffs(-0.5035514)
+        .setDiff(2).build();
+    Arima model = new Arima(series, coeffs, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());
     System.out.println(Arrays.toString(model.forecast(10)));
