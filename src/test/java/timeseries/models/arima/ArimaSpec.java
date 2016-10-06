@@ -3,6 +3,7 @@ package timeseries.models.arima;
 import static data.DoubleFunctions.newArray;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertArrayEquals;
 
 import java.util.Arrays;
 
@@ -32,10 +33,22 @@ public class ArimaSpec {
     ModelOrder order = new ModelOrder(1, 1, 1, 0, 0, 0, false);
     ModelCoefficients coeffs = ModelCoefficients.newBuilder().setArCoeffs(0.6480679).setMaCoeffs(-0.5035514).
         setDiff(1).build();
-    Arima model = new Arima(series, order, TimePeriod.oneYear());
+    Arima model = new Arima(series, coeffs, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());
     new Arima(series, order, TimePeriod.oneYear());
     System.out.println(Arrays.toString(model.forecast(10)));
+  }
+  
+  @Test
+  public void whenArimaModelForecastThenPsiAccurate() throws Exception {
+    TimeSeries series = TestData.livestock();
+    ModelCoefficients coeffs = ModelCoefficients.newBuilder().setArCoeffs(-0.4857229)//.setMaCoeffs(-0.5035514).
+        .setDiff(2).build();
+    Arima model = new Arima(series, coeffs, TimePeriod.oneYear(), FittingStrategy.CSS);
+    ArimaForecast fcst = new ArimaForecast(model, 12, 0.05);
+    System.out.println(Arrays.toString(fcst.getPsiCoefficients()));
+    System.out.println(Arrays.toString(fcst.getStdErrors()));
+    //assertArrayEquals(new double[] {1.0, 1.144516, 1.238173}, fcst.getPsiCoefficients(), 1E-4);
   }
 
 }

@@ -1,5 +1,6 @@
 package timeseries.models.arima;
 
+import static java.lang.Math.sqrt;
 import java.awt.Color;
 import java.awt.Font;
 import java.time.OffsetDateTime;
@@ -38,7 +39,7 @@ public final class ArimaForecast implements Forecast {
   public ArimaForecast(final Arima model, final int steps, final double alpha) {
     this.model = model;
     this.forecast = model.pointForecast(steps);
-    this.criticalValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
+    this.criticalValue = new Normal().quantile(1 - alpha / 2);
     this.fcstErrors = getFcstErrors();
     this.upperValues = computeUpperPredictionValues(steps, alpha);
     this.lowerValues = computeLowerPredictionValues(steps, alpha);
@@ -89,10 +90,38 @@ public final class ArimaForecast implements Forecast {
     return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
   }
   
-  private double[] getPsiCoefficients() {
+  double[] getPsiCoefficients() {
     LagPolynomial arPoly = LagPolynomial.autoRegressive(model.arSarCoefficients());
-    LagPolynomial diffPoly = LagPolynomial.firstDifference();
-    return null;
+    LagPolynomial diffPoly = LagPolynomial.differences(model.order().d);
+    double[] phi = diffPoly.times(arPoly).inverseParams();
+    double[] theta = model.maSmaCoefficients();
+    final int r = Math.max(phi.length, theta.length);
+    final double[] psi = new double[this.forecast.n()];
+    psi[0] = 1.0;
+    for (int i = 0; i < theta.length; i++) {
+      psi[i + 1] = theta[i];
+    }
+    for (int j = 1; j < psi.length; j++) {
+      for (int i = 0; i < Math.min(j, phi.length); i++) {
+        psi[j] += psi[j - i - 1] * phi[i];
+      }
+    }
+    return psi;
+  }
+  
+  double[] getStdErrors() {
+    double[] psiCoeffs = getPsiCoefficients();
+    double[] stdErrors = new double[this.forecast.n()];
+    double sigma = sqrt(model.sigma2());
+    System.out.println(sigma);
+    double sd = 0.0;
+    double psiWeightSum = 0.0;
+    for (int i = 0; i < stdErrors.length; i++) {
+      psiWeightSum += psiCoeffs[i] * psiCoeffs[i];
+      sd = sigma * sqrt(psiWeightSum);
+      stdErrors[i] = this.criticalValue * sd;
+    }
+    return stdErrors;
   }
   
   @Override

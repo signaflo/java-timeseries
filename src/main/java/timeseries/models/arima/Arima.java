@@ -173,7 +173,12 @@ public final class Arima implements Model {
     this.intercept = mean * (1 - sumOf(arSarCoeffs));
     if (fittingStrategy == FittingStrategy.CSS) {
       modelInfo = fitCss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean);
-      this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), modelInfo.fitted);
+      final double[] residuals = modelInfo.residuals;
+      System.out.println(sumOfSquared(residuals));
+      System.out.println(modelInfo.logLikelihood);
+      final double[] fittedArray = integrate(Operators.differenceOf(differencedSeries.series(),
+          residuals));
+      this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
       this.residuals = this.observations.minus(this.fittedSeries);
     } else {
       modelInfo = fitUss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean);
@@ -185,7 +190,6 @@ public final class Arima implements Model {
       }
       this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
       this.residuals = this.observations.minus(this.fittedSeries);
-      System.out.println(this.residuals.sumOfSquares());
     }
   }
 
@@ -207,6 +211,10 @@ public final class Arima implements Model {
    */
   public final ModelCoefficients coefficients() {
     return this.modelCoefficients;
+  }
+  
+  public final ModelOrder order() {
+    return this.order;
   }
 
   /**
@@ -313,9 +321,9 @@ public final class Arima implements Model {
         fitted[t] += maCoeffs[j] * residuals[t - j - 1];
       }
     }
-
-    final double sigma2 = sumOfSquared(residuals) / differencedSeries.n();
-    final double logLikelihood = (-n / 2) * (Math.log(2 * Math.PI * sigma2) + 1);
+    final int m = differencedSeries.n() - arCoeffs.length;
+    final double sigma2 = sumOfSquared(residuals) / m;
+    final double logLikelihood = (-n / 2.0) * (Math.log(2 * Math.PI * sigma2) + 1);
     return new ModelInformation(sigma2, logLikelihood, residuals, fitted);
   }
 
@@ -368,7 +376,7 @@ public final class Arima implements Model {
 
     n = differencedSeries.n();
     final double sigma2 = sumOfSquared(residuals) / n;
-    final double logLikelihood = (-n / 2) * (Math.log(2 * Math.PI * sigma2) + 1);
+    final double logLikelihood = (-n / 2.0) * (Math.log(2 * Math.PI * sigma2) + 1);
     return new ModelInformation(sigma2, logLikelihood, residuals, extendedFit);
   }
 
@@ -546,13 +554,14 @@ public final class Arima implements Model {
    *
    */
   public static final class ModelOrder {
-    private final int p;
-    private final int d;
-    private final int q;
-    private final int P;
-    private final int D;
-    private final int Q;
-    private final int constant;
+    
+    final int p;
+    final int d;
+    final int q;
+    final int P;
+    final int D;
+    final int Q;
+    final int constant;
 
     /**
      * Create a new ModelOrder using the provided number of autoregressive and moving-average parameters, as well as the
