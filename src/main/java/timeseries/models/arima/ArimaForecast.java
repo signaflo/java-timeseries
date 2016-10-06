@@ -40,7 +40,7 @@ public final class ArimaForecast implements Forecast {
     this.model = model;
     this.forecast = model.pointForecast(steps);
     this.criticalValue = new Normal().quantile(1 - alpha / 2);
-    this.fcstErrors = getFcstErrors();
+    this.fcstErrors = getFcstErrors(this.criticalValue);
     this.upperValues = computeUpperPredictionValues(steps, alpha);
     this.lowerValues = computeLowerPredictionValues(steps, alpha);
   }
@@ -62,10 +62,11 @@ public final class ArimaForecast implements Forecast {
   
   @Override
   public final TimeSeries computeUpperPredictionValues(final int steps, final double alpha) {
+    final double criticalValue = new Normal().quantile(1 - alpha / 2);
     double[] upperPredictionValues = new double[steps];
-    double criticalValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
+    double[] errors = getStdErrors(criticalValue);
     for (int t = 0; t < steps; t++) {
-      upperPredictionValues[t] = forecast.at(t) + criticalValue * Math.sqrt(t + 1);
+      upperPredictionValues[t] = forecast.at(t) + errors[t];
     }
     return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0),
         upperPredictionValues);
@@ -73,29 +74,21 @@ public final class ArimaForecast implements Forecast {
 
   @Override
   public final TimeSeries computeLowerPredictionValues(final int steps, final double alpha) {
-    double[] upperPredictionValues = new double[steps];
-    double criticalValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
+    final double criticalValue = new Normal().quantile(alpha / 2);
+    double[] lowerPredictionValues = new double[steps];
+    double[] errors = getStdErrors(criticalValue);
     for (int t = 0; t < steps; t++) {
-      upperPredictionValues[t] = forecast.at(t) - criticalValue * Math.sqrt(t + 1);
+      lowerPredictionValues[t] = forecast.at(t) + errors[t];
     }
     return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0),
-        upperPredictionValues);
+        lowerPredictionValues);
   }
   
-  private TimeSeries getFcstErrors() {
-    double[] errors = new double[forecast.n()];
-    for (int t = 0; t < errors.length; t++) {
-      errors[t] = criticalValue * Math.sqrt(t + 1);
-    }
-    return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
-  }
-  
-  double[] getPsiCoefficients() {
+  private final double[] getPsiCoefficients() {
     LagPolynomial arPoly = LagPolynomial.autoRegressive(model.arSarCoefficients());
     LagPolynomial diffPoly = LagPolynomial.differences(model.order().d);
     double[] phi = diffPoly.times(arPoly).inverseParams();
     double[] theta = model.maSmaCoefficients();
-    final int r = Math.max(phi.length, theta.length);
     final double[] psi = new double[this.forecast.n()];
     psi[0] = 1.0;
     for (int i = 0; i < theta.length; i++) {
@@ -109,17 +102,21 @@ public final class ArimaForecast implements Forecast {
     return psi;
   }
   
-  double[] getStdErrors() {
+  private final TimeSeries getFcstErrors(final double criticalValue) {
+    double[] errors = getStdErrors(criticalValue);
+    return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
+  }
+  
+  private final double[] getStdErrors(final double criticalValue) {
     double[] psiCoeffs = getPsiCoefficients();
     double[] stdErrors = new double[this.forecast.n()];
     double sigma = sqrt(model.sigma2());
-    System.out.println(sigma);
     double sd = 0.0;
     double psiWeightSum = 0.0;
     for (int i = 0; i < stdErrors.length; i++) {
       psiWeightSum += psiCoeffs[i] * psiCoeffs[i];
       sd = sigma * sqrt(psiWeightSum);
-      stdErrors[i] = this.criticalValue * sd;
+      stdErrors[i] = criticalValue * sd;
     }
     return stdErrors;
   }
@@ -145,8 +142,10 @@ public final class ArimaForecast implements Forecast {
       XYSeries observationSeries = chart.addSeries("Past", xAxisObs, seriesList);
       XYSeries forecastSeries = chart.addSeries("Future", xAxis, forecastList, errorList);
 
-      observationSeries.setMarker(new None());
-      forecastSeries.setMarker(new None());
+      observationSeries.setMarker(new Circle());
+      observationSeries.setMarkerColor(Color.BLACK);
+      forecastSeries.setMarker(new Circle());
+      forecastSeries.setMarkerColor(Color.BLUE);
 
       observationSeries.setLineWidth(0.75f);
       forecastSeries.setLineWidth(1.5f);

@@ -452,10 +452,10 @@ public final class Arima implements Model {
     for (int t = 0; t < steps; t++) {
       diffedFcst[n + t] = mean;
       fcst[m + t] = mean;
+      fcst[m + t] += lagPolynomial.applyInverse(fcst, m + t);
       for (int i = 0; i < arSarCoeffs.length; i++) {
         diffedFcst[n + t] += arSarCoeffs[i] * (diffedFcst[n + t - i - 1] - mean);
         fcst[m + t] += arSarCoeffs[i] * diffedFcst[m + t - i - d - 1];
-        fcst[m + t] += lagPolynomial.applyInverse(fcst, m + t);
       }
       for (int j = maSmaCoeffs.length; j > 0 && t - j < 0; j--) {
         diffedFcst[n + t] += maSmaCoeffs[j - 1] * resid[m + t - j];

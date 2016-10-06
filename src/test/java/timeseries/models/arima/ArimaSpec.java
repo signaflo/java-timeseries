@@ -44,10 +44,10 @@ public class ArimaSpec {
     TimeSeries series = TestData.livestock();
     ModelCoefficients coeffs = ModelCoefficients.newBuilder().setArCoeffs(-0.4857229)//.setMaCoeffs(-0.5035514).
         .setDiff(2).build();
-    Arima model = new Arima(series, coeffs, TimePeriod.oneYear(), FittingStrategy.CSS);
+    Arima model = new Arima(series, coeffs, TimePeriod.oneYear(), FittingStrategy.USS);
     ArimaForecast fcst = new ArimaForecast(model, 12, 0.05);
-    System.out.println(Arrays.toString(fcst.getPsiCoefficients()));
-    System.out.println(Arrays.toString(fcst.getStdErrors()));
+    System.out.println(fcst.computeLowerPredictionValues(12, 0.05));
+    System.out.println(fcst.computeUpperPredictionValues(12, 0.05));
     //assertArrayEquals(new double[] {1.0, 1.144516, 1.238173}, fcst.getPsiCoefficients(), 1E-4);
   }
 
