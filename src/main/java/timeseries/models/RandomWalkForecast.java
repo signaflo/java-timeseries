@@ -90,7 +90,7 @@ public final class RandomWalkForecast implements Forecast {
   }
 
   @Override
-  public final void pastAndFuture() {
+  public final void plot() {
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().n());
@@ -130,7 +130,7 @@ public final class RandomWalkForecast implements Forecast {
   }
 
   @Override
-  public final void plot() {
+  public final void plotForecast() {
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       for (OffsetDateTime dateTime : forecast.observationTimes()) {

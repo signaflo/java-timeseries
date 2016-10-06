@@ -1,5 +1,6 @@
 package timeseries.models.arima;
 
+import static java.lang.Math.sqrt;
 import java.awt.Color;
 import java.awt.Font;
 import java.time.OffsetDateTime;
@@ -38,10 +39,14 @@ public final class ArimaForecast implements Forecast {
   public ArimaForecast(final Arima model, final int steps, final double alpha) {
     this.model = model;
     this.forecast = model.pointForecast(steps);
-    this.criticalValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
-    this.fcstErrors = getFcstErrors();
+    this.criticalValue = new Normal().quantile(1 - alpha / 2);
+    this.fcstErrors = getFcstErrors(this.criticalValue);
     this.upperValues = computeUpperPredictionValues(steps, alpha);
     this.lowerValues = computeLowerPredictionValues(steps, alpha);
+  }
+  
+  public ArimaForecast(final Arima model, final int steps) {
+    this(model, steps, 0.05);
   }
   
   @Override
@@ -61,10 +66,11 @@ public final class ArimaForecast implements Forecast {
   
   @Override
   public final TimeSeries computeUpperPredictionValues(final int steps, final double alpha) {
+    final double criticalValue = new Normal().quantile(1 - alpha / 2);
     double[] upperPredictionValues = new double[steps];
-    double criticalValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
+    double[] errors = getStdErrors(criticalValue);
     for (int t = 0; t < steps; t++) {
-      upperPredictionValues[t] = forecast.at(t) + criticalValue * Math.sqrt(t + 1);
+      upperPredictionValues[t] = forecast.at(t) + errors[t];
     }
     return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0),
         upperPredictionValues);
@@ -72,47 +78,56 @@ public final class ArimaForecast implements Forecast {
 
   @Override
   public final TimeSeries computeLowerPredictionValues(final int steps, final double alpha) {
-    double[] upperPredictionValues = new double[steps];
-    double criticalValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
+    final double criticalValue = new Normal().quantile(alpha / 2);
+    double[] lowerPredictionValues = new double[steps];
+    double[] errors = getStdErrors(criticalValue);
     for (int t = 0; t < steps; t++) {
-      upperPredictionValues[t] = forecast.at(t) - criticalValue * Math.sqrt(t + 1);
+      lowerPredictionValues[t] = forecast.at(t) + errors[t];
     }
     return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0),
-        upperPredictionValues);
+        lowerPredictionValues);
   }
   
-  private TimeSeries getFcstErrors() {
-    double[] errors = new double[forecast.n()];
-    for (int t = 0; t < errors.length; t++) {
-      errors[t] = criticalValue * Math.sqrt(t + 1);
-    }
-    return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
-  }
-  
-  double[] getPsiCoefficients() {
+  private final double[] getPsiCoefficients() {
     LagPolynomial arPoly = LagPolynomial.autoRegressive(model.arSarCoefficients());
     LagPolynomial diffPoly = LagPolynomial.differences(model.order().d);
-    LagPolynomial arDiffPoly = diffPoly.times(arPoly);
-    final double[] theta = model.maSmaCoefficients();
-    final double[] phi = arDiffPoly.inverseParams();
-    final double[] psi = new double[Math.max(model.arSarCoefficients().length + model.order().d + model.order().D,
-            theta.length) + 1];
-    if (psi.length > 0) {
-      psi[0] = 1.0;
-    }
+    LagPolynomial seasDiffPoly = LagPolynomial.seasonalDifferences(model.seasonalFrequency(), model.order().D);
+    double[] phi = diffPoly.times(seasDiffPoly).times(arPoly).inverseParams();
+    double[] theta = model.maSmaCoefficients();
+    final double[] psi = new double[this.forecast.n()];
+    psi[0] = 1.0;
     for (int i = 0; i < theta.length; i++) {
       psi[i + 1] = theta[i];
     }
     for (int j = 1; j < psi.length; j++) {
-      for (int i = 0; i < j; i++) {
+      for (int i = 0; i < Math.min(j, phi.length); i++) {
         psi[j] += psi[j - i - 1] * phi[i];
       }
     }
     return psi;
   }
   
+  private final TimeSeries getFcstErrors(final double criticalValue) {
+    double[] errors = getStdErrors(criticalValue);
+    return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
+  }
+  
+  private final double[] getStdErrors(final double criticalValue) {
+    double[] psiCoeffs = getPsiCoefficients();
+    double[] stdErrors = new double[this.forecast.n()];
+    double sigma = sqrt(model.sigma2());
+    double sd = 0.0;
+    double psiWeightSum = 0.0;
+    for (int i = 0; i < stdErrors.length; i++) {
+      psiWeightSum += psiCoeffs[i] * psiCoeffs[i];
+      sd = sigma * sqrt(psiWeightSum);
+      stdErrors[i] = criticalValue * sd;
+    }
+    return stdErrors;
+  }
+  
   @Override
-  public final void pastAndFuture() {
+  public final void plot() {
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().n());
@@ -132,13 +147,15 @@ public final class ArimaForecast implements Forecast {
       XYSeries observationSeries = chart.addSeries("Past", xAxisObs, seriesList);
       XYSeries forecastSeries = chart.addSeries("Future", xAxis, forecastList, errorList);
 
-      observationSeries.setMarker(new None());
-      forecastSeries.setMarker(new None());
+      observationSeries.setMarker(new Circle());
+      observationSeries.setMarkerColor(Color.BLACK);
+      forecastSeries.setMarker(new Circle());
+      forecastSeries.setMarkerColor(Color.BLUE);
 
-      observationSeries.setLineWidth(0.75f);
-      forecastSeries.setLineWidth(1.5f);
+      observationSeries.setLineWidth(1.0f);
+      forecastSeries.setLineWidth(1.0f);
 
-      chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.RED);
+      chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.DARK_GRAY);
       observationSeries.setLineColor(Color.BLACK);
       forecastSeries.setLineColor(Color.BLUE);
 
@@ -152,7 +169,7 @@ public final class ArimaForecast implements Forecast {
   }
 
   @Override
-  public final void plot() {   
+  public final void plotForecast() {   
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       for (OffsetDateTime dateTime : forecast.observationTimes()) {

@@ -13,6 +13,10 @@ public final class Normal implements Distribution {
 //		this.stdev = stdev;
 		this.dist = new GaussianDistribution(mean, stdev);
 	}
+	
+	public Normal() {
+	 this(0, 1);
+	}
 
 	@Override
 	public final double rand() {

@@ -173,7 +173,12 @@ public final class Arima implements Model {
     this.intercept = mean * (1 - sumOf(arSarCoeffs));
     if (fittingStrategy == FittingStrategy.CSS) {
       modelInfo = fitCss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean);
-      this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), modelInfo.fitted);
+      final double[] residuals = modelInfo.residuals;
+      System.out.println(sumOfSquared(residuals));
+      System.out.println(modelInfo.logLikelihood);
+      final double[] fittedArray = integrate(Operators.differenceOf(differencedSeries.series(),
+          residuals));
+      this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
       this.residuals = this.observations.minus(this.fittedSeries);
     } else {
       modelInfo = fitUss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean);
@@ -185,8 +190,52 @@ public final class Arima implements Model {
       }
       this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
       this.residuals = this.observations.minus(this.fittedSeries);
-      System.out.println(this.residuals.sumOfSquares());
     }
+  }
+
+  /**
+   * The maximum-likelihood estimate of the model variance, equal to the sum of squared residuals divided by the number
+   * of observations.
+   * 
+   * @return the maximum-likelihood estimate of the model variance, equal to the sum of squared residuals divided by the
+   *         number of observations.
+   */
+  public final double sigma2() {
+    return modelInfo.sigma2;
+  }
+  
+  public final int seasonalFrequency() {
+    return this.seasonalFrequency;
+  }
+
+  /**
+   * Retrieve the coefficients of this ARIMA model.
+   * 
+   * @return the coefficients of this ARIMA model.
+   */
+  public final ModelCoefficients coefficients() {
+    return this.modelCoefficients;
+  }
+  
+  public final ModelOrder order() {
+    return this.order;
+  }
+
+  /**
+   * The natural logarithm of the likelihood of the model parameters given the data.
+   * 
+   * @return the natural logarithm of the likelihood of the model parameters.
+   */
+  public final double logLikelihood() {
+    return modelInfo.logLikelihood;
+  }
+
+  public final double[] arSarCoefficients() {
+    return this.arSarCoeffs.clone();
+  }
+
+  public final double[] maSmaCoefficients() {
+    return this.maSmaCoeffs.clone();
   }
 
   private Matrix getInitialHessian(final double[] initParams) {
@@ -276,9 +325,9 @@ public final class Arima implements Model {
         fitted[t] += maCoeffs[j] * residuals[t - j - 1];
       }
     }
-
-    final double sigma2 = sumOfSquared(residuals) / differencedSeries.n();
-    final double logLikelihood = (-n / 2) * (Math.log(2 * Math.PI * sigma2) + 1);
+    final int m = differencedSeries.n() - arCoeffs.length;
+    final double sigma2 = sumOfSquared(residuals) / m;
+    final double logLikelihood = (-n / 2.0) * (Math.log(2 * Math.PI * sigma2) + 1);
     return new ModelInformation(sigma2, logLikelihood, residuals, fitted);
   }
 
@@ -331,7 +380,7 @@ public final class Arima implements Model {
 
     n = differencedSeries.n();
     final double sigma2 = sumOfSquared(residuals) / n;
-    final double logLikelihood = (-n / 2) * (Math.log(2 * Math.PI * sigma2) + 1);
+    final double logLikelihood = (-n / 2.0) * (Math.log(2 * Math.PI * sigma2) + 1);
     return new ModelInformation(sigma2, logLikelihood, residuals, extendedFit);
   }
 
@@ -360,6 +409,7 @@ public final class Arima implements Model {
    */
   public final double[] forecast(final int steps) {
     final int d = order.d;
+    final int D = order.D;
     final int n = differencedSeries.n();
     final int m = observations.n();
     final double[] resid = this.residuals.series();
@@ -367,14 +417,16 @@ public final class Arima implements Model {
     final double[] fcst = new double[m + steps];
     System.arraycopy(differencedSeries.series(), 0, diffedFcst, 0, n);
     System.arraycopy(observations.series(), 0, fcst, 0, m);
-    LagPolynomial lagPolynomial = LagPolynomial.differences(d);
+    LagPolynomial diffPolynomial = LagPolynomial.differences(d);
+    LagPolynomial seasDiffPolynomial = LagPolynomial.seasonalDifferences(seasonalFrequency, D);
+    LagPolynomial lagPolyomial = diffPolynomial.times(seasDiffPolynomial);
     for (int t = 0; t < steps; t++) {
       diffedFcst[n + t] = mean;
       fcst[m + t] = mean;
+      fcst[m + t] += lagPolyomial.applyInverse(fcst, m + t);
       for (int i = 0; i < arSarCoeffs.length; i++) {
         diffedFcst[n + t] += arSarCoeffs[i] * (diffedFcst[n + t - i - 1] - mean);
-        fcst[m + t] += arSarCoeffs[i] * diffedFcst[m + t - i - d - 1];
-        fcst[m + t] += lagPolynomial.applyInverse(fcst, m + t);
+        fcst[m + t] += arSarCoeffs[i] * (diffedFcst[n + t - i - 1] - mean);
       }
       for (int j = maSmaCoeffs.length; j > 0 && t - j < 0; j--) {
         diffedFcst[n + t] += maSmaCoeffs[j - 1] * resid[m + t - j];
@@ -559,6 +611,7 @@ public final class Arima implements Model {
    *
    */
   public static final class ModelOrder {
+    
     final int p;
     final int d;
     final int q;

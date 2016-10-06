@@ -23,8 +23,8 @@ public interface Forecast {
   
   TimeSeries forecast();
 
-  void pastAndFuture();
-
   void plot();
+
+  void plotForecast();
 
 }

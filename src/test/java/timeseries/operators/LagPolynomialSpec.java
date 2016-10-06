@@ -15,6 +15,8 @@ public final class LagPolynomialSpec {
   public void whenLagPolyInverseAppliedResultCorrect() {
     TimeSeries series = TestData.ausbeerSeries();
     LagPolynomial poly = LagPolynomial.differences(1);
+    LagPolynomial seasPoly = LagPolynomial.firstSeasonalDifference(4);
+    System.out.println(seasPoly);
     assertThat(poly.applyInverse(series, 2), is(equalTo(series.at(1))));
   }
   
