@@ -6,6 +6,7 @@
 package timeseries.models.arima;
 
 import static data.DoubleFunctions.slice;
+import static data.Operators.differenceOf;
 import static stats.Statistics.sumOf;
 import static stats.Statistics.sumOfSquared;
 
@@ -29,7 +30,6 @@ import org.knowm.xchart.style.XYStyler;
 import org.knowm.xchart.style.markers.Circle;
 import org.knowm.xchart.style.markers.None;
 
-import data.Operators;
 import linear.doubles.Matrix;
 import linear.doubles.Vector;
 import optim.AbstractMultivariateFunction;
@@ -124,7 +124,7 @@ public final class Arima implements Model {
     this.modelInfo = fitUss(differencedSeries, arCoeffs, maCoeffs, mean);
 
     final double[] residuals = modelInfo.residuals;
-    final double[] fittedArray = integrate(Operators.differenceOf(differencedSeries.series(),
+    final double[] fittedArray = integrate(differenceOf(differencedSeries.series(),
             slice(residuals, 2 * arCoeffs.length, residuals.length)));
     for (int i = 0; i < arCoeffs.length; i++) {
       fittedArray[i] -= residuals[i + arCoeffs.length];
@@ -176,14 +176,14 @@ public final class Arima implements Model {
       final double[] residuals = modelInfo.residuals;
       System.out.println(sumOfSquared(residuals));
       System.out.println(modelInfo.logLikelihood);
-      final double[] fittedArray = integrate(Operators.differenceOf(differencedSeries.series(),
+      final double[] fittedArray = integrate(differenceOf(differencedSeries.series(),
           residuals));
       this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
       this.residuals = this.observations.minus(this.fittedSeries);
     } else {
       modelInfo = fitUss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean);
       final double[] residuals = modelInfo.residuals;
-      final double[] fittedArray = integrate(Operators.differenceOf(differencedSeries.series(),
+      final double[] fittedArray = integrate(differenceOf(differencedSeries.series(),
               slice(residuals, 2 * arSarCoeffs.length, residuals.length)));
       for (int i = 0; i < arSarCoeffs.length; i++) {
         fittedArray[i] -= residuals[i + arSarCoeffs.length];
@@ -596,6 +596,51 @@ public final class Arima implements Model {
     // This returns the total number of nonseasonal and seasonal ARMA parameters.
     private final int sumARMA() {
       return this.p + this.q + this.P + this.Q;
+    }
+
+    @Override
+    public String toString() {
+      boolean isSeasonal = P > 0 || Q > 0 || D > 0;
+      StringBuilder builder = new StringBuilder();
+      if (isSeasonal) {
+        builder.append("Seasonal ");
+      }
+      builder.append("ARIMA (").append(p).append(", ").append(d).append(", ").append(q);
+      if (isSeasonal) {
+        builder.append(") x (").append(P).append(", ").append(D).append(", ").append(Q);
+      }
+      builder.append(") with").append((constant == 1)? " a constant" : " no constant");
+      return builder.toString();
+    }
+
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + D;
+      result = prime * result + P;
+      result = prime * result + Q;
+      result = prime * result + constant;
+      result = prime * result + d;
+      result = prime * result + p;
+      result = prime * result + q;
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      ModelOrder other = (ModelOrder) obj;
+      if (D != other.D) return false;
+      if (P != other.P) return false;
+      if (Q != other.Q) return false;
+      if (constant != other.constant) return false;
+      if (d != other.d) return false;
+      if (p != other.p) return false;
+      if (q != other.q) return false;
+      return true;
     }
   }
 

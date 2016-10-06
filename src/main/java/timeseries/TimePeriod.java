@@ -216,7 +216,7 @@ public final class TimePeriod {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append("timeUnit: ").append(timeUnit).append("\nunitLength: ").append(periodLength);
+    builder.append("timeUnit: ").append(timeUnit).append("\nperiodLength: ").append(periodLength);
     return builder.toString();
   }
 

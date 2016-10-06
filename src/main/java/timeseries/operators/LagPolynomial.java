@@ -199,7 +199,7 @@ public class LagPolynomial {
       } else {
         builder.append(" + ");
       }
-      if (coefficients[i] != 1.0) {
+      if (Math.abs(coefficients[i]) != 1.0) {
         builder.append(Math.abs(coefficients[i]));
       }
       builder.append("L");
