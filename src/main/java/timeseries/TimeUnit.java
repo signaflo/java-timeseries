@@ -10,8 +10,8 @@ import java.time.temporal.TemporalUnit;
 
 /**
  * A set of constants representing standard time units, raging from nanoseconds to centuries. This class
- * wraps a {@link ChronoUnit} together with a period length to create a broader set of time units than
- * ChronoUnit provides and to provide some additional functionality. For even more fine-tuned time modeling
+ * wraps a {@link ChronoUnit} together with a length of time to create a broader set of time units than
+ * those provided by ChronoUnit and to allow additional functionality. For even more fine-tuned time modeling
  * use the {@link TimePeriod} class.
  * 
  * @author Jacob Rachiele
@@ -34,11 +34,11 @@ public enum TimeUnit {
   NANOSECOND(ChronoUnit.NANOS, 1L);
 
   private final TemporalUnit temporalUnit;
-  private final long periodLength;
+  private final long unitLength;
 
-  TimeUnit(final TemporalUnit timeUnit, final long periodLength) {
+  TimeUnit(final TemporalUnit timeUnit, final long unitLength) {
     this.temporalUnit = timeUnit;
-    this.periodLength = periodLength;
+    this.unitLength = unitLength;
   }
 
   /**
@@ -53,8 +53,8 @@ public enum TimeUnit {
    * The length of this TimeUnit relative to the underlying TemporalUnit.
    * @return the length of this TimeUnit relative to the underlying TemporalUnit.
    */
-  public long periodLength() {
-    return this.periodLength;
+  public long unitLength() {
+    return this.unitLength;
   }
 
   /**
@@ -96,7 +96,7 @@ public enum TimeUnit {
   double totalDuration() {
     
     Duration thisDuration = this.temporalUnit.getDuration();
-    return thisDuration.getSeconds() * this.periodLength + ((thisDuration.getNano() * this.periodLength) / 1E9);
+    return thisDuration.getSeconds() * this.unitLength + ((thisDuration.getNano() * this.unitLength) / 1E9);
 
   }
 }

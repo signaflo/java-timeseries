@@ -2,7 +2,7 @@ package timeseries;
 
 /**
  * Represents an amount of time expressed in a particular time unit.
- * This class wraps a {@link TimeUnit} together with a positive integer unit length, 
+ * This class wraps a {@link TimeUnit} together with a positive integer period length, 
  * allowing one to create a wide range of different time periods.
  * This class is immutable and thread-safe.
  * 
@@ -12,21 +12,21 @@ package timeseries;
 public final class TimePeriod {
 
   private final TimeUnit timeUnit;
-  private final long unitLength;
+  private final long periodLength;
 
   /**
-   * Construct a new TimePeriod with the given unit of time and unit length.
+   * Construct a new TimePeriod with the given unit of time and period length.
    * 
    * @param timeUnit the unit of time underlying this time period
-   * @param unitLength the length of this time period relative to the given unit of time. Note the
-   * unitLength argument must be a long. Most decimal time periods can be modeled by converting to
+   * @param periodLength the length of this time period relative to the given unit of time. Note the
+   * periodLength argument must be a long. Most decimal time periods can be modeled by converting to
    * an appropriate time unit with a smaller order of magnitude. For example, the {@link halfMonth} 
    * constructor works by converting 15.2184375 days to 1314873 seconds.
    */
-  public TimePeriod(final TimeUnit timeUnit, final long unitLength) {
-    validate(unitLength);
+  public TimePeriod(final TimeUnit timeUnit, final long periodLength) {
+    validate(periodLength);
     this.timeUnit = timeUnit;
-    this.unitLength = unitLength;
+    this.periodLength = periodLength;
   }
 
   /**
@@ -39,12 +39,12 @@ public final class TimePeriod {
   }
 
   /**
-   * The length of this unit of time relative to the underlying time period.
+   * The length of this time period relative to the underlying time unit.
    * 
-   * @return the length of this unit of time relative to the underlying time period.
+   * @return the length of this time period relative to the underlying time unit.
    */
-  public final long unitLength() {
-    return this.unitLength;
+  public final long periodLength() {
+    return this.periodLength;
   }
 
   /**
@@ -68,7 +68,7 @@ public final class TimePeriod {
    */
   public final double totalSeconds() {
     double thisDuration = this.timeUnit.totalDuration();
-    return thisDuration * this.unitLength;
+    return thisDuration * this.periodLength;
   }
   
   /**
@@ -216,7 +216,7 @@ public final class TimePeriod {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append("timeUnit: ").append(timeUnit).append("\nunitLength: ").append(unitLength);
+    builder.append("timeUnit: ").append(timeUnit).append("\nunitLength: ").append(periodLength);
     return builder.toString();
   }
 
@@ -226,7 +226,7 @@ public final class TimePeriod {
     int result = 1;
     result = prime * result + ((timeUnit == null) ? 0 : timeUnit.hashCode());
     long temp;
-    temp = Double.doubleToLongBits(unitLength);
+    temp = Double.doubleToLongBits(periodLength);
     result = prime * result + (int) (temp ^ (temp >>> 32));
     return result;
   }
@@ -242,7 +242,7 @@ public final class TimePeriod {
     TimePeriod other = (TimePeriod) obj;
     if (timeUnit != other.timeUnit)
       return false;
-    if (Double.doubleToLongBits(unitLength) != Double.doubleToLongBits(other.unitLength))
+    if (Double.doubleToLongBits(periodLength) != Double.doubleToLongBits(other.periodLength))
       return false;
     return true;
   }

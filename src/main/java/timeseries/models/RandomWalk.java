@@ -109,7 +109,7 @@ public final class RandomWalk implements Model {
     int n = timeSeries.n();
     TimePeriod timePeriod = timeSeries.timePeriod();
     final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
-            .plus((long)timePeriod.unitLength() * timePeriod.timeUnit().periodLength(), timePeriod.timeUnit().temporalUnit());
+            .plus((long)timePeriod.periodLength() * timePeriod.timeUnit().unitLength(), timePeriod.timeUnit().temporalUnit());
     double[] forecast = new double[steps];
     for (int t = 0; t < steps; t++) {
       forecast[t] = timeSeries.at(n - 1);
