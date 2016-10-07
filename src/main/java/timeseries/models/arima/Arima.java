@@ -392,7 +392,7 @@ public final class Arima implements Model {
     }
 
     n = differencedSeries.n();
-    final double sigma2 = sumOfSquared(residuals) / (residuals.length - order.sumARMA() - order.constant);
+    final double sigma2 = sumOfSquared(residuals) / n;
     final double logLikelihood = (-n / 2.0) * (Math.log(2 * Math.PI * sigma2) + 1);
     return new ModelInformation(sigma2, logLikelihood, residuals, extendedFit);
   }
