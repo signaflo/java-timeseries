@@ -142,9 +142,49 @@ public final class ArimaForecast implements Forecast {
     return stdErrors;
   }
   
-  //********** Plots **********//
   @Override
   public final void plot() {
+    new Thread(() -> {
+      final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
+      final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().n());
+      for (OffsetDateTime dateTime : model.timeSeries().observationTimes()) {
+        xAxisObs.add(Date.from(dateTime.toInstant()));
+      }
+      for (OffsetDateTime dateTime : forecast.observationTimes()) {
+        xAxis.add(Date.from(dateTime.toInstant()));
+      }
+
+      List<Double> seriesList = Doubles.asList(model.timeSeries().series());
+      List<Double> forecastList = Doubles.asList(forecast.series());
+      final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
+          .title("ARIMA Forecast").build();
+
+      XYSeries observationSeries = chart.addSeries("Past", xAxisObs, seriesList);
+      XYSeries forecastSeries = chart.addSeries("Future", xAxis, forecastList);
+
+      observationSeries.setMarker(new Circle());
+      observationSeries.setMarkerColor(Color.DARK_GRAY);
+      forecastSeries.setMarker(new Circle());
+      forecastSeries.setMarkerColor(Color.BLUE);
+
+      observationSeries.setLineWidth(0.8f);
+      forecastSeries.setLineWidth(0.8f);
+
+      chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line);
+      observationSeries.setLineColor(Color.DARK_GRAY);
+      forecastSeries.setLineColor(Color.BLUE);
+
+      JPanel panel = new XChartPanel<>(chart);
+      JFrame frame = new JFrame("ARIMA Forecast");
+      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      frame.add(panel);
+      frame.pack();
+      frame.setVisible(true);
+    }).start();
+  }
+  
+  //********** Plots **********//
+  public final void plotWithErrorBars() {
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().n());
@@ -172,7 +212,7 @@ public final class ArimaForecast implements Forecast {
       observationSeries.setLineWidth(1.0f);
       forecastSeries.setLineWidth(1.0f);
 
-      chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.DARK_GRAY);
+      chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.RED);
       observationSeries.setLineColor(Color.DARK_GRAY);
       forecastSeries.setLineColor(Color.BLUE);
 
@@ -201,7 +241,7 @@ public final class ArimaForecast implements Forecast {
       chart.setXAxisTitle("Time");
       chart.setYAxisTitle("Forecast Values");
       chart.getStyler().setAxisTitleFont(new Font("Arial", Font.PLAIN, 14));
-      chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.DARK_GRAY)
+      chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.RED)
       .setChartFontColor(new Color(112, 112, 112));     
       
       XYSeries forecastSeries = chart.addSeries("Forecast", xAxis, forecastList, errorList);

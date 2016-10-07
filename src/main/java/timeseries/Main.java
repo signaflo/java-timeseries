@@ -1,8 +1,6 @@
 package timeseries;
 
 import data.TestData;
-import timeseries.models.Forecast;
-import timeseries.models.Model;
 import timeseries.models.arima.Arima;
 import timeseries.models.arima.ArimaForecast;
 import timeseries.models.arima.FittingStrategy;
