@@ -48,6 +48,10 @@ public final class ArimaForecast implements Forecast {
     this.lowerValues = computeLowerPredictionValues(steps, alpha);
   }
   
+  public ArimaForecast(final Arima model, final int steps) {
+    this(model, steps, 0.05);
+  }
+  
   public static final ArimaForecast forecast(final Arima model, final int steps, final double alpha) {
     return new ArimaForecast(model, steps, alpha);
   }
@@ -56,8 +60,8 @@ public final class ArimaForecast implements Forecast {
     return new ArimaForecast(model, steps, 0.05);
   }
   
-  public ArimaForecast(final Arima model, final int steps) {
-    this(model, steps, 0.05);
+  public static final ArimaForecast forecast(final Arima model) {
+    return new ArimaForecast(model, 12, 0.05);
   }
   
   @Override
@@ -108,7 +112,7 @@ public final class ArimaForecast implements Forecast {
     double[] theta = model.maSmaCoefficients();
     final double[] psi = new double[steps];
     psi[0] = 1.0;
-    for (int i = 0; i < Math.min(steps, theta.length) - 1; i++) {
+    for (int i = 0; i < Math.min(steps - 1, theta.length); i++) {
       psi[i + 1] = theta[i];
     }
     for (int j = 1; j < psi.length; j++) {
@@ -163,14 +167,14 @@ public final class ArimaForecast implements Forecast {
       observationSeries.setMarker(new Circle());
       observationSeries.setMarkerColor(Color.DARK_GRAY);
       forecastSeries.setMarker(new Circle());
-      forecastSeries.setMarkerColor(Color.RED);
+      forecastSeries.setMarkerColor(Color.BLUE);
 
       observationSeries.setLineWidth(1.0f);
       forecastSeries.setLineWidth(1.0f);
 
       chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.DARK_GRAY);
       observationSeries.setLineColor(Color.DARK_GRAY);
-      forecastSeries.setLineColor(Color.RED);
+      forecastSeries.setLineColor(Color.BLUE);
 
       JPanel panel = new XChartPanel<>(chart);
       JFrame frame = new JFrame("ARIMA Forecast");
@@ -202,9 +206,9 @@ public final class ArimaForecast implements Forecast {
       
       XYSeries forecastSeries = chart.addSeries("Forecast", xAxis, forecastList, errorList);
       forecastSeries.setMarker(new Circle());
-      forecastSeries.setMarkerColor(Color.GRAY);
+      forecastSeries.setMarkerColor(Color.BLUE);
       forecastSeries.setLineWidth(1.0f);
-      forecastSeries.setLineColor(Color.DARK_GRAY);
+      forecastSeries.setLineColor(Color.BLUE);
 
       JPanel panel = new XChartPanel<>(chart);
       JFrame frame = new JFrame("ARIMA Forecast");
@@ -216,6 +220,7 @@ public final class ArimaForecast implements Forecast {
   }
   //********** Plots **********//
 
+  //********** Boiler Plate **********//
   @Override
   public String toString() {
     NumberFormat numFormatter = new DecimalFormat("#0.0000");
@@ -271,5 +276,6 @@ public final class ArimaForecast implements Forecast {
     } else if (!upperValues.equals(other.upperValues)) return false;
     return true;
   }
+  //********** Boiler Plate **********//
 
 }

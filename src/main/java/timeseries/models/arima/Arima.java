@@ -64,6 +64,14 @@ public final class Arima implements Model {
   private final double mean;
   private final double[] arSarCoeffs;
   private final double[] maSmaCoeffs;
+  
+  public static final Arima model(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle) {
+    return new Arima(observations, order, seasonalCycle);
+  }
+  
+  public static final Arima model(final TimeSeries observations, final ModelOrder order) {
+    return new Arima(observations, order, TimePeriod.oneYear());
+  }
 
   /**
    * Create a new ARIMA model from the given observations, model order, and seasonal cycle. This constructor sets the
@@ -175,8 +183,6 @@ public final class Arima implements Model {
     if (fittingStrategy == FittingStrategy.CSS) {
       modelInfo = fitCss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean, order);
       final double[] residuals = modelInfo.residuals;
-      System.out.println(sumOfSquared(residuals));
-      System.out.println(modelInfo.logLikelihood);
       final double[] fittedArray = integrate(differenceOf(differencedSeries.series(),
           residuals));
       this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
@@ -184,9 +190,6 @@ public final class Arima implements Model {
     } else {
       modelInfo = fitUss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean, order);
       final double[] residuals = modelInfo.residuals;
-      System.out.println(sumOfSquared(residuals));
-      System.out.println(modelInfo.sigma2);
-      System.out.println(modelInfo.logLikelihood);
       final double[] fittedArray = integrate(differenceOf(differencedSeries.series(),
               slice(residuals, 2 * arSarCoeffs.length, residuals.length)));
       for (int i = 0; i < arSarCoeffs.length; i++) {
@@ -330,7 +333,7 @@ public final class Arima implements Model {
         fitted[t] += maCoeffs[j] * residuals[t - j - 1];
       }
     }
-    final int m = differencedSeries.n() - order.sumARMA() - order.d - order.D - order.constant;
+    final int m = differencedSeries.n() - order.sumARMA() - order.constant;
     final double sigma2 = sumOfSquared(residuals) / m;
     final double logLikelihood = (-n / 2.0) * (Math.log(2 * Math.PI * sigma2) + 1);
     return new ModelInformation(sigma2, logLikelihood, residuals, fitted);
@@ -597,6 +600,19 @@ public final class Arima implements Model {
       this.D = D;
       this.Q = Q;
       this.constant = (constant == true)? 1 : 0;
+    }
+    
+    public static final ModelOrder order(final int p, final int d, final int q) {
+      return new ModelOrder(p, d, q, 0, 0, 0, (d > 0)? false : true);
+    }
+    
+    public static final ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q) {
+      return new ModelOrder(p, d, q, P, D, Q, (d > 0 || D > 0)? false : true);
+    }
+    
+    public static final ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q,
+            final boolean constant) {
+      return new ModelOrder(p, d, q, P, D, Q, constant);
     }
 
     // This returns the total number of nonseasonal and seasonal ARMA parameters.
