@@ -64,11 +64,12 @@ public final class Arima implements Model {
   private final double mean;
   private final double[] arSarCoeffs;
   private final double[] maSmaCoeffs;
-  
-  public static final Arima model(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle) {
+
+  public static final Arima model(final TimeSeries observations, final ModelOrder order,
+          final TimePeriod seasonalCycle) {
     return new Arima(observations, order, seasonalCycle);
   }
-  
+
   public static final Arima model(final TimeSeries observations, final ModelOrder order) {
     return new Arima(observations, order, TimePeriod.oneYear());
   }
@@ -130,18 +131,25 @@ public final class Arima implements Model {
     this.intercept = mean * (1 - sumOf(arCoeffs));
     this.modelCoefficients = new ModelCoefficients(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs, order.d, order.D,
             this.mean);
-    this.modelInfo = fitUss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean, order);
-
-    final double[] residuals = modelInfo.residuals;
-    final double[] fittedArray = integrate(differenceOf(differencedSeries.series(),
-            slice(residuals, 2 * arSarCoeffs.length, residuals.length)));
-    final int diffs = order.d + order.D * seasonalFrequency;
-    final int offset = 2 * arSarCoeffs.length;
-    for (int i = 0; i < diffs && i >= (diffs - offset); i++) {
-      fittedArray[i] -= residuals[offset - diffs + i];
+    if (fittingStrategy == FittingStrategy.CSS) {
+      this.modelInfo = fitCss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean, order);
+      final double[] residuals = modelInfo.residuals;
+      final double[] fittedArray = integrate(differenceOf(differencedSeries.series(), residuals));
+      this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
+      this.residuals = this.observations.minus(this.fittedSeries);
+    } else {
+      this.modelInfo = fitUss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean, order);
+      final double[] residuals = modelInfo.residuals;
+      final double[] fittedArray = integrate(
+              differenceOf(differencedSeries.series(), slice(residuals, 2 * arSarCoeffs.length, residuals.length)));
+      final int diffs = order.d + order.D * seasonalFrequency;
+      final int offset = 2 * arSarCoeffs.length;
+      for (int i = 0; i < diffs && i >= (diffs - offset); i++) {
+        fittedArray[i] -= residuals[offset - diffs + i];
+      }
+      this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
+      this.residuals = this.observations.minus(this.fittedSeries);
     }
-    this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
-    this.residuals = this.observations.minus(this.fittedSeries);
   }
 
   /**
@@ -183,17 +191,16 @@ public final class Arima implements Model {
     this.mean = coeffs.mean;
     this.intercept = mean * (1 - sumOf(arSarCoeffs));
     if (fittingStrategy == FittingStrategy.CSS) {
-      modelInfo = fitCss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean, order);
+      this.modelInfo = fitCss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean, order);
       final double[] residuals = modelInfo.residuals;
-      final double[] fittedArray = integrate(differenceOf(differencedSeries.series(),
-          residuals));
+      final double[] fittedArray = integrate(differenceOf(differencedSeries.series(), residuals));
       this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
       this.residuals = this.observations.minus(this.fittedSeries);
     } else {
-      modelInfo = fitUss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean, order);
+      this.modelInfo = fitUss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean, order);
       final double[] residuals = modelInfo.residuals;
-      final double[] fittedArray = integrate(differenceOf(differencedSeries.series(),
-              slice(residuals, 2 * arSarCoeffs.length, residuals.length)));
+      final double[] fittedArray = integrate(
+              differenceOf(differencedSeries.series(), slice(residuals, 2 * arSarCoeffs.length, residuals.length)));
       final int diffs = order.d + order.D * seasonalFrequency;
       final int offset = 2 * arSarCoeffs.length;
       for (int i = 0; i < diffs && i >= (diffs - offset); i++) {
@@ -214,7 +221,7 @@ public final class Arima implements Model {
   public final double sigma2() {
     return modelInfo.sigma2;
   }
-  
+
   public final int seasonalFrequency() {
     return this.seasonalFrequency;
   }
@@ -227,7 +234,7 @@ public final class Arima implements Model {
   public final ModelCoefficients coefficients() {
     return this.modelCoefficients;
   }
-  
+
   public final ModelOrder order() {
     return this.order;
   }
@@ -316,6 +323,7 @@ public final class Arima implements Model {
 
   /**
    * Fit the model using conditional sum-of-squares.
+   * 
    * @param order TODO
    * 
    * @return information about the model fit.
@@ -347,6 +355,7 @@ public final class Arima implements Model {
    * Fit the model using unconditional sum-of-squares, utilizing back-forecasting to estimate the residuals for the
    * first few observations. This method, compared to conditional sum-of-squares, often gives estimates much closer to
    * those obtained from maximum-likelihood fitting, especially for shorter series.
+   * 
    * @param order TODO
    * 
    * @return information about the model fit.
@@ -574,7 +583,7 @@ public final class Arima implements Model {
    *
    */
   public static final class ModelOrder {
-    
+
     final int p;
     final int d;
     final int q;
@@ -605,15 +614,15 @@ public final class Arima implements Model {
       this.Q = Q;
       this.constant = (constant == true)? 1 : 0;
     }
-    
+
     public static final ModelOrder order(final int p, final int d, final int q) {
       return new ModelOrder(p, d, q, 0, 0, 0, (d > 0)? false : true);
     }
-    
+
     public static final ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q) {
       return new ModelOrder(p, d, q, P, D, Q, (d > 0 || D > 0)? false : true);
     }
-    
+
     public static final ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q,
             final boolean constant) {
       return new ModelOrder(p, d, q, P, D, Q, constant);
@@ -1021,9 +1030,8 @@ public final class Arima implements Model {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append("\norder: ").append(order).append("\nmodelInfo: ")
-            .append(modelInfo).append("\nmodelCoefficients: ").append(modelCoefficients).append("\nintercept: ")
-            .append(intercept);
+    builder.append("\norder: ").append(order).append("\nmodelInfo: ").append(modelInfo).append("\nmodelCoefficients: ")
+            .append(modelCoefficients).append("\nintercept: ").append(intercept);
     return builder.toString();
   }
 
