@@ -134,9 +134,11 @@ public final class Arima implements Model {
 
     final double[] residuals = modelInfo.residuals;
     final double[] fittedArray = integrate(differenceOf(differencedSeries.series(),
-            slice(residuals, 2 * arCoeffs.length, residuals.length)));
-    for (int i = 0; i < arCoeffs.length; i++) {
-      fittedArray[i] -= residuals[i + arCoeffs.length];
+            slice(residuals, 2 * arSarCoeffs.length, residuals.length)));
+    final int diffs = order.d + order.D * seasonalFrequency;
+    final int offset = 2 * arSarCoeffs.length;
+    for (int i = 0; i < diffs && i >= (diffs - offset); i++) {
+      fittedArray[i] -= residuals[offset - diffs + i];
     }
     this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
     this.residuals = this.observations.minus(this.fittedSeries);
@@ -192,8 +194,10 @@ public final class Arima implements Model {
       final double[] residuals = modelInfo.residuals;
       final double[] fittedArray = integrate(differenceOf(differencedSeries.series(),
               slice(residuals, 2 * arSarCoeffs.length, residuals.length)));
-      for (int i = 0; i < arSarCoeffs.length; i++) {
-        fittedArray[i] -= residuals[i + arSarCoeffs.length];
+      final int diffs = order.d + order.D * seasonalFrequency;
+      final int offset = 2 * arSarCoeffs.length;
+      for (int i = 0; i < diffs && i >= (diffs - offset); i++) {
+        fittedArray[i] -= residuals[offset - diffs + i];
       }
       this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
       this.residuals = this.observations.minus(this.fittedSeries);
@@ -328,10 +332,10 @@ public final class Arima implements Model {
       for (int i = 0; i < arCoeffs.length; i++) {
         fitted[t] += mean + arCoeffs[i] * (differencedSeries.at(t - i - 1) - mean);
       }
-      residuals[t] = differencedSeries.at(t) - fitted[t];
-      for (int j = 0; j < maCoeffs.length; j++) {
+      for (int j = 0; j < Math.min(t, maCoeffs.length); j++) {
         fitted[t] += maCoeffs[j] * residuals[t - j - 1];
       }
+      residuals[t] = differencedSeries.at(t) - fitted[t];
     }
     final int m = differencedSeries.n() - order.sumARMA() - order.constant;
     final double sigma2 = sumOfSquared(residuals) / m;
@@ -388,7 +392,7 @@ public final class Arima implements Model {
     }
 
     n = differencedSeries.n();
-    final double sigma2 = sumOfSquared(residuals) / (residuals.length - order.sumARMA());
+    final double sigma2 = sumOfSquared(residuals) / (residuals.length - order.sumARMA() - order.constant);
     final double logLikelihood = (-n / 2.0) * (Math.log(2 * Math.PI * sigma2) + 1);
     return new ModelInformation(sigma2, logLikelihood, residuals, extendedFit);
   }
@@ -955,7 +959,7 @@ public final class Arima implements Model {
         sarParams[i] = params[i + order.p + order.q];
       }
       for (int i = 0; i < order.Q; i++) {
-        smaParams[i] = params[i + order.p + order.q + order.Q];
+        smaParams[i] = params[i + order.p + order.q + order.P];
       }
       final double[] arCoeffs = Arima.expandArCoefficients(arParams, sarParams, seasonalFrequency);
       final double[] maCoeffs = Arima.expandMaCoefficients(maParams, smaParams, seasonalFrequency);

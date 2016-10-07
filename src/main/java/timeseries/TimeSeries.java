@@ -468,13 +468,13 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Return a slice of this time series from start (inclusive) to end (exclusive).
+   * Return a slice of this time series from start (inclusive) to end (inclusive).
    * 
    * @param start the beginning index of the slice. The value at the index is included in the returned TimeSeries.
-   * @param end the ending index of the slice. The value at the index is <i>not</i> included in the returned TimeSeries.
-   * @return a slice of this time series from start (inclusive) to end (exclusive).
+   * @param end the ending index of the slice. The value at the index is included in the returned TimeSeries.
+   * @return a slice of this time series from start (inclusive) to end (inclusive).
    */
-  public final TimeSeries slice(final int start, final int end) {
+  public final TimeSeries from(final int start, final int end) {
     final double[] sliced = new double[end - start + 1];
     System.arraycopy(series, start, sliced, 0, end - start + 1);
     final List<OffsetDateTime> obsTimes = this.observationTimes.subList(start, end + 1);
@@ -482,15 +482,15 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Return a slice of this time series from start (inclusive) to end (exclusive).
+   * Return a slice of this time series from start (inclusive) to end (inclusive).
    * 
    * @param start the beginning date and time of the slice. The value at the given date-time is included in the returned
    *          TimeSeries.
-   * @param end the ending date and time of the slice. The value at the given date-time is <i>not</i> included in the
+   * @param end the ending date and time of the slice. The value at the given date-time is included in the
    *          returned TimeSeries.
-   * @return a slice of this time series from start (inclusive) to end (exclusive).
+   * @return a slice of this time series from start (inclusive) to end (inclusive).
    */
-  public final TimeSeries slice(final OffsetDateTime start, final OffsetDateTime end) {
+  public final TimeSeries from(final OffsetDateTime start, final OffsetDateTime end) {
     final int startIdx = this.dateTimeIndex.get(start);
     final int endIdx = this.dateTimeIndex.get(end);
     final double[] sliced = new double[endIdx - startIdx + 1];
@@ -504,9 +504,9 @@ public final class TimeSeries extends DataSet {
    * 
    * @param start the beginning time index of the slice. The value at the time index is included in the returned
    *          TimeSeries.
-   * @param end the ending time index of the slice. The value at the time index is <i>not</i> included in the returned
+   * @param end the ending time index of the slice. The value at the time index is included in the returned
    *          TimeSeries.
-   * @return a slice of this time series from start (inclusive) to end (exclusive) using R/Julia style indexing.
+   * @return a slice of this time series from start (inclusive) to end (inclusive) using R/Julia style indexing.
    */
   public final TimeSeries timeSlice(final int start, final int end) {
     final double[] sliced = new double[end - start + 1];
