@@ -3,6 +3,8 @@ package timeseries.models.arima;
 import static java.lang.Math.sqrt;
 import java.awt.Color;
 import java.awt.Font;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,16 +34,26 @@ public final class ArimaForecast implements Forecast {
   private final TimeSeries forecast;
   private final TimeSeries upperValues;
   private final TimeSeries lowerValues;
+  private final double alpha;
   private final double criticalValue;
   private final TimeSeries fcstErrors;
 
   public ArimaForecast(final Arima model, final int steps, final double alpha) {
     this.model = model;
     this.forecast = model.pointForecast(steps);
+    this.alpha = alpha;
     this.criticalValue = new Normal().quantile(1 - alpha / 2);
     this.fcstErrors = getFcstErrors(this.criticalValue);
     this.upperValues = computeUpperPredictionValues(steps, alpha);
     this.lowerValues = computeLowerPredictionValues(steps, alpha);
+  }
+  
+  public static final ArimaForecast forecast(final Arima model, final int steps, final double alpha) {
+    return new ArimaForecast(model, steps, alpha);
+  }
+  
+  public static final ArimaForecast forecast(final Arima model, final int steps) {
+    return new ArimaForecast(model, steps, 0.05);
   }
   
   public ArimaForecast(final Arima model, final int steps) {
@@ -88,14 +100,15 @@ public final class ArimaForecast implements Forecast {
   }
   
   private final double[] getPsiCoefficients() {
+    final int steps = this.forecast.n();
     LagPolynomial arPoly = LagPolynomial.autoRegressive(model.arSarCoefficients());
     LagPolynomial diffPoly = LagPolynomial.differences(model.order().d);
     LagPolynomial seasDiffPoly = LagPolynomial.seasonalDifferences(model.seasonalFrequency(), model.order().D);
     double[] phi = diffPoly.times(seasDiffPoly).times(arPoly).inverseParams();
     double[] theta = model.maSmaCoefficients();
-    final double[] psi = new double[this.forecast.n()];
+    final double[] psi = new double[steps];
     psi[0] = 1.0;
-    for (int i = 0; i < theta.length; i++) {
+    for (int i = 0; i < Math.min(steps, theta.length) - 1; i++) {
       psi[i + 1] = theta[i];
     }
     for (int j = 1; j < psi.length; j++) {
@@ -201,6 +214,62 @@ public final class ArimaForecast implements Forecast {
       frame.setVisible(true);
     }).start();
   }
-//********** Plots **********//
+  //********** Plots **********//
+
+  @Override
+  public String toString() {
+    NumberFormat numFormatter = new DecimalFormat("#0.0000");
+    StringBuilder builder = new StringBuilder();
+    builder.append(String.format("%-20s", "| Date ")).append(String.format("%-12s", "| Forecast "))
+            .append(String.format("%-12s", " | Lower " + String.format("%.1f", (1 - alpha) * 100) + "%"))
+            .append(String.format("%-12s", "  | Upper " + String.format("%.1f", (1 - alpha) * 100) + "%  |\n"));
+    builder.append("| ------------------------------------------------------------ |\n");
+    for (int i = 0; i < this.forecast.n(); i++) {
+      builder.append("| ").append(forecast.observationTimes().get(i).toLocalDateTime()).append("  | ")
+      .append(numFormatter.format(forecast.at(i))).append("  | ").append(numFormatter.format(this.lowerValues.at(i)))
+      .append("    | ").append(numFormatter.format(this.upperValues.at(i))).append("    |\n");
+    }
+    return builder.toString();
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    long temp;
+    temp = Double.doubleToLongBits(criticalValue);
+    result = prime * result + (int) (temp ^ (temp >>> 32));
+    result = prime * result + ((fcstErrors == null)? 0 : fcstErrors.hashCode());
+    result = prime * result + ((forecast == null)? 0 : forecast.hashCode());
+    result = prime * result + ((lowerValues == null)? 0 : lowerValues.hashCode());
+    result = prime * result + ((model == null)? 0 : model.hashCode());
+    result = prime * result + ((upperValues == null)? 0 : upperValues.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    ArimaForecast other = (ArimaForecast) obj;
+    if (Double.doubleToLongBits(criticalValue) != Double.doubleToLongBits(other.criticalValue)) return false;
+    if (fcstErrors == null) {
+      if (other.fcstErrors != null) return false;
+    } else if (!fcstErrors.equals(other.fcstErrors)) return false;
+    if (forecast == null) {
+      if (other.forecast != null) return false;
+    } else if (!forecast.equals(other.forecast)) return false;
+    if (lowerValues == null) {
+      if (other.lowerValues != null) return false;
+    } else if (!lowerValues.equals(other.lowerValues)) return false;
+    if (model == null) {
+      if (other.model != null) return false;
+    } else if (!model.equals(other.model)) return false;
+    if (upperValues == null) {
+      if (other.upperValues != null) return false;
+    } else if (!upperValues.equals(other.upperValues)) return false;
+    return true;
+  }
 
 }

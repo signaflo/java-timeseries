@@ -12,13 +12,14 @@ import timeseries.models.arima.Arima.ModelOrder;
 final class Main {
 
   public static void main(String[] args) throws Exception {
-    TimeSeries series = TestData.ukcars();
-    ModelCoefficients coeffs = ModelCoefficients.newBuilder().setMaCoeffs(-0.3975232)
-        .setSarCoeffs(-0.3947254).setSmaCoeffs(-0.5061460 )//.setMaCoeffs(-0.5035514).
-        .setDiff(1).setSeasDiff(1).build();
+    TimeSeries series = TestData.internetTraffic();
+    ModelCoefficients coeffs = ModelCoefficients.newBuilder().setArCoeffs(0.08463934)
+        .setSarCoeffs(0.14057406).setSmaCoeffs()//.setMaCoeffs(-0.5035514).
+        .setDiff(1).setSeasDiff(0).build();
     Arima model = new Arima(series, coeffs, TimePeriod.oneYear(), FittingStrategy.USS);
-    System.out.println(model.order());
-    ArimaForecast fcst = new ArimaForecast(model, 12);
+    //System.out.println(model.order());
+    ArimaForecast fcst = new ArimaForecast(model, 12, 0.05);
+    System.out.println(fcst);
 //    fcst.plotForecast();
 //    fcst.plot();
   }

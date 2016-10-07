@@ -320,8 +320,8 @@ public final class TestData {
         3496.537, 3477.594, 3519.641, 3566.907, 3619.604, 3545.919, 3580.011, 3507.3, 3463.601, 3359.582, 3391.929,
         3364.103, 3344.854, 3265.992, 3230.704, 3208.588, 3254.183, 3192.484, 3130.113, 3166.313, 3085.524, 3017.947,
         3111.564, 3057.035, 3024.072, 2936.645, 2974.818, 3005.528, 3066.679, 3017.318, 2976.698, 2959.047, 2952.356 };
-    return new TimeSeries(new TimePeriod(TimeUnit.MILLISECOND, 10),
-        OffsetDateTime.of(LocalDateTime.of(2004, 11, 19, 9, 30), ZoneOffset.ofHours(0)), traffic);
+    return new TimeSeries(new TimePeriod(TimeUnit.MONTH, 1),
+        OffsetDateTime.of(LocalDateTime.of(2004, 11, 19, 0, 0), ZoneOffset.ofHours(0)), traffic);
   }
 
 }
