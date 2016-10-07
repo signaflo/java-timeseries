@@ -14,14 +14,14 @@ final class Main {
   public static void main(String[] args) throws Exception {
     TimeSeries series = TestData.ukcars();
     ModelCoefficients coeffs = ModelCoefficients.newBuilder().setArCoeffs()
-        .setSarCoeffs(-0.2312411).setSmaCoeffs(-0.5314621768198619 )//.setMaCoeffs(-0.5035514).
+        .setSarCoeffs(-0.34468894381981).setSmaCoeffs(-0.5314621768198619)//.setMaCoeffs(-0.5035514).
         .setDiff(1).setSeasDiff(1).build();
     Arima model = new Arima(series, coeffs, TimePeriod.oneYear(), FittingStrategy.USS);
-    //Arima model = new Arima(series, new ModelOrder(0, 1, 0, 1, 1, 1, false), TimePeriod.oneYear());
+    Arima mod = new Arima(series, new ModelOrder(0, 1, 0, 1, 1, 1, false), TimePeriod.oneYear(), FittingStrategy.USS);
     //System.out.println(model.order());
-    ArimaForecast fcst = ArimaForecast.forecast(model, 12, 0.05);
+    ArimaForecast fcst = ArimaForecast.forecast(mod, 12, 0.05);
     System.out.println(fcst);
-    fcst.plotForecast();
-    fcst.plot();
+//    fcst.plotForecast();
+//    fcst.plot();
   }
 }

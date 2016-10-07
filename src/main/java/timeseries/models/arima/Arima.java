@@ -130,7 +130,7 @@ public final class Arima implements Model {
     this.intercept = mean * (1 - sumOf(arCoeffs));
     this.modelCoefficients = new ModelCoefficients(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs, order.d, order.D,
             this.mean);
-    this.modelInfo = fitUss(differencedSeries, arCoeffs, maCoeffs, mean, order);
+    this.modelInfo = fitUss(differencedSeries, arSarCoeffs, maSmaCoeffs, mean, order);
 
     final double[] residuals = modelInfo.residuals;
     final double[] fittedArray = integrate(differenceOf(differencedSeries.series(),
@@ -388,7 +388,7 @@ public final class Arima implements Model {
     }
 
     n = differencedSeries.n();
-    final double sigma2 = sumOfSquared(residuals) / (n - order.sumARMA() - order.constant);
+    final double sigma2 = sumOfSquared(residuals) / (residuals.length - order.sumARMA());
     final double logLikelihood = (-n / 2.0) * (Math.log(2 * Math.PI * sigma2) + 1);
     return new ModelInformation(sigma2, logLikelihood, residuals, extendedFit);
   }
