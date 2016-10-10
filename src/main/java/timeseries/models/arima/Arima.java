@@ -118,7 +118,8 @@ public final class Arima implements Model {
     final BFGS optimizer = new BFGS(function, initParams, 1e-8, 1e-8, initHessian);
     final Vector optimizedParams = optimizer.parameters();
     final Matrix inverseHessian = optimizer.inverseHessian();
-
+    System.out.println(function.functionEvaluations());
+    System.out.println(function.gradientEvaluations());
     this.stdErrors = DoubleFunctions.sqrt(inverseHessian.scaledBy((1.0) / differencedSeries.n()).diagonal());
     final double[] arCoeffs = getArCoeffs(optimizedParams);
     final double[] maCoeffs = getMaCoeffs(optimizedParams);
