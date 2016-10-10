@@ -21,7 +21,7 @@ public interface Model {
   TimeSeries pointForecast(int steps);
 
   /**
-   * Produce a new forecast up to the given number of steps and and with the given significance level (alpha) for
+   * Produce a new forecast up to the given number of steps and with the given &alpha; significance level for
    * computing prediction intervals.
    * @param steps the number of steps ahead to forecast.
    * @param alpha the total probability that a future observation will fall outside the associated (1 - &alpha;)100%

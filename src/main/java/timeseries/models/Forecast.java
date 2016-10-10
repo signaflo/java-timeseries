@@ -4,23 +4,53 @@ import timeseries.TimeSeries;
 
 /**
  * Represents a forecast produced by a time series {@link Model}.
+ * 
  * @author Jacob Rachiele
  *
  */
 public interface Forecast {
-  
+
   /**
-   * A time series of the upper prediction 
-   * @return
+   * The upper end points of the prediction interval.
+   * 
+   * @return the upper end points of the prediction interval.
    */
   TimeSeries upperPredictionValues();
-  
+
+  /**
+   * The lower end points of the prediction interval.
+   * 
+   * @return the lower end points of the prediction interval.
+   */
   TimeSeries lowerPredictionValues();
 
+  /**
+   * Compute the upper end points of a prediction interval with the given number of forecast steps and the provided
+   * significance level &alpha;
+   * 
+   * @param steps the number of forecast steps.
+   * @param alpha the significance level for the prediction intervals.
+   * @return the upper end points of a prediction interval with the given number of forecast steps and the provided
+   *         significance level &alpha;
+   */
   TimeSeries computeUpperPredictionValues(int steps, double alpha);
 
+  /**
+   * Compute the lower end points of a prediction interval with the given number of forecast steps and the provided
+   * significance level &alpha;
+   * 
+   * @param steps the number of forecast steps.
+   * @param alpha the significance level for the prediction intervals.
+   * @return the lower end points of a prediction interval with the given number of forecast steps and the provided
+   *         significance level &alpha;
+   */
   TimeSeries computeLowerPredictionValues(int steps, double alpha);
-  
+
+  /**
+   * The point forecast.
+   * 
+   * @return the point forecast.
+   */
   TimeSeries forecast();
 
   void plot();

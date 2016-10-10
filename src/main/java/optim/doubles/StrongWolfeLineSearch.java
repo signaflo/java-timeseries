@@ -51,8 +51,12 @@ public final class StrongWolfeLineSearch {
       fAlphaT = fNewAlphaT;
       dAlphaT = dNewAlphaT;
       fNewAlphaT = f.at(newAlphaT);
-      if (abs(fNewAlphaT) == Double.POSITIVE_INFINITY) {
-        return alphaMin;
+      while (abs(fNewAlphaT) == Double.POSITIVE_INFINITY && i < MAX_UPDATE_ITERATIONS) {
+        newAlphaT /= 2;
+        fAlphaT = fNewAlphaT;
+        dAlphaT = dNewAlphaT;
+        fNewAlphaT = f.at(newAlphaT);
+        i++;
       }
       dNewAlphaT = f.slopeAt(newAlphaT);
       if (fNewAlphaT > f0 + c1 * newAlphaT * slope0 || fNewAlphaT >= fAlphaT && i > 1) {
