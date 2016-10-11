@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ * 
+ */
+
 package data;
 
 import java.io.File;
@@ -12,7 +17,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 /**
- * A class for reading data from csv files.
+ * A class for reading data from CSV files.
  * @author Jacob Rachiele
  */
 public final class CsvReader {
@@ -23,7 +28,7 @@ public final class CsvReader {
   private final List<String> header;
   
   /**
-   * Create a new csv reader using the given file path and header flag.
+   * Create a new CSV reader using the given file path and header flag.
    * @param csvFilePath the path to the file.
    * @param headerRow indicates whether the file contains a header row.
    */
