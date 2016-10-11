@@ -44,7 +44,7 @@ public final class BFGS {
    * @param functionChangeTolerance the tolerance for the change in function value.
    */
   public BFGS(final AbstractMultivariateFunction f, final Vector startingPoint, final double gradientTolerance,
-          double functionChangeTolerance) {
+          final double functionChangeTolerance) {
     this(f, startingPoint, gradientTolerance, functionChangeTolerance, Matrices.identity(startingPoint.size()));
   }
 
