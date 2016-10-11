@@ -5,6 +5,11 @@ import java.util.List;
 
 import math.Complex;
 
+/**
+ * Static methods for creating Vector objects.
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
 public final class Vectors {
 
   private Vectors() {}

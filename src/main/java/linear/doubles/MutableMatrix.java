@@ -1,5 +1,10 @@
 package linear.doubles;
 
+/**
+ * A matrix whose internal data may change when acted on.
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
 public final class MutableMatrix {
   
   private final int nrow;

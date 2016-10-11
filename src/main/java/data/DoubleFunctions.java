@@ -3,7 +3,7 @@ package data;
 import stats.Statistics;
 
 /**
- * 
+ * Static methods for creating, manipulating, and operating on arrays of primitive doubles.
  * @author Jacob Rachiele
  *
  */

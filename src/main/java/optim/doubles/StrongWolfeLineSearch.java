@@ -4,6 +4,11 @@ import static java.lang.Math.abs;
 
 import optim.AbstractFunction;
 
+/**
+ * A line search implementation designed to find an element of the function domain that satisfies the strong Wolfe conditions.
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
 public final class StrongWolfeLineSearch {
 
   private static final int MAX_UPDATE_ITERATIONS = 100;
@@ -30,6 +35,10 @@ public final class StrongWolfeLineSearch {
   private double gradientTolerance = 1E-8;
   int m = 0;
 
+  /**
+   * Use a builder to create a new line search object.
+   * @param builder the line search builder containing the necessary data for the new object.
+   */
   public StrongWolfeLineSearch(final Builder builder) {
     this.f = builder.f;
     this.c1 = builder.c1;
@@ -40,6 +49,10 @@ public final class StrongWolfeLineSearch {
     this.alpha0 = builder.alpha0;
   }
 
+  /**
+   * Perform the line search , returning an element satisfying the strong Wolfe conditions.
+   * @return an element satisfying the strong Wolfe conditions.
+   */
   public final double search() {
     fNewAlphaT = f0;
     dNewAlphaT = slope0;
@@ -153,10 +166,22 @@ public final class StrongWolfeLineSearch {
     }
   }
 
+  /**
+   * Get a new builder for the line search.
+   * @param f the function.
+   * @param f0 the value of the function at 0.
+   * @param slope0 the slope of the function at 0.
+   * @return a new builder for the line search.
+   */
   public static final Builder newBuilder(final AbstractFunction f, final double f0, final double slope0) {
     return new Builder(f, f0, slope0);
   }
 
+  /**
+   * A builder for the line search.
+   * Copyright (c) 2016 Jacob Rachiele
+   *
+   */
   public static final class Builder {
 
     private final AbstractFunction f;

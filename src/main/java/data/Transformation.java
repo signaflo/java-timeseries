@@ -1,7 +1,7 @@
 package data;
 
 /**
- * Describes a transformation to be applied to a set of data.
+ * Specifies a transformation to be applied to a set of data.
  * @author jacob
  *
  */

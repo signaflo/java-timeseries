@@ -6,6 +6,11 @@ import linear.doubles.Vector;
 import optim.doubles.QuasiNewtonLineFunction;
 import optim.doubles.StrongWolfeLineSearch;
 
+/**
+ * An implementation ofthe Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm for nonlinear unconstrained optimization.
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
 public final class BFGS {
 
   private static final double c1 = 1E-4;
@@ -26,6 +31,14 @@ public final class BFGS {
   private final Matrix identity;
 
   // Note that the objects we use are immutable and hence no copy operations are needed.
+  /**
+   * Create a new BFGS object with the given information.
+   * @param f the function to be minimized.
+   * @param startingPoint the initial guess of the minimum.
+   * @param gradientTolerance the tolerance for the norm of the gradient of the function.
+   * @param pointTolerance the tolerance for the change in function value.
+   * @param initialHessian The initial guess for the inverse Hessian approximation.
+   */
   public BFGS(final AbstractMultivariateFunction f, final Vector startingPoint, final double gradientTolerance,
           final double pointTolerance, final Matrix initialHessian) {
     this.f = f;

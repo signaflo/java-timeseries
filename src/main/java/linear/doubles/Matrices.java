@@ -1,9 +1,19 @@
 package linear.doubles;
 
+/**
+ * Static methods for creating Matrix objects.
+ * @author jrachiele
+ *
+ */
 public final class Matrices {
   
   private Matrices(){}
   
+  /**
+   * Create a new identity matrix of the given dimension.
+   * @param n the dimension of the identity matrix.
+   * @return a new identity matrix of the given dimension.
+   */
   public static final Matrix identity(final int n) {
     final double[] data = new double[n * n];
     for (int i = 0; i < n; i++) {

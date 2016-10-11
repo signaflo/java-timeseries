@@ -2,6 +2,11 @@ package optim;
 
 import linear.doubles.Vector;
 
+/**
+ * A partial implementation of a scalar-valued function of multiple variables.
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
 public abstract class AbstractMultivariateFunction implements MultivariateFunction {
   
   protected int functionEvaluations = 0;
@@ -18,10 +23,18 @@ public abstract class AbstractMultivariateFunction implements MultivariateFuncti
     return NumericalDerivatives.forwardDifferenceGradient(this, point, gradientTolerance, functionValue);
   }
   
+  /**
+   * The number of times this function has been evaluated.
+   * @return the number of times this function has been evaluated.
+   */
   public int functionEvaluations() {
     return this.functionEvaluations;
   }
   
+  /**
+   * The number of times the gradient has been computed.
+   * @return the number of times the gradient has been computed.
+   */
   public int gradientEvaluations() {
     return this.gradientEvalutations;
   }
