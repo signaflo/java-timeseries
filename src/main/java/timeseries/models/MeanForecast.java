@@ -24,6 +24,11 @@ import com.google.common.primitives.Doubles;
 import stats.distributions.StudentsT;
 import timeseries.TimeSeries;
 
+/**
+ * A mean model forecast.
+ * @author Jacob Rachiele
+ *
+ */
 public final class MeanForecast implements Forecast {
   
   private final Model model;

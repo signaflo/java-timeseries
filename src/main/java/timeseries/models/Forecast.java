@@ -53,8 +53,14 @@ public interface Forecast {
    */
   TimeSeries forecast();
 
+  /**
+   * Plot the forecasted values along with the historical data and prediction interval.
+   */
   void plot();
 
+  /**
+   * Plot only the forecasted values and the corresponding prediction interval.
+   */
   void plotForecast();
 
 }

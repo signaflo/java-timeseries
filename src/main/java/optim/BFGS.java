@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ * 
+ */
 package optim;
 
 import linear.doubles.Matrices;
@@ -7,8 +11,9 @@ import optim.doubles.QuasiNewtonLineFunction;
 import optim.doubles.StrongWolfeLineSearch;
 
 /**
- * An implementation ofthe Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm for nonlinear unconstrained optimization.
- * Copyright (c) 2016 Jacob Rachiele
+ * An implementation of the Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm for unconstrained
+ * nonlinear optimization.
+ * @author Jacob Rachiele
  *
  */
 public final class BFGS {
@@ -29,18 +34,30 @@ public final class BFGS {
   private Vector y;
   private Matrix H;
   private final Matrix identity;
+  
+  /**
+   * Create a new BFGS object with the given information. The identity matrix will be used for
+   * initial inverse Hessian approximation.
+   * @param f the function to be minimized.
+   * @param startingPoint the initial guess of the minimum.
+   * @param gradientTolerance the tolerance for the norm of the gradient of the function.
+   * @param functionChangeTolerance the tolerance for the change in function value.
+   */
+  public BFGS(final AbstractMultivariateFunction f, final Vector startingPoint, final double gradientTolerance,
+          double functionChangeTolerance) {
+    this(f, startingPoint, gradientTolerance, functionChangeTolerance, Matrices.identity(startingPoint.size()));
+  }
 
-  // Note that the objects we use are immutable and hence no copy operations are needed.
   /**
    * Create a new BFGS object with the given information.
    * @param f the function to be minimized.
    * @param startingPoint the initial guess of the minimum.
    * @param gradientTolerance the tolerance for the norm of the gradient of the function.
-   * @param pointTolerance the tolerance for the change in function value.
+   * @param functionChangeTolerance the tolerance for the change in function value.
    * @param initialHessian The initial guess for the inverse Hessian approximation.
    */
   public BFGS(final AbstractMultivariateFunction f, final Vector startingPoint, final double gradientTolerance,
-          final double pointTolerance, final Matrix initialHessian) {
+          final double functionChangeTolerance, final Matrix initialHessian) {
     this.f = f;
     this.identity = Matrices.identity(startingPoint.size());
     this.H = initialHessian;
@@ -52,8 +69,8 @@ public final class BFGS {
     double relativeChange = Double.MAX_VALUE;
     gradient = f.gradientAt(startingPoint, functionValue);
     if (startingPoint.size() > 0) {
-      while (gradient.norm() > gradientTolerance && absoluteChange > pointTolerance
-              && relativeChange > pointTolerance) {
+      while (gradient.norm() > gradientTolerance && absoluteChange > functionChangeTolerance
+              && relativeChange > functionChangeTolerance) {
         searchDirection = (H.times(gradient).scaledBy(-1.0));
         stepSize = updateStepSize(k, functionValue);
         nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
@@ -73,11 +90,6 @@ public final class BFGS {
     }
   }
 
-  public BFGS(final AbstractMultivariateFunction f, final Vector startingPoint, final double gradientTolerance,
-          double pointChangeTolerance) {
-    this(f, startingPoint, gradientTolerance, pointChangeTolerance, Matrices.identity(startingPoint.size()));
-  }
-
   private final double updateStepSize(final int k, final double functionValue) {
     final double slope0 = gradient.dotProduct(searchDirection);
     final QuasiNewtonLineFunction lineFunction = new QuasiNewtonLineFunction(this.f, iterate, searchDirection);
@@ -93,14 +105,26 @@ public final class BFGS {
     return a.times(H).times(b).plus(c);
   }
 
+  /**
+   * Return the final value of the target function.
+   * @return the final value of the target function.
+   */
   public final double functionValue() {
     return this.functionValue;
   }
 
+  /**
+   * Return the final, optimized input parameters.
+   * @return the final, optimized input parameters.
+   */
   public final Vector parameters() {
     return this.iterate;
   }
 
+  /**
+   * Return the final approximation to the inverse Hessian.
+   * @return the final approximation to the inverse Hessian.
+   */
   public final Matrix inverseHessian() {
     return this.H;
   }

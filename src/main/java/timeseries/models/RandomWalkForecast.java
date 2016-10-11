@@ -23,6 +23,11 @@ import com.google.common.primitives.Doubles;
 import stats.distributions.Normal;
 import timeseries.TimeSeries;
 
+/**
+ * A forecast for a random walk model.
+ * @author Jacob Rachiele
+ *
+ */
 public final class RandomWalkForecast implements Forecast {
 
   private final Model model;

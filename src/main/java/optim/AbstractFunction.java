@@ -1,8 +1,11 @@
+/*
+ *  Copyright (c) 2016 Jacob Rachiele
+ *  
+ */
 package optim;
 
 /**
  * A partial implementation of a scalar-valued function of one variable.
- * Copyright (c) 2016 Jacob Rachiele
  *
  */
 public abstract class AbstractFunction implements Function {

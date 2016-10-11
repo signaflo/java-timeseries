@@ -9,6 +9,11 @@ import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
+/**
+ * Static factory constructors for time series objects.
+ * @author Jacob Rachiele
+ *
+ */
 public final class Ts {
 	
 	private static final int ZONE_OFFSET = 0;

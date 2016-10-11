@@ -1,10 +1,13 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ * 
+ */
 package optim;
 
 import linear.doubles.Vector;
 
 /**
- * A partial implementation of a scalar-valued function of multiple variables.
- * Copyright (c) 2016 Jacob Rachiele
+ * A partial implementation of a scalar-valued function of several variables.
  *
  */
 public abstract class AbstractMultivariateFunction implements MultivariateFunction {

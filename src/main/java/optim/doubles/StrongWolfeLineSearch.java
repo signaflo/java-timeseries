@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ * 
+ */
 package optim.doubles;
 
 import static java.lang.Math.abs;
@@ -5,8 +9,7 @@ import static java.lang.Math.abs;
 import optim.AbstractFunction;
 
 /**
- * A line search implementation designed to find an element of the function domain that satisfies the strong Wolfe conditions.
- * Copyright (c) 2016 Jacob Rachiele
+ * A line search implementation designed to find a point in the domain that satisfies the strong Wolfe conditions.
  *
  */
 public final class StrongWolfeLineSearch {

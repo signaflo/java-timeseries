@@ -2,7 +2,6 @@
  * Copyright (c) 2016 Jacob Rachiele
  * 
  */
-
 package timeseries.models.arima;
 
 import static data.DoubleFunctions.slice;
@@ -65,14 +64,74 @@ public final class Arima implements Model {
   private final double[] arSarCoeffs;
   private final double[] maSmaCoeffs;
   private final double[] stdErrors;
+  
+  public static final Arima model(final TimeSeries observations, final ModelOrder order,
+      final TimePeriod seasonalCycle, final FittingStrategy fittingStrategy) {
+    return new Arima(observations, order, seasonalCycle, fittingStrategy);
+  }
 
+  /**
+   * Create a new ARIMA model from the given observations, model order, and seasonal cycle. This method sets the
+   * model {@link FittingStrategy} to unconditional sum-of-squares.
+   * 
+   * @param observations the time series of observations.
+   * @param order the order of the ARIMA model.
+   * @param seasonalCycle the amount of time it takes for the seasonal pattern to complete one cycle. For example,
+   *        monthly data usually has a cycle of one year, hourly data a cycle of one day, etc... For a non-typical
+   *        example, one could specify a seasonal cycle of half a year using a time period of six months, or,
+   *        equivalently, two quarters.
+   * @return a new ARIMA model from the given observations, model order, and seasonal cycle.
+   */
   public static final Arima model(final TimeSeries observations, final ModelOrder order,
       final TimePeriod seasonalCycle) {
     return new Arima(observations, order, seasonalCycle);
   }
 
+  /**
+   * Create a new ARIMA model from the given observations, model order. This constructor sets the
+   * model {@link FittingStrategy} to unconditional sum-of-squares and the seasonal cycle to one year.
+   * 
+   * @param observations the time series of observations.
+   * @param order the order of the ARIMA model.
+   * @return a new ARIMA model from the given observations, model order.
+   */
   public static final Arima model(final TimeSeries observations, final ModelOrder order) {
     return new Arima(observations, order, TimePeriod.oneYear());
+  }
+  
+  /**
+   * Create a new ARIMA model from the given observations, model coefficients, seasonal cycle, and fitting strategy.
+   * 
+   * @param observations the time series of observations.
+   * @param coeffs the parameter coefficients of the model.
+   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle. For
+   *        example, monthly or quarterly data typically has a cycle of one year, hourly data may have a cycle of one
+   *        day, etc... For less typical situations, one could specify a seasonal cycle of, e.g., half of a year, five
+   *        milliseconds, or two decades.
+   * @param fittingStrategy the strategy to use to fit the model to the data. Results may differ from dataset to
+   *        dataset, but on average, unconditional sum-of-squares outperforms conditional sum-of-squares.
+   *  @return a new ARIMA model from the given observations, model coefficients, seasonal cycle, and fitting strategy. 
+   */
+  public static final Arima model(final TimeSeries observations, final ModelCoefficients coeffs, 
+      final TimePeriod seasonalCycle, final FittingStrategy fittingStrategy) {
+    return new Arima(observations, coeffs, seasonalCycle, fittingStrategy);
+  }
+  
+  /**
+   * Create a new ARIMA model from the given observations, model coefficients, and seasonal cycle. This constructor sets
+   * the model {@link FittingStrategy} to unconditional sum-of-squares.
+   * 
+   * @param observations the time series of observations.
+   * @param coeffs the parameter coefficients of the model.
+   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle. For
+   *        example, monthly or quarterly data typically has a cycle of one year, hourly data may have a cycle of one
+   *        day, etc... For less typical situations, one could specify a seasonal cycle of, e.g., half of a year, five
+   *        milliseconds, or two decades.
+   * @return a new ARIMA model from the given observations, model coefficients, and seasonal cycle.
+   */
+  public static final Arima model(final TimeSeries observations, final ModelCoefficients coeffs,
+      final TimePeriod seasonalCycle) {
+    return new Arima(observations, coeffs, seasonalCycle, FittingStrategy.USS);
   }
 
   /**
@@ -80,13 +139,13 @@ public final class Arima implements Model {
    * model {@link FittingStrategy} to unconditional sum-of-squares.
    * 
    * @param observations the time series of observations.
-   * @param order the model order.
+   * @param order the order of the ARIMA model.
    * @param seasonalCycle the amount of time it takes for the seasonal pattern to complete one cycle. For example,
    *        monthly data usually has a cycle of one year, hourly data a cycle of one day, etc... For a non-typical
    *        example, one could specify a seasonal cycle of half a year using a time period of six months, or,
    *        equivalently, two quarters.
    */
-  public Arima(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle) {
+  private Arima(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle) {
     this(observations, order, seasonalCycle, FittingStrategy.USS);
   }
 
@@ -104,7 +163,7 @@ public final class Arima implements Model {
    *        dataset, but on average, unconditional sum-of-squares outperforms conditional sum-of-squares in both speed
    *        and accuracy.
    */
-  public Arima(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle,
+  private Arima(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle,
       final FittingStrategy fittingStrategy) {
     this.observations = observations;
     this.order = order;
@@ -164,7 +223,7 @@ public final class Arima implements Model {
    *        day, etc... For less typical situations, one could specify a seasonal cycle of, e.g., half of a year, five
    *        milliseconds, or two decades.
    */
-  public Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimePeriod seasonalCycle) {
+  private Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimePeriod seasonalCycle) {
     this(observations, coeffs, seasonalCycle, FittingStrategy.USS);
   }
 
@@ -180,7 +239,7 @@ public final class Arima implements Model {
    * @param fittingStrategy the strategy to use to fit the model to the data. Results may differ from dataset to
    *        dataset, but on average, unconditional sum-of-squares outperforms conditional sum-of-squares.
    */
-  public Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimePeriod seasonalCycle,
+  private Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimePeriod seasonalCycle,
       final FittingStrategy fittingStrategy) {
     this.observations = observations;
     this.modelCoefficients = coeffs;
@@ -345,7 +404,7 @@ public final class Arima implements Model {
 
   @Override
   public Forecast forecast(int steps, double alpha) {
-    return new ArimaForecast(this, steps, alpha);
+    return ArimaForecast.forecast(this, steps, alpha);
   }
 
   /*
@@ -844,6 +903,11 @@ public final class Arima implements Model {
       return new Builder();
     }
 
+    /**
+     * A builder class for ARIMA model coefficients.
+     * @author Jacob Rachiele
+     *
+     */
     public static final class Builder {
       private double[] arCoeffs = new double[] {};
       private double[] maCoeffs = new double[] {};

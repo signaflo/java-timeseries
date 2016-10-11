@@ -4,6 +4,11 @@ import linear.doubles.Vector;
 
 import static linear.doubles.Vector.newVector;
 
+/**
+ * Static methods for computing numerical derivatives.
+ * @author Jacob Rachiele
+ *
+ */
 public final class NumericalDerivatives {
   
   private NumericalDerivatives(){}

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ * 
+ */
 package timeseries.models.arima;
 
 import static java.lang.Math.sqrt;
@@ -28,6 +32,11 @@ import timeseries.TimeSeries;
 import timeseries.models.Forecast;
 import timeseries.operators.LagPolynomial;
 
+/**
+ * A forecast for an ARIMA model.
+ * @author Jacob Rachiele
+ *
+ */
 public final class ArimaForecast implements Forecast {
   
   private final Arima model;
@@ -36,9 +45,62 @@ public final class ArimaForecast implements Forecast {
   private final TimeSeries lowerValues;
   private final double alpha;
   private final double criticalValue;
-  private final TimeSeries fcstErrors;
+  private final TimeSeries fcstErrors;  
+  
+  /**
+   * Create a new forecast for the given number of steps from the provided ARIMA model and with the given
+   * &alpha; significance level.
+   * @param model a fitted ARIMA model.
+   * @param steps the number of forecast steps.
+   * @param alpha the significance level for the prediction intervals.
+   * @return a new forecast for the given number of steps from the provided ARIMA model and with the given
+   * &alpha; significance level.
+   */
+  public static final ArimaForecast forecast(final Arima model, final int steps, final double alpha) {
+    return new ArimaForecast(model, steps, alpha);
+  }
+  
+  /**
+   * Create a new forecast for the given number of steps from the provided ARIMA model with a default
+   * &alpha; significance level of 0.05.
+   * @param model a fitted ARIMA model.
+   * @param steps the number of forecast steps.
+   * @return a new forecast for the given number of steps from the provided ARIMA model with a default
+   * &alpha; significance level of 0.05.
+   */
+  public static final ArimaForecast forecast(final Arima model, final int steps) {
+    return new ArimaForecast(model, steps, 0.05);
+  }
+  
+  /**
+   * Create a new 12 step ahead forecast from the provided ARIMA model with a default
+   * &alpha; significance level of 0.05.
+   * @param model a fitted ARIMA model.
+   * @return a new 12 step ahead forecast from the provided ARIMA model with a default
+   * &alpha; significance level of 0.05.
+   */
+  public static final ArimaForecast forecast(final Arima model) {
+    return new ArimaForecast(model, 12, 0.05);
+  }
+  
+  /**
+   * Create a new forecast for the given number of steps from the provided ARIMA model with a default
+   * &alpha; significance level of 0.05.
+   * @param model a fitted ARIMA model.
+   * @param steps the number of forecast steps.
+   */
+  private ArimaForecast(final Arima model, final int steps) {
+    this(model, steps, 0.05);
+  }
 
-  public ArimaForecast(final Arima model, final int steps, final double alpha) {
+  /**
+   * Create a new forecast for the given number of steps from the provided ARIMA model and with the given
+   * &alpha; significance level.
+   * @param model a fitted ARIMA model.
+   * @param steps the number of forecast steps.
+   * @param alpha the significance level for the prediction intervals.
+   */
+  private ArimaForecast(final Arima model, final int steps, final double alpha) {
     this.model = model;
     this.forecast = model.pointForecast(steps);
     this.alpha = alpha;
@@ -46,22 +108,6 @@ public final class ArimaForecast implements Forecast {
     this.fcstErrors = getFcstErrors(this.criticalValue);
     this.upperValues = computeUpperPredictionValues(steps, alpha);
     this.lowerValues = computeLowerPredictionValues(steps, alpha);
-  }
-  
-  public ArimaForecast(final Arima model, final int steps) {
-    this(model, steps, 0.05);
-  }
-  
-  public static final ArimaForecast forecast(final Arima model, final int steps, final double alpha) {
-    return new ArimaForecast(model, steps, alpha);
-  }
-  
-  public static final ArimaForecast forecast(final Arima model, final int steps) {
-    return new ArimaForecast(model, steps, 0.05);
-  }
-  
-  public static final ArimaForecast forecast(final Arima model) {
-    return new ArimaForecast(model, 12, 0.05);
   }
   
   @Override
@@ -143,6 +189,7 @@ public final class ArimaForecast implements Forecast {
   }
   
   //********** Plots **********//
+  @Override
   public final void plot() {
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());

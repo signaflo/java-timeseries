@@ -1,5 +1,10 @@
 package optim.doubles;
 
+/**
+ * A class for performing cubic polynomial interpolation of a function.
+ * @author Jacob Rachiele
+ *
+ */
 final class CubicInterpolation {
 
   private final double x1;

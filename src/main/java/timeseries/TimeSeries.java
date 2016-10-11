@@ -76,8 +76,8 @@ public final class TimeSeries extends DataSet {
    * 
    * @param timePeriod the period of time at which observations are made.
    * @param startTime the time at which the first observation was made. The string must represent either a valid
-   *          {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
-   *          UTC/Greenwich offset, i.e., an offset of 0, will be used.
+   *        {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default UTC/Greenwich
+   *        offset, i.e., an offset of 0, will be used.
    * @param series the observation data.
    */
   public TimeSeries(final TimePeriod timePeriod, final String startTime, final double... series) {
@@ -128,7 +128,7 @@ public final class TimeSeries extends DataSet {
     OffsetDateTime dateTime;
     for (int i = 1; i < series.length; i++) {
       dateTime = dateTimes.get(i - 1).plus(timePeriod.periodLength() * timePeriod.timeUnit().unitLength(),
-              timePeriod.timeUnit().temporalUnit());
+          timePeriod.timeUnit().temporalUnit());
       dateTimes.add(dateTime);
       dateTimeIndex.put(dateTime, i);
     }
@@ -141,8 +141,8 @@ public final class TimeSeries extends DataSet {
    * 
    * @param timeUnit the unit of time in which observations are made.
    * @param startTime the time at which the first observation was made. The string must represent either a valid
-   *          {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
-   *          UTC/Greenwich offset, i.e., an offset of 0, will be used.
+   *        {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default UTC/Greenwich
+   *        offset, i.e., an offset of 0, will be used.
    * @param series the observation data.
    */
   public TimeSeries(final TimeUnit timeUnit, final String startTime, final double... series) {
@@ -210,8 +210,8 @@ public final class TimeSeries extends DataSet {
     final int period = (int) (this.timePeriod.frequencyPer(timePeriod));
     if (period == 0) {
       throw new IllegalArgumentException(
-              "The given time period was of a smaller magnitude than the original time period."
-                      + " To aggregate a series, the time period argument must be of a larger magnitude than the original.");
+          "The given time period was of a smaller magnitude than the original time period."
+              + " To aggregate a series, the time period argument must be of a larger magnitude than the original.");
     }
     final List<OffsetDateTime> obsTimes = new ArrayList<>();
     double[] aggregated = new double[series.length / period];
@@ -319,7 +319,7 @@ public final class TimeSeries extends DataSet {
   public final TimeSeries transform(final double boxCoxLambda) {
     if (boxCoxLambda > 2 || boxCoxLambda < -1) {
       throw new IllegalArgumentException("The BoxCox parameter must lie between"
-              + " -1 and 2, but the provided parameter was equal to " + boxCoxLambda);
+          + " -1 and 2, but the provided parameter was equal to " + boxCoxLambda);
     }
     final double[] boxCoxed = DoubleFunctions.boxCox(this.series, boxCoxLambda);
     return new TimeSeries(this.timePeriod, this.observationTimes, boxCoxed);
@@ -334,7 +334,7 @@ public final class TimeSeries extends DataSet {
   public final TimeSeries backTransform(final double boxCoxLambda) {
     if (boxCoxLambda > 2 || boxCoxLambda < -1) {
       throw new IllegalArgumentException("The BoxCox parameter must lie between"
-              + " -1 and 2, but the provided parameter was equal to " + boxCoxLambda);
+          + " -1 and 2, but the provided parameter was equal to " + boxCoxLambda);
     }
     final double[] invBoxCoxed = DoubleFunctions.inverseBoxCox(this.series, boxCoxLambda);
     return new TimeSeries(this.timePeriod, this.observationTimes, invBoxCoxed);
@@ -370,7 +370,8 @@ public final class TimeSeries extends DataSet {
    * @return a centered moving average of order m.
    */
   public final TimeSeries centeredMovingAverage(final int m) {
-    if (m % 2 == 1) return movingAverage(m);
+    if (m % 2 == 1)
+      return movingAverage(m);
     TimeSeries firstAverage = movingAverage(m);
     final int k = m / 2;
     final List<OffsetDateTime> times = this.observationTimes.subList(k, n - k);
@@ -380,6 +381,7 @@ public final class TimeSeries extends DataSet {
 
   /**
    * Remove the mean from this series and return the result as a new time series.
+   * 
    * @return a new time series representing this time series with its mean removed.
    */
   public final TimeSeries demean() {
@@ -485,9 +487,9 @@ public final class TimeSeries extends DataSet {
    * Return a slice of this time series from start (inclusive) to end (inclusive).
    * 
    * @param start the beginning date and time of the slice. The value at the given date-time is included in the returned
-   *          TimeSeries.
-   * @param end the ending date and time of the slice. The value at the given date-time is included in the
-   *          returned TimeSeries.
+   *        TimeSeries.
+   * @param end the ending date and time of the slice. The value at the given date-time is included in the returned
+   *        TimeSeries.
    * @return a slice of this time series from start (inclusive) to end (inclusive).
    */
   public final TimeSeries from(final OffsetDateTime start, final OffsetDateTime end) {
@@ -503,9 +505,8 @@ public final class TimeSeries extends DataSet {
    * Return a slice of this time series using R/Julia style indexing.
    * 
    * @param start the beginning time index of the slice. The value at the time index is included in the returned
-   *          TimeSeries.
-   * @param end the ending time index of the slice. The value at the time index is included in the returned
-   *          TimeSeries.
+   *        TimeSeries.
+   * @param end the ending time index of the slice. The value at the time index is included in the returned TimeSeries.
    * @return a slice of this time series from start (inclusive) to end (inclusive) using R/Julia style indexing.
    */
   public final TimeSeries timeSlice(final int start, final int end) {
@@ -538,6 +539,7 @@ public final class TimeSeries extends DataSet {
 
   /**
    * Retrieve the time period at which observations are made for this series.
+   * 
    * @return the time period at which observations are made for this series.
    */
   public final TimePeriod timePeriod() {
@@ -590,7 +592,7 @@ public final class TimeSeries extends DataSet {
       }
       final XYChart chart = new XYChartBuilder().theme(ChartTheme.XChart).height(480).width(960).title("").build();
       final XYSeries xySeries = chart.addSeries("Series Values", xAxis, seriesList)
-              .setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
+          .setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
       xySeries.setLineWidth(0.75f);
       xySeries.setMarker(new None()).setLineColor(Color.BLUE);
       final JPanel panel = new XChartPanel<>(chart);
@@ -615,9 +617,9 @@ public final class TimeSeries extends DataSet {
         }
       }
       final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800).title(plotName)
-              .build();
+          .build();
       final XYSeries xySeries = chart.addSeries("Series Values", xAxis, seriesList)
-              .setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
+          .setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
       xySeries.setLineWidth(0.75f);
       xySeries.setMarker(new None()).setLineColor(Color.BLUE);
       final JPanel panel = new XChartPanel<>(chart);
@@ -653,18 +655,18 @@ public final class TimeSeries extends DataSet {
 
     new Thread(() -> {
       XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
-              .title("Autocorrelations By Lag").build();
+          .title("Autocorrelations By Lag").build();
       XYSeries series = chart.addSeries("Autocorrelation", lags, acf);
       XYSeries series2 = chart.addSeries("Upper Bound", lags, upperLine);
       XYSeries series3 = chart.addSeries("Lower Bound", lags, lowerLine);
       chart.getStyler().setChartFontColor(Color.BLACK)
-              .setSeriesColors(new Color[] { Color.BLACK, Color.BLUE, Color.BLUE });
+          .setSeriesColors(new Color[] { Color.BLACK, Color.BLUE, Color.BLUE });
 
       series.setXYSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
       series2.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line).setMarker(SeriesMarkers.NONE)
-              .setLineStyle(SeriesLines.DASH_DASH);
+          .setLineStyle(SeriesLines.DASH_DASH);
       series3.setXYSeriesRenderStyle(XYSeriesRenderStyle.Line).setMarker(SeriesMarkers.NONE)
-              .setLineStyle(SeriesLines.DASH_DASH);
+          .setLineStyle(SeriesLines.DASH_DASH);
       JPanel panel = new XChartPanel<>(chart);
       JFrame frame = new JFrame("Autocorrelation by Lag");
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -678,16 +680,24 @@ public final class TimeSeries extends DataSet {
   // ********** Boiler Plate ********** //
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (!super.equals(obj)) return false;
-    if (getClass() != obj.getClass()) return false;
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
     TimeSeries other = (TimeSeries) obj;
-    if (Double.doubleToLongBits(mean) != Double.doubleToLongBits(other.mean)) return false;
-    if (n != other.n) return false;
+    if (Double.doubleToLongBits(mean) != Double.doubleToLongBits(other.mean))
+      return false;
+    if (n != other.n)
+      return false;
     if (observationTimes == null) {
-      if (other.observationTimes != null) return false;
-    } else if (!observationTimes.equals(other.observationTimes)) return false;
-    if (!Arrays.equals(series, other.series)) return false;
+      if (other.observationTimes != null)
+        return false;
+    } else if (!observationTimes.equals(other.observationTimes))
+      return false;
+    if (!Arrays.equals(series, other.series))
+      return false;
     return true;
   }
 
@@ -699,7 +709,7 @@ public final class TimeSeries extends DataSet {
     temp = Double.doubleToLongBits(mean);
     result = prime * result + (int) (temp ^ (temp >>> 32));
     result = prime * result + n;
-    result = prime * result + ((observationTimes == null)? 0 : observationTimes.hashCode());
+    result = prime * result + ((observationTimes == null) ? 0 : observationTimes.hashCode());
     result = prime * result + Arrays.hashCode(series);
     return result;
   }
