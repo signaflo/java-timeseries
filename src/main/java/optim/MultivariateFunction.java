@@ -3,7 +3,7 @@ package optim;
 import linear.doubles.Vector;
 
 /**
- * A scalar-values function of several variables.
+ * A scalar-valued function of several variables.
  * @author Jacob Rachiele
  *
  */
