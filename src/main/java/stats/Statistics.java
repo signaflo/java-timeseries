@@ -4,7 +4,11 @@ import static data.Operators.productOf;
 
 import java.util.Arrays;
 
-
+/**
+ * Static methods for basic statistics functionality.
+ * @author Jacob Rachiele
+ *
+ */
 public final class Statistics {
   
   private Statistics(){}
