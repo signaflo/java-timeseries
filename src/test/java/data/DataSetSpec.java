@@ -144,5 +144,12 @@ public class DataSetSpec {
 	  DataSet dataSet = new DataSet(1.0, 2.0, 3.0);
 	  assertThat(dataSet.sumOfSquares(), is(equalTo(14.0)));
 	}
+	
+	@Test
+	public void whenTwoDataSetsEqualThenEqualMethodReturnsTrue() {
+	  DataSet dataSet = new DataSet(1.0, 2.0, 3.0);
+	  DataSet dataSet2 = new DataSet(1.0, 2.0, 3.0);
+	  assertThat(dataSet.equals(dataSet2), is(equalTo(true)));
+	}
 
 }
