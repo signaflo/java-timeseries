@@ -20,6 +20,7 @@ final class Main {
     Arima mod = Arima.model(series, new ModelOrder(1, 1, 2, 0, 1, 1, false), TimePeriod.oneYear(), FittingStrategy.USS);
     //System.out.println(model.order());
     ArimaForecast fcst = ArimaForecast.forecast(mod, 12, 0.05);
+    series.plot("UK Cars");
     System.out.println(mod.sigma2());
     System.out.println(mod.logLikelihood());
     System.out.println(mod.coefficients());

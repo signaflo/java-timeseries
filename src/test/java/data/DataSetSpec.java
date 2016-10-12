@@ -125,5 +125,18 @@ public class DataSetSpec {
 		double[] expected = new double[] {8.0, 17.5};
 		assertThat(dataSet1.plus(dataSet2).data(), is(equalTo(expected)));
 	}
+	
+	@Test
+	public void whenPlotCalledNoExceptionsThrown() {
+	  DataSet dataSet = new DataSet(TestData.ausbeer());
+	  dataSet.plot();
+	}
+	
+	@Test
+	public void whenPlotAgainstCalledNoExceptionsThrown() {
+	  DataSet dataSet1 = new DataSet(1.0, 2.0, 3.0);
+	  DataSet dataSet2 = new DataSet(1.0, 4.0, 9.0);
+	  dataSet1.plotAgainst(dataSet2);
+	}
 
 }

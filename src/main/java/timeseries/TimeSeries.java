@@ -29,6 +29,7 @@ import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
 import org.knowm.xchart.style.Styler.ChartTheme;
 import org.knowm.xchart.style.lines.SeriesLines;
+import org.knowm.xchart.style.markers.Circle;
 import org.knowm.xchart.style.markers.None;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
@@ -590,11 +591,13 @@ public final class TimeSeries extends DataSet {
           seriesList.set(t, Double.NaN);
         }
       }
-      final XYChart chart = new XYChartBuilder().theme(ChartTheme.XChart).height(480).width(960).title("").build();
+      final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(960).title("Series")
+          .xAxisTitle("Time").yAxisTitle("Values").build();
+      chart.getStyler().setChartFontColor(Color.DARK_GRAY);
       final XYSeries xySeries = chart.addSeries("Series Values", xAxis, seriesList)
           .setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
-      xySeries.setLineWidth(0.75f);
-      xySeries.setMarker(new None()).setLineColor(Color.BLUE);
+      xySeries.setLineWidth(1f);
+      xySeries.setMarker(new Circle()).setMarkerColor(Color.BLUE).setLineColor(Color.BLUE);
       final JPanel panel = new XChartPanel<>(chart);
       final JFrame frame = new JFrame("");
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -616,12 +619,13 @@ public final class TimeSeries extends DataSet {
           seriesList.set(t, Double.NaN);
         }
       }
-      final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800).title(plotName)
-          .build();
+      final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(960).title(plotName)
+          .xAxisTitle("Time").yAxisTitle("Values").build();
+      chart.getStyler().setChartFontColor(Color.DARK_GRAY);
       final XYSeries xySeries = chart.addSeries("Series Values", xAxis, seriesList)
           .setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
-      xySeries.setLineWidth(0.75f);
-      xySeries.setMarker(new None()).setLineColor(Color.BLUE);
+      xySeries.setLineWidth(1f);
+      xySeries.setMarker(new Circle()).setMarkerColor(Color.BLUE).setLineColor(Color.BLUE);
       final JPanel panel = new XChartPanel<>(chart);
       final JFrame frame = new JFrame(plotName);
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

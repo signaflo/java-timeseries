@@ -2,7 +2,6 @@
  * Copyright (c) 2016 Jacob Rachiele
  * 
  */
-
 package data;
 
 import java.awt.Color;
@@ -152,7 +151,7 @@ public class DataSet {
 				title("Scatter Plot").xAxisTitle("Index").yAxisTitle("Values").build();
 		chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter).
 		    setChartFontColor(Color.BLACK).setSeriesColors(new Color[] {Color.BLUE});
-		chart.addSeries("", indices, data);
+		chart.addSeries("data values", indices, data);
 	    new SwingWrapper<>(chart).displayChart();
 	}
 	
@@ -160,7 +159,7 @@ public class DataSet {
 		XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
 				.title("Scatter Plot").xAxisTitle("X").yAxisTitle("Y").build();
 		chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter).
-	    setChartFontColor(Color.BLACK).setSeriesColors(new Color[] {Color.BLUE});
+	    setChartFontColor(Color.DARK_GRAY).setSeriesColors(new Color[] {Color.BLUE});
 		chart.addSeries(" ", otherData.data, this.data);
 		new SwingWrapper<>(chart).displayChart();
 	}
