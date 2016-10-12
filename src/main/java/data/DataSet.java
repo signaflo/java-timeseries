@@ -18,7 +18,7 @@ import org.knowm.xchart.style.Styler.ChartTheme;
 import stats.Statistics;
 
 /**
- * A collection of numerical observations.
+ * A collection of numerical observations. This class is immutable and all subclasses must be immutable.
  * @author Jacob Rachiele
  *
  */
@@ -173,15 +173,6 @@ public class DataSet {
 		append("\nSize: ").append(data.length).
 		append("\nMean: ").append(mean()).
 		append("\nStandard deviation: ").append(df.format(stdDeviation())).toString();
-	}
-
-	// Copy constructor. Should be called directly by all subclass copy constructors.
-	protected DataSet(final DataSet other) {
-		this.data = other.data.clone();
-	}
-	
-	public DataSet copy() {
-		return new DataSet(this);
 	}
 
 	@Override

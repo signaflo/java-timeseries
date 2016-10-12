@@ -2,7 +2,6 @@
  * Copyright (c) 2016 Jacob Rachiele
  * 
  */
-
 package data;
 
 import java.io.File;
@@ -71,7 +70,7 @@ public final class CsvReader {
       }
       allRows.add(row);
     }
-    return allRows;
+    return Collections.unmodifiableList(allRows);
   }
 
   private CSVParser getParser(final File csvFile) {
@@ -128,7 +127,7 @@ public final class CsvReader {
    * @return the header row.
    */
   public final List<String> getHeader() {
-    return this.header;
+    return Collections.unmodifiableList(this.header);
   }
   
   /**
@@ -147,6 +146,7 @@ public final class CsvReader {
       columns.add(column);
     }
     return columns;
+    //return Collections.unmodifiableList(columns);
   }
   
 }
