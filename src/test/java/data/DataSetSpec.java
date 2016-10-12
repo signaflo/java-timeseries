@@ -138,5 +138,11 @@ public class DataSetSpec {
 	  DataSet dataSet2 = new DataSet(1.0, 4.0, 9.0);
 	  dataSet1.plotAgainst(dataSet2);
 	}
+	
+	@Test
+	public void whenSumOfSquaresComputedResultCorrect() {
+	  DataSet dataSet = new DataSet(1.0, 2.0, 3.0);
+	  assertThat(dataSet.sumOfSquares(), is(equalTo(14.0)));
+	}
 
 }
