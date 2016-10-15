@@ -89,14 +89,15 @@ public final class Arima implements Model {
 
   /**
    * Create a new ARIMA model from the given observations, model order. This constructor sets the
-   * model {@link FittingStrategy} to unconditional sum-of-squares and the seasonal cycle to one year.
+   * model {@link FittingStrategy} to unconditional sum-of-squares and the seasonal cycle to 
+   * the same periodicity of the observations.
    * 
    * @param observations the time series of observations.
    * @param order the order of the ARIMA model.
    * @return a new ARIMA model from the given observations, model order.
    */
   public static final Arima model(final TimeSeries observations, final ModelOrder order) {
-    return new Arima(observations, order, TimePeriod.oneYear());
+    return new Arima(observations, order, observations.timePeriod());
   }
   
   /**
