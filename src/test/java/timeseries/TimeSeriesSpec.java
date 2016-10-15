@@ -112,7 +112,6 @@ public class TimeSeriesSpec {
         3003.3525, 3106.6, 3157.9875, 3194.6625, 3186.1875, 3207.8875, 3295.61, 3391.00625, 3502.8925 };
     double[] result = series.centeredMovingAverage(4).series();
     assertArrayEquals(expected, result, 1E-2);
-    System.out.println(series.centeredMovingAverage(4));
   }
 
   @Test
@@ -122,7 +121,6 @@ public class TimeSeriesSpec {
         3077.3, 3144.52, 3188.7, 3202.32, 3216.94, 3307.296, 3398.754, 3485.434 };
     double[] result = series.centeredMovingAverage(5).series();
     assertArrayEquals(expected, result, 1E-2);
-    System.out.println(series.centeredMovingAverage(5));
   }
 
   @Test
@@ -133,7 +131,6 @@ public class TimeSeriesSpec {
     OffsetDateTime expectedEnd = OffsetDateTime.of(LocalDateTime.of(1996, 1, 1, 0, 0), ZoneOffset.ofHours(0));
     assertThat(aggregated.observationTimes().get(0), is(equalTo(expectedStart)));
     assertThat(aggregated.observationTimes().get(aggregated.n() - 1), is(equalTo(expectedEnd)));
-    series.difference(2, 2).print();
   }
 
   @Test
@@ -147,16 +144,6 @@ public class TimeSeriesSpec {
   @Test
   public void whenMinuteSeriesCreatedObservationTimesCorrect() throws Exception {
     TimeSeries series = TestData.debitcards();
-    series.print();
-    
-  }
-
-  @Test
-  public void testTimePeriod() {
-    double[] testData = TestData.ausbeer();
-    String start = "1956-01-01T00:00:00";
-    TimePeriod timePeriod = new TimePeriod(TimeUnit.MILLISECOND, (long)(15.7 * 1E3));
-    TimeSeries series = new TimeSeries(timePeriod, start, testData);
-    series.print();
+    series.print();  
   }
 }

@@ -148,5 +148,15 @@ public final class CsvReader {
     return columns;
     //return Collections.unmodifiableList(columns);
   }
+
+  public final List<String> getColumn(final String columnName) {
+    List<String> headerRow = getHeader();
+    for (int i = 0; i < headerRow.size(); i++) {
+      if (headerRow.get(i).equals(columnName)) {
+        return getColumn(i);
+      }
+    }
+    throw new IllegalArgumentException("A column with the provided column name was not found.");
+  }
   
 }
