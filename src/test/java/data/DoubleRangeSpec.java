@@ -46,6 +46,4 @@ public class DoubleRangeSpec {
 		DoubleRange range = DoubleRange.newRangeExclusive(2, 5);
 		assertThat(range.sum(), is(closeTo(9.0, 1E-8)));
 	}
-
-
 }
