@@ -22,7 +22,7 @@ public class CsvReaderSpec {
   public void whenCsvReadHeaderCorrect() throws Exception {
     String csvPath = "monthly-total-number-of-pigs-sla.csv";
     CsvReader reader = new CsvReader(csvPath, true);
-    assertThat("Month", is(equalTo(reader.getHeader().get(1).substring(0, 5))));
+    assertThat("Pigs Slaughtered", is(equalTo(reader.getHeader().get(1))));
   }
   
   @Test
@@ -58,6 +58,14 @@ public class CsvReaderSpec {
     String csvPath = "monthly-total-number-of-pigs-sla.csv";
     CsvReader reader = new CsvReader(csvPath, true);
     assertThat(reader.csvFile().getName(), is(equalTo(csvPath)));
+  }
+  
+  @Test
+  public void whenColumnByNameThenRightColumnDataReturnd() {
+    String csvPath = "monthly-total-number-of-pigs-sla.csv";
+    CsvReader reader = new CsvReader(csvPath, true);
+    List<String> column = reader.getColumn("Pigs Slaughtered");
+    assertThat(Double.parseDouble(column.get(0)), is(equalTo(76378.0)));
   }
   
 }
