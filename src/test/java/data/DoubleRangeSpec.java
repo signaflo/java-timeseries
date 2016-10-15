@@ -26,7 +26,7 @@ public class DoubleRangeSpec {
 	}
 	
 	@Test
-	public void whenDoubleRangeInclusiveCreatedCorrectObjectReturnedTestTwo() {
+	public void whenDoubleRangeInclusiveCreatedCorrectObjectReturnedAgain() {
 		int from = 2;
 		int to = 7;
 		double[] expected = new double[] {2.0, 3.0, 4.0, 5.0, 6.0, 7.0};
@@ -34,7 +34,7 @@ public class DoubleRangeSpec {
 	}
 	
 	@Test
-	public void whenDoubleRangeExclusiveCreatedCorrectObjectReturnedTestTwo() {
+	public void whenDoubleRangeExclusiveCreatedCorrectObjectReturnedAgain() {
 		int from = 2;
 		int to = 5;
 		double[] expected = new double[] {2.0, 3.0, 4.0};

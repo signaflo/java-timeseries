@@ -27,7 +27,7 @@ public class DataSet {
 	
 	/**
 	 * Construct a new DataSet from the given data.
-	 * @param data the colletion of observations.
+	 * @param data the collection of observations.
 	 */
 	public DataSet(final double... data) {
 		if (data == null) {
