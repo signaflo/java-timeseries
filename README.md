@@ -1,7 +1,9 @@
-#Java Time Series
+Java Time Series
+---------------
 Time series analysis on the JVM.
 
-##Features
+Features
+-------
 * Seasonal ARIMA models and forecasting.
 * Dedicated time series library.
 * Simple, intuitive, and powerful time modeling.
@@ -9,7 +11,8 @@ Time series analysis on the JVM.
 * Random walk simulation and forecasting.
 * Box-Cox data transformations.
 
-##Credits
+Credits
+------
 | Library | Category | License |
 | ------- | -------- | ------- |
 | [XChart](https://github.com/timmolter/XChart) | Graphing | [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0) |
