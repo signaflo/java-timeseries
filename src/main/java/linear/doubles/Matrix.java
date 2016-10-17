@@ -18,9 +18,22 @@ public final class Matrix {
   private final double[] data;
   
   public Matrix(final int nrow, final int ncol, final double... data) {
+    if (nrow * ncol != data.length) {
+      throw new IllegalArgumentException("The dimensions do not match the amount of data provided. The amount of data was "
+              + data.length + ", but the number of rows and columns were " + nrow + " and " + ncol + " respectively.");
+    }
     this.nrow = nrow;
     this.ncol = ncol;
     this.data = data.clone();
+  }
+  
+  public Matrix(final int nrow, final int ncol, final double datum) {
+    this.nrow = nrow;
+    this.ncol = ncol;
+    this.data = new double[nrow * ncol];
+    for (int i = 0; i < data.length; i++) {
+      this.data[i] = datum;
+    }
   }
   
   public Matrix(final double[][] matrixData) {

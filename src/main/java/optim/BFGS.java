@@ -94,7 +94,7 @@ public final class BFGS {
     final double slope0 = gradient.dotProduct(searchDirection);
     final QuasiNewtonLineFunction lineFunction = new QuasiNewtonLineFunction(this.f, iterate, searchDirection);
     StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(lineFunction, functionValue, slope0).c1(c1)
-            .c2(c2).alphaMax(100).alpha0(1.0).build();
+            .c2(c2).alphaMax(1000).alpha0(1.0).build();
     return lineSearch.search();
   }
 
