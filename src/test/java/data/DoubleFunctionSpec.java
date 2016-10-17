@@ -69,7 +69,7 @@ public class DoubleFunctionSpec {
   }
   
   @Test
-  public void whenNegativeOfThenNegativeOfDataApplied() {
+  public void whenNegativeOfThenNegativeTaken() {
     double[] data = TestData.debitcards().data();
     double[] neg = negativeOf(data);
     assertThat(Statistics.meanOf(neg), is(closeTo(-15514.25641, 1E-4)));
