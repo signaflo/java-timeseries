@@ -1073,7 +1073,7 @@ public final class Arima implements Model {
     }
   }
 
-  static final class OptimFunction extends AbstractMultivariateFunction {
+  public static final class OptimFunction extends AbstractMultivariateFunction {
 
     private final TimeSeries differencedSeries;
     private final ModelOrder order;
@@ -1084,7 +1084,7 @@ public final class Arima implements Model {
     private final double[] sarParams;
     private final double[] smaParams;
 
-    OptimFunction(final TimeSeries differencedSeries, final ModelOrder order, final FittingStrategy fittingStrategy,
+    public OptimFunction(final TimeSeries differencedSeries, final ModelOrder order, final FittingStrategy fittingStrategy,
         final int seasonalFrequency) {
       this.differencedSeries = differencedSeries;
       this.order = order;

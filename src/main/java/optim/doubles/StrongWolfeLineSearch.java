@@ -14,7 +14,7 @@ import optim.AbstractFunction;
  */
 public final class StrongWolfeLineSearch {
 
-  private static final int MAX_UPDATE_ITERATIONS = 100;
+  private static final int MAX_UPDATE_ITERATIONS = 40;
   private static final double DELTA_MAX = 4.0;
 
   private final AbstractFunction f;
@@ -22,7 +22,7 @@ public final class StrongWolfeLineSearch {
   private final double c2;
   private final double f0;
   private final double slope0;
-  private final double alphaMin = 1E-3;
+  private final double alphaMin = 5E-3;
   private final double alphaMax;
   private final double alpha0;
 
@@ -100,6 +100,7 @@ public final class StrongWolfeLineSearch {
     double fAlphaJ = 0.0;
     double dAlphaJ = 1.0;
     double intervalLength = 0.0;
+    double updatedIntervalLength = 0.0;
     int trials = 0;
     // double mid = 0.0;
     // double fMid = 0.0;
@@ -113,7 +114,8 @@ public final class StrongWolfeLineSearch {
       if (trials == 0) {
         intervalLength = abs(alphaHi - alphaLo);
       }
-      if (abs(alphaHi - alphaLo) > 0.667 * intervalLength && trials > 1) {
+      updatedIntervalLength = abs(alphaHi - alphaLo);
+      if (abs((updatedIntervalLength - intervalLength) / intervalLength) < 0.667 && trials > 2) {
         alphaJ = abs(alphaHi + alphaLo) / 2.0;
         trials = 0;
       } else {
@@ -154,7 +156,7 @@ public final class StrongWolfeLineSearch {
     final double alphaS;
     if (fAlphaHi > fAlphaLo) {
       //alphaC = new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum();
-      alphaC = CubicInterpolation.nocedalFunction(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi);
+      alphaC = new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum();
       alphaQ = new QuadraticInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo).minimum();
       return (abs(alphaC - alphaLo) < abs(alphaQ - alphaLo))? alphaC : 0.5 * (alphaQ + alphaC);
     } else if (dAlphaLo * dAlphaHi < 0) {
