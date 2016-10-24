@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import stats.Statistics;
 
-public class DoubleFunctionSpec {
-  
+public class DoubleFunctionsSpec {
+
   @Test
   public void whenNewArrayCreatedOutputValuesEqualToInputValues() {
     double[] expected = new double[] {3.0, 7.5, 10.0};
