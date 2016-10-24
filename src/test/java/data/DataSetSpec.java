@@ -149,7 +149,7 @@ public class DataSetSpec {
   }
 
   @Test
-  public void whenTwoDataSetsEqualThenEqualsAndHashCodeWork() {
+  public void whenTwoDataSetsEqualThenEqualsAndHashCodeCorrect() {
     DataSet dataSet = new DataSet(1.0, 2.0, 3.0);
     DataSet dataSet2 = new DataSet(1.0, 2.0, 3.0);
     assertThat(dataSet.equals(dataSet2), is(true));
@@ -158,7 +158,7 @@ public class DataSetSpec {
   }
 
   @Test
-  public void whenTwoDataSetsNotEqualThenEqualsAndHashCodeWork() {
+  public void whenTwoDataSetsNotEqualThenEqualsAndHashCodeCorrect() {
     DataSet dataSet = new DataSet(1.0, 2.0, 3.0);
     DataSet dataSet2 = new DataSet(1.0, 2.0, 3.0, 4.0);
     assertThat(dataSet.equals(dataSet2), is(false));
@@ -167,7 +167,7 @@ public class DataSetSpec {
   }
 
   @Test
-  public void whenDataSetNotEqualOtherObjectThenEqualsAndHashCodeWork() {
+  public void whenDataSetNotEqualOtherObjectThenEqualsAndHashCodeCorrect() {
     DataSet dataSet = new DataSet(1.0, 2.0, 3.0);
     TimeSeries dataSet2 = Ts.newAnnualSeries(2011, 3.5, 7.4, 8.8);
     assertThat(dataSet.equals(dataSet2), is(false));
@@ -176,10 +176,15 @@ public class DataSetSpec {
   }
 
   @Test
-  public void whenDataSetEqualToItselfThenEqualsAndHashCodeWork() {
+  public void whenDataSetEqualToItselfThenEqualsAndHashCodeCorrect() {
     DataSet dataSet = new DataSet(1.0, 2.0, 3.0);
     assertThat(dataSet.equals(dataSet), is(true));
-    assertThat(dataSet.equals(dataSet), is(true));
     assertThat(dataSet.hashCode(), is(equalTo(dataSet.hashCode())));
+  }
+  
+  @Test
+  public void whenDataSetEqualToNullThenFalse() {
+    DataSet dataSet = new DataSet(1.0, 2.0, 3.0);
+    assertThat(dataSet.equals(null), is(false));
   }
 }
