@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import math.Complex;
 
-public class VectorSpec {
+public class FieldVectorSpec {
 
   @Test
   public void whenVectorsAddedThenSumCorrect() {

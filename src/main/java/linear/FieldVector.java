@@ -5,6 +5,7 @@
 package linear;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,11 +21,20 @@ public final class FieldVector<T extends FieldElement<T>> {
   public final List<T> elements;
   
   /**
-   * Create a new vector using the provided elements.
+   * Create a new vector using the provided list of elements.
    * @param elements a list of elements constituting the elements of the new vector.
    */
   public FieldVector(List<T> elements) {
     this.elements = Collections.unmodifiableList(elements);
+  }
+  
+  /**
+   * Create a new vector using the provided elements.
+   * @param elements the elements of the new vector.
+   */
+  @SafeVarargs
+  public FieldVector(T... elements) {
+    this.elements = Collections.unmodifiableList(Arrays.asList(elements));
   }
   
   /**
