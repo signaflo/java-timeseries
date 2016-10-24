@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
 package data;
 
 import stats.Statistics;
@@ -24,7 +28,7 @@ final class DoubleRange {
 	 * @param to the ending value of the range, not included in the result.
 	 * @return a new of doubles excluding the given <i>to</i> value.
 	 */
-	static final DoubleRange newRangeExclusive(final int from, final int to) {
+	static DoubleRange newRangeExclusive(final int from, final int to) {
 		return new DoubleRange(from, to, 1);
 	}
 	
@@ -34,7 +38,7 @@ final class DoubleRange {
    * @param to the ending value of the range, included in the result.
    * @return a new of doubles including the given <i>to</i> value.
    */
-	static final DoubleRange newRangeInclusive(final int from, final int to) {
+	static DoubleRange newRangeInclusive(final int from, final int to) {
 		return new DoubleRange(from, to + 1, 1);
 	}
 	
@@ -50,6 +54,7 @@ final class DoubleRange {
 	 * Get the sum of the data in the range.
 	 * @return the sum of the data in the range.
 	 */
+	@Vectorized
 	final double sum() {
 		return Statistics.sumOf(range);
 	}

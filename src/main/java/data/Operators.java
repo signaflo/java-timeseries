@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Jacob Rachiele
+ *
  */
-
 package data;
 
 /**
@@ -12,17 +12,17 @@ package data;
  */
 public final class Operators {
 
-  private Operators() {
-  }
+  private Operators() {}
 
   /**
-   * Return the element-by-element product of the two arrays.
+   * Take the element-by-element product of the two arrays and return the result in a new array.
    * 
    * @param left the first array to take the product with.
    * @param right the second array to take the product with.
    * @return the element-by-element product of the two arrays.
    */
-  public static final double[] productOf(final double[] left, final double[] right) {
+  @ElementWise
+  public static double[] productOf(final double[] left, final double[] right) {
     if (left.length != right.length) {
       throw new IllegalArgumentException("The data arrays must have the same length.");
     }
@@ -33,7 +33,15 @@ public final class Operators {
     return product;
   }
 
-  public static final double[] sumOf(final double[] left, final double[] right) {
+  /**
+   * Take the element-by-element sum of the two arrays and return the result in a new array.
+   *
+   * @param left the first array to take the sum with.
+   * @param right the second array to take the sum with.
+   * @return the element-by-element sum of the two arrays.
+   */
+  @ElementWise
+  public static double[] sumOf(final double[] left, final double[] right) {
     if (left.length != right.length) {
       throw new IllegalArgumentException("The data arrays must have the same length.");
     }
@@ -44,7 +52,15 @@ public final class Operators {
     return sum;
   }
 
-  public static final double[] differenceOf(final double[] left, final double[] right) {
+  /**
+   * Take the element-by-element difference of the two arrays and return the result in a new array.
+   *
+   * @param left the first array to take the difference with.
+   * @param right the second array to take the difference with.
+   * @return the element-by-element difference of the two arrays.
+   */
+  @ElementWise
+  public static double[] differenceOf(final double[] left, final double[] right) {
     if (left.length != right.length) {
       throw new IllegalArgumentException("The data arrays must have the same length.");
     }
@@ -55,7 +71,15 @@ public final class Operators {
     return difference;
   }
 
-  public static final double[] quotientOf(final double[] numerator, final double[] denominator) {
+  /**
+   * Take the element-by-element quotient of the two arrays and return the result in a new array.
+   *
+   * @param numerator the array of numerators.
+   * @param denominator the array of denominators.
+   * @return the element-by-element quotient of the two arrays.
+   */
+  @ElementWise
+  public static double[] quotientOf(final double[] numerator, final double[] denominator) {
     if (numerator.length != denominator.length) {
       throw new IllegalArgumentException("The data arrays must have the same length.");
     }
@@ -65,8 +89,15 @@ public final class Operators {
     }
     return quotient;
   }
-  
-  public static final double[] scaled(final double[] original, final double alpha) {
+
+  /**
+   * Scale the original data by the given scalar, &alpha;, and return the result in a new array.
+   * @param original the data to be scaled.
+   * @param alpha the scaling factor.
+   * @return the original data scaled by the given scalar, &alpha;.
+   */
+  @Vectorized
+  public static double[] scaled(final double[] original, final double alpha) {
     final double[] scaled = new double[original.length];
     for (int i = 0; i < original.length; i++) {
       scaled[i] = original[i] * alpha;

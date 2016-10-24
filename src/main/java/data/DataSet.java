@@ -40,6 +40,7 @@ public class DataSet {
 	 * The sum of the observations.
 	 * @return the sum of the observations.
 	 */
+	@Vectorized
 	public final double sum() {
 		return Statistics.sumOf(this.data);
 	}
@@ -48,6 +49,7 @@ public class DataSet {
 	 * The sum of the squared observations.
 	 * @return the sum of the squared observations.
 	 */
+	@Vectorized
 	public final double sumOfSquares() {
 	  return Statistics.sumOfSquared(this.data);
 	}
@@ -56,6 +58,7 @@ public class DataSet {
 	 * The mean of the observations.
 	 * @return the mean of the observations.
 	 */
+	@Vectorized
 	public final double mean() {
 		return Statistics.meanOf(this.data);
 	}
@@ -64,6 +67,7 @@ public class DataSet {
 	 * The median value of the observations.
 	 * @return the median value of the observations.
 	 */
+	@Vectorized
 	public final double median() {
 		return Statistics.medianOf(this.data);
 	}
@@ -82,6 +86,7 @@ public class DataSet {
 	 * @return A new DataSet containing every element of this DataSet multiplied by
 	 * the corresponding element of the given DataSet.
 	 */
+	@ElementWise
 	public final DataSet times(final DataSet otherData) {
 		return new DataSet(Operators.productOf(this.data, otherData.data));
 	}
@@ -92,6 +97,7 @@ public class DataSet {
 	 * @return A new DataSet containing every element of this DataSet added to
 	 * the corresponding element of the given DataSet.
 	 */
+	@ElementWise
 	public final DataSet plus(final DataSet otherData) {
 		return new DataSet(Operators.sumOf(this.data, otherData.data));
 	}
@@ -100,6 +106,7 @@ public class DataSet {
 	 * The unbiased sample variance of the observations.
 	 * @return the unbiased sample variance of the observations.
 	 */
+	@Vectorized
 	public final double variance() {
 		return Statistics.varianceOf(this.data);
 	}
@@ -108,6 +115,7 @@ public class DataSet {
 	 * The unbiased sample standard deviation of the observations.
 	 * @return the unbiased sample standard deviation of the observations.
 	 */
+	@Vectorized
 	public final double stdDeviation() {
 		return Statistics.stdDeviationOf(this.data);
 	}
@@ -119,17 +127,19 @@ public class DataSet {
 	 * @return the unbiased sample covariance of these observations with the observations
 	 * contained in the given DataSet.
 	 */
+	@Vectorized
 	public final double covariance(final DataSet otherData) {
 		return Statistics.covarianceOf(this.data, otherData.data);
 	}
 	
 	/**
-	 * The unbiased sample correlation coefficient of these observations with the observations
+	 * The unbiased sample correlation of these observations with the observations
 	 * contained in the given DataSet.
-	 * @param otherData the data to compute the correlation cofficient with.
-	 * @return the unbiased sample correlation coefficient of these observations with the observations
+	 * @param otherData the data to compute the correlation coefficient with.
+	 * @return the unbiased sample correlation of these observations with the observations
 	 * contained in the given DataSet.
 	 */
+	@Vectorized
 	public final double correlation(DataSet otherData) {
 		return Statistics.correlationOf(this.data, otherData.data);
 	}
@@ -141,7 +151,11 @@ public class DataSet {
 	public final double[] data() {
 		return this.data.clone();
 	}
-	
+
+  /**
+   * Plot this data set. This method will produce a scatter plot of the data values against the integers
+   * from 0 to n - 1, where n is the size of the data set.
+   */
 	public void plot() {
 		final double[] indices = new double[this.data.length];
 		for (int i = 0; i < indices.length; i++) {
@@ -154,7 +168,12 @@ public class DataSet {
 		chart.addSeries("data values", indices, data);
 	    new SwingWrapper<>(chart).displayChart();
 	}
-	
+
+	/**
+	 * Plot this data set against the given data set. The given data set will be plotted on the x-axis, while
+   * this data set will be plotted on the y-axis.
+	 * @param otherData the data set to plot this data set against.
+	 */
 	public void plotAgainst(final DataSet otherData) {
 		XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
 				.title("Scatter Plot").xAxisTitle("X").yAxisTitle("Y").build();
@@ -194,10 +213,7 @@ public class DataSet {
 			return false;
 		}
 		DataSet other = (DataSet) obj;
-		if (!Arrays.equals(data, other.data)) {
-			return false;
-		}
-		return true;
+		return Arrays.equals(data, other.data);
 	}
 
 }
