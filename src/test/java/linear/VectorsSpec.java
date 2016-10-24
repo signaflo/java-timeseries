@@ -46,14 +46,14 @@ public class VectorsSpec {
     List<Complex> l3 = new ArrayList<>(2);
     l3.add(c5); l3.add(c6);
     FieldVector<Complex> vec3 = new FieldVector<>(l3);
-    assertThat(Vectors.axpy(vec1, vec2, alpha), is(equalTo(vec3)));
+    assertThat(ComplexVectors.axpy(vec1, vec2, alpha), is(equalTo(vec3)));
   }
 
   @Test
   public void whenZeroVectorThenVectorOfZerosCreated() {
     Complex zero = new Complex(0.0, 0.0);
     FieldVector<Complex> zeros = new FieldVector<>(zero, zero, zero);
-    assertThat(Vectors.zeroVector(3), is(equalTo(zeros)));
+    assertThat(ComplexVectors.zeroVector(3), is(equalTo(zeros)));
   }
   
   @Test
@@ -65,6 +65,6 @@ public class VectorsSpec {
     List<FieldVector<Complex>> vectors = new ArrayList<>(2);
     vectors.add(vec1); vectors.add(vec2);
     FieldVector<Complex> expected = new FieldVector<>(new Complex(-8.3, 34.9), new Complex(5.25, 29.75));
-    assertThat(Vectors.linearCombination(vectors, scalars), is(equalTo(expected)));
+    assertThat(ComplexVectors.linearCombination(vectors, scalars), is(equalTo(expected)));
   }
 }

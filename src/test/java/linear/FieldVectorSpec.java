@@ -6,11 +6,39 @@ import static org.hamcrest.Matchers.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import math.Complex;
+import org.junit.rules.ExpectedException;
 
 public class FieldVectorSpec {
+
+  @Rule
+  public ExpectedException exception = ExpectedException.none();
+
+  @Test
+  public void whenNormZeroLengthVectorThenAnswerZero() {
+    FieldVector<Complex> empty = ComplexVectors.zeroVector(0);
+    assertThat(empty.norm(), is(equalTo(0.0)));
+  }
+
+  @Test
+  public void whenDotProductZeroLengthVectorExceptionThrown() {
+    exception.expect(IllegalStateException.class);
+    FieldVector<Complex> empty = ComplexVectors.zeroVector(0);
+    empty.dotProduct(empty);
+  }
+
+  @Test
+  public void whenElementsGetterThenElementsRetrieved() {
+    FieldVector<Complex> vector = testVecTwoElem();
+    Complex c1 = new Complex(3, 5);
+    Complex c2 = new Complex(2.5, 4.5);
+    List<Complex> complexList = new ArrayList<>(2);
+    complexList.add(c1); complexList.add(c2);
+    assertThat(vector.elements(), is(equalTo(complexList)));
+  }
 
   @Test
   public void whenVectorsAddedThenSumCorrect() {
@@ -81,7 +109,7 @@ public class FieldVectorSpec {
     assertThat(axpy.at(1), is(equalTo(new Complex(7.75, 42.25))));
   }
   
-  private final FieldVector<Complex> testVecFourElem() {
+  private FieldVector<Complex> testVecFourElem() {
     Complex c1 = new Complex(3, 5);
     Complex c2 = new Complex(2.5, 4.5);
     Complex c3 = new Complex(2.4, 4.0);
@@ -92,7 +120,7 @@ public class FieldVectorSpec {
     return new FieldVector<>(complexList);
   }
   
-  private final FieldVector<Complex> testVecTwoElem() {
+  private FieldVector<Complex> testVecTwoElem() {
     Complex c1 = new Complex(3, 5);
     Complex c2 = new Complex(2.5, 4.5);
     List<Complex> complexList = new ArrayList<>(2);
@@ -100,7 +128,7 @@ public class FieldVectorSpec {
     return new FieldVector<>(complexList);
   }
   
-  private final FieldVector<Complex> testVecTwoElem2() {
+  private FieldVector<Complex> testVecTwoElem2() {
     Complex c3 = new Complex(2.4, 4.0);
     Complex c4 = new Complex(6, 2);
     List<Complex> complexList = new ArrayList<>(2);

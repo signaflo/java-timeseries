@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import data.ElementWise;
+import data.Vectorized;
 import math.FieldElement;
 
 /**
@@ -18,7 +20,7 @@ import math.FieldElement;
  */
 public final class FieldVector<T extends FieldElement<T>> {
   
-  public final List<T> elements;
+  private final List<T> elements;
   
   /**
    * Create a new vector using the provided list of elements.
@@ -67,12 +69,13 @@ public final class FieldVector<T extends FieldElement<T>> {
    * @param other the vector to add to this vector.
    * @return this vector added to the given vector.
    */
+  @ElementWise
   public final FieldVector<T> plus(final FieldVector<T> other) {
-    final List<T> summed = new ArrayList<T>(this.size());
+    final List<T> summed = new ArrayList<>(this.size());
     for (int i = 0; i < this.size(); i++) {
       summed.add(this.elements.get(i).plus(other.elements.get(i)));
     }
-    return new FieldVector<T>(summed);
+    return new FieldVector<>(summed);
   }
   
   /**
@@ -80,12 +83,13 @@ public final class FieldVector<T extends FieldElement<T>> {
    * @param other the vector to subtract from this vector.
    * @return this vector subtracted by the given vector.
    */
+  @ElementWise
   public final FieldVector<T> minus(final FieldVector<T> other) {
-    final List<T> differenced = new ArrayList<T>(this.size());
+    final List<T> differenced = new ArrayList<>(this.size());
     for (int i = 0; i < this.size(); i++) {
       differenced.add(this.elements.get(i).minus(other.elements.get(i)));
     }
-    return new FieldVector<T>(differenced);
+    return new FieldVector<>(differenced);
   }
   
   /**
@@ -93,20 +97,21 @@ public final class FieldVector<T extends FieldElement<T>> {
    * @param alpha the scalar to scale this vector by.
    * @return this vector scaled by the given scalar.
    */
+  @Vectorized
   public final FieldVector<T> scaledBy(final T alpha) {
-    final List<T> scaled = new ArrayList<T>(this.size());
+    final List<T> scaled = new ArrayList<>(this.size());
     for (int i = 0; i < this.size(); i++) {
       scaled.add(this.elements.get(i).times(alpha));
     }
-    return new FieldVector<T>(scaled);
+    return new FieldVector<>(scaled);
   }
 
   final FieldVector<T> axpy(final FieldVector<T> other, final T alpha) {
-    final List<T> result = new ArrayList<T>(this.size());
+    final List<T> result = new ArrayList<>(this.size());
     for (int i = 0; i < this.size(); i++) {
       result.add(this.elements.get(i).times(alpha).plus(other.elements.get(i)));
     }
-    return new FieldVector<T>(result);
+    return new FieldVector<>(result);
   }
   
   /**
@@ -114,6 +119,7 @@ public final class FieldVector<T extends FieldElement<T>> {
    * @param other the vector to take the dot product with.
    * @return the dot product of this vector with the given vector.
    */
+  @Vectorized
   public final T dotProduct(final FieldVector<T> other) {
     if (this.size() > 0) {
       T product = this.elements.get(0).times(other.elements.get(0).conjugate());
@@ -133,15 +139,15 @@ public final class FieldVector<T extends FieldElement<T>> {
     return Math.sqrt(sumOfSquares());
   }
   
-  private final double sumOfSquares() {
+  private double sumOfSquares() {
+    double sum = 0.0;
     if (this.size() > 0) {
-      double sum = Math.pow(this.elements.get(0).abs(), 2);
+      sum = Math.pow(this.elements.get(0).abs(), 2);
       for (int i = 1; i < this.elements.size(); i++) {
         sum += Math.pow(this.elements.get(i).abs(), 2);
       }
-      return sum;
     }
-    throw new IllegalStateException("sum of squares undefined for zero length vectors.");
+    return sum;
   }
   
   

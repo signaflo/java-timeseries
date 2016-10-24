@@ -10,15 +10,15 @@ import java.util.List;
 import math.Complex;
 
 /**
- * Static methods for creating Vector objects.
+ * Static methods for creating complex-valued vectors.
  * 
  *
  */
-public final class Vectors {
+public final class ComplexVectors {
 
-  private Vectors() {}
+  private ComplexVectors() {}
 
-  public static final FieldVector<Complex> linearCombination(List<FieldVector<Complex>> vectors, List<Complex> scalars) {
+  public static FieldVector<Complex> linearCombination(List<FieldVector<Complex>> vectors, List<Complex> scalars) {
     FieldVector<Complex> result = zeroVector(scalars.size());
     for (int i = 0; i < vectors.size(); i++) {
       result = result.plus(vectors.get(i).scaledBy(scalars.get(i)));
@@ -26,12 +26,12 @@ public final class Vectors {
     return result;
   }
 
-  public static final FieldVector<Complex> axpy(final FieldVector<Complex> x, final FieldVector<Complex> y,
+  public static FieldVector<Complex> axpy(final FieldVector<Complex> x, final FieldVector<Complex> y,
       final Complex alpha) {
     return (x.scaledBy(alpha).plus(y));
   }
 
-  public static final FieldVector<Complex> zeroVector(final int size) {
+  public static FieldVector<Complex> zeroVector(final int size) {
     List<Complex> zeros = new ArrayList<>(size);
     for (int i = 0; i < size; i++) {
       zeros.add(new Complex(0, 0));
