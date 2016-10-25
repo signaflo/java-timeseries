@@ -53,7 +53,6 @@ public final class DoubleFunctions {
    * @param lambda the Box-Cox parameter.
    * @return the data transformed using a Box-Cox transformation with the given lambda value.
    */
-  @Vectorized
   public static double[] boxCox(final double[] data, final double lambda) {
     final double[] boxCoxed = new double[data.length];
     if (Math.abs(lambda) < 1E-15) { 
@@ -75,7 +74,6 @@ public final class DoubleFunctions {
    * @param lambda the Box-Cox parameter used in the transformation.
    * @return the original, untransformed data in a new array.
    */
-  @Vectorized
   public static double[] inverseBoxCox(final double[] data, final double lambda) {
     final double[] invBoxCoxed = new double[data.length];
     if (Math.abs(lambda) < 1E-15) {
@@ -95,7 +93,6 @@ public final class DoubleFunctions {
    * @param data the data to take the square root of.
    * @return a new array containing the square root of each element.
    */
-  @Vectorized
   public static double[] sqrt(final double[] data) {
     final double[] sqrtData = new double[data.length];
     for (int i = 0; i < sqrtData.length; i++) {
@@ -109,7 +106,6 @@ public final class DoubleFunctions {
    * @param data the data to remove the mean from.
    * @return the data with the mean removed.
    */
-  @Vectorized
   public static double[] demean(final double[] data) {
     final double mean = Statistics.meanOf(data);
     final double[] demeaned = new double[data.length];
@@ -124,7 +120,6 @@ public final class DoubleFunctions {
    * @param data the data to take the additive inverse of.
    * @return a new array containing the additive inverse, or negative, of each element.
    */
-  @Vectorized
   public static double[] negativeOf(final double[] data) {
     final double[] negative = new double[data.length];
     for (int i = 0; i < negative.length; i++) {

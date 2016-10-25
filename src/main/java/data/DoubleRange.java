@@ -54,8 +54,7 @@ final class DoubleRange {
 	 * Get the sum of the data in the range.
 	 * @return the sum of the data in the range.
 	 */
-	@Vectorized
-	final double sum() {
+  final double sum() {
 		return Statistics.sumOf(range);
 	}
 }

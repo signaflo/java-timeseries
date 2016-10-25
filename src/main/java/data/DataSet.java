@@ -40,7 +40,6 @@ public class DataSet {
 	 * The sum of the observations.
 	 * @return the sum of the observations.
 	 */
-	@Vectorized
 	public final double sum() {
 		return Statistics.sumOf(this.data);
 	}
@@ -49,7 +48,6 @@ public class DataSet {
 	 * The sum of the squared observations.
 	 * @return the sum of the squared observations.
 	 */
-	@Vectorized
 	public final double sumOfSquares() {
 	  return Statistics.sumOfSquared(this.data);
 	}
@@ -58,7 +56,6 @@ public class DataSet {
 	 * The mean of the observations.
 	 * @return the mean of the observations.
 	 */
-	@Vectorized
 	public final double mean() {
 		return Statistics.meanOf(this.data);
 	}
@@ -67,7 +64,6 @@ public class DataSet {
 	 * The median value of the observations.
 	 * @return the median value of the observations.
 	 */
-	@Vectorized
 	public final double median() {
 		return Statistics.medianOf(this.data);
 	}
@@ -86,7 +82,6 @@ public class DataSet {
 	 * @return A new DataSet containing every element of this DataSet multiplied by
 	 * the corresponding element of the given DataSet.
 	 */
-	@ElementWise
 	public final DataSet times(final DataSet otherData) {
 		return new DataSet(Operators.productOf(this.data, otherData.data));
 	}
@@ -97,7 +92,6 @@ public class DataSet {
 	 * @return A new DataSet containing every element of this DataSet added to
 	 * the corresponding element of the given DataSet.
 	 */
-	@ElementWise
 	public final DataSet plus(final DataSet otherData) {
 		return new DataSet(Operators.sumOf(this.data, otherData.data));
 	}
@@ -106,7 +100,6 @@ public class DataSet {
 	 * The unbiased sample variance of the observations.
 	 * @return the unbiased sample variance of the observations.
 	 */
-	@Vectorized
 	public final double variance() {
 		return Statistics.varianceOf(this.data);
 	}
@@ -115,7 +108,6 @@ public class DataSet {
 	 * The unbiased sample standard deviation of the observations.
 	 * @return the unbiased sample standard deviation of the observations.
 	 */
-	@Vectorized
 	public final double stdDeviation() {
 		return Statistics.stdDeviationOf(this.data);
 	}
@@ -127,7 +119,6 @@ public class DataSet {
 	 * @return the unbiased sample covariance of these observations with the observations
 	 * contained in the given DataSet.
 	 */
-	@Vectorized
 	public final double covariance(final DataSet otherData) {
 		return Statistics.covarianceOf(this.data, otherData.data);
 	}
@@ -139,7 +130,6 @@ public class DataSet {
 	 * @return the unbiased sample correlation of these observations with the observations
 	 * contained in the given DataSet.
 	 */
-	@Vectorized
 	public final double correlation(DataSet otherData) {
 		return Statistics.correlationOf(this.data, otherData.data);
 	}

@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import data.ElementWise;
-import data.Vectorized;
 import math.FieldElement;
 
 /**
@@ -69,7 +67,6 @@ public final class FieldVector<T extends FieldElement<T>> {
    * @param other the vector to add to this vector.
    * @return this vector added to the given vector.
    */
-  @ElementWise
   public final FieldVector<T> plus(final FieldVector<T> other) {
     final List<T> summed = new ArrayList<>(this.size());
     for (int i = 0; i < this.size(); i++) {
@@ -83,7 +80,6 @@ public final class FieldVector<T extends FieldElement<T>> {
    * @param other the vector to subtract from this vector.
    * @return this vector subtracted by the given vector.
    */
-  @ElementWise
   public final FieldVector<T> minus(final FieldVector<T> other) {
     final List<T> differenced = new ArrayList<>(this.size());
     for (int i = 0; i < this.size(); i++) {
@@ -97,7 +93,6 @@ public final class FieldVector<T extends FieldElement<T>> {
    * @param alpha the scalar to scale this vector by.
    * @return this vector scaled by the given scalar.
    */
-  @Vectorized
   public final FieldVector<T> scaledBy(final T alpha) {
     final List<T> scaled = new ArrayList<>(this.size());
     for (int i = 0; i < this.size(); i++) {
@@ -119,7 +114,6 @@ public final class FieldVector<T extends FieldElement<T>> {
    * @param other the vector to take the dot product with.
    * @return the dot product of this vector with the given vector.
    */
-  @Vectorized
   public final T dotProduct(final FieldVector<T> other) {
     if (this.size() > 0) {
       T product = this.elements.get(0).times(other.elements.get(0).conjugate());

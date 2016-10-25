@@ -21,7 +21,6 @@ public final class Operators {
    * @param right the second array to take the product with.
    * @return the element-by-element product of the two arrays.
    */
-  @ElementWise
   public static double[] productOf(final double[] left, final double[] right) {
     if (left.length != right.length) {
       throw new IllegalArgumentException("The data arrays must have the same length.");
@@ -40,7 +39,6 @@ public final class Operators {
    * @param right the second array to take the sum with.
    * @return the element-by-element sum of the two arrays.
    */
-  @ElementWise
   public static double[] sumOf(final double[] left, final double[] right) {
     if (left.length != right.length) {
       throw new IllegalArgumentException("The data arrays must have the same length.");
@@ -59,7 +57,6 @@ public final class Operators {
    * @param right the second array to take the difference with.
    * @return the element-by-element difference of the two arrays.
    */
-  @ElementWise
   public static double[] differenceOf(final double[] left, final double[] right) {
     if (left.length != right.length) {
       throw new IllegalArgumentException("The data arrays must have the same length.");
@@ -78,7 +75,6 @@ public final class Operators {
    * @param denominator the array of denominators.
    * @return the element-by-element quotient of the two arrays.
    */
-  @ElementWise
   public static double[] quotientOf(final double[] numerator, final double[] denominator) {
     if (numerator.length != denominator.length) {
       throw new IllegalArgumentException("The data arrays must have the same length.");
@@ -96,7 +92,6 @@ public final class Operators {
    * @param alpha the scaling factor.
    * @return the original data scaled by the given scalar, &alpha;.
    */
-  @Vectorized
   public static double[] scaled(final double[] original, final double alpha) {
     final double[] scaled = new double[original.length];
     for (int i = 0; i < original.length; i++) {

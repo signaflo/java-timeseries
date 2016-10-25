@@ -5,6 +5,7 @@
 package linear.doubles;
 
 import java.util.Arrays;
+
 import stats.Statistics;
 
 /**
@@ -16,7 +17,7 @@ public final class Vector {
 
   private final double[] elements;
   
-  public static final Vector newVector(double... elements) {
+  public static Vector newVector(double... elements) {
     return new Vector(elements);
   }
   
@@ -120,7 +121,7 @@ public final class Vector {
     }
     throw new IllegalArgumentException("The dot product is undefined for zero length vectors");
   }
-  
+
   public final Matrix outerProduct(final Vector other) {
     double[] product = new double[elements.length * other.elements.length];
     for (int i = 0; i < elements.length; i++) {
@@ -131,7 +132,7 @@ public final class Vector {
     return new Matrix(elements.length, other.elements.length, product);
     
   }
-  
+
   final Vector axpy(final Vector other, final double alpha) {
     final double[] result = new double[this.size()];
     for (int i = 0; i < result.length; i++) {
@@ -147,11 +148,11 @@ public final class Vector {
   public final double norm() {
     return Math.sqrt(dotProduct(this));
   }
-  
+
   public final double sum() {
     return Statistics.sumOf(elements);
   }
-  
+
   public final double sumOfSquares() {
     return Statistics.sumOfSquared(elements);
   }
