@@ -108,6 +108,27 @@ public class FieldVectorSpec {
     assertThat(axpy.at(0), is(equalTo(new Complex(5.9, 49.5))));
     assertThat(axpy.at(1), is(equalTo(new Complex(7.75, 42.25))));
   }
+
+  @Test
+  public void whenTwoVectorsSameThenEqualsIsTrue() {
+    FieldVector<Complex> vec1 = testVecTwoElem();
+    FieldVector<Complex> vec2 = testVecTwoElem();
+    assertThat(vec1, is(equalTo(vec2)));
+    assertThat(vec1.hashCode(), is(equalTo(vec2.hashCode())));
+    vec2 = vec1;
+    assertThat(vec1, is(equalTo(vec2)));
+    assertThat(vec1.hashCode(), is(equalTo(vec2.hashCode())));
+  }
+
+  @Test
+  public void whenTwoVectorsDiffThenEqualsIsFalse() {
+    FieldVector<Complex> vec1 = testVecTwoElem();
+    FieldVector<Complex> vec2 = testVecTwoElem2();
+    assertThat(vec1, is(not(equalTo(vec2))));
+    vec2 = null;
+    assertThat(vec1, is(not(equalTo(vec2))));
+    assertThat(vec1, is(not(equalTo(new Object()))));
+  }
   
   private FieldVector<Complex> testVecFourElem() {
     Complex c1 = new Complex(3, 5);
