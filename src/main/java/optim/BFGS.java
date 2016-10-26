@@ -37,6 +37,7 @@ public final class BFGS {
   private Vector y;
   private Matrix H;
   private final Matrix identity;
+  private final int maxIterations = 100;
   
   /**
    * Create a new BFGS object with the given information. The identity matrix will be used for
@@ -66,13 +67,14 @@ public final class BFGS {
     this.H = initialHessian;
     this.iterate = startingPoint;
     int k = 0;
-    double priorFunctionValue = Double.POSITIVE_INFINITY;
+    double priorFunctionValue;
     functionValue = f.at(startingPoint);
     double relativeChange = Double.MAX_VALUE;
-    double relativeChangeDenominator = 1.0;
+    double relativeChangeDenominator;
     gradient = f.gradientAt(startingPoint, functionValue);
     if (startingPoint.size() > 0) {
-      while (gradient.norm() > gradientTolerance && relativeChange > relativeErrorTolerance) {
+      while (gradient.norm() > gradientTolerance && relativeChange > relativeErrorTolerance
+          && k < maxIterations) {
         searchDirection = (H.times(gradient).scaledBy(-1.0));
         stepSize = updateStepSize(functionValue);
         nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
