@@ -88,7 +88,6 @@ public final class MeanForecast implements Forecast {
   
   @Override
   public final void plotForecast() {
-    
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       for (OffsetDateTime dateTime : forecast.observationTimes()) {

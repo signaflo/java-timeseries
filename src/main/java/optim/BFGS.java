@@ -4,6 +4,9 @@
  */
 package optim;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+
 import linear.doubles.Matrices;
 import linear.doubles.Matrix;
 import linear.doubles.Vector;
@@ -53,11 +56,11 @@ public final class BFGS {
    * @param f the function to be minimized.
    * @param startingPoint the initial guess of the minimum.
    * @param gradientTolerance the tolerance for the norm of the gradient of the function.
-   * @param functionChangeTolerance the tolerance for the change in function value.
+   * @param relativeErrorTolerance the tolerance for the change in function value.
    * @param initialHessian The initial guess for the inverse Hessian approximation.
    */
   public BFGS(final AbstractMultivariateFunction f, final Vector startingPoint, final double gradientTolerance,
-          final double functionChangeTolerance, final Matrix initialHessian) {
+          final double relativeErrorTolerance, final Matrix initialHessian) {
     this.f = f;
     this.identity = Matrices.identity(startingPoint.size());
     this.H = initialHessian;
@@ -65,24 +68,24 @@ public final class BFGS {
     int k = 0;
     double priorFunctionValue = Double.POSITIVE_INFINITY;
     functionValue = f.at(startingPoint);
-    double absoluteChange = Double.MAX_VALUE;
     double relativeChange = Double.MAX_VALUE;
+    double relativeChangeDenominator = 1.0;
     gradient = f.gradientAt(startingPoint, functionValue);
     if (startingPoint.size() > 0) {
-      while (gradient.norm() > gradientTolerance && absoluteChange > functionChangeTolerance
-              && relativeChange > functionChangeTolerance) {
+      while (gradient.norm() > gradientTolerance && relativeChange > relativeErrorTolerance) {
         searchDirection = (H.times(gradient).scaledBy(-1.0));
-        stepSize = updateStepSize(k, functionValue);
+        stepSize = updateStepSize(functionValue);
         nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
         s = nextIterate.minus(iterate);
         priorFunctionValue = functionValue;
         functionValue = f.at(nextIterate);
-        absoluteChange = Math.abs(priorFunctionValue - functionValue);
-        relativeChange = Math.abs((priorFunctionValue - functionValue) / priorFunctionValue);
+        relativeChangeDenominator = max(abs(priorFunctionValue), abs(nextIterate.norm()));
+        //Hamming, Numerical Methods, 2nd edition, pg. 22
+        relativeChange = Math.abs((priorFunctionValue - functionValue) / relativeChangeDenominator);
         nextGradient = f.gradientAt(nextIterate, functionValue);
         y = nextGradient.minus(gradient);
         rho = 1 / y.dotProduct(s);
-        H = updateHessian(k);
+        H = updateHessian();
         iterate = nextIterate;
         gradient = nextGradient;
         k += 1;
@@ -90,7 +93,7 @@ public final class BFGS {
     }
   }
 
-  private final double updateStepSize(final int k, final double functionValue) {
+  private final double updateStepSize(final double functionValue) {
     final double slope0 = gradient.dotProduct(searchDirection);
     final QuasiNewtonLineFunction lineFunction = new QuasiNewtonLineFunction(this.f, iterate, searchDirection);
     StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(lineFunction, functionValue, slope0).c1(c1)
@@ -98,7 +101,7 @@ public final class BFGS {
     return lineSearch.search();
   }
 
-  private final Matrix updateHessian(final int k) {
+  private final Matrix updateHessian() {
     Matrix a = identity.minus(s.outerProduct(y).scaledBy(rho));
     Matrix b = identity.minus(y.outerProduct(s).scaledBy(rho));
     Matrix c = s.outerProduct(s).scaledBy(rho);
