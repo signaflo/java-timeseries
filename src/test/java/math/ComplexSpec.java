@@ -3,6 +3,7 @@ package math;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class ComplexSpec {
@@ -10,6 +11,13 @@ public class ComplexSpec {
   @Test
   public void whenComplexNumberCreatedModulusCorrect() {
     assertThat(new Complex(3, 4).abs(), is(equalTo(5.0)));
+  }
+
+  @Test
+  public void whenNoArgConstructorThenComplexZero() {
+    Complex shouldBeZero = new Complex();
+    assertThat(shouldBeZero.real(), is(0.0));
+    assertThat(shouldBeZero.im(), is(0.0));
   }
   
   @Test
@@ -57,6 +65,21 @@ public class ComplexSpec {
     double r = 5.830951894845301;
     Complex zr = z.plus(r);
     assertThat(zr.dividedBy(zr.abs()), is(equalTo(new Complex(0.8701999067534788, 0.49269881498359286))));
+  }
+
+  @Test
+  public void whenHashCodeAndEqualsThenValuesCorrect() {
+    Complex c1 = new Complex(3, 5);
+    Complex c2 = new Complex(2.4, 3.7);
+    Complex c3 = new Complex(3, 5);
+    assertThat(c1.hashCode(), is(not(c2.hashCode())));
+    assertThat(c1.hashCode(), is(c3.hashCode()));
+    assertThat(c1.equals(c1), is(true));
+    assertThat(c1.equals(c2), is(false));
+    assertThat(c1.equals(c3), is(true));
+    assertThat(c1.equals(null), is(false));
+    assertThat(c1.equals(new Object()), is(false));
+    assertThat(c1.equals(new Complex(2.0, 5.0)), is(false));
   }
 
 }
