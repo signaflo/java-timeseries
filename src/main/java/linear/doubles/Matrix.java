@@ -42,13 +42,13 @@ public final class Matrix {
     this.data = new double[nrow * ncol];
     for (int i = 0; i < nrow; i++) {
       for (int j = 0; j < ncol; j++) {
-        this.data[i * nrow + j] = matrixData[i][j];
+        this.data[i * ncol + j] = matrixData[i][j];
       }
     }
   }
   
   public final Matrix plus(final Matrix other) {
-    if (this.nrow != other.nrow && this.ncol != other.ncol) {
+    if (this.nrow != other.nrow || this.ncol != other.ncol) {
       throw new IllegalArgumentException("The dimensions of this matrix must equal the dimensions of the other matrix. "
           + "This matrix has dimension (" + this.nrow + ", " + this.ncol + ") and the other matrix has dimension (" + other.nrow
           + ", " + other.ncol + ")");
@@ -97,7 +97,7 @@ public final class Matrix {
     }
     return new Vector(product);
   }
-  
+
   public final Matrix scaledBy(final double c) {
     final double[] scaled = new double[this.data.length];
     for (int i = 0; i < this.data.length; i++) {
@@ -107,7 +107,7 @@ public final class Matrix {
   }
   
   public final Matrix minus(final Matrix other) {
-    if (this.nrow != other.nrow && this.ncol != other.ncol) {
+    if (this.nrow != other.nrow || this.ncol != other.ncol) {
       throw new IllegalArgumentException("The dimensions of this matrix must equal the dimensions of the other matrix. "
           + "This matrix has dimension (" + this.nrow + ", " + this.ncol + ") and the other matrix has dimension (" + other.nrow
           + ", " + other.ncol + ")");
@@ -133,11 +133,48 @@ public final class Matrix {
     return this.data.clone();
   }
 
+
+  public final double[][] data2D() {
+    final double[][] twoD = new double[this.nrow][this.ncol];
+    for (int i = 0; i < nrow; i++) {
+      for (int j = 0; j < ncol; j++) {
+        twoD[i][j] = this.data[i * ncol + j];
+      }
+    }
+    return twoD;
+  }
+
   @Override
   public String toString() {
-    return "Matrix [nrow=" + nrow + ", ncol=" + ncol + ", data=" + Arrays.toString(data) + "]";
+    return "Matrix{" +
+        "nrow=" + nrow +
+        ", ncol=" + ncol +
+        ", data=" + Arrays.toString(data) +
+        '}';
   }
-  
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Matrix matrix = (Matrix) o;
+
+    if (nrow != matrix.nrow) return false;
+    if (ncol != matrix.ncol) return false;
+    return Arrays.equals(data, matrix.data);
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = nrow;
+    result = 31 * result + ncol;
+    result = 31 * result + Arrays.hashCode(data);
+    return result;
+  }
+
   /**
    * A class that allows one to start with an identity matrix, then set specific elements before creating
    * an immutable Matrix.
