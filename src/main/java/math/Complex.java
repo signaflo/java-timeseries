@@ -1,11 +1,11 @@
 package math;
 
 /**
- * An immutable and thread-safe implementation of a complex number.
+ * An immutable and thread-safe implementation of a complex number. Subclasses must maintain immutability.
  * @author Jacob Rachiele
  *
  */
-public final class Complex implements FieldElement<Complex> {
+public class Complex implements FieldElement<Complex> {
   
   private final double real;
   private final double im;
@@ -16,7 +16,14 @@ public final class Complex implements FieldElement<Complex> {
   public Complex() {
     this(0.0, 0.0);
   }
-  
+
+  /**
+   * Construct a new complex number with zero imaginary part, i.e, a real number.
+   */
+  public Complex(final double real) {
+    this(real, 0.0);
+  }
+
   /**
    * Construct a new complex number with the given real and imaginary parts.
    * @param real the real part of the new complex number.
@@ -82,7 +89,14 @@ public final class Complex implements FieldElement<Complex> {
   }
   
   @Override
-  public final Complex sqrt() {
+  public Complex sqrt() {
+    // TODO: Replace zero equality check with more sophisticated method.
+    if (this.real < 0 && this.im == 0) {
+      return new Complex(0.0, Math.sqrt(abs()));
+    }
+    // The following algorithm fails only in the case where this complex number is
+    // a negative real number, but that case was taken care of in the preceding if branch.
+    // http://math.stackexchange.com/questions/44406/how-do-i-get-the-square-root-of-a-complex-number
     final double r = abs();
     final Complex zr = this.plus(r);
     return zr.dividedBy(zr.abs()).times(Math.sqrt(r));
