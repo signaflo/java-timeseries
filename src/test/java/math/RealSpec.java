@@ -41,4 +41,20 @@ public class RealSpec {
     a = Real.from(-3.0);
     assertThat(a.sqrt(), is(new Complex(0.0, Math.sqrt(3.0))));
   }
+
+  @Test
+  public void whenAdditiveInverseThenRightNumberReturned() {
+    assertThat(a.negative(), is(Real.from(-3.0)));
+  }
+
+  @Test
+  public void whenEqualsAndHashCodeThenCorrectValues() {
+    assertThat(a.equals(new Object()), is(false));
+    assertThat(a.equals(null), is(false));
+    assertThat(a.equals(b), is(false));
+    assertThat(a.equals(a), is(true));
+    assertThat(a.equals(new Real(3.0)), is(true));
+    assertThat(a.hashCode(), is(new Real(3.0).hashCode()));
+    assertThat(a.hashCode(), is(not(b.hashCode())));
+  }
 }

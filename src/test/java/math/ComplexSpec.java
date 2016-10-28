@@ -51,6 +51,12 @@ public class ComplexSpec {
     Complex c1 = new Complex(3, 5);
     assertThat(c1.sqrt(), is(equalTo(new Complex(2.101303392521568, 1.189737764140758))));
   }
+
+  @Test
+  public void whenSqrtWithNegativeRealComputedThenResultCorrect() {
+    Complex c1 = new Complex(-3.0, 1.5);
+    assertThat(c1.sqrt(), is(new Complex(0.4207742662340964, 1.782428394950227)));
+  }
   
   @Test
   public void whenComplexPlusDoubleThenResultCorrect() {

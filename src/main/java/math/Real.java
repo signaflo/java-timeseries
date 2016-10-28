@@ -48,6 +48,14 @@ public final class Real extends Complex {
     return new Real(this.value * other.value);
   }
 
+  public Real times(double other) {
+    return new Real(this.value * other);
+  }
+
+  public Real negative() {
+    return new Real(-this.value);
+  }
+
   public final double value() {
     return this.value;
   }
