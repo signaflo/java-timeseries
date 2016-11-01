@@ -44,15 +44,16 @@ public final class Real extends Complex {
     return new Real(this.value - other.value);
   }
 
-  public Real times(Real other) {
+  public final Real times(Real other) {
     return new Real(this.value * other.value);
   }
 
-  public Real times(double other) {
+  @Override
+  public final Real times(double other) {
     return new Real(this.value * other);
   }
 
-  public Real negative() {
+  public final Real negative() {
     return new Real(-this.value);
   }
 
