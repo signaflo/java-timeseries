@@ -1,4 +1,9 @@
-package optim.doubles;
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
+
+package optim;
 
 import optim.AbstractFunction;
 

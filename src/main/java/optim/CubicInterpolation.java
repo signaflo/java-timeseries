@@ -1,4 +1,9 @@
-package optim.doubles;
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
+
+package optim;
 
 /**
  * A class for performing cubic polynomial interpolation of a function.

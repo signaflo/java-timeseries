@@ -35,17 +35,19 @@ public final class DividedDifference {
     }
   }
 
-  public final double[] coefficients() {
-    return this.coefficients.clone();
-  }
+//  public final double[] coefficients() {
+//    return this.coefficients.clone();
+//  }
 
   public final double getCoefficient(final int i) {
     return this.coefficients[i];
   }
 
-  public final double getDividedDifference(final int start, final int end) {
+  final double getDividedDifference(final int start, final int end) {
     int k = end - start;
-    if (k == 0) {
+    if (k < 0) {
+      throw new IllegalArgumentException("start must be less than end.");
+    } else if (k == 0) {
       return value[end];
     } else if (k == 1) {
       return (value[end] - value[start]) / (point[end] - point[start]);

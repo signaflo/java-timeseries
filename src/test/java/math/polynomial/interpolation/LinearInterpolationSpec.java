@@ -1,4 +1,9 @@
-package math.polynomial;
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
+
+package math.polynomial.interpolation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

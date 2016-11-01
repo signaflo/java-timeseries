@@ -1,4 +1,9 @@
-package math.polynomial;
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
+
+package math.polynomial.interpolation;
 
 public final class LinearInterpolation {
   

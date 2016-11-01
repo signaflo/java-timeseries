@@ -1,8 +1,11 @@
-package optim.doubles;
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
+
+package optim;
 
 import org.junit.Test;
-
-import optim.AbstractFunction;
 
 public final class StrongWolfeLineSearchSpec {
   

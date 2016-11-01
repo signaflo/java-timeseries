@@ -1,8 +1,14 @@
-package optim.doubles;
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
+
+package optim;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import optim.CubicInterpolation;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

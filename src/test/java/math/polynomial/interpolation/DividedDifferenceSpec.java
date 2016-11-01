@@ -27,6 +27,25 @@ public class DividedDifferenceSpec {
   }
 
   @Test
+  public void whenNoDataThenException() {
+    exception.expect(IllegalArgumentException.class);
+    new DividedDifference(new double[] {}, new double[] {});
+  }
+
+  @Test
+  public void whenGetDividedDifferenceStartLessThanEndThenException() {
+    exception.expect(IllegalArgumentException.class);
+    DividedDifference dd = new DividedDifference(new double[] {2.0}, new double[] {4.0});
+    dd.getDividedDifference(2, 1);
+  }
+
+  @Test
+  public void whenGetDividedDifferenceStartEqulasEndThenFunctionValue() {
+    DividedDifference dd = new DividedDifference(new double[] {2.0}, new double[] {4.0});
+    assertThat(dd.getDividedDifference(0, 0), is(equalTo(4.0)));
+  }
+
+  @Test
   public void whenOnePointThenCoefficientEqualsFunctionValue() {
     DividedDifference dd = new DividedDifference(new double[] {2.0}, new double[] {4.0});
     assertThat(dd.getCoefficient(0), is(equalTo(4.0)));

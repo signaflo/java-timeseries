@@ -1,15 +1,24 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
+
 package optim;
 
-public final class TestFunction1 extends AbstractFunction {
+import optim.AbstractFunction;
+
+public class TestFunction1 extends AbstractFunction {
 
   @Override
   public final double at(final double point) {
+    functionEvaluations++;
     return -point / (point * point + 2.0);
   }
   
   @Override
   public final double slopeAt(final double point) {
-    return (point * point - 2) / Math.pow((point * point + 2), 2);
+    slopeEvaluations++;
+    return (point * point - 2) / Math.pow(point * point + 2, 2);
   }
 
 }
