@@ -6,15 +6,13 @@
 package optim;
 
 import linear.doubles.Vector;
-import optim.AbstractFunction;
-import optim.AbstractMultivariateFunction;
 
 /**
  * A function for the line search component of a quasi-Newton algorithm.
  * @author Jacob Rachiele
  *
  */
-public final class QuasiNewtonLineFunction extends AbstractFunction {
+final class QuasiNewtonLineFunction extends AbstractFunction {
   
   private final AbstractMultivariateFunction f;
   private final Vector x;
@@ -27,7 +25,7 @@ public final class QuasiNewtonLineFunction extends AbstractFunction {
    * @param point the current input point.
    * @param searchDirection the current search direction.
    */
-  public QuasiNewtonLineFunction(final AbstractMultivariateFunction f, final Vector point, 
+  QuasiNewtonLineFunction(final AbstractMultivariateFunction f, final Vector point,
       final Vector searchDirection) {
     this.f = f;
     this.x = point;

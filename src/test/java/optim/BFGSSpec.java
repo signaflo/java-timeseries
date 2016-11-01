@@ -36,7 +36,7 @@ public final class BFGSSpec {
             12);
     final Vector initParams = new Vector(0, 0, 0, 0, timeSeries.mean());
     final Matrix initHessian = getInitialHessian(timeSeries, initParams.elements(), 1);
-    BFGS optimizer = new BFGS(f, initParams, 1e-8, 1e-8, initHessian);
+    new BFGS(f, initParams, 1e-8, 1e-8, initHessian);
     assertThat(f.functionEvaluations, is(lessThan(100)));
   }
   

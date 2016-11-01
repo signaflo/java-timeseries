@@ -5,9 +5,7 @@
 
 package optim;
 
-import optim.AbstractFunction;
-
-public final class TestFunction3 extends AbstractFunction {
+final class TestFunction3 extends AbstractFunction {
 
   @Override
   public final double at(final double alpha) {

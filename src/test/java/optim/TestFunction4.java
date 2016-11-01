@@ -1,6 +1,6 @@
 package optim;
 
-public final class TestFunction4 extends AbstractFunction {
+final class TestFunction4 extends AbstractFunction {
 
   @Override
   public final double at(final double point) {

@@ -4,7 +4,7 @@ package optim;
 import static java.lang.Math.pow;
 import linear.doubles.Vector;
 
-public final class RosenbrockFunction extends AbstractMultivariateFunction {
+final class RosenbrockFunction extends AbstractMultivariateFunction {
 
   @Override
   public final double at(final Vector point) {
