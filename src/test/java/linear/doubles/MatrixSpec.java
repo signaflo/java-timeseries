@@ -3,8 +3,6 @@ package linear.doubles;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -116,6 +114,7 @@ public final class MatrixSpec {
     assertThat(new Matrix(data), is(expectedResult));
   }
 
+  @SuppressWarnings("EqualsWithItself")
   @Test
   public void whenMatrixHashCodeAndEqualsThenValuesCorrect() {
     assertThat(matrix1.equals(matrix1), is(true));
@@ -124,6 +123,7 @@ public final class MatrixSpec {
     assertThat(matrix1.equals(newMatrix), is(true));
     assertThat(matrix1.hashCode(), is(newMatrix.hashCode()));
     assertThat(matrix1.hashCode(), is(not(matrix2.hashCode())));
+    //noinspection ObjectEqualsNull
     assertThat(matrix1.equals(null), is(false));
     assertThat(matrix1.equals(new Object()), is(false));
     newMatrix = new Matrix(3, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5, 4.0, 1.0, 3.5);

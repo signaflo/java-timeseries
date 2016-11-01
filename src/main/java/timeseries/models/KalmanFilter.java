@@ -4,7 +4,6 @@ import static org.ejml.ops.CommonOps.*;
 
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.data.RowD1Matrix64F;
-import org.ejml.equation.Equation;
 
 import timeseries.models.arima.StateSpaceARMA;
 

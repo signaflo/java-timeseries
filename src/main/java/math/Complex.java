@@ -134,24 +134,15 @@ public class Complex implements FieldElement<Complex> {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     Complex other = (Complex) obj;
-    if (Math.abs(im - other.im) > Math.ulp(1.0))
-      return false;
-    if (Math.abs(real - other.real) > Math.ulp(1.0))
-      return false;
-    return true;
+    return Math.abs(im - other.im) <= Math.ulp(1.0) && Math.abs(real - other.real) <= Math.ulp(1.0);
   }
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("(real: ").append(real).append(" im: ").append(im + ")");
-    return builder.toString();
+    return "(real: " + real + " im: " + im + ")";
   }
 }

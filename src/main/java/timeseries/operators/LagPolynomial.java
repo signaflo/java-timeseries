@@ -25,15 +25,13 @@ public class LagPolynomial {
    * Construct a new lag polynomial from the given parameters. Note that the parameters given here are not the same as
    * the coefficients of the polynomial since the coefficient at the zero-degreee term is always equal to 1.
    * 
-   * @param parameters
+   * @param parameters the parameters of the polynomial.
    */
   LagPolynomial(final double... parameters) {
     this.parameters = parameters.clone();
     this.coefficients = new double[parameters.length + 1];
     this.coefficients[0] = 1.0;
-    for (int i = 0; i < parameters.length; i++) {
-      this.coefficients[i + 1] = parameters[i];
-    }
+    System.arraycopy(parameters, 0, this.coefficients, 1, parameters.length);
     this.degree = parameters.length;
   }
 
@@ -292,19 +290,11 @@ public class LagPolynomial {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     LagPolynomial other = (LagPolynomial) obj;
-    if (!Arrays.equals(coefficients, other.coefficients))
-      return false;
-    if (degree != other.degree)
-      return false;
-    if (!Arrays.equals(parameters, other.parameters))
-      return false;
-    return true;
+    if (!Arrays.equals(coefficients, other.coefficients)) return false;
+    return degree == other.degree && Arrays.equals(parameters, other.parameters);
   }
 }

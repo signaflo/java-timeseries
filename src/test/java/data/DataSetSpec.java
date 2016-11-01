@@ -20,11 +20,11 @@ public class DataSetSpec {
   public ExpectedException exception = ExpectedException.none();
 
   @Test
-  @SuppressWarnings("unused")
+  @SuppressWarnings({"unused", "ConstantConditions"})
   public void whenDataSetCreatedWithNullArrayThenExceptionThrown() {
     double[] data = null;
     exception.expect(IllegalArgumentException.class);
-    DataSet dataSet = new DataSet(data);
+    new DataSet(data);
   }
 
   @Test
@@ -178,6 +178,7 @@ public class DataSetSpec {
     assertThat(dataSet.hashCode(), is(not(equalTo(dataSet2.hashCode()))));
   }
 
+  @SuppressWarnings("EqualsWithItself")
   @Test
   public void whenDataSetEqualToItselfThenEqualsAndHashCodeCorrect() {
     DataSet dataSet = new DataSet(1.0, 2.0, 3.0);
@@ -188,6 +189,7 @@ public class DataSetSpec {
   @Test
   public void whenDataSetEqualToNullThenFalse() {
     DataSet dataSet = new DataSet(1.0, 2.0, 3.0);
+    //noinspection ObjectEqualsNull
     assertThat(dataSet.equals(null), is(false));
   }
 }

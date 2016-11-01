@@ -47,9 +47,11 @@ public class RealSpec {
     assertThat(a.negative(), is(Real.from(-3.0)));
   }
 
+  @SuppressWarnings("EqualsWithItself")
   @Test
   public void whenEqualsAndHashCodeThenCorrectValues() {
     assertThat(a.equals(new Object()), is(false));
+    //noinspection ObjectEqualsNull
     assertThat(a.equals(null), is(false));
     assertThat(a.equals(b), is(false));
     assertThat(a.equals(a), is(true));

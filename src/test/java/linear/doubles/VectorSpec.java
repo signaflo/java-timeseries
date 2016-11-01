@@ -39,6 +39,7 @@ public final class VectorSpec {
     assertThat(result, is(equalTo(81.25)));
   }
 
+  @SuppressWarnings("EqualsWithItself")
   @Test
   public void whenEqualsAndHashCodeThenValuesCorrect() {
     assertThat(vec1.equals(vec2), is(false));
@@ -47,6 +48,7 @@ public final class VectorSpec {
     assertThat(vec1.equals(newVec), is(true));
     assertThat(vec1.hashCode(), is(newVec.hashCode()));
     assertThat(vec1.equals(new Object()), is(false));
+    //noinspection ObjectEqualsNull
     assertThat(vec1.equals(null), is(false));
     assertThat(vec1.equals(vec1), is(true));
   }

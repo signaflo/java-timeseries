@@ -399,7 +399,7 @@ public final class Arima implements Model {
     double[] fcst = forecast(steps);
     TimePeriod timePeriod = observations.timePeriod();
     final OffsetDateTime startTime = observations.observationTimes().get(n - 1).plus(
-        (long) timePeriod.periodLength() * timePeriod.timeUnit().unitLength(), timePeriod.timeUnit().temporalUnit());
+        timePeriod.periodLength() * timePeriod.timeUnit().unitLength(), timePeriod.timeUnit().temporalUnit());
     return new TimeSeries(timePeriod, startTime, fcst);
   }
 
@@ -452,9 +452,7 @@ public final class Arima implements Model {
       final int seasonalFrequency) {
     double[] arSarCoeffs = new double[arCoeffs.length + sarCoeffs.length * seasonalFrequency];
 
-    for (int i = 0; i < arCoeffs.length; i++) {
-      arSarCoeffs[i] = arCoeffs[i];
-    }
+    System.arraycopy(arCoeffs, 0, arSarCoeffs, 0, arCoeffs.length);
 
     // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
     // which arises because the model's ar and sar polynomials are multiplied together.
@@ -475,9 +473,7 @@ public final class Arima implements Model {
       final int seasonalFrequency) {
     double[] maSmaCoeffs = new double[maCoeffs.length + smaCoeffs.length * seasonalFrequency];
 
-    for (int i = 0; i < maCoeffs.length; i++) {
-      maSmaCoeffs[i] = maCoeffs[i];
-    }
+    System.arraycopy(maCoeffs, 0, maSmaCoeffs, 0, maCoeffs.length);
 
     // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
     // which arises because the model's ma and sma polynomials are multiplied together.
@@ -712,7 +708,7 @@ public final class Arima implements Model {
      * @return a new model order with the given number of coefficients.
      */
     public static final ModelOrder order(final int p, final int d, final int q) {
-      return new ModelOrder(p, d, q, 0, 0, 0, (d > 0) ? false : true);
+      return new ModelOrder(p, d, q, 0, 0, 0, d <= 0);
     }
 
     /**
@@ -729,7 +725,7 @@ public final class Arima implements Model {
     }
 
     public static final ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q) {
-      return new ModelOrder(p, d, q, P, D, Q, (d > 0 || D > 0) ? false : true);
+      return new ModelOrder(p, d, q, P, D, Q, !(d > 0 || D > 0));
     }
 
     public static final ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q,
@@ -773,28 +769,16 @@ public final class Arima implements Model {
 
     @Override
     public boolean equals(Object obj) {
-      if (this == obj)
-        return true;
-      if (obj == null)
-        return false;
-      if (getClass() != obj.getClass())
-        return false;
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
       ModelOrder other = (ModelOrder) obj;
-      if (D != other.D)
-        return false;
-      if (P != other.P)
-        return false;
-      if (Q != other.Q)
-        return false;
-      if (constant != other.constant)
-        return false;
-      if (d != other.d)
-        return false;
-      if (p != other.p)
-        return false;
-      if (q != other.q)
-        return false;
-      return true;
+      if (D != other.D) return false;
+      if (P != other.P) return false;
+      if (Q != other.Q) return false;
+      if (constant != other.constant) return false;
+      if (d != other.d) return false;
+      return p == other.p && q == other.q;
     }
   }
 
@@ -887,12 +871,8 @@ public final class Arima implements Model {
 
     @Override
     public String toString() {
-      StringBuilder builder2 = new StringBuilder();
-      builder2.append("arCoeffs: ").append(Arrays.toString(arCoeffs)).append("\nmaCoeffs: ")
-          .append(Arrays.toString(maCoeffs)).append("\nsarCoeffs: ").append(Arrays.toString(sarCoeffs))
-          .append("\nsmaCoeffs: ").append(Arrays.toString(smaCoeffs)).append("\nd: ").append(d).append("\nD: ")
-          .append(D).append("\nmean: ").append(mean);
-      return builder2.toString();
+      String builder2 = "arCoeffs: " + Arrays.toString(arCoeffs) + "\nmaCoeffs: " + Arrays.toString(maCoeffs) + "\nsarCoeffs: " + Arrays.toString(sarCoeffs) + "\nsmaCoeffs: " + Arrays.toString(smaCoeffs) + "\nd: " + d + "\nD: " + D + "\nmean: " + mean;
+      return builder2;
     }
 
     /**
@@ -979,28 +959,16 @@ public final class Arima implements Model {
 
     @Override
     public boolean equals(Object obj) {
-      if (this == obj)
-        return true;
-      if (obj == null)
-        return false;
-      if (getClass() != obj.getClass())
-        return false;
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
       ModelCoefficients other = (ModelCoefficients) obj;
-      if (D != other.D)
-        return false;
-      if (!Arrays.equals(arCoeffs, other.arCoeffs))
-        return false;
-      if (d != other.d)
-        return false;
-      if (!Arrays.equals(maCoeffs, other.maCoeffs))
-        return false;
-      if (Double.doubleToLongBits(mean) != Double.doubleToLongBits(other.mean))
-        return false;
-      if (!Arrays.equals(sarCoeffs, other.sarCoeffs))
-        return false;
-      if (!Arrays.equals(smaCoeffs, other.smaCoeffs))
-        return false;
-      return true;
+      if (D != other.D) return false;
+      if (!Arrays.equals(arCoeffs, other.arCoeffs)) return false;
+      if (d != other.d) return false;
+      if (!Arrays.equals(maCoeffs, other.maCoeffs)) return false;
+      if (Double.doubleToLongBits(mean) != Double.doubleToLongBits(other.mean)) return false;
+      return Arrays.equals(sarCoeffs, other.sarCoeffs) && Arrays.equals(smaCoeffs, other.smaCoeffs);
     }
   }
 
@@ -1033,9 +1001,7 @@ public final class Arima implements Model {
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
-      builder.append("sigma2: ").append(sigma2).append("\nlogLikelihood: ").append(logLikelihood);
-      return builder.toString();
+      return "sigma2: " + sigma2 + "\nlogLikelihood: " + logLikelihood;
     }
 
     @Override
@@ -1054,22 +1020,13 @@ public final class Arima implements Model {
 
     @Override
     public boolean equals(Object obj) {
-      if (this == obj)
-        return true;
-      if (obj == null)
-        return false;
-      if (getClass() != obj.getClass())
-        return false;
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
       ModelInformation other = (ModelInformation) obj;
-      if (!Arrays.equals(fitted, other.fitted))
-        return false;
-      if (Double.doubleToLongBits(logLikelihood) != Double.doubleToLongBits(other.logLikelihood))
-        return false;
-      if (!Arrays.equals(residuals, other.residuals))
-        return false;
-      if (Double.doubleToLongBits(sigma2) != Double.doubleToLongBits(other.sigma2))
-        return false;
-      return true;
+      if (!Arrays.equals(fitted, other.fitted)) return false;
+      if (Double.doubleToLongBits(logLikelihood) != Double.doubleToLongBits(other.logLikelihood)) return false;
+      return Arrays.equals(residuals, other.residuals) && Double.doubleToLongBits(sigma2) == Double.doubleToLongBits(other.sigma2);
     }
   }
 
@@ -1100,12 +1057,8 @@ public final class Arima implements Model {
     public final double at(final Vector point) {
       functionEvaluations++;
       final double[] params = point.elements();
-      for (int i = 0; i < order.p; i++) {
-        arParams[i] = params[i];
-      }
-      for (int i = 0; i < order.q; i++) {
-        maParams[i] = params[i + order.p];
-      }
+      System.arraycopy(params, 0, arParams, 0, order.p);
+      System.arraycopy(params, order.p, maParams, 0, order.q);
       for (int i = 0; i < order.P; i++) {
         sarParams[i] = params[i + order.p + order.q];
       }
@@ -1123,15 +1076,11 @@ public final class Arima implements Model {
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
-      builder.append("differencedSeries: ").append(differencedSeries).append("\norder: ").append(order)
-          .append("\nfittingStrategy: ").append(fittingStrategy).append("\nseasonalFrequency: ")
-          .append(seasonalFrequency).append("\narParams: ").append(Arrays.toString(arParams)).append("\nmaParams: ")
-          .append(Arrays.toString(maParams)).append("\nsarParams: ").append(Arrays.toString(sarParams))
-          .append("\nsmaParams: ").append(Arrays.toString(smaParams));
-      return builder.toString();
+      String builder = "differencedSeries: " + differencedSeries + "\norder: " + order + "\nfittingStrategy: " + fittingStrategy + "\nseasonalFrequency: " + seasonalFrequency + "\narParams: " + Arrays.toString(arParams) + "\nmaParams: " + Arrays.toString(maParams) + "\nsarParams: " + Arrays.toString(sarParams) + "\nsmaParams: " + Arrays.toString(smaParams);
+      return builder;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public int hashCode() {
       final int prime = 31;
@@ -1147,47 +1096,31 @@ public final class Arima implements Model {
       return result;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public boolean equals(Object obj) {
-      if (this == obj)
-        return true;
-      if (obj == null)
-        return false;
-      if (getClass() != obj.getClass())
-        return false;
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
       OptimFunction other = (OptimFunction) obj;
-      if (!Arrays.equals(arParams, other.arParams))
-        return false;
+      if (!Arrays.equals(arParams, other.arParams)) return false;
       if (differencedSeries == null) {
-        if (other.differencedSeries != null)
-          return false;
-      } else if (!differencedSeries.equals(other.differencedSeries))
-        return false;
-      if (fittingStrategy != other.fittingStrategy)
-        return false;
-      if (!Arrays.equals(maParams, other.maParams))
-        return false;
+        if (other.differencedSeries != null) return false;
+      } else if (!differencedSeries.equals(other.differencedSeries)) return false;
+      if (fittingStrategy != other.fittingStrategy) return false;
+      if (!Arrays.equals(maParams, other.maParams)) return false;
       if (order == null) {
-        if (other.order != null)
-          return false;
-      } else if (!order.equals(other.order))
-        return false;
-      if (!Arrays.equals(sarParams, other.sarParams))
-        return false;
-      if (seasonalFrequency != other.seasonalFrequency)
-        return false;
-      if (!Arrays.equals(smaParams, other.smaParams))
-        return false;
-      return true;
+        if (other.order != null) return false;
+      } else if (!order.equals(other.order)) return false;
+      if (!Arrays.equals(sarParams, other.sarParams)) return false;
+      return seasonalFrequency == other.seasonalFrequency && Arrays.equals(smaParams, other.smaParams);
     }
   }
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("\norder: ").append(order).append("\nmodelInfo: ").append(modelInfo).append("\nmodelCoefficients: ")
-        .append(modelCoefficients).append("\nintercept: ").append(intercept);
-    return builder.toString();
+    String builder = "\norder: " + order + "\nmodelInfo: " + modelInfo + "\nmodelCoefficients: " + modelCoefficients + "\nintercept: " + intercept;
+    return builder;
   }
 
   @Override
@@ -1264,8 +1197,6 @@ public final class Arima implements Model {
         return false;
     } else if (!residuals.equals(other.residuals))
       return false;
-    if (seasonalFrequency != other.seasonalFrequency)
-      return false;
-    return true;
+    return seasonalFrequency == other.seasonalFrequency;
   }
 }

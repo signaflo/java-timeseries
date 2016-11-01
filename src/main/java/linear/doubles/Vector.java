@@ -174,15 +174,11 @@ public final class Vector {
     if (getClass() != obj.getClass())
       return false;
     Vector other = (Vector) obj;
-    if (!Arrays.equals(elements, other.elements))
-      return false;
-    return true;
+    return Arrays.equals(elements, other.elements);
   }
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("elements: ").append(Arrays.toString(elements));
-    return builder.toString();
+    return "elements: " + Arrays.toString(elements);
   }
 }

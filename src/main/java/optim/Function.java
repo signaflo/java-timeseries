@@ -13,5 +13,5 @@ public interface Function {
    * @param point the point at which to evaluate the function.
    * @return the value of the function at the given point.
    */
-  public double at(double point);
+  double at(double point);
 }

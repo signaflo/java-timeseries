@@ -20,7 +20,7 @@ public final class TimePeriod {
    * @param timeUnit the unit of time underlying this time period
    * @param periodLength the length of this time period relative to the given unit of time. Note the
    * periodLength argument must be a long. Most decimal time periods can be modeled by converting to
-   * an appropriate time unit with a smaller order of magnitude. For example, the {@link halfMonth} 
+   * an appropriate time unit with a smaller order of magnitude. For example, the {@link TimePeriod#halfMonth}
    * constructor works by converting 15.2184375 days to 1314873 seconds.
    */
   public TimePeriod(final TimeUnit timeUnit, final long periodLength) {
@@ -103,7 +103,7 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing exactly one month.
    */
-  public static final TimePeriod oneMonth() {
+  public static TimePeriod oneMonth() {
     return new TimePeriod(TimeUnit.MONTH, 1);
   }
 
@@ -112,7 +112,7 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing one half of a month.
    */
-  public static final TimePeriod halfMonth() {
+  public static TimePeriod halfMonth() {
     return new TimePeriod(TimeUnit.SECOND, 1314873);
   }
 
@@ -215,9 +215,7 @@ public final class TimePeriod {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("timeUnit: ").append(timeUnit).append("\nperiodLength: ").append(periodLength);
-    return builder.toString();
+    return "timeUnit: " + timeUnit + "\nperiodLength: " + periodLength;
   }
 
   @Override
@@ -233,18 +231,11 @@ public final class TimePeriod {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     TimePeriod other = (TimePeriod) obj;
-    if (timeUnit != other.timeUnit)
-      return false;
-    if (Double.doubleToLongBits(periodLength) != Double.doubleToLongBits(other.periodLength))
-      return false;
-    return true;
+    return timeUnit == other.timeUnit && Double.doubleToLongBits(periodLength) == Double.doubleToLongBits(other.periodLength);
   }
 
 }

@@ -41,9 +41,7 @@ public final class Matrix {
     this.ncol = matrixData[0].length;
     this.data = new double[nrow * ncol];
     for (int i = 0; i < nrow; i++) {
-      for (int j = 0; j < ncol; j++) {
-        this.data[i * ncol + j] = matrixData[i][j];
-      }
+      System.arraycopy(matrixData[i], 0, this.data, i * ncol, ncol);
     }
   }
   
@@ -123,9 +121,7 @@ public final class Matrix {
   
   public final double[] diagonal() {
     final double[] diag = new double[Math.min(nrow, ncol)];
-    for (int i = 0; i < diag.length; i++) {
-      diag[i] = data[i * ncol + i];
-    }
+    System.arraycopy(data, 0 + 0, diag, 0, diag.length);
     return diag;
   }
   
@@ -137,9 +133,7 @@ public final class Matrix {
   public final double[][] data2D() {
     final double[][] twoD = new double[this.nrow][this.ncol];
     for (int i = 0; i < nrow; i++) {
-      for (int j = 0; j < ncol; j++) {
-        twoD[i][j] = this.data[i * ncol + j];
-      }
+      System.arraycopy(this.data, i * ncol, twoD[i], 0, ncol);
     }
     return twoD;
   }
@@ -162,8 +156,7 @@ public final class Matrix {
     Matrix matrix = (Matrix) o;
 
     if (nrow != matrix.nrow) return false;
-    if (ncol != matrix.ncol) return false;
-    return Arrays.equals(data, matrix.data);
+    return ncol == matrix.ncol && Arrays.equals(data, matrix.data);
 
   }
 

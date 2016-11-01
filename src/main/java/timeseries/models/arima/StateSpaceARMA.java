@@ -30,9 +30,7 @@ public final class StateSpaceARMA {
   private final double[] createMovingAverageVector() {
     double[] R = new double[r];
     R[0] = 1.0;
-    for (int i = 0; i < maParams.length; i++) {
-      R[i + 1] = maParams[i];
-    }
+    System.arraycopy(maParams, 0, R, 1, maParams.length);
     return R;
   }
   private final double[][] createTransitionMatrix() {
@@ -64,9 +62,7 @@ public final class StateSpaceARMA {
   
   private final double[] R() {
     double[] R = new double[r];
-    for (int i = 0; i < arParams.length; i++) {
-      R[i] = arParams[i];
-    }
+    System.arraycopy(arParams, 0, R, 0, arParams.length);
     for (int j = 0; j < maParams.length; j++) {
       R[j] += maParams[j];
     }
