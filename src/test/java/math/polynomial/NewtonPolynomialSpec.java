@@ -3,12 +3,13 @@
  *
  */
 
-package math.polynomial.interpolation;
+package math.polynomial;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import math.function.QuadraticFunction;
+import math.polynomial.NewtonPolynomial;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
