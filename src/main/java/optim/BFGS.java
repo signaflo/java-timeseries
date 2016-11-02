@@ -10,8 +10,7 @@ import static java.lang.Math.max;
 import linear.doubles.Matrices;
 import linear.doubles.Matrix;
 import linear.doubles.Vector;
-import optim.doubles.QuasiNewtonLineFunction;
-import optim.doubles.StrongWolfeLineSearch;
+import math.function.AbstractMultivariateFunction;
 
 /**
  * An implementation of the Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm for unconstrained

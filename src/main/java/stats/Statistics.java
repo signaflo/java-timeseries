@@ -15,8 +15,8 @@ public final class Statistics {
 
 	public static final double sumOf(final double[] data) {
 		double sum = 0.0;
-		for (int i = 0; i < data.length; i++) {
-			sum += data[i];
+		for (double element : data) {
+			sum += element;
 		}
 		return sum;
 	}

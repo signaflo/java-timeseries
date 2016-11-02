@@ -13,5 +13,5 @@ public enum Transformation {
   /**
    * The square root.
    */
-  SQRT;
+  SQRT
 }

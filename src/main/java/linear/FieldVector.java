@@ -147,9 +147,7 @@ public final class FieldVector<T extends FieldElement<T>> {
   
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("elements: ").append(elements);
-    return builder.toString();
+    return "elements: " + elements;
   }
 
   @Override

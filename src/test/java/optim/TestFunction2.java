@@ -1,8 +1,13 @@
-package optim.doubles;
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
 
-import optim.AbstractFunction;
+package optim;
 
-public final class TestFunction2 extends AbstractFunction{
+import math.function.AbstractFunction;
+
+public final class TestFunction2 extends AbstractFunction {
 
   @Override
   public final double at(final double alpha) {

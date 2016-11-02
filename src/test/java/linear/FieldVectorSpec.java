@@ -120,6 +120,7 @@ public class FieldVectorSpec {
     assertThat(vec1.hashCode(), is(equalTo(vec2.hashCode())));
   }
 
+  @SuppressWarnings("ConstantConditions")
   @Test
   public void whenTwoVectorsDiffThenEqualsIsFalse() {
     FieldVector<Complex> vec1 = testVecTwoElem();

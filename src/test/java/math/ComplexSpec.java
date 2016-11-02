@@ -3,7 +3,6 @@ package math;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import org.junit.Before;
 import org.junit.Test;
 
 public class ComplexSpec {
@@ -73,6 +72,7 @@ public class ComplexSpec {
     assertThat(zr.dividedBy(zr.abs()), is(equalTo(new Complex(0.8701999067534788, 0.49269881498359286))));
   }
 
+  @SuppressWarnings("EqualsWithItself")
   @Test
   public void whenHashCodeAndEqualsThenValuesCorrect() {
     Complex c1 = new Complex(3, 5);
@@ -83,6 +83,7 @@ public class ComplexSpec {
     assertThat(c1.equals(c1), is(true));
     assertThat(c1.equals(c2), is(false));
     assertThat(c1.equals(c3), is(true));
+    //noinspection ObjectEqualsNull
     assertThat(c1.equals(null), is(false));
     assertThat(c1.equals(new Object()), is(false));
     assertThat(c1.equals(new Complex(2.0, 5.0)), is(false));

@@ -30,7 +30,6 @@ import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
 import org.knowm.xchart.style.Styler.ChartTheme;
 import org.knowm.xchart.style.lines.SeriesLines;
 import org.knowm.xchart.style.markers.Circle;
-import org.knowm.xchart.style.markers.None;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import data.DataSet;
@@ -216,7 +215,7 @@ public final class TimeSeries extends DataSet {
     }
     final List<OffsetDateTime> obsTimes = new ArrayList<>();
     double[] aggregated = new double[series.length / period];
-    double sum = 0.0;
+    double sum;
     for (int i = 0; i < aggregated.length; i++) {
       sum = 0.0;
       for (int j = 0; j < period; j++) {
@@ -700,9 +699,7 @@ public final class TimeSeries extends DataSet {
         return false;
     } else if (!observationTimes.equals(other.observationTimes))
       return false;
-    if (!Arrays.equals(series, other.series))
-      return false;
-    return true;
+    return Arrays.equals(series, other.series);
   }
 
   @Override

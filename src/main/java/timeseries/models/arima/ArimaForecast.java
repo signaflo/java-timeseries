@@ -158,9 +158,7 @@ public final class ArimaForecast implements Forecast {
     double[] theta = model.maSmaCoefficients();
     final double[] psi = new double[steps];
     psi[0] = 1.0;
-    for (int i = 0; i < Math.min(steps - 1, theta.length); i++) {
-      psi[i + 1] = theta[i];
-    }
+    System.arraycopy(theta, 0, psi, 1, Math.min(steps - 1, theta.length));
     for (int j = 1; j < psi.length; j++) {
       for (int i = 0; i < Math.min(j, phi.length); i++) {
         psi[j] += psi[j - i - 1] * phi[i];
@@ -178,7 +176,7 @@ public final class ArimaForecast implements Forecast {
     double[] psiCoeffs = getPsiCoefficients();
     double[] stdErrors = new double[this.forecast.n()];
     double sigma = sqrt(model.sigma2());
-    double sd = 0.0;
+    double sd;
     double psiWeightSum = 0.0;
     for (int i = 0; i < stdErrors.length; i++) {
       psiWeightSum += psiCoeffs[i] * psiCoeffs[i];

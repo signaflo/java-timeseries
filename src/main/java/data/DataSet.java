@@ -176,11 +176,7 @@ public class DataSet {
 	@Override
 	public String toString() {
 		DecimalFormat df = new DecimalFormat("0.##");
-		return new StringBuilder().
-		append("\nValues: ").append(Arrays.toString(data)).
-		append("\nSize: ").append(data.length).
-		append("\nMean: ").append(mean()).
-		append("\nStandard deviation: ").append(df.format(stdDeviation())).toString();
+		return "\nValues: " + Arrays.toString(data) + "\nSize: " + data.length + "\nMean: " + mean() + "\nStandard deviation: " + df.format(stdDeviation());
 	}
 
 	@Override

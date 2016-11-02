@@ -1,18 +1,25 @@
-package optim;
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
+
+package math.function;
+
+import linear.doubles.Vector;
 
 /**
- * A scalar-valued function of several variables that uses primitive doubles as input and output values.
+ * A scalar-valued function of several variables.
  * @author Jacob Rachiele
  *
  */
 @FunctionalInterface
-public interface MultivariateDoubleFunction {
+public interface MultivariateFunction {
   
   /**
    * Compute and return the value of the function at the given point.
    * @param point the point at which to evaluate the function.
    * @return the value of the function at the given point.
    */
-  public double at(double... point);
+  double at(Vector point);
 
 }

@@ -1,4 +1,9 @@
-package optim;
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
+
+package math.function;
 
 /**
  * A scalar-valued function of one variable.
@@ -13,5 +18,5 @@ public interface Function {
    * @param point the point at which to evaluate the function.
    * @return the value of the function at the given point.
    */
-  public double at(double point);
+  double at(double point);
 }

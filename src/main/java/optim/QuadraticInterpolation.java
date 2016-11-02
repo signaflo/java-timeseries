@@ -1,4 +1,9 @@
-package optim.doubles;
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
+
+package optim;
 
 final class QuadraticInterpolation {
 
@@ -12,7 +17,7 @@ final class QuadraticInterpolation {
 
   QuadraticInterpolation(final double x1, final double x2, final double y1, final double y2, final double dydx) {
     if (x1 == x2) {
-      throw new RuntimeException("The two x values cannot be the same. x1 and x2 were both equal to: " + x1);
+      throw new IllegalArgumentException("The two x values cannot be the same. x1 and x2 were both equal to: " + x1);
     }
     if (x1 > x2) {
       this.x1 = x2;
@@ -42,14 +47,15 @@ final class QuadraticInterpolation {
     return -b / (2 * a);
   }
 
-  static final double secantFormulaMinimum(final double x1, final double x2, final double dydx1, final double dydx2) {
+  static double secantFormulaMinimum(final double x1, final double x2, final double dydx1, final double dydx2) {
     if (x1 <= x2) {
       return x1 - dydx1 * ((x1 - x2) / (dydx1 - dydx2));
     }
     return x2 - dydx2 * ((x2 - x1) / (dydx2 - dydx1));
   }
 
-  static final double threePointMinimum(final double x1, final double x2, final double x3, final double y1,
+  // The input arguments must be ordered from least to greatest.
+  static double threePointMinimum(final double x1, final double x2, final double x3, final double y1,
       final double y2, final double y3) {
     final double a1;
     final double a2;
@@ -57,7 +63,7 @@ final class QuadraticInterpolation {
     final double b1;
     final double b2;
     final double b3;
-    
+
     if (x1 <= x2) {
       if (x1 <= x3) {
         if (x2 <= x3) {
@@ -115,6 +121,9 @@ final class QuadraticInterpolation {
     final double top = (b1 - b2) * (a2 - a3) * (a3 - a1);
     final double bottom = b1 * (a2 - a3) + b2 * (a3 - a1) + b3 * (a1 - a2);
     return 0.5 * (a1 + a2 + (top / bottom));
+//    final double top = (x1 - x2) * (x2 - x3) * (x3 - x1);
+//    final double bottom = y1 * (x2 - x3) + y2 * (x3 - x1) + y3 * (x1 - x2);
+//    return 0.5 * (x1 + x2 + (top / bottom));
   }
   
 }

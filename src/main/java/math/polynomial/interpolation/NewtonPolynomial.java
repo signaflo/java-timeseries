@@ -32,7 +32,6 @@ final class NewtonPolynomial {
       this.coefficients[i] = getDividedDifference(0, i);
     }
   }
-
   final double[] coefficients() {
     return this.coefficients.clone();
   }
@@ -43,7 +42,9 @@ final class NewtonPolynomial {
 
   private double getDividedDifference(final int start, final int end) {
     int k = end - start;
-    if (k == 0) {
+    if (k < 0) {
+      throw new IllegalArgumentException("start must be less than end.");
+    } else if (k == 0) {
       return value[end];
     } else if (k == 1) {
       return (value[end] - value[start]) / (point[end] - point[start]);
