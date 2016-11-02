@@ -3,6 +3,7 @@ package optim;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import math.function.AbstractMultivariateFunction;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -24,8 +25,8 @@ public final class BFGSSpec {
     BFGS solver = new BFGS(f, startingPoint, tol, 1e-8);
     System.out.println(solver.functionValue());
     System.out.println(solver.parameters());
-    System.out.println(f.functionEvaluations);
-    System.out.println(f.gradientEvalutations);
+    System.out.println(f.functionEvaluations());
+    System.out.println(f.gradientEvaluations());
   }
   
   @Test
@@ -37,7 +38,7 @@ public final class BFGSSpec {
     final Vector initParams = new Vector(0, 0, 0, 0, timeSeries.mean());
     final Matrix initHessian = getInitialHessian(timeSeries, initParams.elements(), 1);
     new BFGS(f, initParams, 1e-8, 1e-8, initHessian);
-    assertThat(f.functionEvaluations, is(lessThan(100)));
+    assertThat(f.functionEvaluations(), is(lessThan(100)));
   }
   
   private Matrix getInitialHessian(final TimeSeries differencedSeries, final double[] initParams, final int constant) {

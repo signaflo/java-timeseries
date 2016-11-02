@@ -1,6 +1,9 @@
 package optim;
 
 import linear.doubles.Vector;
+import math.function.Function;
+import math.function.MultivariateDoubleFunction;
+import math.function.MultivariateFunction;
 
 import static linear.doubles.Vector.newVector;
 
@@ -21,8 +24,8 @@ public final class NumericalDerivatives {
     return (f.at(point + 0.5*h) - f.at(point - 0.5*h)) / h;
   }
   
-  public static final double[] forwardDifferenceGradient(final MultivariateDoubleFunction f, final double[] point, 
-      final double h) {
+  public static final double[] forwardDifferenceGradient(final MultivariateDoubleFunction f, final double[] point,
+                                                         final double h) {
     double[] newPoints = point.clone();
     final double[] partials = new double[point.length];
     final double functionValue = f.at(point);
@@ -49,8 +52,8 @@ public final class NumericalDerivatives {
     return partials;
   }
   
-  public static final Vector forwardDifferenceGradient(final MultivariateFunction f, final Vector point, 
-      final double h) {
+  public static final Vector forwardDifferenceGradient(final MultivariateFunction f, final Vector point,
+                                                       final double h) {
     double[] newPoints = point.elements().clone();
     final double[] partials = new double[point.size()];
     final double functionValue = f.at(point);

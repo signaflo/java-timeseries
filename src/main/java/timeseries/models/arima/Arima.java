@@ -32,7 +32,7 @@ import org.knowm.xchart.style.markers.None;
 import data.DoubleFunctions;
 import linear.doubles.Matrix;
 import linear.doubles.Vector;
-import optim.AbstractMultivariateFunction;
+import math.function.AbstractMultivariateFunction;
 import optim.BFGS;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;

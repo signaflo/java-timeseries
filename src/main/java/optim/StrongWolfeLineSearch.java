@@ -4,6 +4,8 @@
  */
 package optim;
 
+import math.function.AbstractFunction;
+
 import static java.lang.Math.abs;
 
 /**
@@ -173,7 +175,6 @@ final class StrongWolfeLineSearch {
 
   /**
    * A builder for the line search.
-   * Copyright (c) 2016 Jacob Rachiele
    */
   static final class Builder {
 

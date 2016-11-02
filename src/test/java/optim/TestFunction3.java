@@ -5,6 +5,8 @@
 
 package optim;
 
+import math.function.AbstractFunction;
+
 final class TestFunction3 extends AbstractFunction {
 
   @Override

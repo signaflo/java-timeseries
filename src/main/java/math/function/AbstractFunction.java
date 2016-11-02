@@ -1,8 +1,10 @@
 /*
- *  Copyright (c) 2016 Jacob Rachiele
- *  
+ * Copyright (c) 2016 Jacob Rachiele
+ *
  */
-package optim;
+package math.function;
+
+import optim.NumericalDerivatives;
 
 /**
  * A partial implementation of a scalar-valued function of one variable.

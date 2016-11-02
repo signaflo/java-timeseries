@@ -5,6 +5,7 @@
 
 package optim;
 
+import math.function.AbstractFunction;
 import org.junit.Test;
 
 public final class StrongWolfeLineSearchSpec {
