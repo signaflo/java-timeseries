@@ -53,6 +53,10 @@ public final class Real extends Complex {
     return new Real(this.value * other);
   }
 
+  public final Real dividedBy(Real other) {
+    return new Real(this.value / other.value);
+  }
+
   public final Real negative() {
     return new Real(-this.value);
   }

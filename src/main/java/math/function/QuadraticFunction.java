@@ -48,4 +48,50 @@ public class QuadraticFunction {
     final Complex root2 = b.negative().minus(bSquared.minus(fourAC).sqrt()).dividedBy(a.times(2).value());
     return new Complex[] {root1, root2};
   }
+
+  public Real a() {
+    return this.a;
+  }
+
+  public Real b() {
+    return this.b;
+  }
+
+  public Real c() {
+    return this.c;
+  }
+
+  public Real[] coefficients() {
+    return new Real[] {this.a, this.b, this.c};
+  }
+
+  public double[] doubleCoefficients() {
+    return new double[] {a.value(), b.value(), c.value()};
+  }
+
+  public double doubleExtremePoint() {
+    return -b.value() / (2 * a.value());
+  }
+
+  public Real extremePoint() {
+    return b.dividedBy(a.times(2));
+  }
+
+  public double doubleExtremum() {
+    double x = doubleExtremePoint();
+    return a.value() * x * x + b.value() * x + c.value();
+  }
+
+  public Real extremum() {
+    Real x = extremePoint();
+    return a.times(x).times(x).plus((b).times(x)).plus(c);
+  }
+
+  public boolean hasMinimum() {
+    return a.value() > 0.0;
+  }
+
+  public boolean hasMaximum() {
+    return a.value() < 0.0;
+  }
 }
