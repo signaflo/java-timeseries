@@ -1,4 +1,9 @@
-package optim;
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ */
+
+package math.function;
 
 /**
  * A scalar-valued function of one variable.

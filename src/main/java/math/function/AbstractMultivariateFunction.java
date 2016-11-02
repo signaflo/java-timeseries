@@ -1,10 +1,11 @@
 /*
  * Copyright (c) 2016 Jacob Rachiele
- * 
+ *
  */
-package optim;
+package math.function;
 
 import linear.doubles.Vector;
+import optim.NumericalDerivatives;
 
 /**
  * A partial implementation of a scalar-valued function of several variables.

@@ -6,6 +6,8 @@
 package optim;
 
 import linear.doubles.Vector;
+import math.function.AbstractFunction;
+import math.function.AbstractMultivariateFunction;
 
 /**
  * A function for the line search component of a quasi-Newton algorithm.

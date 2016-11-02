@@ -3,6 +3,10 @@ package optim;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+
+import math.function.Function;
+import math.function.MultivariateDoubleFunction;
+import math.function.MultivariateFunction;
 import org.junit.Test;
 
 import linear.doubles.Vector;

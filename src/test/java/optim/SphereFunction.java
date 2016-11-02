@@ -1,6 +1,7 @@
 package optim;
 
 import linear.doubles.Vector;
+import math.function.AbstractMultivariateFunction;
 
 public final class SphereFunction extends AbstractMultivariateFunction {
 
