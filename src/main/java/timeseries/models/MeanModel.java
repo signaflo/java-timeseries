@@ -141,8 +141,7 @@ public final class MeanModel implements Model {
 
   @Override
   public String toString() {
-    String builder = "timeSeries: " + timeSeries + "\nfittedSeries: " + fittedSeries + "\nmean: " + mean;
-    return builder;
+    return "timeSeries: " + timeSeries + "\nfittedSeries: " + fittedSeries + "\nmean: " + mean;
   }
 
   @Override

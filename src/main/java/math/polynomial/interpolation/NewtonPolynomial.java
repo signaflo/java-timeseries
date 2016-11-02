@@ -65,7 +65,11 @@ final class NewtonPolynomial {
     return result;
   }
 
-  public final QuadraticFunction simplify() {
+  public final QuadraticFunction toQuadratic() {
+    if (coefficients.length != 3) {
+      throw new IllegalStateException("The function is of degree " + (coefficients.length - 1) +
+          " and thus not quadratic.");
+    }
     double a = coefficients[2];
     double b = coefficients[1] - coefficients[2] * (point[0] + point[1]);
     double c = coefficients[0] - coefficients[1] * point[0] + coefficients[2] * point[0] * point[1];

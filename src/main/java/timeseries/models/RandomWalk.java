@@ -58,7 +58,7 @@ public final class RandomWalk implements Model {
    * @param n The number of observations to simulate.
    * @return A simulated RandomWalk model.
    */
-  public static final Model simulate(final Distribution dist, final int n) {
+  public static Model simulate(final Distribution dist, final int n) {
     final double[] series = new double[n];
     for (int t = 0; t < n; t++) {
       series[t] = dist.rand();
@@ -75,7 +75,7 @@ public final class RandomWalk implements Model {
    * @param n the number of observations to simulate.
    * @return a new simulated random walk model.
    */
-  public static final Model simulate(final double mean, final double sigma, final int n) {
+  public static Model simulate(final double mean, final double sigma, final int n) {
     final Distribution dist = new Normal(mean, sigma);
     return simulate(dist, n);
   }
@@ -88,7 +88,7 @@ public final class RandomWalk implements Model {
    * @param n the number of observations to simulate.
    * @return a new simulated random walk model.
    */
-  public static final Model simulate(final double sigma, final int n) {
+  public static Model simulate(final double sigma, final int n) {
     final Distribution dist = new Normal(0, sigma);
     return simulate(dist, n);
   }
@@ -99,7 +99,7 @@ public final class RandomWalk implements Model {
    * @param n the number of observations to simulate.
    * @return a new simulated random walk model.
    */
-  public static final Model simulate(final int n) {
+  public static Model simulate(final int n) {
     final Distribution dist = new Normal(0, 1);
     return simulate(dist, n);
   }
@@ -224,7 +224,7 @@ public final class RandomWalk implements Model {
 
   }
 
-  private final TimeSeries fitSeries() {
+  private TimeSeries fitSeries() {
     final double[] fitted = new double[timeSeries.n()];
     fitted[0] = timeSeries.at(0);
     for (int t = 1; t < timeSeries.n(); t++) {
@@ -234,7 +234,7 @@ public final class RandomWalk implements Model {
         fitted);
   }
 
-  private final TimeSeries calculateResiduals() {
+  private TimeSeries calculateResiduals() {
     final double[] residuals = new double[timeSeries.n()];
     for (int t = 1; t < timeSeries.n(); t++) {
       residuals[t] = timeSeries.at(t) - fittedSeries.at(t);
@@ -245,8 +245,7 @@ public final class RandomWalk implements Model {
 
   @Override
   public String toString() {
-    String builder = "timeSeries: " + timeSeries + "\nfittedSeries: " + fittedSeries + "\nresiduals: " + residuals;
-    return builder;
+    return "timeSeries: " + timeSeries + "\nfittedSeries: " + fittedSeries + "\nresiduals: " + residuals;
   }
 
   @Override

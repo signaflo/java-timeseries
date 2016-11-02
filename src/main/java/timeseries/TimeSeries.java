@@ -375,8 +375,7 @@ public final class TimeSeries extends DataSet {
     TimeSeries firstAverage = movingAverage(m);
     final int k = m / 2;
     final List<OffsetDateTime> times = this.observationTimes.subList(k, n - k);
-    double[] secondAverage = firstAverage.movingAverage(2).series;
-    return new TimeSeries(this.timePeriod, times, secondAverage);
+    return new TimeSeries(this.timePeriod, times, firstAverage.movingAverage(2).series);
   }
 
   /**
@@ -431,7 +430,7 @@ public final class TimeSeries extends DataSet {
     return difference(1);
   }
 
-  private final double[] differenceArray(final int lag) {
+  private double[] differenceArray(final int lag) {
     double[] differenced = new double[series.length - lag];
     for (int i = 0; i < differenced.length; i++) {
       differenced[i] = series[i + lag] - series[i];
@@ -517,7 +516,7 @@ public final class TimeSeries extends DataSet {
   }
 
   // Helper method to get the total period length for the provided time period.
-  private final long totalPeriodLength(final TimePeriod timePeriod) {
+  private long totalPeriodLength(final TimePeriod timePeriod) {
     return timePeriod.timeUnit().unitLength() * timePeriod.periodLength();
   }
 

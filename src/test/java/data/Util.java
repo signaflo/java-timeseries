@@ -1,7 +1,8 @@
 package data;
 
 /**
- * Created by jacob on 10/31/16.
+ * @author Jacob Rachiele
+ *
  */
 public final class Util {
 

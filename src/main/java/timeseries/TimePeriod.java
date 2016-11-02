@@ -76,7 +76,7 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing exactly one year.
    */
-  public static final TimePeriod oneYear() {
+  public static TimePeriod oneYear() {
     return new TimePeriod(TimeUnit.YEAR, 1);
   }
 
@@ -85,7 +85,7 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing exactly two years.
    */
-  public static final TimePeriod twoYears() {
+  public static TimePeriod twoYears() {
     return new TimePeriod(TimeUnit.YEAR, 2);
   }
 
@@ -94,7 +94,7 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing one half of a decade.
    */
-  public static final TimePeriod halfDecade() {
+  public static TimePeriod halfDecade() {
     return new TimePeriod(TimeUnit.YEAR, 5);
   }
 
@@ -121,7 +121,7 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing one quarter of a year.
    */
-  public static final TimePeriod oneQuarter() {
+  public static TimePeriod oneQuarter() {
     return new TimePeriod(TimeUnit.QUARTER, 1);
   }
 
@@ -130,7 +130,7 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing one half of a year.
    */
-  public static final TimePeriod halfYear() {
+  public static TimePeriod halfYear() {
     return new TimePeriod(TimeUnit.MONTH, 6);
   }
 
@@ -139,7 +139,7 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing exactly one decade.
    */
-  public static final TimePeriod oneDecade() {
+  public static TimePeriod oneDecade() {
     return new TimePeriod(TimeUnit.DECADE, 1);
   }
 
@@ -148,7 +148,7 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing one half of a century.
    */
-  public static final TimePeriod halfCentury() {
+  public static TimePeriod halfCentury() {
     return new TimePeriod(TimeUnit.DECADE, 5);
   }
 
@@ -157,7 +157,7 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing exactly one century.
    */
-  public static final TimePeriod oneCentury() {
+  public static TimePeriod oneCentury() {
     return new TimePeriod(TimeUnit.CENTURY, 1);
   }
 
@@ -166,7 +166,7 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing one half of an hour.
    */
-  public static final TimePeriod halfHour() {
+  public static TimePeriod halfHour() {
     return new TimePeriod(TimeUnit.MINUTE, 30);
   }
 
@@ -175,7 +175,7 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing one half of a day.
    */
-  public static final TimePeriod halfDay() {
+  public static TimePeriod halfDay() {
     return new TimePeriod(TimeUnit.HOUR, 12);
   }
 
@@ -184,7 +184,7 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing one third of a year.
    */
-  public static final TimePeriod triAnnual() {
+  public static TimePeriod triAnnual() {
     return new TimePeriod(TimeUnit.MONTH, 4);
   }
   
@@ -193,7 +193,7 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing one half of a second.
    */
-  public static final TimePeriod halfSecond() {
+  public static TimePeriod halfSecond() {
     return new TimePeriod(TimeUnit.MILLISECOND, 500);
   }
   
@@ -202,11 +202,11 @@ public final class TimePeriod {
    * 
    * @return a new TimePeriod representing one tenth of a second.
    */
-  public static final TimePeriod oneTenthSecond() {
+  public static TimePeriod oneTenthSecond() {
     return new TimePeriod(TimeUnit.MILLISECOND, 100);
   }
   
-  private final void validate(final long unitLength) {
+  private void validate(final long unitLength) {
     if (unitLength <= 0) {
       throw new IllegalArgumentException("The provided unitLength must be a positive integer");
     }

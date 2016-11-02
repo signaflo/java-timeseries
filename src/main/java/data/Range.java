@@ -16,11 +16,11 @@ final class Range {
 		}
 	}
 	
-	static final Range newRangeExclusive(final int from, final int to) {
+	static Range newRangeExclusive(final int from, final int to) {
 		return new Range(from, to, 1);
 	}
 	
-	static final Range newRangeInclusive(final int from, final int to) {
+	static Range newRangeInclusive(final int from, final int to) {
 		return new Range(from, to + 1, 1);
 	}
 	

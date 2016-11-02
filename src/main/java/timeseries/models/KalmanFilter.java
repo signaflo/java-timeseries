@@ -42,7 +42,7 @@ public final class KalmanFilter {
     filter();
   }
   
-  private final DenseMatrix64F initializePredictedCovariance() {
+  private DenseMatrix64F initializePredictedCovariance() {
     final DenseMatrix64F P = new DenseMatrix64F(r * r, 1);
     final RowD1Matrix64F id = identity(r * r);
     final DenseMatrix64F kronT = new DenseMatrix64F(r * r, r * r);
@@ -62,7 +62,7 @@ public final class KalmanFilter {
     return P;
   }
 
-  private final void filter() {
+  private void filter() {
     
     predictionError[0] = y[0];
     // f[t] is always the first element of column vector M because f[t] = Z*M, where

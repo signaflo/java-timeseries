@@ -19,7 +19,7 @@ public final class LagOperator {
    * @param index the index to apply the lag operation at.
    * @return the value of the series at lag 1 from the given index.
    */
-  public static final double apply(final TimeSeries series, final int index) {
+  public static double apply(final TimeSeries series, final int index) {
     return series.at(index - 1);
   }
   
@@ -29,7 +29,7 @@ public final class LagOperator {
    * @param dateTime the date and time to apply the lag operation at.
    * @return the value of the series at lag 1 from the given index.
    */
-  public static final double apply(final TimeSeries series, final OffsetDateTime dateTime) {
+  public static double apply(final TimeSeries series, final OffsetDateTime dateTime) {
     return series.at(dateTime);
   }
   
@@ -40,7 +40,7 @@ public final class LagOperator {
    * @param times the number of times to apply the lag operator.
    * @return the value of the series at the given number of lags from the given index.
    */
-  public static final double apply(final TimeSeries series, final int index, final int times) {
+  public static double apply(final TimeSeries series, final int index, final int times) {
     return series.at(index - times);
   }
   
@@ -51,7 +51,7 @@ public final class LagOperator {
    * @param times the number of times to apply the lag operator.
    * @return the value of the series at the given number of lags from the given index.
    */
-  public static final double apply(final TimeSeries series, final OffsetDateTime dateTime, final int times) {
+  public static double apply(final TimeSeries series, final OffsetDateTime dateTime, final int times) {
     return series.at(series.dateTimeIndex().get(dateTime) - times);
   }
   
@@ -62,7 +62,7 @@ public final class LagOperator {
    * @param times the number of times to apply the lag operator.
    * @return the value of the series at the given number of lags from the given index.
    */
-  public static final double apply(final double[] series, final int index, final int times) {
+  public static double apply(final double[] series, final int index, final int times) {
     return series[index - times];
   }
 
