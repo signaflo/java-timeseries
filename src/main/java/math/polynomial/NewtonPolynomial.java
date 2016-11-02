@@ -9,6 +9,8 @@ import math.function.QuadraticFunction;
 
 /**
  * @author Jacob Rachiele
+ * Represents the <a target="_blank" href="https://en.wikipedia.org/wiki/Newton_polynomial">Newton form</a>
+ * of an interpolating polynomial.
  */
 final class NewtonPolynomial {
 
@@ -16,6 +18,11 @@ final class NewtonPolynomial {
   private final double[] value;
   private final double[] coefficients;
 
+  /**
+   * Create a new NewtonPolynomial with the given points and function values.
+   * @param point the array of sample points.
+   * @param value the array of sample function values at each corresponding point.
+   */
   NewtonPolynomial(final double[] point, final double[] value) {
     if (point.length != value.length) {
       throw new IllegalArgumentException("There must be one function value for each point, "
@@ -37,6 +44,11 @@ final class NewtonPolynomial {
     return this.coefficients.clone();
   }
 
+  /**
+   * Get the ith coefficient of this Newton Polynomial.
+   * @param i the index of the coefficient.
+   * @return the ith coefficient of this Newton Polynomial.
+   */
   final double getCoefficient(final int i) {
     return this.coefficients[i];
   }
@@ -55,6 +67,11 @@ final class NewtonPolynomial {
     }
   }
 
+  /**
+   * Evaluate this Newton Polynomial at the given point.
+   * @param x the point at which to evaluate this Newton Polynomial.
+   * @return the value of the polynomial at the given point.
+   */
   public final double evaluateAt(double x) {
     double product = 1.0;
     double result = coefficients[0];
@@ -65,7 +82,12 @@ final class NewtonPolynomial {
     return result;
   }
 
-  public final QuadraticFunction toQuadratic() {
+  /**
+   *
+   * @return this Newton Polynomial converted to standard quadratic form.
+   * @throws IllegalStateException if this polynomial is not quadratic.
+   */
+  public final QuadraticFunction toQuadratic() throws IllegalStateException {
     if (coefficients.length != 3) {
       throw new IllegalStateException("The function is of degree " + (coefficients.length - 1) +
           " and thus not quadratic.");

@@ -32,7 +32,7 @@ public final class Real extends Complex {
   }
 
   /**
-   * Add this real number to the given real number and return the result as a new real number.
+   * Add this real number to the given real number and return the result.
    * @param other the real number to add to this one.
    * @return the sum of this real number and the given real number.
    */
@@ -40,10 +40,20 @@ public final class Real extends Complex {
     return new Real(this.value + other.value);
   }
 
+  /**
+   * Subtract the given real number from this real number and return the result.
+   * @param other the real number to subtract from this one.
+   * @return the difference of the given real number from this real number.
+   */
   public final Real minus(final Real other) {
     return new Real(this.value - other.value);
   }
 
+  /**
+   * Multiply this real number by the given real number and return the result.
+   * @param other the real number to multiply this one by.
+   * @return this real number multiplied by the given real number.
+   */
   public final Real times(Real other) {
     return new Real(this.value * other.value);
   }
@@ -53,10 +63,27 @@ public final class Real extends Complex {
     return new Real(this.value * other);
   }
 
+  /**
+   * Square this real number and return the result.
+   * @return the square of this real number.
+   */
+  public final Real squared() {
+    return this.times(this);
+  }
+
+  /**
+   * Divide this real number by the given real number and return the result.
+   * @param other the real number to divide this one by.
+   * @return this real number divided by the given real number.
+   */
   public final Real dividedBy(Real other) {
     return new Real(this.value / other.value);
   }
 
+  /**
+   * Take the additive inverse, or negative, of this real number and return the result.
+   * @return the additive inverse, or negative, of this real number.
+   */
   public final Real negative() {
     return new Real(-this.value);
   }
