@@ -12,26 +12,20 @@ import org.junit.Test;
 import math.Complex;
 
 public class VectorsSpec {
-  
-  private Complex c1;
-  private Complex c2;
-  private Complex c3;
-  private Complex c4;
-  private List<Complex> l1;
-  private List<Complex> l2;
+
   private FieldVector<Complex> vec1;
   private FieldVector<Complex> vec2;
   
   @Before
   public void beforeMethod() {
-    c1 = new Complex(3, 5);
-    c2 = new Complex(2.5, 4.5);
-    c3 = new Complex(2.4, 4.0);
-    c4 = new Complex(6, 2);
-    
-    l1 = new ArrayList<>(2);
+    Complex c1 = new Complex(3, 5);
+    Complex c2 = new Complex(2.5, 4.5);
+    Complex c3 = new Complex(2.4, 4.0);
+    Complex c4 = new Complex(6, 2);
+
+    List<Complex> l1 = new ArrayList<>(2);
     l1.add(c1); l1.add(c2);
-    l2 = new ArrayList<>(2);
+    List<Complex> l2 = new ArrayList<>(2);
     l2.add(c3); l2.add(c4);
     
     vec1 = new FieldVector<>(l1);

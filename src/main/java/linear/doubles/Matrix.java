@@ -121,7 +121,7 @@ public final class Matrix {
   
   public final double[] diagonal() {
     final double[] diag = new double[Math.min(nrow, ncol)];
-    System.arraycopy(data, 0 + 0, diag, 0, diag.length);
+    System.arraycopy(data, 0, diag, 0, diag.length);
     return diag;
   }
   

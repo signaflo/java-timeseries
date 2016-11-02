@@ -20,20 +20,20 @@ public final class StateSpaceARMA {
     this.observationVector = createStateEffectsVector();
   }
   
-  private final double[] createStateEffectsVector() {
+  private double[] createStateEffectsVector() {
     double[] Z = new double[r];
     Z[0] = 1.0;
     return Z;
   }
   
   
-  private final double[] createMovingAverageVector() {
+  private double[] createMovingAverageVector() {
     double[] R = new double[r];
     R[0] = 1.0;
     System.arraycopy(maParams, 0, R, 1, maParams.length);
     return R;
   }
-  private final double[][] createTransitionMatrix() {
+  private double[][] createTransitionMatrix() {
     double[][] T = new double[r][r];
     for (int i = 0; i < arParams.length; i++) {
       T[i][0] = arParams[i];
@@ -60,7 +60,7 @@ public final class StateSpaceARMA {
     return r;
   }
   
-  private final double[] R() {
+  private double[] R() {
     double[] R = new double[r];
     System.arraycopy(arParams, 0, R, 0, arParams.length);
     for (int j = 0; j < maParams.length; j++) {

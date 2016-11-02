@@ -25,19 +25,15 @@ public final class BFGS {
 
   private final AbstractMultivariateFunction f;
   private Vector iterate;
-  private Vector nextIterate;
   private Vector gradient;
-  private Vector nextGradient;
   private Vector searchDirection;
   private double functionValue = 0.0;
-  private double stepSize = 0.0;
   private double rho = 0.0;
   private Vector s;
   private Vector y;
   private Matrix H;
   private final Matrix identity;
-  private final int maxIterations = 100;
-  
+
   /**
    * Create a new BFGS object with the given information. The identity matrix will be used for
    * initial inverse Hessian approximation.
@@ -72,18 +68,19 @@ public final class BFGS {
     double relativeChangeDenominator;
     gradient = f.gradientAt(startingPoint, functionValue);
     if (startingPoint.size() > 0) {
+      int maxIterations = 100;
       while (gradient.norm() > gradientTolerance && relativeChange > relativeErrorTolerance
           && k < maxIterations) {
         searchDirection = (H.times(gradient).scaledBy(-1.0));
-        stepSize = updateStepSize(functionValue);
-        nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
+        double stepSize = updateStepSize(functionValue);
+        Vector nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
         s = nextIterate.minus(iterate);
         priorFunctionValue = functionValue;
         functionValue = f.at(nextIterate);
         relativeChangeDenominator = max(abs(priorFunctionValue), abs(nextIterate.norm()));
         //Hamming, Numerical Methods, 2nd edition, pg. 22
         relativeChange = Math.abs((priorFunctionValue - functionValue) / relativeChangeDenominator);
-        nextGradient = f.gradientAt(nextIterate, functionValue);
+        Vector nextGradient = f.gradientAt(nextIterate, functionValue);
         y = nextGradient.minus(gradient);
         rho = 1 / y.dotProduct(s);
         H = updateHessian();
@@ -94,7 +91,7 @@ public final class BFGS {
     }
   }
 
-  private final double updateStepSize(final double functionValue) {
+  private double updateStepSize(final double functionValue) {
     final double slope0 = gradient.dotProduct(searchDirection);
     final QuasiNewtonLineFunction lineFunction = new QuasiNewtonLineFunction(this.f, iterate, searchDirection);
     StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(lineFunction, functionValue, slope0).c1(c1)
@@ -102,7 +99,7 @@ public final class BFGS {
     return lineSearch.search();
   }
 
-  private final Matrix updateHessian() {
+  private Matrix updateHessian() {
     Matrix a = identity.minus(s.outerProduct(y).scaledBy(rho));
     Matrix b = identity.minus(y.outerProduct(s).scaledBy(rho));
     Matrix c = s.outerProduct(s).scaledBy(rho);

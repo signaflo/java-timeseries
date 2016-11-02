@@ -40,7 +40,7 @@ public class LagPolynomial {
    * 
    * @return a new lag polynomial representing the first difference operator.
    */
-  public static final LagPolynomial firstDifference() {
+  public static LagPolynomial firstDifference() {
     return new LagPolynomial(-1.0);
   }
 
@@ -50,7 +50,7 @@ public class LagPolynomial {
    * @param seasonalLag the period of seasonality, which is the lag to use for the operator.
    * @return a new lag polynomial representing the first seasonal difference operator.
    */
-  public static final LagPolynomial firstSeasonalDifference(final int seasonalLag) {
+  public static LagPolynomial firstSeasonalDifference(final int seasonalLag) {
     double[] poly = new double[seasonalLag];
     poly[seasonalLag - 1] = -1.0;
     return new LagPolynomial(poly);
@@ -63,7 +63,7 @@ public class LagPolynomial {
    * @param D the number of seasonal differences.
    * @return a new lag polynomial representing an arbitrary number of seasonal differences.
    */
-  public static final LagPolynomial seasonalDifferences(final int seasonalLag, final int D) {
+  public static LagPolynomial seasonalDifferences(final int seasonalLag, final int D) {
     if (D < 0) {
       throw new RuntimeException("The degree of differencing must be greater than or equal to 0, but was " + D);
     }
@@ -84,7 +84,7 @@ public class LagPolynomial {
    * @param d the number of differences. An integer greater than or equal to 0.
    * @return a new lag polynomial representing an arbitrary number of differences.
    */
-  public static final LagPolynomial differences(final int d) {
+  public static LagPolynomial differences(final int d) {
     if (d < 0) {
       throw new RuntimeException("The degree of differencing must be greater than or equal to 0, but was " + d);
     }
@@ -105,7 +105,7 @@ public class LagPolynomial {
    * @param parameters the moving average parameters of an ARIMA model.
    * @return a new moving average lag polynomial.
    */
-  public static final LagPolynomial movingAverage(double... parameters) {
+  public static LagPolynomial movingAverage(double... parameters) {
     return new MovingAveragePolynomial(parameters);
   }
 
@@ -115,7 +115,7 @@ public class LagPolynomial {
    * @param parameters the autoregressive parameters of an ARIMA model.
    * @return a new autoregressive lag polynomial.
    */
-  public static final LagPolynomial autoRegressive(double... parameters) {
+  public static LagPolynomial autoRegressive(double... parameters) {
     final double[] inverseParams = new double[parameters.length];
     for (int i = 0; i < inverseParams.length; i++) {
       inverseParams[i] = -parameters[i];

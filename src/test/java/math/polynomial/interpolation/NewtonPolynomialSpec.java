@@ -8,7 +8,6 @@ package math.polynomial.interpolation;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
-import math.Complex;
 import math.function.QuadraticFunction;
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,7 +60,7 @@ public class NewtonPolynomialSpec {
   @Test
   public void whenSimplifiedThenQuadraticFunctionCorrect() {
     NewtonPolynomial np = new NewtonPolynomial(new double[] {2.0, 4.0, 7.0}, new double[] {4.0, 16.0, 49.0});
-    QuadraticFunction function = np.simplify();
+    QuadraticFunction function = np.toQuadratic();
     double[] expected = new double[] {1.0, 0.0, 0.0};
     assertThat(function.doubleCoefficients(), is(equalTo(expected)));
   }

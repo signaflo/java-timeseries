@@ -56,7 +56,7 @@ public final class ArimaForecast implements Forecast {
    * @return a new forecast for the given number of steps from the provided ARIMA model and with the given
    * &alpha; significance level.
    */
-  public static final ArimaForecast forecast(final Arima model, final int steps, final double alpha) {
+  public static ArimaForecast forecast(final Arima model, final int steps, final double alpha) {
     return new ArimaForecast(model, steps, alpha);
   }
   
@@ -68,7 +68,7 @@ public final class ArimaForecast implements Forecast {
    * @return a new forecast for the given number of steps from the provided ARIMA model with a default
    * &alpha; significance level of 0.05.
    */
-  public static final ArimaForecast forecast(final Arima model, final int steps) {
+  public static ArimaForecast forecast(final Arima model, final int steps) {
     return new ArimaForecast(model, steps, 0.05);
   }
   
@@ -79,7 +79,7 @@ public final class ArimaForecast implements Forecast {
    * @return a new 12 step ahead forecast from the provided ARIMA model with a default
    * &alpha; significance level of 0.05.
    */
-  public static final ArimaForecast forecast(final Arima model) {
+  public static ArimaForecast forecast(final Arima model) {
     return new ArimaForecast(model, 12, 0.05);
   }
   
@@ -149,7 +149,7 @@ public final class ArimaForecast implements Forecast {
         lowerPredictionValues);
   }
   
-  private final double[] getPsiCoefficients() {
+  private double[] getPsiCoefficients() {
     final int steps = this.forecast.n();
     LagPolynomial arPoly = LagPolynomial.autoRegressive(model.arSarCoefficients());
     LagPolynomial diffPoly = LagPolynomial.differences(model.order().d);
@@ -167,12 +167,12 @@ public final class ArimaForecast implements Forecast {
     return psi;
   }
   
-  private final TimeSeries getFcstErrors(final double criticalValue) {
+  private TimeSeries getFcstErrors(final double criticalValue) {
     double[] errors = getStdErrors(criticalValue);
     return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
   }
   
-  private final double[] getStdErrors(final double criticalValue) {
+  private double[] getStdErrors(final double criticalValue) {
     double[] psiCoeffs = getPsiCoefficients();
     double[] stdErrors = new double[this.forecast.n()];
     double sigma = sqrt(model.sigma2());

@@ -26,7 +26,7 @@ public final class Ts {
 	 * @param series the sequence of observations constituting this time series.
 	 * @return a new TimeSeries object with the given series data and start year.
 	 */
-	public static final TimeSeries newAnnualSeries(final int startYear, final double... series) {
+	public static TimeSeries newAnnualSeries(final int startYear, final double... series) {
 	  final LocalDateTime localDateTime = LocalDateTime.of(startYear, Month.JANUARY, 1, 0, 0);
 	  final OffsetDateTime startingInstant = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
 	  return new TimeSeries(TimePeriod.oneYear(), startingInstant, series);
@@ -41,8 +41,8 @@ public final class Ts {
 	 * @param series the sequence of observations constituting this time series.
 	 * @return a new TimeSeries object with the given series data, start year, and start month.
 	 */
-	public static final TimeSeries newMonthlySeries(final int startYear, final int startMonth,
-			final double... series) {
+	public static TimeSeries newMonthlySeries(final int startYear, final int startMonth,
+                                            final double... series) {
 	  final LocalDateTime localDateTime = LocalDateTime.of(startYear, startMonth, 1, 0, 0);
 		final OffsetDateTime startingInstant = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
 		final TimeUnit timeUnit = TimeUnit.MONTH;
@@ -60,8 +60,8 @@ public final class Ts {
 	 * @param series The sequence of observations constituting this time series.
 	 * @return A new TimeSeries object with the given year, month, and series data.
 	 */
-	public static final TimeSeries newMonthlySeries(final int startYear, final int startMonth,
-			final int startDay, final double... series) {
+	public static TimeSeries newMonthlySeries(final int startYear, final int startMonth,
+                                            final int startDay, final double... series) {
 		final OffsetDateTime startingInstant = OffsetDateTime.of(startYear, startMonth, startDay, 0, 0, 0, 0,
 				ZoneOffset.ofHours(ZONE_OFFSET));
 		final TimeUnit timeUnit = TimeUnit.MONTH;
@@ -78,8 +78,8 @@ public final class Ts {
 	 * @param series The sequence of observations constituting this time series.
 	 * @return A new TimeSeries object with the given year, quarter, and series data.
 	 */
-	public static final TimeSeries newQuarterlySeries(final int startYear, final int startQuarter,
-			final double... series) {
+	public static TimeSeries newQuarterlySeries(final int startYear, final int startQuarter,
+                                              final double... series) {
 		final int startMonth  = 3*startQuarter - 2;
 		final OffsetDateTime startingInstant = OffsetDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
 				ZoneOffset.ofHours(0));
