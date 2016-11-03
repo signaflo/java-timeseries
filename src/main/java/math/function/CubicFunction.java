@@ -5,7 +5,6 @@
 
 package math.function;
 
-import math.Complex;
 import math.Real;
 
 /**
@@ -119,7 +118,7 @@ public final class CubicFunction {
    * retrieve the coefficients of the polynomial as primitives.
    * @return the coefficients of the polynomial as primitives.
    */
-  public double[] doubleCoefficients() {
+  public double[] coefficientsPrimitive() {
     return new double[] {a.value(), b.value(), c.value(), d.value()};
   }
 
@@ -127,7 +126,7 @@ public final class CubicFunction {
    * retrieve the point at which the extremum of this function occurs as a primitive.
    * @return the point at which the extremum of this function occurs as a primitive.
    */
-  public double doubleExtremePoint() {
+  public double extremePointPrimitive() {
     return -b.value() / (2 * a.value());
   }
 
@@ -143,8 +142,8 @@ public final class CubicFunction {
    * retrieve the extremum of this function as a primitive.
    * @return the extremum of this function as a primitive.
    */
-  public double doubleExtremum() {
-    double x = doubleExtremePoint();
+  public double extremumPrimitive() {
+    double x = extremePointPrimitive();
     return a.value() * x * x + b.value() * x + c.value();
   }
 
