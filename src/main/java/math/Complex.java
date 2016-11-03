@@ -91,7 +91,7 @@ public class Complex implements FieldElement<Complex> {
   @Override
   public Complex sqrt() {
     // TODO: Replace zero equality check with more sophisticated method.
-    if (this.real < 0 && Math.abs(this.im) < 1E-15) {
+    if (this.real < 1E-15 && Math.abs(this.im) < 1E-15) {
       return new Complex(0.0, Math.sqrt(abs()));
     }
     // The following algorithm fails only in the case where this complex number is

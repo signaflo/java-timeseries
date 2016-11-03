@@ -123,8 +123,15 @@ public final class CubicFunction {
     return new double[] {a.value(), b.value(), c.value(), d.value()};
   }
 
-  final Complex[] criticalPoints() {
-    return this.derivative.zeros();
+  final Real[] criticalPoints() {
+    Complex[] zeros = this.derivative.zeros();
+    if (zeros[0].equals(zeros[1])) {
+      return new Real[] {Real.from(zeros[0].real())};
+    } else if (allReal(zeros)) {
+      return toReal(zeros);
+    } else {
+      return new Real[] {};
+    }
   }
 
   final Real localMinimum() {
@@ -196,7 +203,7 @@ public final class CubicFunction {
 
   private boolean allReal(final Complex[] numbers) {
     for (Complex number : numbers) {
-      if (number.isReal()) {
+      if (!number.isReal()) {
         return false;
       }
     }
@@ -214,11 +221,11 @@ public final class CubicFunction {
     return reals;
   }
 
-  private final double computeDiscriminant() {
+  private double computeDiscriminant() {
     return b.value() * b.value() - 3 * a.value() * c.value();
   }
 
-  private final Real[] evaluate(final Real[] points) {
+  private Real[] evaluate(final Real[] points) {
     Real[] values = new Real[points.length];
     for (int i = 0; i < points.length; i++) {
       double x= points[i].value();
@@ -227,7 +234,7 @@ public final class CubicFunction {
     return values;
   }
 
-  private final double[] toPrimitive(final Real[] points) {
+  private double[] toPrimitive(final Real[] points) {
     double[] prim = new double[points.length];
     for (int i = 0; i < prim.length; i++) {
       prim[i] = points[i].value();
