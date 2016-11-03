@@ -61,7 +61,7 @@ public class Complex implements FieldElement<Complex> {
   }
   
   /**
-   * Multiply this element by the given double.
+   * Multiply this element by the given double and return the result.
    * @param other the double to multiply this element by.
    * @return this element multiplied by the given double.
    */
@@ -70,7 +70,7 @@ public class Complex implements FieldElement<Complex> {
   }
   
   /**
-   * Divide this element by the given double.
+   * Divide this element by the given double and return the result.
    * @param other the double to divide this element by.
    * @return this element divided by the given double.
    */

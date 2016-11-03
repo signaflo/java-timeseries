@@ -6,16 +6,16 @@
 package math;
 
 /**
- * @author Jacob Rachiele
  * A numerical approximation of a <a target="_blank" href=https://en.wikipedia.org/wiki/Real_number>
- *   real number</a>
+ * real number</a>.
+ * @author Jacob Rachiele
  */
 public final class Real extends Complex {
 
   private final double value;
 
   /**
-   * Create a new real number using the given primitive double.
+   * Create a new real number using the given double.
    * @param value the primitive double approximating the real number.
    */
   public Real(final double value) {
@@ -24,8 +24,9 @@ public final class Real extends Complex {
   }
 
   /**
-   * Create a new real number using the given primitive double.
+   * Create a new real number using the given double.
    * @param value the primitive double approximating the real number.
+   * @return a new real number from the given double.
    */
   public static Real from(final double value) {
     return new Real(value);
@@ -68,7 +69,15 @@ public final class Real extends Complex {
    * @return the square of this real number.
    */
   public final Real squared() {
-    return this.times(this);
+    return new Real(this.value * this.value);
+  }
+
+  /**
+   * Cube this real number and return the result.
+   * @return the cube of this real number.
+   */
+  public final Real cubed() {
+    return new Real(this.value * this.value * this.value);
   }
 
   /**
