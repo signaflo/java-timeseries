@@ -107,24 +107,24 @@ public class QuadraticFunction {
   }
 
   /**
-   * retrieve the point at which the extremum of this function occurs as a primitive.
-   * @return the point at which the extremum of this function occurs as a primitive.
+   * retrieve the point at which the localExtrema of this function occurs as a primitive.
+   * @return the point at which the localExtrema of this function occurs as a primitive.
    */
   public double extremePointPrimitive() {
     return -b.value() / (2 * a.value());
   }
 
   /**
-   * retrieve the point at which the extremum of this function occurs.
-   * @return the point at which the extremum of this function occurs.
+   * retrieve the point at which the localExtrema of this function occurs.
+   * @return the point at which the localExtrema of this function occurs.
    */
   public Real extremePoint() {
-    return b.dividedBy(a.times(2));
+    return new Real(b.value() / (a.value() * 2));
   }
 
   /**
-   * retrieve the extremum of this function as a primitive.
-   * @return the extremum of this function as a primitive.
+   * retrieve the localExtrema of this function as a primitive.
+   * @return the localExtrema of this function as a primitive.
    */
   public double extremumPrimitive() {
     double x = extremePointPrimitive();
@@ -132,12 +132,12 @@ public class QuadraticFunction {
   }
 
   /**
-   * retrieve the extremum of this function.
-   * @return the extremum of this function.
+   * retrieve the localExtrema of this function.
+   * @return the localExtrema of this function.
    */
   public Real extremum() {
-    Real x = extremePoint();
-    return a.times(x).times(x).plus((b).times(x)).plus(c);
+    double x = extremePoint().value();
+    return new Real(a.value() * x * x + b.value() * x + c.value());
   }
 
   /**

@@ -91,7 +91,7 @@ public class Complex implements FieldElement<Complex> {
   @Override
   public Complex sqrt() {
     // TODO: Replace zero equality check with more sophisticated method.
-    if (this.real < 0 && this.im == 0) {
+    if (this.real < 0 && Math.abs(this.im) < 1E-15) {
       return new Complex(0.0, Math.sqrt(abs()));
     }
     // The following algorithm fails only in the case where this complex number is
@@ -116,6 +116,14 @@ public class Complex implements FieldElement<Complex> {
    */
   public final double im() {
     return this.im;
+  }
+
+  /**
+   * Returns true if this complex number is also a real number and false otherwise.
+   * @return true if this complex number is also a real number and false otherwise.
+   */
+  public final boolean isReal() {
+    return Math.abs(this.im) < 1E-15;
   }
   
   

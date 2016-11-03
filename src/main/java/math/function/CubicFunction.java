@@ -5,6 +5,7 @@
 
 package math.function;
 
+import math.Complex;
 import math.Real;
 
 /**
@@ -122,38 +123,59 @@ public final class CubicFunction {
     return new double[] {a.value(), b.value(), c.value(), d.value()};
   }
 
+  final Complex[] criticalPoints() {
+    return this.derivative.zeros();
+  }
+
+  final Real localMinimum() {
+    return this.at(localMinimumPoint());
+  }
+
+  final Real localMaximum() {
+    return this.at(localMaximumPoint());
+  }
+
+  final Real localMinimumPoint() {
+    if (!hasMinimum()) {
+      throw new RuntimeException("This cubic function " + this.toString() + " has no local minimum.");
+    }
+    Real[] extremePoints = localExtremePoints();
+    if ((extremePoints[0].value() * a.value()) > (b.value() / -3.0)) {
+      return extremePoints[0];
+    }
+    return extremePoints[1];
+  }
+
+
+  final Real localMaximumPoint() {
+    if (!hasMaximum()) {
+      throw new RuntimeException("This cubic function " + this.toString() + " has no local minimum.");
+    }
+    Real[] extremePoints = localExtremePoints();
+    if ((extremePoints[0].value() * a.value()) < (b.value() / -3.0)) {
+      return extremePoints[0];
+    }
+    return extremePoints[1];
+  }
   /**
-   * retrieve the point at which the extremum of this function occurs as a primitive.
-   * @return the point at which the extremum of this function occurs as a primitive.
+   * retrieve the points at which the local extrema of this function occurs.
+   * @return the points at which the local extrema of this function occurs.
    */
-  public double extremePointPrimitive() {
-    return -b.value() / (2 * a.value());
+  public Real[] localExtremePoints() {
+    Real[] points = toReal(criticalPoints());
+    if (points.length < 2) {
+      return new Real[]{};
+    }
+    return points;
   }
 
   /**
-   * retrieve the point at which the extremum of this function occurs.
-   * @return the point at which the extremum of this function occurs.
+   * retrieve the local extrema of this function.
+   * @return the local extrema of this function.
    */
-  public Real extremePoint() {
-    return b.dividedBy(a.times(2));
-  }
-
-  /**
-   * retrieve the extremum of this function as a primitive.
-   * @return the extremum of this function as a primitive.
-   */
-  public double extremumPrimitive() {
-    double x = extremePointPrimitive();
-    return a.value() * x * x + b.value() * x + c.value();
-  }
-
-  /**
-   * retrieve the extremum of this function.
-   * @return the extremum of this function.
-   */
-  public Real extremum() {
-    Real x = extremePoint();
-    return a.times(x).times(x).plus((b).times(x)).plus(c);
+  public Real[] localExtrema() {
+    Real[] x = localExtremePoints();
+    return evaluate(x);
   }
 
   /**
@@ -161,7 +183,7 @@ public final class CubicFunction {
    * @return true if this function has a minimum, false otherwise.
    */
   public boolean hasMinimum() {
-    return a.value() > 0.0;
+    return computeDiscriminant() > 0.0;
   }
 
   /**
@@ -169,6 +191,47 @@ public final class CubicFunction {
    * @return true if this function has a maximum, false otherwise.
    */
   public boolean hasMaximum() {
-    return a.value() < 0.0;
+    return computeDiscriminant() > 0.0;
+  }
+
+  private boolean allReal(final Complex[] numbers) {
+    for (Complex number : numbers) {
+      if (number.isReal()) {
+        return false;
+      }
+    }
+    if (numbers.length == 0) {
+      return false;
+    }
+    return true;
+  }
+
+  private Real[] toReal(final Complex[] numbers) {
+    Real[] reals = new Real[numbers.length];
+    for (int i = 0; i < numbers.length; i++) {
+      reals[i] = Real.from(numbers[i].real());
+    }
+    return reals;
+  }
+
+  private final double computeDiscriminant() {
+    return b.value() * b.value() - 3 * a.value() * c.value();
+  }
+
+  private final Real[] evaluate(final Real[] points) {
+    Real[] values = new Real[points.length];
+    for (int i = 0; i < points.length; i++) {
+      double x= points[i].value();
+      values[i] = Real.from(a.value() * x * x * x + b.value() * x * x + c.value() * x + d.value());
+    }
+    return values;
+  }
+
+  private final double[] toPrimitive(final Real[] points) {
+    double[] prim = new double[points.length];
+    for (int i = 0; i < prim.length; i++) {
+      prim[i] = points[i].value();
+    }
+    return prim;
   }
 }
