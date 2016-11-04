@@ -64,39 +64,46 @@ final class StrongWolfeLineSearch {
     Real.Interval initialInterval = determineInitialInterval(this.alpha0, 1e-1);
     double fNewAlphaT = f0;
     double dNewAlphaT = slope0;
-    double newAlphaT = alpha0;
+    double lowerAlpha = initialInterval.lowerDbl();
+    double upperAlpha = initialInterval.upperDbl();
+    double fLowerAlpha = f.at(lowerAlpha);
+    double fUpperAlpha = f.at(upperAlpha);
+    double dLowerAlpha = f.slopeAt(lowerAlpha);
+    double dUpperAlpha = f.slopeAt(upperAlpha);
+    return zoom(lowerAlpha, upperAlpha, fLowerAlpha, fUpperAlpha, dLowerAlpha, dUpperAlpha);
 
-    int i = 1;
-    while (i < MAX_UPDATE_ITERATIONS) {
-      m++;
-      double fAlphaT = fNewAlphaT;
-      double dAlphaT = dNewAlphaT;
-      fNewAlphaT = f.at(newAlphaT);
-      while (abs(fNewAlphaT) == Double.POSITIVE_INFINITY && i < MAX_UPDATE_ITERATIONS) {
-        newAlphaT /= 2;
-        fAlphaT = fNewAlphaT;
-        dAlphaT = dNewAlphaT;
-        fNewAlphaT = f.at(newAlphaT);
-        i++;
-      }
-      dNewAlphaT = f.slopeAt(newAlphaT);
-      if (fNewAlphaT > f0 + c1 * newAlphaT * slope0 || fNewAlphaT >= fAlphaT && i > 1) {
-        return zoom(alphaT, newAlphaT, fAlphaT, fNewAlphaT, dAlphaT, dNewAlphaT);
-      }
-      // dNewAlphaT = f.slopeAt(newAlphaT);
-      if (abs(dNewAlphaT) <= -c2 * slope0) {
-        return newAlphaT;
-      }
-      if (dNewAlphaT >= 0) {
-        return zoom(newAlphaT, alphaT, fNewAlphaT, fAlphaT, dNewAlphaT, dAlphaT);
-      }
-      double oldAlphaT = alphaT;
-      alphaT = newAlphaT;
-      // Safeguard condition 2.2 since alphaT is increasing.
-      newAlphaT = Math.min(alphaT + DELTA_MAX * (alphaT - oldAlphaT), alphaMax);
-      i++;
-    }
-    return newAlphaT;
+//    double newAlphaT = 0.0;
+//    int i = 1;
+//    while (i < MAX_UPDATE_ITERATIONS) {
+//      m++;
+//      double fAlphaT = fNewAlphaT;
+//      double dAlphaT = dNewAlphaT;
+//      fNewAlphaT = f.at(newAlphaT);
+//      while (abs(fNewAlphaT) == Double.POSITIVE_INFINITY && i < MAX_UPDATE_ITERATIONS) {
+//        newAlphaT /= 2;
+//        fAlphaT = fNewAlphaT;
+//        dAlphaT = dNewAlphaT;
+//        fNewAlphaT = f.at(newAlphaT);
+//        i++;
+//      }
+//      dNewAlphaT = f.slopeAt(newAlphaT);
+//      if (fNewAlphaT > f0 + c1 * newAlphaT * slope0 || fNewAlphaT >= fAlphaT && i > 1) {
+//        return zoom(alphaT, newAlphaT, fAlphaT, fNewAlphaT, dAlphaT, dNewAlphaT);
+//      }
+//      // dNewAlphaT = f.slopeAt(newAlphaT);
+//      if (abs(dNewAlphaT) <= -c2 * slope0) {
+//        return newAlphaT;
+//      }
+//      if (dNewAlphaT >= 0) {
+//        return zoom(newAlphaT, alphaT, fNewAlphaT, fAlphaT, dNewAlphaT, dAlphaT);
+//      }
+//      double oldAlphaT = alphaT;
+//      alphaT = newAlphaT;
+//      // Safeguard condition 2.2 since alphaT is increasing.
+//      newAlphaT = Math.min(alphaT + DELTA_MAX * (alphaT - oldAlphaT), alphaMax);
+//      i++;
+//    }
+//    return newAlphaT;
   }
 
   private Real.Interval determineInitialInterval(double alphaK, double h) {
@@ -119,7 +126,7 @@ final class StrongWolfeLineSearch {
         if (k == 0) {
           h *= -1;
         } else {
-          return new Real.Interval(Math.min(alpha, alphaK1), Math.max(alpha, alphaK1));
+          return new Real.Interval(Math.max(1e-3, Math.min(alpha, alphaK1)), Math.max(alpha, alphaK1));
         }
       }
     }
