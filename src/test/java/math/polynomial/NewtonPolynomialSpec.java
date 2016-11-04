@@ -8,6 +8,7 @@ package math.polynomial;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
+import math.function.CubicFunction;
 import math.function.QuadraticFunction;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,10 +59,19 @@ public class NewtonPolynomialSpec {
   }
 
   @Test
-  public void whenSimplifiedThenQuadraticFunctionCorrect() {
+  public void whenConvertedThenQuadraticFunctionCorrect() {
     NewtonPolynomial np = new NewtonPolynomial(new double[] {2.0, 4.0, 7.0}, new double[] {4.0, 16.0, 49.0});
     QuadraticFunction function = np.toQuadratic();
     double[] expected = new double[] {1.0, 0.0, 0.0};
+    assertThat(function.coefficientsPrimitive(), is(equalTo(expected)));
+  }
+
+  @Test
+  public void whenConvertedThenCubicFunctionCorrect() {
+    NewtonPolynomial np = new NewtonPolynomial(new double[] {2.0, 4.0, 5.0, 7.0}, new double[]
+        {8.0, 64.0, 125.0, 343.0});
+    CubicFunction function = np.toCubic();
+    double[] expected = new double[] {1.0, 0.0, 0.0, 0.0};
     assertThat(function.coefficientsPrimitive(), is(equalTo(expected)));
   }
 }

@@ -5,6 +5,7 @@
 
 package math.polynomial;
 
+import math.function.CubicFunction;
 import math.function.QuadraticFunction;
 
 /**
@@ -96,5 +97,24 @@ final class NewtonPolynomial {
     double b = coefficients[1] - coefficients[2] * (point[0] + point[1]);
     double c = coefficients[0] - coefficients[1] * point[0] + coefficients[2] * point[0] * point[1];
     return new QuadraticFunction(a, b, c);
+  }
+
+  /**
+   *
+   * @return this Newton Polynomial converted to standard cubic form.
+   * @throws IllegalStateException if this polynomial is not quadratic.
+   */
+  public final CubicFunction toCubic() throws IllegalStateException {
+    if (coefficients.length != 4) {
+      throw new IllegalStateException("The function is of degree " + (coefficients.length - 1) +
+          " and thus not cubic.");
+    }
+    double a = coefficients[3];
+    double b = coefficients[2] - coefficients[3] * (point[0] + point[1] + point[2]);
+    double c = coefficients[1] - coefficients[2] * (point[0] + point[1]) +
+        coefficients[3] * (point[0] * point[1] + point[0] * point[2] + point[1] * point[2]);
+    double d = coefficients[0] - coefficients[1] * point[0] + coefficients[2] * point[0] * point[1] -
+        coefficients[3] * point[0] * point[1] * point[2];
+    return new CubicFunction(a, b, c, d);
   }
 }
