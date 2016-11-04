@@ -124,4 +124,25 @@ public final class Real extends Complex {
   public String toString() {
     return Double.toString(this.value);
   }
+
+  public static class Interval {
+
+    private final Real lower;
+    private final Real upper;
+
+    public Interval(final Real lower, final Real upper) {
+      this.lower = lower;
+      this.upper = upper;
+    }
+
+    public Interval(final double lower, final double upper) {
+      this.lower = Real.from(lower);
+      this.upper = Real.from(upper);
+    }
+
+    @Override
+    public String toString() {
+      return "(" + this.lower.value() + ", " + this.upper.value() + ")";
+    }
+  }
 }

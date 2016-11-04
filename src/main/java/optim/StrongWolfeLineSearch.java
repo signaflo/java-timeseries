@@ -4,6 +4,7 @@
  */
 package optim;
 
+import math.Real;
 import math.function.AbstractFunction;
 
 import static java.lang.Math.abs;
@@ -59,6 +60,8 @@ final class StrongWolfeLineSearch {
    * @return an element satisfying the strong Wolfe conditions.
    */
   final double search() {
+
+    Real.Interval initialInterval = determineInitialInterval(this.alpha0, 1e-1);
     double fNewAlphaT = f0;
     double dNewAlphaT = slope0;
     double newAlphaT = alpha0;
@@ -96,6 +99,32 @@ final class StrongWolfeLineSearch {
     return newAlphaT;
   }
 
+  private Real.Interval determineInitialInterval(double alphaK, double h) {
+    double alpha = 0.0;
+    double alphaK1;
+    final int t = 2;
+    double fK = f.at(alphaK);
+    double fK1;
+    int k = 0;
+    while (true) {
+      alphaK1 = alphaK + h;
+      fK1 = f.at(alphaK1);
+      if (fK1 < fK) {
+        h *= t;
+        alpha = alphaK;
+        alphaK = alphaK1;
+        fK = fK1;
+        k += 1;
+      } else {
+        if (k == 0) {
+          h *= -1;
+        } else {
+          return new Real.Interval(Math.min(alpha, alphaK1), Math.max(alpha, alphaK1));
+        }
+      }
+    }
+  }
+
   private double zoom(double alphaLo, double alphaHi, double fAlphaLo, double fAlphaHi, double dAlphaLo, double dAlphaHi) {
     double alphaJ = 0.0;
     double fAlphaJ;
@@ -103,16 +132,16 @@ final class StrongWolfeLineSearch {
     double intervalLength = 0.0;
     double updatedIntervalLength;
     int trials = 0;
-    // double mid = 0.0;
-    // double fMid = 0.0;
+    double mid = 0.0;
+    double fMid = 0.0;
 
     int k = 1;
     double gradientTolerance = 1E-8;
     while (k < MAX_UPDATE_ITERATIONS && abs(dAlphaJ) > gradientTolerance) {
       m++;
-      // mid = 0.80*alphaLo + 0.2*alphaHi;
-      // fMid = f.at(mid);
-      // alphaJ = QuadraticInterpolation.threePointMinimum(alphaLo, mid, alphaHi, fAlphaLo, fMid, fAlphaHi);
+      mid = 0.8 * alphaLo + 0.2 * alphaHi;
+      fMid = f.at(mid);
+      //alphaJ = QuadraticInterpolation.threePointMinimum(alphaLo, mid, alphaHi, fAlphaLo, fMid, fAlphaHi);
       if (trials == 0) {
         intervalLength = abs(alphaHi - alphaLo);
       }
@@ -126,7 +155,7 @@ final class StrongWolfeLineSearch {
       }
       double alphaMin = 5E-3;
       if (alphaJ < alphaMin) {
-        return alphaMin;
+        alphaJ = 0.5 * (alphaLo + alphaHi);
       }
       fAlphaJ = f.at(alphaJ);
       dAlphaJ = f.slopeAt(alphaJ);

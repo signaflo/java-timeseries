@@ -119,7 +119,7 @@ public final class CubicFunction {
    * retrieve the coefficients of the polynomial as primitives.
    * @return the coefficients of the polynomial as primitives.
    */
-  public double[] coefficientsPrimitive() {
+  public double[] coefficientsDbl() {
     return new double[] {a.value(), b.value(), c.value(), d.value()};
   }
 
@@ -234,11 +234,16 @@ public final class CubicFunction {
     return values;
   }
 
-  private double[] toPrimitive(final Real[] points) {
-    double[] prim = new double[points.length];
-    for (int i = 0; i < prim.length; i++) {
-      prim[i] = points[i].value();
-    }
-    return prim;
+//  private double[] toPrimitive(final Real[] points) {
+//    double[] prim = new double[points.length];
+//    for (int i = 0; i < prim.length; i++) {
+//      prim[i] = points[i].value();
+//    }
+//    return prim;
+//  }
+
+  @Override
+  public String toString() {
+    return "f(x) = " + a.value() + "x^3 + " + b.value() + "x^2 + " + c.value() + "x + " + d.value();
   }
 }

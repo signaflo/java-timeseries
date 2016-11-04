@@ -5,6 +5,9 @@
 
 package optim;
 
+import math.function.QuadraticFunction;
+import math.polynomial.NewtonPolynomial;
+
 final class QuadraticInterpolation {
 
   private final double x1;
@@ -57,70 +60,16 @@ final class QuadraticInterpolation {
   // The input arguments must be ordered from least to greatest.
   static double threePointMinimum(final double x1, final double x2, final double x3, final double y1,
       final double y2, final double y3) {
-    final double a1;
-    final double a2;
-    final double a3;
-    final double b1;
-    final double b2;
-    final double b3;
-
-    if (x1 <= x2) {
-      if (x1 <= x3) {
-        if (x2 <= x3) {
-          a1 = x1;
-          a2 = x2;
-          a3 = x3;
-          b1 = y1;
-          b2 = y2;
-          b3 = y3;
-        }
-        else {
-          a1 = x1;
-          a2 = x3;
-          a3 = x2;
-          b1 = y1;
-          b2 = y3;
-          b3 = y2;
-        }
-      }
-      else {
-        a1 = x3;
-        a2 = x1;
-        a3 = x2;
-        b1 = y3;
-        b2 = y1;
-        b3 = y2;
-      }
+    double[] point = new double[3];
+    double[] value = new double[3];
+    point[0] = x1; point[1] = x2; point[2] = x3;
+    value[0] = y1; value[1] = y2; value[2] = y3;
+    NewtonPolynomial np = new NewtonPolynomial(point, value);
+    QuadraticFunction f = np.toQuadratic();
+    if (f.hasMinimum()) {
+      return f.extremePointDbl();
     }
-    else if (x2 <= x3) {
-      if (x1 <= x3) {
-        a1 = x2;
-        a2 = x1;
-        a3 = x3;
-        b1 = y2;
-        b2 = y1;
-        b3 = y3;
-      }
-      else {
-        a1 = x2;
-        a2 = x3;
-        a3 = x1;
-        b1 = y2;
-        b2 = y3;
-        b3 = y1;
-      }
-    }
-    else {
-      a1 = x3;
-      a2 = x2;
-      a3 = x1;
-      b1 = y3;
-      b2 = y2;
-      b3 = y1;
-    }
-    final double top = (b1 - b2) * (a2 - a3) * (a3 - a1);
-    final double bottom = b1 * (a2 - a3) + b2 * (a3 - a1) + b3 * (a1 - a2);
-    return 0.5 * (a1 + a2 + (top / bottom));
+    throw new IllegalStateException("The interpolating quadratic, " + f + ", had no minimum value.");
 //    final double top = (x1 - x2) * (x2 - x3) * (x3 - x1);
 //    final double bottom = y1 * (x2 - x3) + y2 * (x3 - x1) + y3 * (x1 - x2);
 //    return 0.5 * (x1 + x2 + (top / bottom));

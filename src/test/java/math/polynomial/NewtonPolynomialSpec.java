@@ -63,16 +63,16 @@ public class NewtonPolynomialSpec {
     NewtonPolynomial np = new NewtonPolynomial(new double[] {2.0, 4.0, 7.0}, new double[] {4.0, 16.0, 49.0});
     QuadraticFunction function = np.toQuadratic();
     double[] expected = new double[] {1.0, 0.0, 0.0};
-    assertThat(function.coefficientsPrimitive(), is(equalTo(expected)));
+    assertThat(function.coefficientsDbl(), is(equalTo(expected)));
   }
 
   @Test
   public void whenConvertedThenCubicFunctionCorrect() {
-    NewtonPolynomial np = new NewtonPolynomial(new double[] {1.0, 2.0, 3.0, 4.0}, new double[]
-        {1.0, 8.0, 27.0, 64.0});
+    NewtonPolynomial np = new NewtonPolynomial(new double[] {4.0, 2.0, 5.0, 7.0}, new double[]
+        {64.0, 8.0, 125.0, 343.0});
     CubicFunction function = np.toCubic();
     double[] expected = new double[] {1.0, 0.0, 0.0, 0.0};
-    assertThat(function.coefficientsPrimitive(), is(equalTo(expected)));
+    assertThat(function.coefficientsDbl(), is(equalTo(expected)));
   }
 
 

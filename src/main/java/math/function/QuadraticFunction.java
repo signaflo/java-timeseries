@@ -102,7 +102,7 @@ public class QuadraticFunction {
    * retrieve the coefficients of the polynomial as primitives.
    * @return the coefficients of the polynomial as primitives.
    */
-  public double[] coefficientsPrimitive() {
+  public double[] coefficientsDbl() {
     return new double[] {a.value(), b.value(), c.value()};
   }
 
@@ -110,7 +110,7 @@ public class QuadraticFunction {
    * retrieve the point at which the localExtrema of this function occurs as a primitive.
    * @return the point at which the localExtrema of this function occurs as a primitive.
    */
-  public double extremePointPrimitive() {
+  public double extremePointDbl() {
     return -b.value() / (2 * a.value());
   }
 
@@ -127,7 +127,7 @@ public class QuadraticFunction {
    * @return the localExtrema of this function as a primitive.
    */
   public double extremumPrimitive() {
-    double x = extremePointPrimitive();
+    double x = extremePointDbl();
     return a.value() * x * x + b.value() * x + c.value();
   }
 
@@ -154,5 +154,10 @@ public class QuadraticFunction {
    */
   public boolean hasMaximum() {
     return a.value() < 0.0;
+  }
+
+  @Override
+  public String toString() {
+    return "f(x) = " + a.value() + "x^2 + " + b.value() + "x + " + c.value();
   }
 }
