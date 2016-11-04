@@ -64,7 +64,7 @@ final class NewtonPolynomial {
       return (value[end] - value[start]) / (point[end] - point[start]);
     } else {
       return (getDividedDifference(start + 1, end) - getDividedDifference(start, end - 1)) /
-          (point[end] - point[0]);
+          (point[end] - point[start]);
     }
   }
 

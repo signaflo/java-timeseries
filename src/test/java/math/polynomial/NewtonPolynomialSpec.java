@@ -68,10 +68,26 @@ public class NewtonPolynomialSpec {
 
   @Test
   public void whenConvertedThenCubicFunctionCorrect() {
-    NewtonPolynomial np = new NewtonPolynomial(new double[] {2.0, 4.0, 5.0, 7.0}, new double[]
-        {8.0, 64.0, 125.0, 343.0});
+    NewtonPolynomial np = new NewtonPolynomial(new double[] {1.0, 2.0, 3.0, 4.0}, new double[]
+        {1.0, 8.0, 27.0, 64.0});
     CubicFunction function = np.toCubic();
     double[] expected = new double[] {1.0, 0.0, 0.0, 0.0};
     assertThat(function.coefficientsPrimitive(), is(equalTo(expected)));
+  }
+
+
+  @Test
+  public void whenNewtonPolynomialBuiltThenDividedDifferencesCorrect() {
+    NewtonPolynomial np = new NewtonPolynomial(new double[] {1.0, 2.0, 3.0, 4.0}, new double[]
+        {1.0, 8.0, 27.0, 64.0});
+    //CubicFunction function = np.toCubic();
+    double expected = 1.0;
+    assertThat(np.getCoefficient(0), is(equalTo(expected)));
+    expected = 7.0;
+    assertThat(np.getCoefficient(1), is(equalTo(expected)));
+    expected = 6.0;
+    assertThat(np.getCoefficient(2), is(equalTo(expected)));
+    expected = 1.0;
+    assertThat(np.getCoefficient(3), is(equalTo(expected)));
   }
 }
