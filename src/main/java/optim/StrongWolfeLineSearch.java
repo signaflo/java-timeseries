@@ -6,6 +6,7 @@ package optim;
 
 import math.Real;
 import math.function.AbstractFunction;
+import math.function.Function;
 
 import static java.lang.Math.abs;
 
@@ -70,6 +71,9 @@ final class StrongWolfeLineSearch {
     double fUpperAlpha = f.at(upperAlpha);
     double dLowerAlpha = f.slopeAt(lowerAlpha);
     double dUpperAlpha = f.slopeAt(upperAlpha);
+
+    Function phi = (alpha) -> f.at(alpha) + f0 + c1 * slope0 * alpha;
+    Function dPhi = (alpha) -> f.slopeAt(alpha) + c1 * slope0;
     return zoom(lowerAlpha, upperAlpha, fLowerAlpha, fUpperAlpha, dLowerAlpha, dUpperAlpha);
 
 //    double newAlphaT = 0.0;
@@ -109,7 +113,7 @@ final class StrongWolfeLineSearch {
   private Real.Interval determineInitialInterval(double alphaK, double h) {
     double alpha = 0.0;
     double alphaK1;
-    final int t = 2;
+    final double t = 1.75;
     double fK = f.at(alphaK);
     double fK1;
     int k = 0;
@@ -132,7 +136,8 @@ final class StrongWolfeLineSearch {
     }
   }
 
-  private double zoom(double alphaLo, double alphaHi, double fAlphaLo, double fAlphaHi, double dAlphaLo, double dAlphaHi) {
+  private double zoom(double alphaLo, double alphaHi, double fAlphaLo, double fAlphaHi,
+                      double dAlphaLo, double dAlphaHi) {
     double alphaJ = 0.0;
     double fAlphaJ;
     double dAlphaJ = 1.0;
@@ -171,7 +176,7 @@ final class StrongWolfeLineSearch {
         fAlphaHi = fAlphaJ;
         dAlphaHi = dAlphaJ;
       } else {
-        if (abs(dAlphaJ) <= -c2 * slope0) {
+        if (abs(dAlphaJ) <= c1 * abs(slope0)) {
           return alphaJ;
         }
         if (dAlphaJ * (alphaHi - alphaLo) >= 0) {
