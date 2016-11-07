@@ -68,191 +68,92 @@ final class StrongWolfeLineSearch {
    * @return an element satisfying the strong Wolfe conditions.
    */
   final double search() {
-
-    Real.Interval initialInterval = getInterval(0, alphaMax);
+    Real.Interval initialInterval = getInterval(0.0, alpha0);
     m++;
-    double fNewAlphaT = f0;
-    double dNewAlphaT = slope0;
-    double lowerAlpha = initialInterval.lowerDbl();
-    double upperAlpha = initialInterval.upperDbl();
-    if (lowerAlpha == upperAlpha) {
-      return lowerAlpha;
-    }
-    double fLowerAlpha = f.at(lowerAlpha);
-    double fUpperAlpha = f.at(upperAlpha);
-    double dLowerAlpha = f.slopeAt(lowerAlpha);
-    double dUpperAlpha = f.slopeAt(upperAlpha);
-
-    return zoom(lowerAlpha, upperAlpha, fLowerAlpha, fUpperAlpha, dLowerAlpha, dUpperAlpha);
-
-//    double newAlphaT = 0.0;
-//    int i = 1;
-//    while (i < MAX_UPDATE_ITERATIONS) {
-//      m++;
-//      double fAlphaT = fNewAlphaT;
-//      double dAlphaT = dNewAlphaT;
-//      fNewAlphaT = f.at(newAlphaT);
-//      while (abs(fNewAlphaT) == Double.POSITIVE_INFINITY && i < MAX_UPDATE_ITERATIONS) {
-//        newAlphaT /= 2;
-//        fAlphaT = fNewAlphaT;
-//        dAlphaT = dNewAlphaT;
-//        fNewAlphaT = f.at(newAlphaT);
-//        i++;
-//      }
-//      dNewAlphaT = f.slopeAt(newAlphaT);
-//      if (fNewAlphaT > f0 + c1 * newAlphaT * slope0 || fNewAlphaT >= fAlphaT && i > 1) {
-//        return zoom(alphaT, newAlphaT, fAlphaT, fNewAlphaT, dAlphaT, dNewAlphaT);
-//      }
-//      // dNewAlphaT = f.slopeAt(newAlphaT);
-//      if (abs(dNewAlphaT) <= -c2 * slope0) {
-//        return newAlphaT;
-//      }
-//      if (dNewAlphaT >= 0) {
-//        return zoom(newAlphaT, alphaT, fNewAlphaT, fAlphaT, dNewAlphaT, dAlphaT);
-//      }
-//      double oldAlphaT = alphaT;
-//      alphaT = newAlphaT;
-//      // Safeguard condition 2.2 since alphaT is increasing.
-//      newAlphaT = Math.min(alphaT + DELTA_MAX * (alphaT - oldAlphaT), alphaMax);
-//      i++;
-//    }
-//    return newAlphaT;
+    return zoom(initialInterval);
   }
 
-//  private Real.Interval determineInitialInterval(double alphaK, double h) {
-//    double alpha = 0.0;
-//    double alphaK1;
-//    final double t = 1.75;
-//    double fK = f.at(alphaK);
-//    double fK1;
-//    int k = 0;
-//    while (true) {
-//      alphaK1 = alphaK + h;
-//      fK1 = f.at(alphaK1);
-//      if (fK1 < fK) {
-//        h *= t;
-//        alpha = alphaK;
-//        alphaK = alphaK1;
-//        fK = fK1;
-//        k += 1;
-//      } else {
-//        if (k == 0) {
-//          h *= -1;
-//        } else {
-//          return new Real.Interval(Math.max(1e-3, Math.min(alpha, alphaK1)), Math.max(alpha, alphaK1));
-//        }
-//      }
-//    }
-//  }
-
-  private Real.Interval getInterval(double alphaLower, double alphaUpper) {
+  private double zoom(Real.Interval interval) {
+    double alphaLower = interval.lowerDbl();
+    double alphaUpper = interval.upperDbl();
     double phiAlphaLower = phi.at(alphaLower);
     double phiAlphaUpper = phi.at(alphaUpper);
     double dPhiAlphaLower = dPhi.at(alphaLower);
     double dPhiAlphaUpper = dPhi.at(alphaUpper);
-    if (m == 0) {
-      alphaT = alpha0;
-    } else {
-      alphaT = getTrialValue(alphaLower, alphaUpper, phiAlphaLower, phiAlphaUpper, dPhiAlphaLower, dPhiAlphaUpper);
+    double intervalLength = 0.0;
+    double updatedIntervalLength;
+
+    int trials = 0;
+    int k = 1;
+    double fAlpha;
+    double dAlpha;
+    while (k < MAX_UPDATE_ITERATIONS) {
+      if (trials == 0) {
+        intervalLength = abs(alphaUpper - alphaLower);
+      }
+      updatedIntervalLength = abs(alphaUpper - alphaLower);
+      if (abs((updatedIntervalLength - intervalLength) / intervalLength) < 0.667 && trials > 2) {
+        alphaT = abs(alphaLower + alphaUpper) / 2.0;
+        trials = 0;
+      } else {
+        alphaT = getTrialValue(alphaLower, alphaUpper, phiAlphaLower, phiAlphaUpper, dPhiAlphaLower, dPhiAlphaUpper);
+        trials++;
+      }
+      fAlpha = f.at(alphaT);
+      dAlpha = f.slopeAt(alphaT);
+      if (fAlpha <= f0 + c1*alphaT*slope0 && abs(dAlpha) <= c2 * abs(slope0)) {
+        return alphaT;
+      }
+      interval = getInterval(alphaLower, alphaT);
+      alphaLower = interval.lowerDbl();
+      alphaUpper = interval.upperDbl();
+      phiAlphaLower = phi.at(alphaLower);
+      phiAlphaUpper = phi.at(alphaUpper);
+      dPhiAlphaLower = dPhi.at(alphaLower);
+      dPhiAlphaUpper = dPhi.at(alphaUpper);
+      m++;
+      k++;
     }
-    double phiAlphaT = phi.at(alphaT);
-    double dPhiAlphaT;
+    return alphaT;
+  }
+
+
+  private Real.Interval getInterval(double alphaLower, double alphaK) {
+    double phiAlphaLower = phi.at(alphaLower);
+    double phiAlphaK = phi.at(alphaK);
+    double dPhiAlphaK;
     double previousAlphaLower;
     int k = 0;
     while (k < 1000) {
-      if (phiAlphaT > phiAlphaLower) {
-        return new Real.Interval(alphaLower, alphaT);
+      if (phiAlphaK > phiAlphaLower) {
+        return new Real.Interval(alphaLower, alphaK);
       }
-      dPhiAlphaT = dPhi.at(alphaT);
-      if (dPhiAlphaT * (alphaLower - alphaT) > 0) {
+      dPhiAlphaK = dPhi.at(alphaK);
+      if (dPhiAlphaK * (alphaLower - alphaK) > 0) {
         previousAlphaLower = alphaLower;
-        alphaLower = alphaT;
+        alphaLower = alphaK;
         if (m == 0) {
-          alphaT = Math.min(alphaT + 4.0 * (alphaT - previousAlphaLower), alphaMax);
+          alphaK = Math.min(alphaK + DELTA_MAX * (alphaK - previousAlphaLower), alphaMax);
         } else {
           double phiAlphaMin = phi.at(alphaMin);
-          double alphaUp = Math.max(DELTA_MIN * alphaT, alphaMin);
+          double alphaUp = Math.max(DELTA_MIN * alphaK, alphaMin);
           double phiAlphaUp = phi.at(alphaUp);
           double dPhiAlphaMin = dPhi.at(alphaMin);
           double dPhiAlphaUp = dPhi.at(alphaUp);
-          alphaT = getTrialValue(alphaMin, alphaUp, phiAlphaMin, phiAlphaUp, dPhiAlphaMin, dPhiAlphaUp);
+          alphaK = getTrialValue(alphaMin, alphaUp, phiAlphaMin, phiAlphaUp, dPhiAlphaMin, dPhiAlphaUp);
         }
-        if (alphaT == alphaMax) {
+        if (alphaK == alphaMax) {
           return new Real.Interval(alphaMax, alphaMax);
         }
-      } else if (dPhiAlphaT * (alphaLower - alphaT) < 0){
-        return new Real.Interval(alphaT, alphaLower);
+      } else if (dPhiAlphaK * (alphaLower - alphaK) < 0){
+        return new Real.Interval(alphaK, alphaLower);
       } else {
-        return new Real.Interval(alphaT, alphaT);
+        return new Real.Interval(alphaK, alphaK);
       }
       k++;
     }
     throw new RuntimeException("Couldn't find an interval containing a point satisfying the Strong " +
         "Wolfe conditions.");
-  }
-
-  private double zoom(double alphaLo, double alphaHi, double fAlphaLo, double fAlphaHi,
-                      double dAlphaLo, double dAlphaHi) {
-    Real.Interval interval = getInterval(alphaLo, alphaHi);
-    m++;
-    double alphaLower = interval.lowerDbl();
-    double alphaUpper = interval.upperDbl();
-    double alphaJ = 0.0;
-    double fAlphaJ;
-    double dAlphaJ = 1.0;
-    double intervalLength = 0.0;
-    double updatedIntervalLength;
-    int trials = 0;
-    double mid = 0.0;
-    double fMid = 0.0;
-
-    int k = 1;
-    double gradientTolerance = 1E-8;
-    while (k < MAX_UPDATE_ITERATIONS && abs(dAlphaJ) > gradientTolerance) {
-      interval = getInterval(alphaLower, alphaUpper);
-      alphaLower = interval.lowerDbl();
-      alphaUpper = interval.upperDbl();
-      m++;
-      mid = 0.8 * alphaLo + 0.2 * alphaHi;
-      fMid = f.at(mid);
-      //alphaJ = QuadraticInterpolation.threePointMinimum(alphaLo, mid, alphaHi, fAlphaLo, fMid, fAlphaHi);
-      if (trials == 0) {
-        intervalLength = abs(alphaHi - alphaLo);
-      }
-      updatedIntervalLength = abs(alphaHi - alphaLo);
-      if (abs((updatedIntervalLength - intervalLength) / intervalLength) < 0.667 && trials > 2) {
-        alphaJ = abs(alphaHi + alphaLo) / 2.0;
-        trials = 0;
-      } else {
-        alphaJ = getTrialValue(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi);
-        trials++;
-      }
-      double alphaMin = 5E-3;
-      if (alphaJ < alphaMin) {
-        alphaJ = 0.5 * (alphaLo + alphaHi);
-      }
-      fAlphaJ = f.at(alphaJ);
-      dAlphaJ = f.slopeAt(alphaJ);
-      if (fAlphaJ > f0 + c1 * alphaJ * slope0 || fAlphaJ >= fAlphaLo) {
-        alphaHi = alphaJ;
-        fAlphaHi = fAlphaJ;
-        dAlphaHi = dAlphaJ;
-      } else {
-        if (abs(dAlphaJ) <= c1 * abs(slope0)) {
-          return alphaJ;
-        }
-        if (dAlphaJ * (alphaHi - alphaLo) >= 0) {
-          alphaHi = alphaLo;
-          fAlphaHi = fAlphaLo;
-          dAlphaHi = dAlphaLo;
-        }
-        alphaLo = alphaJ;
-        fAlphaLo = fAlphaJ;
-        dAlphaLo = dAlphaJ;
-      }
-      k++;
-    }
-    return alphaJ;
   }
 
   private double getTrialValue(final double alphaLo, final double alphaHi, double fAlphaLo, double fAlphaHi, double dAlphaLo, double dAlphaHi) {
