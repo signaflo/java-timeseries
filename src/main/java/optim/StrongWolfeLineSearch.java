@@ -17,16 +17,21 @@ final class StrongWolfeLineSearch {
 
   private static final int MAX_UPDATE_ITERATIONS = 40;
   private static final double DELTA_MAX = 4.0;
+  private static final double DELTA_MIN = 7.0/12.0;
 
   private final AbstractFunction f;
   private final double c1;
   private final double c2;
   private final double f0;
   private final double slope0;
+  private final double alphaMin = 1E-4;
   private final double alphaMax;
   private final double alpha0;
   int m = 0;
   private double alphaT = 0.0;
+
+  private final Function phi;
+  private final Function dPhi;
 
   /**
    * Use a builder to create a new line search object.
@@ -41,6 +46,8 @@ final class StrongWolfeLineSearch {
     this.slope0 = builder.slope0;
     this.alphaMax = builder.alphaMax;
     this.alpha0 = builder.alpha0;
+    this.phi = (alpha) -> f.at(alpha) - f0 - c1 * slope0 * alpha;
+    this.dPhi = (alpha) -> f.slopeAt(alpha) - c1 * slope0;
   }
 
   /**
@@ -62,18 +69,20 @@ final class StrongWolfeLineSearch {
    */
   final double search() {
 
-    Real.Interval initialInterval = determineInitialInterval(this.alpha0, 1e-1);
+    Real.Interval initialInterval = getInterval(0, alphaMax);
+    m++;
     double fNewAlphaT = f0;
     double dNewAlphaT = slope0;
     double lowerAlpha = initialInterval.lowerDbl();
     double upperAlpha = initialInterval.upperDbl();
+    if (lowerAlpha == upperAlpha) {
+      return lowerAlpha;
+    }
     double fLowerAlpha = f.at(lowerAlpha);
     double fUpperAlpha = f.at(upperAlpha);
     double dLowerAlpha = f.slopeAt(lowerAlpha);
     double dUpperAlpha = f.slopeAt(upperAlpha);
 
-    Function phi = (alpha) -> f.at(alpha) + f0 + c1 * slope0 * alpha;
-    Function dPhi = (alpha) -> f.slopeAt(alpha) + c1 * slope0;
     return zoom(lowerAlpha, upperAlpha, fLowerAlpha, fUpperAlpha, dLowerAlpha, dUpperAlpha);
 
 //    double newAlphaT = 0.0;
@@ -110,34 +119,84 @@ final class StrongWolfeLineSearch {
 //    return newAlphaT;
   }
 
-  private Real.Interval determineInitialInterval(double alphaK, double h) {
-    double alpha = 0.0;
-    double alphaK1;
-    final double t = 1.75;
-    double fK = f.at(alphaK);
-    double fK1;
-    int k = 0;
-    while (true) {
-      alphaK1 = alphaK + h;
-      fK1 = f.at(alphaK1);
-      if (fK1 < fK) {
-        h *= t;
-        alpha = alphaK;
-        alphaK = alphaK1;
-        fK = fK1;
-        k += 1;
-      } else {
-        if (k == 0) {
-          h *= -1;
-        } else {
-          return new Real.Interval(Math.max(1e-3, Math.min(alpha, alphaK1)), Math.max(alpha, alphaK1));
-        }
-      }
+//  private Real.Interval determineInitialInterval(double alphaK, double h) {
+//    double alpha = 0.0;
+//    double alphaK1;
+//    final double t = 1.75;
+//    double fK = f.at(alphaK);
+//    double fK1;
+//    int k = 0;
+//    while (true) {
+//      alphaK1 = alphaK + h;
+//      fK1 = f.at(alphaK1);
+//      if (fK1 < fK) {
+//        h *= t;
+//        alpha = alphaK;
+//        alphaK = alphaK1;
+//        fK = fK1;
+//        k += 1;
+//      } else {
+//        if (k == 0) {
+//          h *= -1;
+//        } else {
+//          return new Real.Interval(Math.max(1e-3, Math.min(alpha, alphaK1)), Math.max(alpha, alphaK1));
+//        }
+//      }
+//    }
+//  }
+
+  private Real.Interval getInterval(double alphaLower, double alphaUpper) {
+    double phiAlphaLower = phi.at(alphaLower);
+    double phiAlphaUpper = phi.at(alphaUpper);
+    double dPhiAlphaLower = dPhi.at(alphaLower);
+    double dPhiAlphaUpper = dPhi.at(alphaUpper);
+    if (m == 0) {
+      alphaT = alpha0;
+    } else {
+      alphaT = getTrialValue(alphaLower, alphaUpper, phiAlphaLower, phiAlphaUpper, dPhiAlphaLower, dPhiAlphaUpper);
     }
+    double phiAlphaT = phi.at(alphaT);
+    double dPhiAlphaT;
+    double previousAlphaLower;
+    int k = 0;
+    while (k < 1000) {
+      if (phiAlphaT > phiAlphaLower) {
+        return new Real.Interval(alphaLower, alphaT);
+      }
+      dPhiAlphaT = dPhi.at(alphaT);
+      if (dPhiAlphaT * (alphaLower - alphaT) > 0) {
+        previousAlphaLower = alphaLower;
+        alphaLower = alphaT;
+        if (m == 0) {
+          alphaT = Math.min(alphaT + 4.0 * (alphaT - previousAlphaLower), alphaMax);
+        } else {
+          double phiAlphaMin = phi.at(alphaMin);
+          double alphaUp = Math.max(DELTA_MIN * alphaT, alphaMin);
+          double phiAlphaUp = phi.at(alphaUp);
+          double dPhiAlphaMin = dPhi.at(alphaMin);
+          double dPhiAlphaUp = dPhi.at(alphaUp);
+          alphaT = getTrialValue(alphaMin, alphaUp, phiAlphaMin, phiAlphaUp, dPhiAlphaMin, dPhiAlphaUp);
+        }
+        if (alphaT == alphaMax) {
+          return new Real.Interval(alphaMax, alphaMax);
+        }
+      } else if (dPhiAlphaT * (alphaLower - alphaT) < 0){
+        return new Real.Interval(alphaT, alphaLower);
+      } else {
+        return new Real.Interval(alphaT, alphaT);
+      }
+      k++;
+    }
+    throw new RuntimeException("Couldn't find an interval containing a point satisfying the Strong " +
+        "Wolfe conditions.");
   }
 
   private double zoom(double alphaLo, double alphaHi, double fAlphaLo, double fAlphaHi,
                       double dAlphaLo, double dAlphaHi) {
+    Real.Interval interval = getInterval(alphaLo, alphaHi);
+    m++;
+    double alphaLower = interval.lowerDbl();
+    double alphaUpper = interval.upperDbl();
     double alphaJ = 0.0;
     double fAlphaJ;
     double dAlphaJ = 1.0;
@@ -150,6 +209,9 @@ final class StrongWolfeLineSearch {
     int k = 1;
     double gradientTolerance = 1E-8;
     while (k < MAX_UPDATE_ITERATIONS && abs(dAlphaJ) > gradientTolerance) {
+      interval = getInterval(alphaLower, alphaUpper);
+      alphaLower = interval.lowerDbl();
+      alphaUpper = interval.upperDbl();
       m++;
       mid = 0.8 * alphaLo + 0.2 * alphaHi;
       fMid = f.at(mid);
