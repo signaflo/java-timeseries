@@ -24,7 +24,7 @@ final class StrongWolfeLineSearch {
   private final double c2;
   private final double f0;
   private final double slope0;
-  private final double alphaMin = 1E-4;
+  private final double alphaMin;
   private final double alphaMax;
   private final double alpha0;
   int m = 0;
@@ -44,22 +44,11 @@ final class StrongWolfeLineSearch {
     this.c2 = builder.c2;
     this.f0 = builder.f0;
     this.slope0 = builder.slope0;
+    this.alphaMin = 1E-4;
     this.alphaMax = builder.alphaMax;
     this.alpha0 = builder.alpha0;
     this.phi = (alpha) -> f.at(alpha) - f0 - c1 * slope0 * alpha;
     this.dPhi = (alpha) -> f.slopeAt(alpha) - c1 * slope0;
-  }
-
-  /**
-   * Get a new builder for the line search.
-   *
-   * @param f      the function.
-   * @param f0     the value of the function at 0.
-   * @param slope0 the slope of the function at 0.
-   * @return a new builder for the line search.
-   */
-  static Builder newBuilder(final AbstractFunction f, final double f0, final double slope0) {
-    return new Builder(f, f0, slope0);
   }
 
   /**
@@ -75,17 +64,18 @@ final class StrongWolfeLineSearch {
 
   private double zoom(Real.Interval interval) {
     double alphaLower = interval.lowerDbl();
+    double priorAlphaLower = alphaLower;
     double alphaUpper = interval.upperDbl();
-    double phiAlphaLower = phi.at(alphaLower);
-    double phiAlphaUpper = phi.at(alphaUpper);
-    double dPhiAlphaLower = dPhi.at(alphaLower);
-    double dPhiAlphaUpper = dPhi.at(alphaUpper);
+    double phiAlphaLower = phi.at(priorAlphaLower);
+    double phiAlphaT = phi.at(alphaT);
+    double dPhiAlphaLower = dPhi.at(priorAlphaLower);
+    double dPhiAlphaT = dPhi.at(alphaT);
     double intervalLength = 0.0;
     double updatedIntervalLength;
+    double tolerance = 1E-8;
 
     int trials = 0;
     int k = 1;
-    double fAlpha;
     double dAlpha;
     while (k < MAX_UPDATE_ITERATIONS) {
       if (trials == 0) {
@@ -96,21 +86,25 @@ final class StrongWolfeLineSearch {
         alphaT = abs(alphaLower + alphaUpper) / 2.0;
         trials = 0;
       } else {
-        alphaT = getTrialValue(alphaLower, alphaUpper, phiAlphaLower, phiAlphaUpper, dPhiAlphaLower, dPhiAlphaUpper);
+        alphaT = getTrialValue(priorAlphaLower, alphaT, phiAlphaLower, phiAlphaT, dPhiAlphaLower, dPhiAlphaT);
+        phiAlphaT = phi.at(alphaT);
+        dPhiAlphaT = dPhi.at(alphaT);
         trials++;
       }
-      fAlpha = f.at(alphaT);
       dAlpha = f.slopeAt(alphaT);
-      if (fAlpha <= f0 + c1*alphaT*slope0 && abs(dAlpha) <= c2 * abs(slope0)) {
+      if (phiAlphaT <= 0 && abs(dAlpha) <= c2 * abs(slope0)) {
         return alphaT;
       }
+      if (abs(dPhiAlphaT) < tolerance) {
+        return alphaT;
+      }
+      priorAlphaLower = interval.lowerDbl();
+      phiAlphaLower = phi.at(priorAlphaLower);
+      dPhiAlphaLower = dPhi.at(priorAlphaLower);
       interval = getInterval(alphaLower, alphaT);
       alphaLower = interval.lowerDbl();
       alphaUpper = interval.upperDbl();
-      phiAlphaLower = phi.at(alphaLower);
-      phiAlphaUpper = phi.at(alphaUpper);
-      dPhiAlphaLower = dPhi.at(alphaLower);
-      dPhiAlphaUpper = dPhi.at(alphaUpper);
+
       m++;
       k++;
     }
@@ -132,7 +126,7 @@ final class StrongWolfeLineSearch {
       if (dPhiAlphaK * (alphaLower - alphaK) > 0) {
         previousAlphaLower = alphaLower;
         alphaLower = alphaK;
-        if (m == 0) {
+        if (phiAlphaK <= 0 && dPhiAlphaK < 0) {
           alphaK = Math.min(alphaK + DELTA_MAX * (alphaK - previousAlphaLower), alphaMax);
         } else {
           double phiAlphaMin = phi.at(alphaMin);
@@ -156,25 +150,38 @@ final class StrongWolfeLineSearch {
         "Wolfe conditions.");
   }
 
-  private double getTrialValue(final double alphaLo, final double alphaHi, double fAlphaLo, double fAlphaHi, double dAlphaLo, double dAlphaHi) {
+  private double getTrialValue(final double alphaL, final double alphaT, double fAlphaL, double fAlphaT,
+                               double dAlphaL, double dAlphaT) {
     final double alphaC;
     final double alphaQ;
     final double alphaS;
-    if (fAlphaHi > fAlphaLo) {
-      //alphaC = new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum();
-      alphaC = new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum();
-      alphaQ = new QuadraticInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo).minimum();
-      return (abs(alphaC - alphaLo) < abs(alphaQ - alphaLo)) ? alphaC : 0.5 * (alphaQ + alphaC);
-    } else if (dAlphaLo * dAlphaHi < 0) {
-      alphaC = new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum();
-      alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaLo, alphaHi, dAlphaLo, dAlphaHi);
-      return (abs(alphaC - alphaHi) >= abs(alphaS - alphaHi)) ? alphaC : alphaS;
-    } else if (abs(dAlphaHi) <= abs(dAlphaLo)) {
-      alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaLo, alphaHi, dAlphaLo, dAlphaHi);
+    if (fAlphaT > fAlphaL) {
+      //alphaC = new CubicInterpolation(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT).minimum();
+      alphaC = new CubicInterpolation(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT).minimum();
+      alphaQ = new QuadraticInterpolation(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL).minimum();
+      return (abs(alphaC - alphaL) < abs(alphaQ - alphaL)) ? alphaC : 0.5 * (alphaQ + alphaC);
+    } else if (dAlphaL * dAlphaT < 0) {
+      alphaC = new CubicInterpolation(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT).minimum();
+      alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaL, alphaT, dAlphaL, dAlphaT);
+      return (abs(alphaC - alphaT) >= abs(alphaS - alphaT)) ? alphaC : alphaS;
+    } else if (abs(dAlphaT) <= abs(dAlphaL)) {
+      alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaL, alphaT, dAlphaL, dAlphaT);
       return alphaS;
     } else {
-      return new CubicInterpolation(alphaHi, alphaLo, fAlphaHi, fAlphaLo, dAlphaHi, dAlphaLo).minimum();
+      return new CubicInterpolation(alphaT, alphaL, fAlphaT, fAlphaL, dAlphaT, dAlphaL).minimum();
     }
+  }
+
+  /**
+   * Get a new builder for the line search.
+   *
+   * @param f      the function.
+   * @param f0     the value of the function at 0.
+   * @param slope0 the slope of the function at 0.
+   * @return a new builder for the line search.
+   */
+  static Builder newBuilder(final AbstractFunction f, final double f0, final double slope0) {
+    return new Builder(f, f0, slope0);
   }
 
   /**

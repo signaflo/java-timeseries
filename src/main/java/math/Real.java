@@ -140,19 +140,19 @@ public final class Real extends Complex {
       this.upper = Real.from(upper);
     }
 
-    public double lowerDbl() {
+    public final double lowerDbl() {
       return this.lower.value();
     }
 
-    public double upperDbl() {
+    public final double upperDbl() {
       return this.upper.value();
     }
 
-    public Real lower() {
+    public final Real lower() {
       return this.lower;
     }
 
-    public Real upper() {
+    public final Real upper() {
       return this.upper;
     }
 
