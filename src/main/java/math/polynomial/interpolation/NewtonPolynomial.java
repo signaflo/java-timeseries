@@ -3,7 +3,7 @@
  *
  */
 
-package math.polynomial;
+package math.polynomial.interpolation;
 
 import math.function.CubicFunction;
 import math.function.QuadraticFunction;

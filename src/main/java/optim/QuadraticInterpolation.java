@@ -6,7 +6,7 @@
 package optim;
 
 import math.function.QuadraticFunction;
-import math.polynomial.NewtonPolynomial;
+import math.polynomial.interpolation.NewtonPolynomial;
 
 final class QuadraticInterpolation {
 
