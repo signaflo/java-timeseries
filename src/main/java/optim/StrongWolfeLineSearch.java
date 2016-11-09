@@ -86,7 +86,8 @@ final class StrongWolfeLineSearch {
         alphaT = abs(alphaLower + alphaUpper) / 2.0;
         trials = 0;
       } else {
-        alphaT = getTrialValue(priorAlphaLower, alphaT, phiAlphaLower, phiAlphaT, dPhiAlphaLower, dPhiAlphaT);
+        alphaT = getTrialValue(priorAlphaLower, alphaT, phiAlphaLower, phiAlphaT, dPhiAlphaLower,
+            dPhiAlphaT, alphaUpper);
         phiAlphaT = phi.at(alphaT);
         dPhiAlphaT = dPhi.at(alphaT);
         trials++;
@@ -134,7 +135,7 @@ final class StrongWolfeLineSearch {
           double phiAlphaUp = phi.at(alphaUp);
           double dPhiAlphaMin = dPhi.at(alphaMin);
           double dPhiAlphaUp = dPhi.at(alphaUp);
-          alphaK = getTrialValue(alphaMin, alphaUp, phiAlphaMin, phiAlphaUp, dPhiAlphaMin, dPhiAlphaUp);
+          alphaK = getTrialValue(alphaMin, alphaUp, phiAlphaMin, phiAlphaUp, dPhiAlphaMin, dPhiAlphaUp, alphaUp);
         }
         if (alphaK == alphaMax) {
           return new Real.Interval(alphaMax, alphaMax);
@@ -151,7 +152,7 @@ final class StrongWolfeLineSearch {
   }
 
   private double getTrialValue(final double alphaL, final double alphaT, double fAlphaL, double fAlphaT,
-                               double dAlphaL, double dAlphaT) {
+                               double dAlphaL, double dAlphaT, double alphaU) {
     final double alphaC;
     final double alphaQ;
     final double alphaS;
@@ -165,10 +166,13 @@ final class StrongWolfeLineSearch {
       alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaL, alphaT, dAlphaL, dAlphaT);
       return (abs(alphaC - alphaT) >= abs(alphaS - alphaT)) ? alphaC : alphaS;
     } else if (abs(dAlphaT) <= abs(dAlphaL)) {
+      alphaC = new CubicInterpolation(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT).minimum();
       alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaL, alphaT, dAlphaL, dAlphaT);
-      return alphaS;
+      return alphaC;
     } else {
-      return new CubicInterpolation(alphaT, alphaL, fAlphaT, fAlphaL, dAlphaT, dAlphaL).minimum();
+      double fAlphaU = phi.at(alphaU);
+      double dAlphaU = dPhi.at(alphaU);
+      return new CubicInterpolation(alphaU, alphaT, fAlphaU, fAlphaT, dAlphaU, dAlphaT).minimum();
     }
   }
 
