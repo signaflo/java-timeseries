@@ -2,6 +2,8 @@ Java Time Series
 ===============
 Time series analysis on the JVM.
 
+This project is still in the early stages of development, but is seeing great progress so far. Please check back regularly for updates.
+
 Features
 -------
 * Seasonal ARIMA models and forecasting.
