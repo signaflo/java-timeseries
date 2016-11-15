@@ -168,7 +168,11 @@ final class StrongWolfeLineSearch {
     } else if (abs(dAlphaT) <= abs(dAlphaL)) {
       alphaC = new CubicInterpolation(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT).minimum();
       alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaL, alphaT, dAlphaL, dAlphaT);
-      return alphaC;
+      double newAlphaT = (abs(alphaC - alphaT) < abs(alphaS - alphaT))? alphaC : alphaS;
+      if (alphaT > alphaL) {
+        return Math.min(alphaT + 0.67*(alphaU - alphaT), newAlphaT);
+      }
+      return Math.max(alphaT + 0.67*(alphaU - alphaT), newAlphaT);
     } else {
       double fAlphaU = phi.at(alphaU);
       double dAlphaU = dPhi.at(alphaU);
@@ -191,7 +195,7 @@ final class StrongWolfeLineSearch {
   /**
    * A builder for the line search.
    */
-  static final class Builder {
+  static class Builder {
 
     private final AbstractFunction f;
     private final double f0;
