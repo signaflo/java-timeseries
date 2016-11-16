@@ -10,15 +10,15 @@ import math.function.AbstractFunction;
 public class TestFunction1 extends AbstractFunction {
 
   @Override
-  public final double at(final double point) {
+  public final double at(final double x) {
     functionEvaluations++;
-    return -point / (point * point + 2.0);
+    return -x / (x * x + 2.0);
   }
   
   @Override
-  public final double slopeAt(final double point) {
+  public final double slopeAt(final double x) {
     slopeEvaluations++;
-    return (point * point - 2) / Math.pow(point * point + 2, 2);
+    return (x * x - 2) / Math.pow(x * x + 2, 2);
   }
 
 }
