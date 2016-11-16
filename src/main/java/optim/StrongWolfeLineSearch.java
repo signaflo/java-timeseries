@@ -153,13 +153,11 @@ final class StrongWolfeLineSearch {
         alphaLower = alphaK;
         if (psiAlphaK <= 0 && dPsiAlphaK < 0) {
           alphaK = Math.min(alphaK + DELTA_MAX * (alphaK - previousAlphaLower), alphaMax);
-          alphaT = alphaK;
         } else {
           double psiAlphaMin = psi.at(alphaMin);
           double alphaUp = Math.max(DELTA_MIN * alphaK, alphaMin);
           double dPsiAlphaMin = dPsi.at(alphaMin);
           alphaK = getTrialValue(alphaMin, alphaK, psiAlphaMin, psiAlphaK, dPsiAlphaMin, dPsiAlphaK, alphaUp);
-          alphaT = alphaK;
         }
         if (alphaK == alphaMax) {
           return new Real.Interval(alphaMax, alphaMax);

@@ -21,7 +21,7 @@ public final class BFGSSpec {
   public void testBFGS() {
     AbstractMultivariateFunction f = new RosenbrockFunction();
     Vector startingPoint = new Vector(0.5, 1.5);
-    final double tol = 1E-6;
+    final double tol = 1E-8;
     BFGS solver = new BFGS(f, startingPoint, tol, 1e-8);
     System.out.println(solver.functionValue());
     System.out.println(solver.parameters());
@@ -37,8 +37,11 @@ public final class BFGSSpec {
             12);
     final Vector initParams = new Vector(0, 0, 0, 0, timeSeries.mean());
     final Matrix initHessian = getInitialHessian(timeSeries, initParams.elements(), 1);
-    new BFGS(f, initParams, 1e-8, 1e-8, initHessian);
-    assertThat(f.functionEvaluations(), is(lessThan(100)));
+    BFGS optimizer = new BFGS(f, initParams, 1e-8, 1e-8, initHessian);
+    System.out.println(optimizer.parameters());
+    System.out.println(optimizer.functionValue());
+    assertThat(f.functionEvaluations(), is(lessThan(1000)));
+    assertThat(f.gradientEvaluations(), is(lessThan(50)));
   }
   
   private Matrix getInitialHessian(final TimeSeries differencedSeries, final double[] initParams, final int constant) {
