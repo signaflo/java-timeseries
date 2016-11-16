@@ -69,7 +69,7 @@ final class StrongWolfeLineSearch {
    * @return an element satisfying the strong Wolfe conditions.
    */
   final double search() {
-    Real.Interval initialInterval = getInitialInterval(0.0, alpha0);
+    Real.Interval initialInterval = getInitialInterval(0.0, alpha0, f0);
     m++;
     return zoom(initialInterval);
   }
@@ -89,7 +89,6 @@ final class StrongWolfeLineSearch {
 
     int trials = 0;
     int k = 1;
-    double dPhiAlphaT;
     while (k < MAX_UPDATE_ITERATIONS) {
       newIntervalLength = abs(alphaUpper - alphaLower);
       if (abs((newIntervalLength - oldIntervalLength) / oldIntervalLength) < 0.667 && trials > 2) {
@@ -101,19 +100,18 @@ final class StrongWolfeLineSearch {
       }
       psiAlphaT = psi.at(alphaT);
       dPsiAlphaT = dPsi.at(alphaT);
-      dPhiAlphaT = phi.slopeAt(alphaT);
-      if (psiAlphaT <= abs(tolerance)  && ((abs(dPhiAlphaT) - c2 * abs(slope0)) < abs(tolerance))) {
+      if (psiAlphaT <= abs(tolerance)  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < abs(tolerance))) {
         return alphaT;
       }
 //      if (abs(dPsiAlphaT) < tolerance) {
 //        return alphaT;
 //      }
       priorAlphaLower = alphaLower;
-      interval = updateInterval(priorAlphaLower, alphaT, alphaUpper);
-      alphaLower = interval.lowerDbl();
-      alphaUpper = interval.upperDbl();
       psiAlphaLower = psi.at(priorAlphaLower);
       dPsiAlphaLower = dPsi.at(priorAlphaLower);
+      interval = updateInterval(priorAlphaLower, alphaT, alphaUpper, psiAlphaLower, psiAlphaT, dPsiAlphaT);
+      alphaLower = interval.lowerDbl();
+      alphaUpper = interval.upperDbl();
       if (trials > 2) {
         trials = 0;
         oldIntervalLength = abs(alphaUpper - alphaLower);
@@ -124,15 +122,11 @@ final class StrongWolfeLineSearch {
     return alphaT;
   }
 
-  private Real.Interval updateInterval(double alphaLower, double alphaK, double alphaU) {
-    double psiAlphaLower = psi.at(alphaLower);
-    double psiAlphaK;
-    double dPsiAlphaK;
-    psiAlphaK = psi.at(alphaK);
+  private Real.Interval updateInterval(final double alphaLower, final double alphaK, final double alphaU,
+                                       final double psiAlphaLower, final double psiAlphaK, final double dPsiAlphaK) {
     if (psiAlphaK > psiAlphaLower) {
       return new Real.Interval(alphaLower, alphaK);
     }
-    dPsiAlphaK = dPsi.at(alphaK);
     if (dPsiAlphaK * (alphaLower - alphaK) > 0) {
       return new Real.Interval(alphaK, alphaU);
     } else if (dPsiAlphaK * (alphaLower - alphaK) < 0) {
@@ -142,9 +136,8 @@ final class StrongWolfeLineSearch {
     }
   }
 
-  private Real.Interval getInitialInterval(double alphaLower, double alphaK) {
+  private Real.Interval getInitialInterval(double alphaLower, double alphaK, double psiAlphaLower) {
     alphaT = alphaK;
-    double psiAlphaLower = psi.at(alphaLower);
     double psiAlphaK;
     double dPsiAlphaK;
     double previousAlphaLower;
