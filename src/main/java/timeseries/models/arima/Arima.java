@@ -97,7 +97,7 @@ public final class Arima implements Model {
    * @return a new ARIMA model from the given observations, model order.
    */
   public static Arima model(final TimeSeries observations, final ModelOrder order) {
-    return new Arima(observations, order, observations.timePeriod());
+    return new Arima(observations, order, TimePeriod.oneYear());
   }
   
   /**

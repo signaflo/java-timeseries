@@ -86,6 +86,10 @@ final class StrongWolfeLineSearch {
     double newIntervalLength;
     double tolerance = 1E-8;
 
+    if (psiAlphaT <= abs(tolerance)  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < abs(tolerance))) {
+      return alphaTPlus;
+    }
+
     int trials = 0;
     int k = 1;
     while (k < MAX_UPDATE_ITERATIONS) {
