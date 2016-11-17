@@ -24,6 +24,14 @@ public class ArimaSpec {
     assertThat(model.coefficients().arCoeffs()[0], is(closeTo(0.64, 0.02)));
     assertThat(model.coefficients().maCoeffs()[0], is(closeTo(-0.48, 0.02)));
   }
+
+  @Test
+  public void whenArimaModelFitDebitcardsThenParametersSimilarToROutput() throws Exception {
+    TimeSeries series = TestData.debitcards();
+    ModelOrder order = new ModelOrder(0, 1, 1, 0, 1, 1, false);
+    Arima model = Arima.model(series, order, TimePeriod.oneYear());
+    System.out.println(model.coefficients());
+  }
   
   @Test
   public void whenArimaModelForecastThenForecastValuesCorrect() throws Exception {

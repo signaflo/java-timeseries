@@ -4,7 +4,9 @@
  */
 package optim;
 
+import math.Real;
 import math.function.AbstractFunction;
+import math.function.Function;
 
 import static java.lang.Math.abs;
 
@@ -13,18 +15,21 @@ import static java.lang.Math.abs;
  */
 final class StrongWolfeLineSearch {
 
-  private static final int MAX_UPDATE_ITERATIONS = 40;
+  private static final int MAX_ITERATIONS = 40;
   private static final double DELTA_MAX = 4.0;
+  private static final double DELTA_MIN = 7.0 / 12.0;
 
-  private final AbstractFunction f;
+  private final AbstractFunction phi;
   private final double c1;
   private final double c2;
-  private final double f0;
-  private final double slope0;
+  private final double f0; // The value of phi at alpha = 0.
+  private final double slope0; // The slope of phi at alpha = 0.
+  private final double alphaMin;
   private final double alphaMax;
-  private final double alpha0;
-  int m = 0;
-  private double alphaT = 0.0;
+  private final Function psi;
+  private final Function dPsi;
+  int m = 0; // A count of the highest level iteration.
+  private double alphaTPlus;
 
   /**
    * Use a builder to create a new line search object.
@@ -32,13 +37,16 @@ final class StrongWolfeLineSearch {
    * @param builder the line search builder containing the necessary data for the new object.
    */
   private StrongWolfeLineSearch(final Builder builder) {
-    this.f = builder.f;
+    this.phi = builder.phi;
     this.c1 = builder.c1;
     this.c2 = builder.c2;
     this.f0 = builder.f0;
     this.slope0 = builder.slope0;
+    this.alphaMin = 1E-4;
     this.alphaMax = builder.alphaMax;
-    this.alpha0 = builder.alpha0;
+    this.alphaTPlus = builder.alpha0;
+    this.psi = (alpha) -> phi.at(alpha) - f0 - c1 * slope0 * alpha;
+    this.dPsi = (alpha) -> phi.slopeAt(alpha) - c1 * slope0;
   }
 
   /**
@@ -59,126 +67,173 @@ final class StrongWolfeLineSearch {
    * @return an element satisfying the strong Wolfe conditions.
    */
   final double search() {
-    double fNewAlphaT = f0;
-    double dNewAlphaT = slope0;
-    double newAlphaT = alpha0;
-
-    int i = 1;
-    while (i < MAX_UPDATE_ITERATIONS) {
-      m++;
-      double fAlphaT = fNewAlphaT;
-      double dAlphaT = dNewAlphaT;
-      fNewAlphaT = f.at(newAlphaT);
-      while (abs(fNewAlphaT) == Double.POSITIVE_INFINITY && i < MAX_UPDATE_ITERATIONS) {
-        newAlphaT /= 2;
-        fAlphaT = fNewAlphaT;
-        dAlphaT = dNewAlphaT;
-        fNewAlphaT = f.at(newAlphaT);
-        i++;
-      }
-      dNewAlphaT = f.slopeAt(newAlphaT);
-      if (fNewAlphaT > f0 + c1 * newAlphaT * slope0 || fNewAlphaT >= fAlphaT && i > 1) {
-        return zoom(alphaT, newAlphaT, fAlphaT, fNewAlphaT, dAlphaT, dNewAlphaT);
-      }
-      // dNewAlphaT = f.slopeAt(newAlphaT);
-      if (abs(dNewAlphaT) <= -c2 * slope0) {
-        return newAlphaT;
-      }
-      if (dNewAlphaT >= 0) {
-        return zoom(newAlphaT, alphaT, fNewAlphaT, fAlphaT, dNewAlphaT, dAlphaT);
-      }
-      double oldAlphaT = alphaT;
-      alphaT = newAlphaT;
-      // Safeguard condition 2.2 since alphaT is increasing.
-      newAlphaT = Math.min(alphaT + DELTA_MAX * (alphaT - oldAlphaT), alphaMax);
-      i++;
-    }
-    return newAlphaT;
+    Real.Interval initialInterval = getInitialInterval();
+    m++;
+    return zoom(initialInterval);
   }
 
-  private double zoom(double alphaLo, double alphaHi, double fAlphaLo, double fAlphaHi, double dAlphaLo, double dAlphaHi) {
-    double alphaJ = 0.0;
-    double fAlphaJ;
-    double dAlphaJ = 1.0;
-    double intervalLength = 0.0;
-    double updatedIntervalLength;
-    int trials = 0;
-    // double mid = 0.0;
-    // double fMid = 0.0;
+  private double zoom(Real.Interval interval) {
+    double alphaT;
+    double alphaUpper = alphaMax;
+    double alphaLower = 0.0;
+    double alphaLowerPlus = interval.lowerDbl();
+    double alphaUpperPlus = interval.upperDbl();
+    double psiAlphaLower = f0;
+    double priorPsiAlphaT;
+    double psiAlphaT = psi.at(alphaTPlus);
+    double dPsiAlphaLower = slope0;
+    double dPsiAlphaT = dPsi.at(alphaTPlus);
+    double oldIntervalLength = abs(alphaUpperPlus - alphaLowerPlus);
+    double newIntervalLength;
+    double tolerance = 1E-8;
+    double relativeChange;
+    if (psiAlphaT <= abs(tolerance)  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < abs(tolerance))) {
+      return alphaTPlus;
+    }
 
+    int trials = 0;
     int k = 1;
-    double gradientTolerance = 1E-8;
-    while (k < MAX_UPDATE_ITERATIONS && abs(dAlphaJ) > gradientTolerance) {
-      m++;
-      // mid = 0.80*alphaLo + 0.2*alphaHi;
-      // fMid = f.at(mid);
-      // alphaJ = QuadraticInterpolation.threePointMinimum(alphaLo, mid, alphaHi, fAlphaLo, fMid, fAlphaHi);
-      if (trials == 0) {
-        intervalLength = abs(alphaHi - alphaLo);
+    while (k < MAX_ITERATIONS) {
+      alphaT = alphaTPlus;
+      while (Double.isInfinite(psiAlphaT) && k < MAX_ITERATIONS) {
+        alphaT *= 0.5;
+        psiAlphaT = psi.at(alphaT);
+        dPsiAlphaT = dPsi.at(alphaT);
+        k++;
       }
-      updatedIntervalLength = abs(alphaHi - alphaLo);
-      if (abs((updatedIntervalLength - intervalLength) / intervalLength) < 0.667 && trials > 2) {
-        alphaJ = abs(alphaHi + alphaLo) / 2.0;
+      newIntervalLength = abs(alphaUpperPlus - alphaLowerPlus);
+      if (abs((newIntervalLength - oldIntervalLength) / oldIntervalLength) < 0.667 && trials > 1) {
+        alphaTPlus = abs(alphaLower + alphaUpper) / 2.0;
         trials = 0;
+        oldIntervalLength = newIntervalLength;
       } else {
-        alphaJ = getTrialValue(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi);
+        alphaTPlus = getTrialValue(alphaLower, alphaT, psiAlphaLower, psiAlphaT, dPsiAlphaLower,
+            dPsiAlphaT, alphaUpper);
         trials++;
       }
-      double alphaMin = 5E-3;
-      if (alphaJ < alphaMin) {
+      if (Double.isNaN(alphaTPlus) || alphaTPlus < alphaMin) {
         return alphaMin;
       }
-      fAlphaJ = f.at(alphaJ);
-      dAlphaJ = f.slopeAt(alphaJ);
-      if (fAlphaJ > f0 + c1 * alphaJ * slope0 || fAlphaJ >= fAlphaLo) {
-        alphaHi = alphaJ;
-        fAlphaHi = fAlphaJ;
-        dAlphaHi = dAlphaJ;
+      priorPsiAlphaT = psiAlphaT;
+      psiAlphaT = psi.at(alphaTPlus);
+      dPsiAlphaT = dPsi.at(alphaTPlus);
+      if (psiAlphaT <= tolerance  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < tolerance)) {
+        return alphaTPlus;
+      }
+      if (abs(dPsiAlphaT) < tolerance) {
+        return alphaTPlus;
+      }
+      relativeChange = abs((priorPsiAlphaT - psiAlphaT) / Math.max(priorPsiAlphaT, alphaTPlus));
+      if (relativeChange < tolerance) {
+        return alphaTPlus;
+      }
+      alphaUpper = alphaUpperPlus;
+      alphaLower = alphaLowerPlus;
+      psiAlphaLower = psi.at(alphaLower);
+      dPsiAlphaLower = dPsi.at(alphaLower);
+      interval = updateInterval(alphaLower, alphaTPlus, alphaUpper, psiAlphaLower, psiAlphaT, dPsiAlphaT);
+      alphaLowerPlus = interval.lowerDbl();
+      alphaUpperPlus = interval.upperDbl();
+      if (alphaLowerPlus == alphaUpperPlus) {
+        return alphaLowerPlus;
+      }
+      m++;
+      k++;
+    }
+    return alphaTPlus;
+  }
+
+  private Real.Interval updateInterval(final double alphaLower, final double alphaK, final double alphaU,
+                                       final double psiAlphaLower, final double psiAlphaK, final double dPsiAlphaK) {
+    if (psiAlphaK > psiAlphaLower) {
+      return new Real.Interval(alphaLower, alphaK);
+    }
+    if (dPsiAlphaK * (alphaLower - alphaK) > 0) {
+      return new Real.Interval(alphaK, alphaU);
+    } else if (dPsiAlphaK * (alphaLower - alphaK) < 0) {
+      return new Real.Interval(alphaK, alphaLower);
+    } else {
+      return new Real.Interval(alphaK, alphaK);
+    }
+  }
+
+  // Return an interval containing at least one point satisfying the Strong Wolfe Conditions.
+  private Real.Interval getInitialInterval() {
+    double alphaK = this.alphaTPlus;
+    double alphaLower = 0.0;
+    double psiAlphaLower = f0;
+    double psiAlphaK;
+    double dPsiAlphaK;
+    double priorAlphaLower;
+    int k = 0;
+    while (k < 1000) {
+      psiAlphaK = psi.at(alphaK);
+      if (psiAlphaK > psiAlphaLower) {
+        return new Real.Interval(alphaLower, alphaK);
+      }
+      dPsiAlphaK = dPsi.at(alphaK);
+      if (dPsiAlphaK * (alphaLower - alphaK) > 0) {
+        priorAlphaLower = alphaLower;
+        alphaLower = alphaK;
+        if (psiAlphaK <= 0 && dPsiAlphaK < 0) {
+          alphaK = Math.min(alphaK + DELTA_MAX * (alphaK - priorAlphaLower), alphaMax);
+        } else {
+          double psiAlphaMin = psi.at(alphaMin);
+          double alphaUp = Math.max(DELTA_MIN * alphaK, alphaMin);
+          double dPsiAlphaMin = dPsi.at(alphaMin);
+          alphaK = getTrialValue(alphaMin, alphaK, psiAlphaMin, psiAlphaK, dPsiAlphaMin, dPsiAlphaK, alphaUp);
+        }
+        if (alphaK == alphaMax) {
+          return new Real.Interval(alphaMax, alphaMax);
+        }
+      } else if (dPsiAlphaK * (alphaLower - alphaK) < 0) {
+        return new Real.Interval(alphaK, alphaLower);
       } else {
-        if (abs(dAlphaJ) <= -c2 * slope0) {
-          return alphaJ;
-        }
-        if (dAlphaJ * (alphaHi - alphaLo) >= 0) {
-          alphaHi = alphaLo;
-          fAlphaHi = fAlphaLo;
-          dAlphaHi = dAlphaLo;
-        }
-        alphaLo = alphaJ;
-        fAlphaLo = fAlphaJ;
-        dAlphaLo = dAlphaJ;
+        return new Real.Interval(alphaK, alphaK);
       }
       k++;
     }
-    return alphaJ;
+    throw new RuntimeException("Couldn't find an interval containing a point satisfying the Strong " +
+        "Wolfe conditions.");
   }
 
-  private double getTrialValue(final double alphaLo, final double alphaHi, double fAlphaLo, double fAlphaHi, double dAlphaLo, double dAlphaHi) {
+  private double getTrialValue(final double alphaL, final double alphaT, double fAlphaL, double fAlphaT,
+                               double dAlphaL, double dAlphaT, double alphaU) {
     final double alphaC;
     final double alphaQ;
     final double alphaS;
-    if (fAlphaHi > fAlphaLo) {
-      //alphaC = new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum();
-      alphaC = new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum();
-      alphaQ = new QuadraticInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo).minimum();
-      return (abs(alphaC - alphaLo) < abs(alphaQ - alphaLo)) ? alphaC : 0.5 * (alphaQ + alphaC);
-    } else if (dAlphaLo * dAlphaHi < 0) {
-      alphaC = new CubicInterpolation(alphaLo, alphaHi, fAlphaLo, fAlphaHi, dAlphaLo, dAlphaHi).minimum();
-      alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaLo, alphaHi, dAlphaLo, dAlphaHi);
-      return (abs(alphaC - alphaHi) >= abs(alphaS - alphaHi)) ? alphaC : alphaS;
-    } else if (abs(dAlphaHi) <= abs(dAlphaLo)) {
-      alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaLo, alphaHi, dAlphaLo, dAlphaHi);
-      return alphaS;
+    if (fAlphaT > fAlphaL) {
+      alphaC = new CubicInterpolation(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT).minimum();
+      alphaQ = new QuadraticInterpolation(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL).minimum();
+      return (abs(alphaC - alphaL) < abs(alphaQ - alphaL)) ? alphaC : 0.5 * (alphaQ + alphaC);
+    } else if (dAlphaL * dAlphaT < 0) {
+      alphaC = new CubicInterpolation(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT).minimum();
+      alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaL, alphaT, dAlphaL, dAlphaT);
+      return (abs(alphaC - alphaT) >= abs(alphaS - alphaT)) ? alphaC : alphaS;
+    } else if (abs(dAlphaT) <= abs(dAlphaL)) {
+      if (alphaL == alphaT) {
+        return alphaT;
+      }
+      alphaC = new CubicInterpolation(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT).minimum();
+      alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaL, alphaT, dAlphaL, dAlphaT);
+      double newAlphaT = (abs(alphaC - alphaT) < abs(alphaS - alphaT)) ? alphaC : alphaS;
+      if (alphaT > alphaL) {
+        return Math.min(alphaT + 0.67 * (alphaU - alphaT), newAlphaT);
+      }
+      return Math.max(alphaT + 0.67 * (alphaU - alphaT), newAlphaT);
     } else {
-      return new CubicInterpolation(alphaHi, alphaLo, fAlphaHi, fAlphaLo, dAlphaHi, dAlphaLo).minimum();
+      double fAlphaU = psi.at(alphaU);
+      double dAlphaU = dPsi.at(alphaU);
+      return new CubicInterpolation(alphaU, alphaT, fAlphaU, fAlphaT, dAlphaU, dAlphaT).minimum();
     }
   }
 
   /**
    * A builder for the line search.
    */
-  static final class Builder {
+  static class Builder {
 
-    private final AbstractFunction f;
+    private final AbstractFunction phi;
     private final double f0;
     private final double slope0;
     private double c1 = 1E-3;
@@ -186,8 +241,8 @@ final class StrongWolfeLineSearch {
     private double alphaMax = 1000.0;
     private double alpha0 = 1.0;
 
-    Builder(AbstractFunction f, double f0, double slope0) {
-      this.f = f;
+    Builder(AbstractFunction phi, double f0, double slope0) {
+      this.phi = phi;
       this.f0 = f0;
       this.slope0 = slope0;
     }

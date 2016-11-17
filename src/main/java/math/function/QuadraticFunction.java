@@ -86,7 +86,8 @@ public class QuadraticFunction {
   }
 
   public Real at(final Real point) {
-    return point.squared().times(a).plus(point.times(b)).plus(c);
+    double x = point.value();
+    return new Real(x*x*a.value() + x*b.value() + c.value());
   }
 
   /**
@@ -101,42 +102,42 @@ public class QuadraticFunction {
    * retrieve the coefficients of the polynomial as primitives.
    * @return the coefficients of the polynomial as primitives.
    */
-  public double[] doubleCoefficients() {
+  public double[] coefficientsDbl() {
     return new double[] {a.value(), b.value(), c.value()};
   }
 
   /**
-   * retrieve the point at which the extremum of this function occurs as a primitive.
-   * @return the point at which the extremum of this function occurs as a primitive.
+   * retrieve the point at which the localExtrema of this function occurs as a primitive.
+   * @return the point at which the localExtrema of this function occurs as a primitive.
    */
-  public double doubleExtremePoint() {
+  public double extremePointDbl() {
     return -b.value() / (2 * a.value());
   }
 
   /**
-   * retrieve the point at which the extremum of this function occurs.
-   * @return the point at which the extremum of this function occurs.
+   * retrieve the point at which the localExtrema of this function occurs.
+   * @return the point at which the localExtrema of this function occurs.
    */
   public Real extremePoint() {
-    return b.dividedBy(a.times(2));
+    return new Real(b.value() / (a.value() * 2));
   }
 
   /**
-   * retrieve the extremum of this function as a primitive.
-   * @return the extremum of this function as a primitive.
+   * retrieve the localExtrema of this function as a primitive.
+   * @return the localExtrema of this function as a primitive.
    */
-  public double doubleExtremum() {
-    double x = doubleExtremePoint();
+  public double extremumPrimitive() {
+    double x = extremePointDbl();
     return a.value() * x * x + b.value() * x + c.value();
   }
 
   /**
-   * retrieve the extremum of this function.
-   * @return the extremum of this function.
+   * retrieve the localExtrema of this function.
+   * @return the localExtrema of this function.
    */
   public Real extremum() {
-    Real x = extremePoint();
-    return a.times(x).times(x).plus((b).times(x)).plus(c);
+    double x = extremePoint().value();
+    return new Real(a.value() * x * x + b.value() * x + c.value());
   }
 
   /**
@@ -153,5 +154,10 @@ public class QuadraticFunction {
    */
   public boolean hasMaximum() {
     return a.value() < 0.0;
+  }
+
+  @Override
+  public String toString() {
+    return "f(x) = " + a.value() + "x^2 + " + b.value() + "x + " + c.value();
   }
 }

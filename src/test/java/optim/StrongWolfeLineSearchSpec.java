@@ -18,7 +18,7 @@ public final class StrongWolfeLineSearchSpec {
     final double c1 = 0.1;
     final double c2 = 0.1;
     StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(f, f0, slope0)
-            .c1(c1).c2(c2).alpha0(1000).build();
+            .c1(c1).c2(c2).alpha0(1E3).alphaMax(1000).build();
     System.out.println(lineSearch.search());
     System.out.println(f.functionEvaluations());
     System.out.println(f.slopeEvaluations());

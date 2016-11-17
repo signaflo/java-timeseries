@@ -61,7 +61,7 @@ public class Complex implements FieldElement<Complex> {
   }
   
   /**
-   * Multiply this element by the given double.
+   * Multiply this element by the given double and return the result.
    * @param other the double to multiply this element by.
    * @return this element multiplied by the given double.
    */
@@ -70,7 +70,7 @@ public class Complex implements FieldElement<Complex> {
   }
   
   /**
-   * Divide this element by the given double.
+   * Divide this element by the given double and return the result.
    * @param other the double to divide this element by.
    * @return this element divided by the given double.
    */
@@ -91,7 +91,7 @@ public class Complex implements FieldElement<Complex> {
   @Override
   public Complex sqrt() {
     // TODO: Replace zero equality check with more sophisticated method.
-    if (this.real < 0 && this.im == 0) {
+    if (this.real < 1E-15 && Math.abs(this.im) < 1E-15) {
       return new Complex(0.0, Math.sqrt(abs()));
     }
     // The following algorithm fails only in the case where this complex number is
@@ -116,6 +116,14 @@ public class Complex implements FieldElement<Complex> {
    */
   public final double im() {
     return this.im;
+  }
+
+  /**
+   * Returns true if this complex number is also a real number and false otherwise.
+   * @return true if this complex number is also a real number and false otherwise.
+   */
+  public final boolean isReal() {
+    return Math.abs(this.im) < 1E-15;
   }
   
   
