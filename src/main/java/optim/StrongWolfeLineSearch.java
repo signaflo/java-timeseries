@@ -22,15 +22,14 @@ final class StrongWolfeLineSearch {
   private final AbstractFunction phi;
   private final double c1;
   private final double c2;
-  private final double f0;
-  private final double slope0;
+  private final double f0; // The value of phi at alpha = 0.
+  private final double slope0; // The slope of phi at alpha = 0.
   private final double alphaMin;
   private final double alphaMax;
-  private final double alpha0;
   private final Function psi;
   private final Function dPsi;
-  int m = 0;
-  private double alphaT = 0.0;
+  int m = 0; // A count of the highest level iteration.
+  private double alphaTPlus;
 
   /**
    * Use a builder to create a new line search object.
@@ -45,8 +44,7 @@ final class StrongWolfeLineSearch {
     this.slope0 = builder.slope0;
     this.alphaMin = 1E-4;
     this.alphaMax = builder.alphaMax;
-    this.alpha0 = builder.alpha0;
-    this.alphaT = builder.alpha0;
+    this.alphaTPlus = builder.alpha0;
     this.psi = (alpha) -> phi.at(alpha) - f0 - c1 * slope0 * alpha;
     this.dPsi = (alpha) -> phi.slopeAt(alpha) - c1 * slope0;
   }
@@ -69,57 +67,58 @@ final class StrongWolfeLineSearch {
    * @return an element satisfying the strong Wolfe conditions.
    */
   final double search() {
-    Real.Interval initialInterval = getInitialInterval(0.0, alpha0, f0);
+    Real.Interval initialInterval = getInitialInterval();
     m++;
     return zoom(initialInterval);
   }
 
   private double zoom(Real.Interval interval) {
-    double alphaLower = interval.lowerDbl();
-    double alphaUpper = interval.upperDbl();
-    double priorAlphaLower = 0.0;
+    double alphaT;
+    double alphaUpper = alphaMax;
+    double alphaLower = 0.0;
+    double alphaLowerPlus = interval.lowerDbl();
+    double alphaUpperPlus = interval.upperDbl();
     double psiAlphaLower = f0;
-    //alphaT = 0.5 * (alphaLower + alphaUpper);
-    double psiAlphaT = psi.at(alphaT);
+    double psiAlphaT = psi.at(alphaTPlus);
     double dPsiAlphaLower = slope0;
-    double dPsiAlphaT = dPsi.at(alphaT);
-    double oldIntervalLength = abs(alphaUpper - alphaLower);
+    double dPsiAlphaT = dPsi.at(alphaTPlus);
+    double oldIntervalLength = abs(alphaUpperPlus - alphaLowerPlus);
     double newIntervalLength;
-    double tolerance = 1E-10;
+    double tolerance = 1E-8;
 
     int trials = 0;
     int k = 1;
     while (k < MAX_UPDATE_ITERATIONS) {
-      newIntervalLength = abs(alphaUpper - alphaLower);
-      if (abs((newIntervalLength - oldIntervalLength) / oldIntervalLength) < 0.667 && trials > 2) {
-        alphaT = abs(alphaLower + alphaUpper) / 2.0;
+      alphaT = alphaTPlus;
+      newIntervalLength = abs(alphaUpperPlus - alphaLowerPlus);
+      if (abs((newIntervalLength - oldIntervalLength) / oldIntervalLength) < 0.667 && trials > 1) {
+        alphaTPlus = abs(alphaLower + alphaUpper) / 2.0;
+        trials = 0;
+        oldIntervalLength = newIntervalLength;
       } else {
-        alphaT = getTrialValue(priorAlphaLower, alphaT, psiAlphaLower, psiAlphaT, dPsiAlphaLower,
+        alphaTPlus = getTrialValue(alphaLower, alphaT, psiAlphaLower, psiAlphaT, dPsiAlphaLower,
             dPsiAlphaT, alphaUpper);
         trials++;
       }
-      psiAlphaT = psi.at(alphaT);
-      dPsiAlphaT = dPsi.at(alphaT);
+      psiAlphaT = psi.at(alphaTPlus);
+      dPsiAlphaT = dPsi.at(alphaTPlus);
       if (psiAlphaT <= abs(tolerance)  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < abs(tolerance))) {
-        return alphaT;
+        return alphaTPlus;
       }
-//      if (abs(dPsiAlphaT) < tolerance) {
-//        return alphaT;
-//      }
-      priorAlphaLower = alphaLower;
-      psiAlphaLower = psi.at(priorAlphaLower);
-      dPsiAlphaLower = dPsi.at(priorAlphaLower);
-      interval = updateInterval(priorAlphaLower, alphaT, alphaUpper, psiAlphaLower, psiAlphaT, dPsiAlphaT);
-      alphaLower = interval.lowerDbl();
-      alphaUpper = interval.upperDbl();
-      if (trials > 2) {
-        trials = 0;
-        oldIntervalLength = abs(alphaUpper - alphaLower);
+      alphaUpper = alphaUpperPlus;
+      alphaLower = alphaLowerPlus;
+      psiAlphaLower = psi.at(alphaLower);
+      dPsiAlphaLower = dPsi.at(alphaLower);
+      interval = updateInterval(alphaLower, alphaTPlus, alphaUpper, psiAlphaLower, psiAlphaT, dPsiAlphaT);
+      alphaLowerPlus = interval.lowerDbl();
+      alphaUpperPlus = interval.upperDbl();
+      if (alphaLowerPlus == alphaUpperPlus) {
+        return alphaLowerPlus;
       }
       m++;
       k++;
     }
-    return alphaT;
+    return alphaTPlus;
   }
 
   private Real.Interval updateInterval(final double alphaLower, final double alphaK, final double alphaU,
@@ -136,11 +135,14 @@ final class StrongWolfeLineSearch {
     }
   }
 
-  private Real.Interval getInitialInterval(double alphaLower, double alphaK, double psiAlphaLower) {
-    alphaT = alphaK;
+  // Return an interval containing at least one point satisfying the Strong Wolfe Conditions.
+  private Real.Interval getInitialInterval() {
+    double alphaK = this.alphaTPlus;
+    double alphaLower = 0.0;
+    double psiAlphaLower = f0;
     double psiAlphaK;
     double dPsiAlphaK;
-    double previousAlphaLower;
+    double priorAlphaLower;
     int k = 0;
     while (k < 1000) {
       psiAlphaK = psi.at(alphaK);
@@ -149,10 +151,10 @@ final class StrongWolfeLineSearch {
       }
       dPsiAlphaK = dPsi.at(alphaK);
       if (dPsiAlphaK * (alphaLower - alphaK) > 0) {
-        previousAlphaLower = alphaLower;
+        priorAlphaLower = alphaLower;
         alphaLower = alphaK;
         if (psiAlphaK <= 0 && dPsiAlphaK < 0) {
-          alphaK = Math.min(alphaK + DELTA_MAX * (alphaK - previousAlphaLower), alphaMax);
+          alphaK = Math.min(alphaK + DELTA_MAX * (alphaK - priorAlphaLower), alphaMax);
         } else {
           double psiAlphaMin = psi.at(alphaMin);
           double alphaUp = Math.max(DELTA_MIN * alphaK, alphaMin);

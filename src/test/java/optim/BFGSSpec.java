@@ -40,6 +40,8 @@ public final class BFGSSpec {
     BFGS optimizer = new BFGS(f, initParams, 1e-8, 1e-8, initHessian);
     System.out.println(optimizer.parameters());
     System.out.println(optimizer.functionValue());
+    System.out.println(f.functionEvaluations());
+    System.out.println(f.gradientEvaluations());
     assertThat(f.functionEvaluations(), is(lessThan(1000)));
     assertThat(f.gradientEvaluations(), is(lessThan(50)));
   }
