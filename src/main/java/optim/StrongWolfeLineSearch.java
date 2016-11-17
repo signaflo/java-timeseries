@@ -15,7 +15,7 @@ import static java.lang.Math.abs;
  */
 final class StrongWolfeLineSearch {
 
-  private static final int MAX_UPDATE_ITERATIONS = 40;
+  private static final int MAX_ITERATIONS = 40;
   private static final double DELTA_MAX = 4.0;
   private static final double DELTA_MIN = 7.0 / 12.0;
 
@@ -79,21 +79,28 @@ final class StrongWolfeLineSearch {
     double alphaLowerPlus = interval.lowerDbl();
     double alphaUpperPlus = interval.upperDbl();
     double psiAlphaLower = f0;
+    double priorPsiAlphaT;
     double psiAlphaT = psi.at(alphaTPlus);
     double dPsiAlphaLower = slope0;
     double dPsiAlphaT = dPsi.at(alphaTPlus);
     double oldIntervalLength = abs(alphaUpperPlus - alphaLowerPlus);
     double newIntervalLength;
     double tolerance = 1E-8;
-
+    double relativeChange;
     if (psiAlphaT <= abs(tolerance)  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < abs(tolerance))) {
       return alphaTPlus;
     }
 
     int trials = 0;
     int k = 1;
-    while (k < MAX_UPDATE_ITERATIONS) {
+    while (k < MAX_ITERATIONS) {
       alphaT = alphaTPlus;
+      while (Double.isInfinite(psiAlphaT) && k < MAX_ITERATIONS) {
+        alphaT *= 0.5;
+        psiAlphaT = psi.at(alphaT);
+        dPsiAlphaT = dPsi.at(alphaT);
+        k++;
+      }
       newIntervalLength = abs(alphaUpperPlus - alphaLowerPlus);
       if (abs((newIntervalLength - oldIntervalLength) / oldIntervalLength) < 0.667 && trials > 1) {
         alphaTPlus = abs(alphaLower + alphaUpper) / 2.0;
@@ -104,9 +111,20 @@ final class StrongWolfeLineSearch {
             dPsiAlphaT, alphaUpper);
         trials++;
       }
+      if (Double.isNaN(alphaTPlus) || alphaTPlus < alphaMin) {
+        return alphaMin;
+      }
+      priorPsiAlphaT = psiAlphaT;
       psiAlphaT = psi.at(alphaTPlus);
       dPsiAlphaT = dPsi.at(alphaTPlus);
-      if (psiAlphaT <= abs(tolerance)  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < abs(tolerance))) {
+      if (psiAlphaT <= tolerance  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < tolerance)) {
+        return alphaTPlus;
+      }
+      if (abs(dPsiAlphaT) < tolerance) {
+        return alphaTPlus;
+      }
+      relativeChange = abs((priorPsiAlphaT - psiAlphaT) / Math.max(priorPsiAlphaT, alphaTPlus));
+      if (relativeChange < tolerance) {
         return alphaTPlus;
       }
       alphaUpper = alphaUpperPlus;
