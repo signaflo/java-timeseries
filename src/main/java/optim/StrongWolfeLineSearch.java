@@ -15,7 +15,7 @@ import static java.lang.Math.abs;
  */
 final class StrongWolfeLineSearch {
 
-  private static final int MAX_ITERATIONS = 40;
+  private static final int MAX_UPDATE_ITERATIONS = 40;
   private static final double DELTA_MAX = 4.0;
   private static final double DELTA_MIN = 7.0 / 12.0;
 
@@ -74,37 +74,26 @@ final class StrongWolfeLineSearch {
 
   private double zoom(Real.Interval interval) {
     double alphaT;
-    double alphaLower = interval.lowerDbl();
-    double alphaUpper = interval.upperDbl();
+    double alphaUpper = alphaMax;
+    double alphaLower = 0.0;
     double alphaLowerPlus = interval.lowerDbl();
     double alphaUpperPlus = interval.upperDbl();
-    double psiAlphaLower = psi.at(alphaLower);
-    double dPsiAlphaLower = dPsi.at(alphaLower);
+    double psiAlphaLower = f0;
+    double psiAlphaT = psi.at(alphaTPlus);
+    double dPsiAlphaLower = slope0;
+    double dPsiAlphaT = dPsi.at(alphaTPlus);
     double oldIntervalLength = abs(alphaUpperPlus - alphaLowerPlus);
     double newIntervalLength;
     double tolerance = 1E-8;
-    double psiAlphaT = psi.at(alphaTPlus);
-    double dPsiAlphaT = dPsi.at(alphaTPlus);
+
     if (psiAlphaT <= abs(tolerance)  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < abs(tolerance))) {
       return alphaTPlus;
     }
+
     int trials = 0;
     int k = 1;
-    while (k < MAX_ITERATIONS) {
-      alphaTPlus = new CubicInterpolation(alphaLower, alphaUpper, psiAlphaLower, psi.at(alphaUpper),
-          dPsiAlphaLower, dPsi.at(alphaUpper)).minimum();
+    while (k < MAX_UPDATE_ITERATIONS) {
       alphaT = alphaTPlus;
-      psiAlphaT = psi.at(alphaTPlus);
-      dPsiAlphaT = dPsi.at(alphaTPlus);
-      if (psiAlphaT <= tolerance  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < tolerance)) {
-        return alphaTPlus;
-      }
-      while (Double.isInfinite(psiAlphaT) && k < MAX_ITERATIONS) {
-        alphaT *= 0.5;
-        psiAlphaT = psi.at(alphaT);
-        dPsiAlphaT = dPsi.at(alphaT);
-        k++;
-      }
       newIntervalLength = abs(alphaUpperPlus - alphaLowerPlus);
       if (abs((newIntervalLength - oldIntervalLength) / oldIntervalLength) < 0.667 && trials > 1) {
         alphaTPlus = abs(alphaLower + alphaUpper) / 2.0;
@@ -115,13 +104,18 @@ final class StrongWolfeLineSearch {
             dPsiAlphaT, alphaUpper);
         trials++;
       }
+      psiAlphaT = psi.at(alphaTPlus);
+      dPsiAlphaT = dPsi.at(alphaTPlus);
+      if (psiAlphaT <= abs(tolerance)  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < abs(tolerance))) {
+        return alphaTPlus;
+      }
       alphaUpper = alphaUpperPlus;
       alphaLower = alphaLowerPlus;
-      interval = updateInterval(alphaLower, alphaTPlus, alphaUpper, psiAlphaLower, psiAlphaT, dPsiAlphaT);
-      alphaLower = interval.lowerDbl();
-      alphaUpper = interval.upperDbl();
       psiAlphaLower = psi.at(alphaLower);
       dPsiAlphaLower = dPsi.at(alphaLower);
+      interval = updateInterval(alphaLower, alphaTPlus, alphaUpper, psiAlphaLower, psiAlphaT, dPsiAlphaT);
+      alphaLowerPlus = interval.lowerDbl();
+      alphaUpperPlus = interval.upperDbl();
       if (alphaLowerPlus == alphaUpperPlus) {
         return alphaLowerPlus;
       }
@@ -165,13 +159,11 @@ final class StrongWolfeLineSearch {
         alphaLower = alphaK;
         if (psiAlphaK <= 0 && dPsiAlphaK < 0) {
           alphaK = Math.min(alphaK + DELTA_MAX * (alphaK - priorAlphaLower), alphaMax);
-          this.alphaTPlus = alphaK;
         } else {
           double psiAlphaMin = psi.at(alphaMin);
           double alphaUp = Math.max(DELTA_MIN * alphaK, alphaMin);
           double dPsiAlphaMin = dPsi.at(alphaMin);
           alphaK = getTrialValue(alphaMin, alphaK, psiAlphaMin, psiAlphaK, dPsiAlphaMin, dPsiAlphaK, alphaUp);
-          this.alphaTPlus = alphaK;
         }
         if (alphaK == alphaMax) {
           return new Real.Interval(alphaMax, alphaMax);
