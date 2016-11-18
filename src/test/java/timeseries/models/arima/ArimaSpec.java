@@ -27,8 +27,8 @@ public class ArimaSpec {
 
   @Test
   public void whenArimaModelFitDebitcardsThenParametersSimilarToROutput() throws Exception {
-    TimeSeries series = TestData.debitcards();
-    ModelOrder order = new ModelOrder(0, 1, 1, 0, 1, 1, false);
+    TimeSeries series = TestData.ausbeerSeries();
+    ModelOrder order = new ModelOrder(1, 0, 1, 1, 0, 1, true);
     Arima model = Arima.model(series, order, TimePeriod.oneYear());
     System.out.println(model.coefficients());
   }
