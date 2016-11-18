@@ -700,6 +700,27 @@ public final class Arima implements Model {
     }
 
     /**
+     * Create a new ModelOrder using the provided number of autoregressive and moving-average parameters, as well as the
+     * degree of differencing and whether or not to fit a constant (or mean).
+     *
+     * @param p the number of non-seasonal autoregressive coefficients.
+     * @param d the degree of non-seasonal differencing.
+     * @param q the number of non-seasonal moving-average coefficients.
+     * @param P the number of seasonal autoregressive coefficients.
+     * @param D the degree of seasonal differencing.
+     * @param Q the number of seasonal moving-average coefficients.
+     */
+    public ModelOrder(final int p, final int d, final int q, final int P, final int D, final int Q) {
+      this.p = p;
+      this.d = d;
+      this.q = q;
+      this.P = P;
+      this.D = D;
+      this.Q = Q;
+      this.constant = (d == 0 && D == 0) ? 1 : 0;
+    }
+
+    /**
      * Create and return a new non-seasonal model order with the given number of coefficients.
      * 
      * @param p the number of non-seasonal autoregressive coefficients.

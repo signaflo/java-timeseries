@@ -156,6 +156,20 @@ public final class Real extends Complex {
       return this.upper;
     }
 
+    public final boolean endpointsEqual() {
+      return Math.abs(this.lower.value - this.upper.value) < 1E-15;
+    }
+    public final boolean contains(final double value) {
+      if (lower.value < upper.value) {
+        return value >= lower.value && value <= upper.value;
+      }
+      return value <= lower.value && value >= upper.value;
+    }
+
+    public final boolean doesntContain(final double value) {
+      return !contains(value);
+    }
+
     @Override
     public String toString() {
       return "(" + this.lower.value() + ", " + this.upper.value() + ")";

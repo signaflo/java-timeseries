@@ -29,7 +29,16 @@ final class StrongWolfeLineSearch {
   private final Function psi;
   private final Function dPsi;
   int m = 0; // A count of the highest level iteration.
-  private double alphaTPlus;
+  private double alphaLower;
+  private double psiAlphaLower;
+  private double dPsiAlphaLower;
+  private double alphaUpper;
+  private double psiAlphaUpper;
+  private double dPsiAlphaUpper;
+  private double alphaT;
+  private double psiAlphaT;
+  private double dPsiAlphaT;
+  private double tolerance;
 
   /**
    * Use a builder to create a new line search object.
@@ -44,9 +53,15 @@ final class StrongWolfeLineSearch {
     this.slope0 = builder.slope0;
     this.alphaMin = 1E-4;
     this.alphaMax = builder.alphaMax;
-    this.alphaTPlus = builder.alpha0;
+    this.alphaT = builder.alpha0;
     this.psi = (alpha) -> phi.at(alpha) - f0 - c1 * slope0 * alpha;
     this.dPsi = (alpha) -> phi.slopeAt(alpha) - c1 * slope0;
+    this.psiAlphaT = psi.at(alphaT);
+    this.dPsiAlphaT = dPsi.at(alphaT);
+    this.alphaLower = 0;
+    this.psiAlphaLower = 0;
+    this.dPsiAlphaLower = slope0 * (1 - c1);
+    this.tolerance = 1E-8;
   }
 
   /**
@@ -67,72 +82,87 @@ final class StrongWolfeLineSearch {
    * @return an element satisfying the strong Wolfe conditions.
    */
   final double search() {
+    if (psiAlphaT <= tolerance  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < tolerance)) {
+      return alphaT;
+    }
     Real.Interval initialInterval = getInitialInterval();
     m++;
+    if (initialInterval.endpointsEqual()) {
+      return initialInterval.lowerDbl();
+    }
     return zoom(initialInterval);
   }
 
   private double zoom(Real.Interval interval) {
-    double alphaT;
-    double alphaUpper = alphaMax;
-    double alphaLower = 0.0;
-    double alphaLowerPlus = interval.lowerDbl();
-    double alphaUpperPlus = interval.upperDbl();
-    double psiAlphaLower = f0;
-    double psiAlphaT = psi.at(alphaTPlus);
-    double dPsiAlphaLower = slope0;
-    double dPsiAlphaT = dPsi.at(alphaTPlus);
-    double oldIntervalLength = abs(alphaUpperPlus - alphaLowerPlus);
+    alphaLower = interval.lowerDbl();
+    alphaUpper = interval.upperDbl();
+    double priorAlphaUpper = alphaMax;
+    double oldIntervalLength = abs(alphaUpper - alphaLower);
     double newIntervalLength;
-    double tolerance = 1E-8;
-
-    if (psiAlphaT <= abs(tolerance)  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < abs(tolerance))) {
-      return alphaTPlus;
-    }
-
+//
+//    if (psiAlphaT <= abs(tolerance)  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < abs(tolerance))) {
+//      return alphaT;
+//    }
     int trials = 0;
     int k = 1;
     while (k < MAX_UPDATE_ITERATIONS) {
-      alphaT = alphaTPlus;
-      newIntervalLength = abs(alphaUpperPlus - alphaLowerPlus);
+      while (Double.isInfinite(psiAlphaUpper) && k < MAX_UPDATE_ITERATIONS) {
+        alphaUpper = 0.5 * alphaUpper;
+        psiAlphaUpper = psi.at(alphaUpper);
+        dPsiAlphaUpper = dPsi.at(alphaUpper);
+        k++;
+      }
+      newIntervalLength = abs(alphaUpper - alphaLower);
       if (abs((newIntervalLength - oldIntervalLength) / oldIntervalLength) < 0.667 && trials > 1) {
-        alphaTPlus = abs(alphaLower + alphaUpper) / 2.0;
+        alphaT = abs(alphaLower + alphaUpper) / 2.0;
         trials = 0;
         oldIntervalLength = newIntervalLength;
       } else {
-        alphaTPlus = getTrialValue(alphaLower, alphaT, psiAlphaLower, psiAlphaT, dPsiAlphaLower,
-            dPsiAlphaT, alphaUpper);
+        alphaT = getTrialValue(alphaLower, alphaUpper, psiAlphaLower, psiAlphaUpper, dPsiAlphaLower,
+            dPsiAlphaUpper, priorAlphaUpper);
         trials++;
       }
-      psiAlphaT = psi.at(alphaTPlus);
-      dPsiAlphaT = dPsi.at(alphaTPlus);
-      if (psiAlphaT <= abs(tolerance)  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < abs(tolerance))) {
-        return alphaTPlus;
+      psiAlphaT = psi.at(alphaT);
+      dPsiAlphaT = dPsi.at(alphaT);
+      if (psiAlphaT <= tolerance  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < tolerance)) {
+        return alphaT;
       }
-      alphaUpper = alphaUpperPlus;
-      alphaLower = alphaLowerPlus;
-      psiAlphaLower = psi.at(alphaLower);
-      dPsiAlphaLower = dPsi.at(alphaLower);
-      interval = updateInterval(alphaLower, alphaTPlus, alphaUpper, psiAlphaLower, psiAlphaT, dPsiAlphaT);
-      alphaLowerPlus = interval.lowerDbl();
-      alphaUpperPlus = interval.upperDbl();
-      if (alphaLowerPlus == alphaUpperPlus) {
-        return alphaLowerPlus;
+      interval = updateInterval(alphaLower, alphaT, alphaUpper, psiAlphaLower, psiAlphaT, dPsiAlphaT);
+      alphaLower = interval.lowerDbl();
+      priorAlphaUpper = alphaUpper;
+      alphaUpper = interval.upperDbl();
+      if (alphaLower == alphaUpper) {
+        return alphaLower;
       }
       m++;
       k++;
     }
-    return alphaTPlus;
+    return alphaT;
   }
 
-  private Real.Interval updateInterval(final double alphaLower, final double alphaK, final double alphaU,
+  private Real.Interval updateInterval(final double alphaLower, final double alphaK, final double alphaUpper,
                                        final double psiAlphaLower, final double psiAlphaK, final double dPsiAlphaK) {
+    if (psiAlphaLower > psiAlphaUpper || psiAlphaLower > 0 || dPsiAlphaLower * (alphaUpper - alphaLower) >= 0) {
+      throw new RuntimeException("The assumption of Theorem 2.1 (More-Thuente 1994) are not met.");
+    }
     if (psiAlphaK > psiAlphaLower) {
+      this.alphaUpper = alphaK;
+      this.psiAlphaUpper = psiAlphaK;
+      this.dPsiAlphaUpper = dPsiAlphaK;
       return new Real.Interval(alphaLower, alphaK);
     }
     if (dPsiAlphaK * (alphaLower - alphaK) > 0) {
-      return new Real.Interval(alphaK, alphaU);
+      this.alphaLower = alphaK;
+      this.psiAlphaLower = psiAlphaK;
+      this.dPsiAlphaLower = dPsiAlphaK;
+      return new Real.Interval(alphaK, alphaUpper);
     } else if (dPsiAlphaK * (alphaLower - alphaK) < 0) {
+      this.alphaUpper = alphaLower;
+      this.psiAlphaUpper = psiAlphaLower;
+      this.dPsiAlphaUpper = dPsiAlphaLower;
+      this.alphaLower = alphaK;
+      this.psiAlphaLower = psiAlphaK;
+      this.dPsiAlphaLower = dPsiAlphaK;
       return new Real.Interval(alphaK, alphaLower);
     } else {
       return new Real.Interval(alphaK, alphaK);
@@ -141,37 +171,37 @@ final class StrongWolfeLineSearch {
 
   // Return an interval containing at least one point satisfying the Strong Wolfe Conditions.
   private Real.Interval getInitialInterval() {
-    double alphaK = this.alphaTPlus;
-    double alphaLower = 0.0;
-    double psiAlphaLower = f0;
-    double psiAlphaK;
-    double dPsiAlphaK;
     double priorAlphaLower;
     int k = 0;
     while (k < 1000) {
-      psiAlphaK = psi.at(alphaK);
-      if (psiAlphaK > psiAlphaLower) {
-        return new Real.Interval(alphaLower, alphaK);
+      if (psiAlphaT > psiAlphaLower) {
+        this.alphaUpper = alphaT;
+        this.psiAlphaUpper = psiAlphaT;
+        this.dPsiAlphaUpper = dPsiAlphaT;
+        return new Real.Interval(alphaLower, alphaT);
       }
-      dPsiAlphaK = dPsi.at(alphaK);
-      if (dPsiAlphaK * (alphaLower - alphaK) > 0) {
+      if (dPsiAlphaT * (alphaLower - alphaT) > 0) {
         priorAlphaLower = alphaLower;
-        alphaLower = alphaK;
-        if (psiAlphaK <= 0 && dPsiAlphaK < 0) {
-          alphaK = Math.min(alphaK + DELTA_MAX * (alphaK - priorAlphaLower), alphaMax);
-        } else {
-          double psiAlphaMin = psi.at(alphaMin);
-          double alphaUp = Math.max(DELTA_MIN * alphaK, alphaMin);
-          double dPsiAlphaMin = dPsi.at(alphaMin);
-          alphaK = getTrialValue(alphaMin, alphaK, psiAlphaMin, psiAlphaK, dPsiAlphaMin, dPsiAlphaK, alphaUp);
+        alphaLower = alphaT;
+        psiAlphaLower = psiAlphaT;
+        if (psiAlphaT <= 0 && dPsiAlphaT < 0) {
+          alphaT = Math.min(alphaT + DELTA_MAX * (alphaT - priorAlphaLower), alphaMax);
+          psiAlphaT = psi.at(alphaT);
+          dPsiAlphaT = dPsi.at(alphaT);
         }
-        if (alphaK == alphaMax) {
+        if (alphaT == alphaMax) {
           return new Real.Interval(alphaMax, alphaMax);
         }
-      } else if (dPsiAlphaK * (alphaLower - alphaK) < 0) {
-        return new Real.Interval(alphaK, alphaLower);
+      } else if (dPsiAlphaT * (alphaLower - alphaT) < 0) {
+        this.alphaUpper = alphaLower;
+        this.psiAlphaUpper = psiAlphaLower;
+        this.dPsiAlphaUpper = dPsiAlphaLower;
+        this.alphaLower = alphaT;
+        this.psiAlphaLower = psiAlphaT;
+        this.dPsiAlphaLower = dPsiAlphaT;
+        return new Real.Interval(alphaT, alphaLower);
       } else {
-        return new Real.Interval(alphaK, alphaK);
+        return new Real.Interval(alphaT, alphaT);
       }
       k++;
     }
