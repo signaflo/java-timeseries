@@ -90,10 +90,10 @@ final class StrongWolfeLineSearch {
     if (initialInterval.endpointsEqual()) {
       return initialInterval.lowerDbl();
     }
-    return zoom(initialInterval);
+    return zoom();
   }
 
-  private double zoom(Real.Interval interval) {
+  private double zoom() {
     double priorAlphaUpper = alphaMax;
     double oldIntervalLength = abs(alphaUpper - alphaLower);
     double newIntervalLength;
@@ -111,9 +111,9 @@ final class StrongWolfeLineSearch {
         k++;
       }
       newIntervalLength = abs(alphaUpper - alphaLower);
-      if (abs((newIntervalLength - oldIntervalLength) / oldIntervalLength) < 0.667 && trials > 2) {
+      if (abs((newIntervalLength - oldIntervalLength) / oldIntervalLength) < 0.667 && trials > 1) {
         alphaT = abs(alphaLower + alphaUpper) / 2.0;
-        trials = 0;
+        trials = 1;
         oldIntervalLength = newIntervalLength;
       } else {
         alphaT = getTrialValue(alphaLower, alphaUpper, psiAlphaLower, psiAlphaUpper, dPsiAlphaLower,
@@ -139,7 +139,7 @@ final class StrongWolfeLineSearch {
   private void updateInterval(final double alphaLower, final double alphaK, final double alphaUpper,
                                        final double psiAlphaLower, final double psiAlphaK, final double dPsiAlphaK) {
     if (psiAlphaLower > psiAlphaUpper || psiAlphaLower > 0 || dPsiAlphaLower * (alphaUpper - alphaLower) >= 0) {
-      throw new RuntimeException("The assumption of Theorem 2.1 (More-Thuente 1994) are not met.");
+      throw new RuntimeException("The assumptions of Theorem 2.1 (More-Thuente 1994) are not met.");
     }
     if (psiAlphaK > psiAlphaLower) {
       this.alphaUpper = alphaK;
