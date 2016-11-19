@@ -94,8 +94,6 @@ final class StrongWolfeLineSearch {
   }
 
   private double zoom(Real.Interval interval) {
-    alphaLower = interval.lowerDbl();
-    alphaUpper = interval.upperDbl();
     double priorAlphaUpper = alphaMax;
     double oldIntervalLength = abs(alphaUpper - alphaLower);
     double newIntervalLength;
@@ -113,7 +111,7 @@ final class StrongWolfeLineSearch {
         k++;
       }
       newIntervalLength = abs(alphaUpper - alphaLower);
-      if (abs((newIntervalLength - oldIntervalLength) / oldIntervalLength) < 0.667 && trials > 1) {
+      if (abs((newIntervalLength - oldIntervalLength) / oldIntervalLength) < 0.667 && trials > 2) {
         alphaT = abs(alphaLower + alphaUpper) / 2.0;
         trials = 0;
         oldIntervalLength = newIntervalLength;
@@ -124,13 +122,11 @@ final class StrongWolfeLineSearch {
       }
       psiAlphaT = psi.at(alphaT);
       dPsiAlphaT = dPsi.at(alphaT);
-      if (psiAlphaT <= tolerance  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < tolerance)) {
+      if (psiAlphaT <= tolerance  && ((abs(dPsiAlphaT + c1 * slope0) - c2 * abs(slope0)) < tolerance)) {
         return alphaT;
       }
-      interval = updateInterval(alphaLower, alphaT, alphaUpper, psiAlphaLower, psiAlphaT, dPsiAlphaT);
-      alphaLower = interval.lowerDbl();
+      updateInterval(alphaLower, alphaT, alphaUpper, psiAlphaLower, psiAlphaT, dPsiAlphaT);
       priorAlphaUpper = alphaUpper;
-      alphaUpper = interval.upperDbl();
       if (alphaLower == alphaUpper) {
         return alphaLower;
       }
@@ -140,7 +136,7 @@ final class StrongWolfeLineSearch {
     return alphaT;
   }
 
-  private Real.Interval updateInterval(final double alphaLower, final double alphaK, final double alphaUpper,
+  private void updateInterval(final double alphaLower, final double alphaK, final double alphaUpper,
                                        final double psiAlphaLower, final double psiAlphaK, final double dPsiAlphaK) {
     if (psiAlphaLower > psiAlphaUpper || psiAlphaLower > 0 || dPsiAlphaLower * (alphaUpper - alphaLower) >= 0) {
       throw new RuntimeException("The assumption of Theorem 2.1 (More-Thuente 1994) are not met.");
@@ -149,13 +145,12 @@ final class StrongWolfeLineSearch {
       this.alphaUpper = alphaK;
       this.psiAlphaUpper = psiAlphaK;
       this.dPsiAlphaUpper = dPsiAlphaK;
-      return new Real.Interval(alphaLower, alphaK);
-    }
-    if (dPsiAlphaK * (alphaLower - alphaK) > 0) {
+      //return new Real.Interval(alphaLower, alphaK);
+    } else if (dPsiAlphaK * (alphaLower - alphaK) > 0) {
       this.alphaLower = alphaK;
       this.psiAlphaLower = psiAlphaK;
       this.dPsiAlphaLower = dPsiAlphaK;
-      return new Real.Interval(alphaK, alphaUpper);
+      //return new Real.Interval(alphaK, alphaUpper);
     } else if (dPsiAlphaK * (alphaLower - alphaK) < 0) {
       this.alphaUpper = alphaLower;
       this.psiAlphaUpper = psiAlphaLower;
@@ -163,9 +158,9 @@ final class StrongWolfeLineSearch {
       this.alphaLower = alphaK;
       this.psiAlphaLower = psiAlphaK;
       this.dPsiAlphaLower = dPsiAlphaK;
-      return new Real.Interval(alphaK, alphaLower);
+      //return new Real.Interval(alphaK, alphaLower);
     } else {
-      return new Real.Interval(alphaK, alphaK);
+      this.alphaT = this.alphaLower = this.alphaUpper;
     }
   }
 
@@ -184,6 +179,7 @@ final class StrongWolfeLineSearch {
         priorAlphaLower = alphaLower;
         alphaLower = alphaT;
         psiAlphaLower = psiAlphaT;
+        dPsiAlphaLower = dPsiAlphaT;
         if (psiAlphaT <= 0 && dPsiAlphaT < 0) {
           alphaT = Math.min(alphaT + DELTA_MAX * (alphaT - priorAlphaLower), alphaMax);
           psiAlphaT = psi.at(alphaT);
@@ -234,9 +230,10 @@ final class StrongWolfeLineSearch {
       }
       return Math.max(alphaT + 0.67 * (alphaU - alphaT), newAlphaT);
     } else {
-      double fAlphaU = psi.at(alphaU);
-      double dAlphaU = dPsi.at(alphaU);
-      return new CubicInterpolation(alphaU, alphaT, fAlphaU, fAlphaT, dAlphaU, dAlphaT).minimum();
+      throw new RuntimeException("Why am I here?");
+//      double fAlphaU = psi.at(alphaU);
+//      double dAlphaU = dPsi.at(alphaU);
+//      return new CubicInterpolation(alphaU, alphaT, fAlphaU, fAlphaT, dAlphaU, dAlphaT).minimum();
     }
   }
 
