@@ -211,18 +211,18 @@ final class StrongWolfeLineSearch {
     final double alphaQ;
     final double alphaS;
     if (fAlphaT > fAlphaL) {
-      alphaC = CubicInterpolation.nocedalFunction(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT);
+      alphaC = CubicInterpolation.minimum(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT);
       alphaQ = QuadraticInterpolation.minimum(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL);
       return (abs(alphaC - alphaL) < abs(alphaQ - alphaL)) ? alphaC : 0.5 * (alphaQ + alphaC);
     } else if (dAlphaL * dAlphaT < 0) {
-      alphaC = new CubicInterpolation(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT).minimum();
+      alphaC = CubicInterpolation.minimum(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT);
       alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaL, alphaT, dAlphaL, dAlphaT);
       return (abs(alphaC - alphaT) >= abs(alphaS - alphaT)) ? alphaC : alphaS;
     } else if (abs(dAlphaT) <= abs(dAlphaL)) {
       if (alphaL == alphaT) {
         return alphaT;
       }
-      alphaC = new CubicInterpolation(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT).minimum();
+      alphaC = CubicInterpolation.minimum(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT);
       alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaL, alphaT, dAlphaL, dAlphaT);
       double newAlphaT = (abs(alphaC - alphaT) < abs(alphaS - alphaT)) ? alphaC : alphaS;
       if (alphaT > alphaL) {

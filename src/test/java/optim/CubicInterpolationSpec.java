@@ -25,8 +25,8 @@ public final class CubicInterpolationSpec {
   
   @Test
   public void whenCubicInterpolationPerformedMinimumCorrect() {
-    CubicInterpolation interpolater = new CubicInterpolation(1.0, 3.0, -1.0/3.0, -3.0/11.0, -1.0/9.0, 0.057851);
-    assertThat(interpolater.minimum(), is(closeTo(1.528795, 1E-4)));
+    CubicInterpolation interpolation = new CubicInterpolation(1.0, 3.0, -1.0/3.0, -3.0/11.0, -1.0/9.0, 0.057851);
+    assertThat(interpolation.minimum(), is(closeTo(1.528795, 1E-4)));
   }
 
 }
