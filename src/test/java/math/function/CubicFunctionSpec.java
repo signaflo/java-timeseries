@@ -65,10 +65,15 @@ public class CubicFunctionSpec {
   @Test
   public void whenGettersThenValuesReturned() {
     f = new CubicFunction(-4.0, 1.0, 5.0, 0.0);
-    assertThat(f.a(), is(Real.from(-4.0)));
-    assertThat(f.b(), is(Real.from(1.0)));
-    assertThat(f.c(), is(Real.from(5.0)));
-    assertThat(f.d(), is(Real.from(0.0)));
+    Real a = new Real(-4.0);
+    Real b = new Real(1.0);
+    Real c = new Real(5.0);
+    Real d = new Real(0.0);
+    assertThat(f.a(), is(a));
+    assertThat(f.b(), is(b));
+    assertThat(f.c(), is(c));
+    assertThat(f.d(), is(d));
+    assertThat(f.coefficients(), is(new Real[] {a, b, c, d}));
   }
 
   @Test
@@ -93,7 +98,15 @@ public class CubicFunctionSpec {
   @Test
   public void whenNoExtremePointsThenEmptyArray() {
     Real[] empty = new Real[]{};
-    f = new CubicFunction(1.0, 0.0, 0.0, 0.0);
+    f = new CubicFunction(1.0, 1.0, 3.0, 2.0);
+    assertThat(f.criticalPoints(), is(empty));
     assertThat(f.localExtremePoints(), is(empty));
+  }
+
+  @Test
+  public void whenOneExtremePointsThenCriticalPointCorrect() {
+    f = new CubicFunction(1.0, 0.0, 0.0, 0.0);
+    assertThat(f.criticalPoints(), is(new Real[] {Real.from(0.0)}));
+    assertThat(f.localExtremePoints(), is(new Real[] {}));
   }
 }

@@ -5,7 +5,7 @@ import math.function.Function;
 import math.function.MultivariateDoubleFunction;
 import math.function.MultivariateFunction;
 
-import static linear.doubles.Vector.newVector;
+import static linear.doubles.Vector.from;
 
 /**
  * Static methods for computing numerical derivatives.
@@ -59,10 +59,10 @@ public final class NumericalDerivatives {
     final double functionValue = f.at(point);
     for (int i = 0; i < partials.length; i++) {
       newPoints[i] = point.at(i) + h;
-      partials[i] = (f.at(newVector(newPoints)) - functionValue) / h;
+      partials[i] = (f.at(from(newPoints)) - functionValue) / h;
       newPoints = point.elements().clone();
     }
-    return newVector(partials);
+    return from(partials);
   }
   
   public static Vector forwardDifferenceGradient(final MultivariateFunction f, final Vector point,
@@ -71,10 +71,10 @@ public final class NumericalDerivatives {
     final double[] partials = new double[point.size()];
     for (int i = 0; i < partials.length; i++) {
       newPoints[i] = point.at(i) + h;
-      partials[i] = (f.at(newVector(newPoints)) - functionValue) / h;
+      partials[i] = (f.at(from(newPoints)) - functionValue) / h;
       newPoints = point.elements().clone();
     }
-    return newVector(partials);
+    return from(partials);
   }
   
   public static Vector centralDifferenceGradient(final MultivariateFunction f, final Vector point,
@@ -85,11 +85,11 @@ public final class NumericalDerivatives {
     for (int i = 0; i < partials.length; i++) {
       forwardPoints[i] = point.at(i) + 0.5*h;
       backwardPoints[i] = point.at(i) - 0.5*h;
-      partials[i] = (f.at(newVector(forwardPoints)) - f.at(newVector(backwardPoints))) / h;
+      partials[i] = (f.at(from(forwardPoints)) - f.at(from(backwardPoints))) / h;
       forwardPoints = point.elements().clone();
       backwardPoints = point.elements().clone();
     }
-    return newVector(partials);
+    return from(partials);
   }
 
 }

@@ -11,9 +11,13 @@ public final class SphereFunction extends AbstractMultivariateFunction {
     return point.sumOfSquares();
   }
   
-  @Override
-  public Vector gradientAt(Vector point) {
-    return NumericalDerivatives.centralDifferenceGradient(this, point, 1E-4);
-  }
+//  @Override
+//  public Vector gradientAt(Vector point) {
+//    double[] gradient = new double[point.size()];
+//    for (int i = 0; i < gradient.length; i++) {
+//      gradient[i] = 2 * point.at(i);
+//    }
+//    return Vector.from(gradient);
+//  }
 
 }

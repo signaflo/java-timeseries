@@ -119,14 +119,14 @@ public class QuadraticFunction {
    * @return the point at which the localExtrema of this function occurs.
    */
   public Real extremePoint() {
-    return new Real(b.value() / (a.value() * 2));
+    return new Real(-b.value() / (2 * a.value()));
   }
 
   /**
    * retrieve the localExtrema of this function as a primitive.
    * @return the localExtrema of this function as a primitive.
    */
-  public double extremumPrimitive() {
+  public double extremumDbl() {
     double x = extremePointDbl();
     return a.value() * x * x + b.value() * x + c.value();
   }

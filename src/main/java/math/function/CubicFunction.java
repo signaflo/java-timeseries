@@ -156,7 +156,7 @@ public final class CubicFunction {
 
   final Real localMaximumPoint() {
     if (!hasMaximum()) {
-      throw new RuntimeException("This cubic function " + this.toString() + " has no local minimum.");
+      throw new RuntimeException("This cubic function " + this.toString() + " has no local maximum.");
     }
     Real[] extremePoints = localExtremePoints();
     if ((extremePoints[0].value() * a.value()) < (b.value() / -3.0)) {

@@ -17,7 +17,7 @@ public final class Vector {
 
   private final double[] elements;
   
-  public static Vector newVector(double... elements) {
+  public static Vector from(double... elements) {
     return new Vector(elements);
   }
   

@@ -50,6 +50,27 @@ final class QuadraticInterpolation {
     return -b / (2 * a);
   }
 
+  static double minimum(final double x1, final double x2, final double y1, final double y2, final double dydx) {
+    if (x1 == x2) {
+      throw new IllegalArgumentException("The two x values cannot be the same. x1 and x2 were both equal to: " + x1);
+    }
+    double w1, w2, z1, z2;
+    if (x1 > x2) {
+      w1 = x2;
+      z1 = y2;
+      w2 = x1;
+      z2 = y1;
+    } else {
+      w1 = x1;
+      w2 = x2;
+      z1= y1;
+      z2 = y2;
+    }
+    double a = -(z1 - z2 - dydx * (w1 - w2)) / Math.pow(w1 - w2, 2);
+    double b = dydx - 2 *w1 * a;
+    return -b / (2 * a);
+  }
+
   static double secantFormulaMinimum(final double x1, final double x2, final double dydx1, final double dydx2) {
     if (x1 <= x2) {
       return x1 - dydx1 * ((x1 - x2) / (dydx1 - dydx2));

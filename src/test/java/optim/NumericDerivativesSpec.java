@@ -55,7 +55,7 @@ public class NumericDerivativesSpec {
   public void whenForwardGradientVectorCalculatedApproximationClose() {
     MultivariateFunction f = (point) -> point.at(0) * point.at(0) + point.at(1) * point.at(1);
     final double h = 1E-4;
-    final Vector point = Vector.newVector(3.0, 4.0);
+    final Vector point = Vector.from(3.0, 4.0);
     final Vector forwardGradient = NumericalDerivatives.forwardDifferenceGradient(f, point, h);
     final double[] expected = new double[] {6.0, 8.0};
     assertArrayEquals(expected, forwardGradient.elements(), 1E-4);
@@ -65,7 +65,7 @@ public class NumericDerivativesSpec {
   public void whenCentralGradientVectorCalculatedApproximationClose() {
     MultivariateFunction f = (point) -> point.at(0) * point.at(0) + point.at(1) * point.at(1);
     final double h = 1E-4;
-    final Vector point = Vector.newVector(3.0, 4.0);
+    final Vector point = Vector.from(3.0, 4.0);
     final Vector centralGradient= NumericalDerivatives.centralDifferenceGradient(f, point, h);
     final double[] expected = new double[] {6.0, 8.0};
     assertArrayEquals(expected, centralGradient.elements(), 1E-10);
