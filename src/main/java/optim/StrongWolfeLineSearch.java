@@ -94,7 +94,6 @@ final class StrongWolfeLineSearch {
   }
 
   private double zoom() {
-    double priorAlphaUpper = alphaMax;
     double oldIntervalLength = abs(alphaUpper - alphaLower);
     double newIntervalLength;
 //
@@ -117,7 +116,7 @@ final class StrongWolfeLineSearch {
         oldIntervalLength = newIntervalLength;
       } else {
         alphaT = getTrialValue(alphaLower, alphaUpper, psiAlphaLower, psiAlphaUpper, dPsiAlphaLower,
-            dPsiAlphaUpper, priorAlphaUpper);
+            dPsiAlphaUpper);
         trials++;
       }
       psiAlphaT = psi.at(alphaT);
@@ -126,7 +125,6 @@ final class StrongWolfeLineSearch {
         return alphaT;
       }
       updateInterval(alphaLower, alphaT, alphaUpper, psiAlphaLower, psiAlphaT, dPsiAlphaT);
-      priorAlphaUpper = alphaUpper;
       if (alphaLower == alphaUpper) {
         return alphaLower;
       }
@@ -206,36 +204,42 @@ final class StrongWolfeLineSearch {
   }
 
   private double getTrialValue(final double alphaL, final double alphaT, double fAlphaL, double fAlphaT,
-                               double dAlphaL, double dAlphaT, double alphaU) {
-    final double alphaC;
-    final double alphaQ;
-    final double alphaS;
-    if (fAlphaT > fAlphaL) {
-      alphaC = CubicInterpolation.minimum(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT);
-      alphaQ = QuadraticInterpolation.minimum(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL);
+                               double dAlphaL, double dAlphaT) {
+    double alphaC = CubicInterpolation.minimum(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT);
+    double alphaQ = QuadraticInterpolation.minimum(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL);
       return (abs(alphaC - alphaL) < abs(alphaQ - alphaL)) ? alphaC : 0.5 * (alphaQ + alphaC);
-    } else if (dAlphaL * dAlphaT < 0) {
-      alphaC = CubicInterpolation.minimum(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT);
-      alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaL, alphaT, dAlphaL, dAlphaT);
-      return (abs(alphaC - alphaT) >= abs(alphaS - alphaT)) ? alphaC : alphaS;
-    } else if (abs(dAlphaT) <= abs(dAlphaL)) {
-      if (alphaL == alphaT) {
-        return alphaT;
-      }
-      alphaC = CubicInterpolation.minimum(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT);
-      alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaL, alphaT, dAlphaL, dAlphaT);
-      double newAlphaT = (abs(alphaC - alphaT) < abs(alphaS - alphaT)) ? alphaC : alphaS;
-      if (alphaT > alphaL) {
-        return Math.min(alphaT + 0.67 * (alphaU - alphaT), newAlphaT);
-      }
-      return Math.max(alphaT + 0.67 * (alphaU - alphaT), newAlphaT);
-    } else {
-      throw new RuntimeException("Why am I here?");
+  }
+//
+//  private double getTrialValue(final double alphaL, final double alphaT, double fAlphaL, double fAlphaT,
+//                               double dAlphaL, double dAlphaT, double alphaU) {
+//    final double alphaC;
+//    final double alphaQ;
+//    final double alphaS;
+//    if (fAlphaT > fAlphaL) {
+//      alphaC = CubicInterpolation.minimum(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT);
+//      alphaQ = QuadraticInterpolation.minimum(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL);
+//      return (abs(alphaC - alphaL) < abs(alphaQ - alphaL)) ? alphaC : 0.5 * (alphaQ + alphaC);
+//    } else if (dAlphaL * dAlphaT < 0) {
+//      alphaC = CubicInterpolation.minimum(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT);
+//      alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaL, alphaT, dAlphaL, dAlphaT);
+//      return (abs(alphaC - alphaT) >= abs(alphaS - alphaT)) ? alphaC : alphaS;
+//    } else if (abs(dAlphaT) <= abs(dAlphaL)) {
+//      if (alphaL == alphaT) {
+//        return alphaT;
+//      }
+//      alphaC = CubicInterpolation.minimum(alphaL, alphaT, fAlphaL, fAlphaT, dAlphaL, dAlphaT);
+//      alphaS = QuadraticInterpolation.secantFormulaMinimum(alphaL, alphaT, dAlphaL, dAlphaT);
+//      double newAlphaT = (abs(alphaC - alphaT) < abs(alphaS - alphaT)) ? alphaC : alphaS;
+//      if (alphaT > alphaL) {
+//        return Math.min(alphaT + 0.67 * (alphaU - alphaT), newAlphaT);
+//      }
+//      return Math.max(alphaT + 0.67 * (alphaU - alphaT), newAlphaT);
+//    } else {
 //      double fAlphaU = psi.at(alphaU);
 //      double dAlphaU = dPsi.at(alphaU);
 //      return new CubicInterpolation(alphaU, alphaT, fAlphaU, fAlphaT, dAlphaU, dAlphaT).minimum();
-    }
-  }
+//    }
+//  }
 
   /**
    * A builder for the line search.

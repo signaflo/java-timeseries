@@ -41,10 +41,6 @@ public final class NewtonPolynomial {
     }
   }
 
-  final double[] coefficients() {
-    return this.coefficients.clone();
-  }
-
   /**
    * Get the ith coefficient of this Newton Polynomial.
    * @param i the index of the coefficient.

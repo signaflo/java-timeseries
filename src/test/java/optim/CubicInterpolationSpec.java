@@ -24,8 +24,14 @@ public final class CubicInterpolationSpec {
   }
   
   @Test
-  public void whenCubicInterpolationPerformedMinimumCorrect() {
+  public void whenCubicInterpolationPerformedThenMinimumCorrect() {
     CubicInterpolation interpolation = new CubicInterpolation(1.0, 3.0, -1.0/3.0, -3.0/11.0, -1.0/9.0, 0.057851);
+    assertThat(interpolation.minimum(), is(closeTo(1.528795, 1E-4)));
+  }
+
+  @Test
+  public void whenCubicInterpolationPerformedDifferentArgOrderThenMinimumStillCorrect() {
+    CubicInterpolation interpolation = new CubicInterpolation(3.0, 1.0, -3.0/11.0, -1.0/3.0, 0.057851, -1.0/9.0);
     assertThat(interpolation.minimum(), is(closeTo(1.528795, 1E-4)));
   }
 

@@ -10,7 +10,6 @@ import static org.hamcrest.Matchers.*;
 
 import math.function.CubicFunction;
 import math.function.QuadraticFunction;
-import math.polynomial.interpolation.NewtonPolynomial;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -27,6 +26,26 @@ public class NewtonPolynomialSpec {
   public void whenPointAndValuesLengthDifferThenException() {
     exception.expect(IllegalArgumentException.class);
     new NewtonPolynomial(new double[] {0.3}, new double[] {0.4, 1.1});
+  }
+
+  @Test
+  public void whenPointAndValuesEmptyThenException() {
+    exception.expect(IllegalArgumentException.class);
+    new NewtonPolynomial(new double[] {}, new double[] {});
+  }
+
+  @Test
+  public void whenToQuadraticOnLinearFunctionExceptionThrown() {
+    exception.expect(IllegalStateException.class);
+    NewtonPolynomial np = new NewtonPolynomial(new double[] {0.4, 1.1}, new double[] {0.8, 2.2});
+    np.toQuadratic();
+  }
+
+  @Test
+  public void whenToCubicOnQuadraticFunctionExceptionThrown() {
+    exception.expect(IllegalStateException.class);
+    NewtonPolynomial np = new NewtonPolynomial(new double[] {1, 3, 5}, new double[] {1, 9, 25});
+    np.toCubic();
   }
 
   @Test
