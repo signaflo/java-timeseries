@@ -7,7 +7,7 @@ package linear.doubles;
 import java.util.Arrays;
 
 /**
- * An immutable and thread-safe Matrix implementation.
+ * An immutable and thread-safe implementation of a real-valued Matrix.
  * @author jrachiele
  *
  */
@@ -16,17 +16,40 @@ public final class Matrix {
   private final int nrow;
   private final int ncol;
   private final double[] data;
-  
+
+  /**
+   * Create a new matrix with the supplied data and dimensions. The data is assumed to be in row-major order.
+   * @param nrow the number of rows for the matrix.
+   * @param ncol the number of columns for the matrix.
+   * @param data the data in row-major order.
+   */
   public Matrix(final int nrow, final int ncol, final double... data) {
     if (nrow * ncol != data.length) {
-      throw new IllegalArgumentException("The dimensions do not match the amount of data provided. The amount of data was "
-              + data.length + ", but the number of rows and columns were " + nrow + " and " + ncol + " respectively.");
+      throw new IllegalArgumentException("The dimensions do not match the amount of data provided. " +
+          "There were " + data.length + " data points provided but the number of rows and columns " +
+          "were " + nrow + " and " + ncol + " respectively.");
     }
     this.nrow = nrow;
     this.ncol = ncol;
     this.data = data.clone();
   }
-  
+
+  /**
+   * Create a new matrix with the supplied data and dimensions. The data is assumed to be in row-major order.
+   * @param nrow the number of rows for the matrix.
+   * @param ncol the number of columns for the matrix.
+   * @param data the data in row-major order.
+   */
+  public static Matrix create(final int nrow, final int ncol, final double[] data) {
+    return new Matrix(nrow, ncol, data);
+  }
+
+  /**
+   * Create a new matrix of the given dimensions filled with the supplied data point.
+   * @param nrow the number of rows for the matrix.
+   * @param ncol the number of columns for the matrix.
+   * @param datum the data point to fill the matrix with.
+   */
   public Matrix(final int nrow, final int ncol, final double datum) {
     this.nrow = nrow;
     this.ncol = ncol;
@@ -35,7 +58,11 @@ public final class Matrix {
       this.data[i] = datum;
     }
   }
-  
+
+  /**
+   * Create a new matrix from the given two-dimensional array of data.
+   * @param matrixData the two-dimensional array of data constituting the matrix.
+   */
   public Matrix(final double[][] matrixData) {
     this.nrow = matrixData.length;
     this.ncol = matrixData[0].length;
@@ -44,7 +71,12 @@ public final class Matrix {
       System.arraycopy(matrixData[i], 0, this.data, i * ncol, ncol);
     }
   }
-  
+
+  /**
+   * Add this matrix to the given matrix and return the resulting sum.
+   * @param other the matrix to add to this one.
+   * @return this matrix added to the other matrix.
+   */
   public final Matrix plus(final Matrix other) {
     if (this.nrow != other.nrow || this.ncol != other.ncol) {
       throw new IllegalArgumentException("The dimensions of this matrix must equal the dimensions of the other matrix. "
@@ -61,9 +93,9 @@ public final class Matrix {
   }
   
   /**
-   * Multiply this matrix by the given matrix and return the result in a new Matrix.
-   * @param other the matrix to multiply this one by.
-   * @return a new matrix that is the product of this one with the given one.
+   * Multiply this matrix by the given matrix and return the resulting product.
+   * @param other the matrix to multiply by.
+   * @return the product of this matrix with the given matrix.
    */
   public final Matrix times(final Matrix other) {
     if (this.ncol != other.nrow) {
@@ -80,7 +112,12 @@ public final class Matrix {
     }
     return new Matrix(this.nrow, other.ncol, product);
   }
-  
+
+  /**
+   * Transform the given vector with this matrix and return the resulting vector.
+   * @param vector the vector to transform.
+   * @return the given vector transformed by this matrix.
+   */
   public final Vector times(final Vector vector) {
     double[] elements = vector.elements();
     if (this.ncol != elements.length) {
@@ -96,6 +133,11 @@ public final class Matrix {
     return new Vector(product);
   }
 
+  /**
+   * Scale this matrix by the given value and return the scaled matrix.
+   * @param c the value to scale this matrix by.
+   * @return this matrix scaled by the given value.
+   */
   public final Matrix scaledBy(final double c) {
     final double[] scaled = new double[this.data.length];
     for (int i = 0; i < this.data.length; i++) {
@@ -103,7 +145,12 @@ public final class Matrix {
     }
     return new Matrix(this.nrow, this.ncol, scaled);
   }
-  
+
+  /**
+   * Subtract the given matrix from this matrix return the resulting difference.
+   * @param other the matrix to subtract from this one.
+   * @return the difference of this matrix and the given matrix.
+   */
   public final Matrix minus(final Matrix other) {
     if (this.nrow != other.nrow || this.ncol != other.ncol) {
       throw new IllegalArgumentException("The dimensions of this matrix must equal the dimensions of the other matrix. "
@@ -121,7 +168,9 @@ public final class Matrix {
   
   public final double[] diagonal() {
     final double[] diag = new double[Math.min(nrow, ncol)];
-    System.arraycopy(data, 0, diag, 0, diag.length);
+    for (int i = 0; i < diag.length; i++) {
+      diag[i] = data[ncol * i + i];
+    }
     return diag;
   }
   
@@ -129,8 +178,11 @@ public final class Matrix {
     return this.data.clone();
   }
 
-
-  public final double[][] data2D() {
+  /**
+   * Obtain the data in this matrix as a two-dimensional array.
+   * @return the data in this matrix as a two-dimensional array.
+   */
+  final double[][] data2D() {
     final double[][] twoD = new double[this.nrow][this.ncol];
     for (int i = 0; i < nrow; i++) {
       System.arraycopy(this.data, i * ncol, twoD[i], 0, ncol);
@@ -140,11 +192,12 @@ public final class Matrix {
 
   @Override
   public String toString() {
-    return "Matrix{" +
-        "nrow=" + nrow +
-        ", ncol=" + ncol +
-        ", data=" + Arrays.toString(data) +
-        '}';
+    StringBuilder representation = new StringBuilder();
+    double[][] twoD = data2D();
+    for (int i = 0; i < this.nrow; i++) {
+      representation.append(Arrays.toString(twoD[i])).append("\n");
+    }
+    return representation.toString();
   }
 
 
@@ -154,10 +207,7 @@ public final class Matrix {
     if (o == null || getClass() != o.getClass()) return false;
 
     Matrix matrix = (Matrix) o;
-
-    if (nrow != matrix.nrow) return false;
-    return ncol == matrix.ncol && Arrays.equals(data, matrix.data);
-
+    return nrow == matrix.nrow && ncol == matrix.ncol && Arrays.equals(data, matrix.data);
   }
 
   @Override

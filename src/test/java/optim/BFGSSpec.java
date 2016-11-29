@@ -23,10 +23,6 @@ public final class BFGSSpec {
     Vector startingPoint = new Vector(0.5, 1.5);
     final double tol = 1E-8;
     BFGS solver = new BFGS(f, startingPoint, tol, 1e-8);
-    System.out.println(solver.functionValue());
-    System.out.println(solver.parameters());
-    System.out.println(f.functionEvaluations());
-    System.out.println(f.gradientEvaluations());
   }
   
   @Test
@@ -38,10 +34,6 @@ public final class BFGSSpec {
     final Vector initParams = new Vector(0, 0, 0, 0, timeSeries.mean());
     final Matrix initHessian = getInitialHessian(timeSeries, initParams.elements(), 1);
     BFGS optimizer = new BFGS(f, initParams, 1e-8, 1e-8, initHessian);
-    System.out.println(optimizer.parameters());
-    System.out.println(optimizer.functionValue());
-    System.out.println(f.functionEvaluations());
-    System.out.println(f.gradientEvaluations());
     assertThat(f.functionEvaluations(), is(lessThan(1000)));
     assertThat(f.gradientEvaluations(), is(lessThan(50)));
   }
