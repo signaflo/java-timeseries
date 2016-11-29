@@ -167,10 +167,18 @@ public final class Matrix {
     return new Matrix(this.nrow, this.ncol, minus);
   }
 
+  /**
+   * Returns true if the matrix is square and false otherwise.
+   * @return true if the matrix is square and false otherwise.
+   */
   public final boolean isSquare() {
     return this.nrow == this.ncol;
   }
 
+  /**
+   * Transpose this matrix and return the resulting transposition.
+   * @return the transpose of this matrix.
+   */
   public final Matrix transpose() {
     final double[] tData = new double[this.data.length];
     for (int i = 0; i < this.nrow; i++) {
