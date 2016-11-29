@@ -10,81 +10,81 @@ import org.junit.rules.ExpectedException;
 
 public final class MatrixSpec {
 
-  private Matrix matrix1;
-  private Matrix matrix2;
+  private Matrix A;
+  private Matrix B;
 
   @Rule
   public ExpectedException exception = ExpectedException.none();
 
   @Before
   public void beforeMethod() {
-    matrix1 = new Matrix(3, 2, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
-    matrix2 = new Matrix(3, 2, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5);
+    A = new Matrix(3, 2, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
+    B = new Matrix(3, 2, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5);
   }
   
   @Test
-  public void whenMatrixProductWithInvalidDimensionsExceptionThrown() {
+  public void whenMatrixProductWithInvalidDimensionsException() {
     exception.expect(IllegalArgumentException.class);
-    matrix1.times(matrix2);
+    A.times(B);
   }
 
   @Test
-  public void whenMatrixVectorProductWithInvalidDimensionsExceptionThrown() {
+  public void whenMatrixVectorProductWithInvalidDimensionsException() {
     exception.expect(IllegalArgumentException.class);
-    matrix1.times(new Vector(5.0, 9.0, 3.5));
+    A.times(new Vector(5.0, 9.0, 3.5));
   }
   
   @Test
-  public void whenMatrixSumWithInvalidDimensionsExceptionThrown() {
-    matrix2 = new Matrix(2, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5);
+  public void whenMatrixSumWithInvalidDimensionsException() {
+    B = new Matrix(2, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5);
     exception.expect(IllegalArgumentException.class);
-    matrix1.plus(matrix2);
+    A.plus(B);
   }
 
   @Test
-  public void whenMatrixSumWithInvalidColumnDimensionExceptionThrown() {
-    matrix2 = new Matrix(3, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5, 4.0, 1.0, 3.5);
+  public void whenMatrixSumWithInvalidColumnDimensionException() {
+    B = new Matrix(3, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5, 4.0, 1.0, 3.5);
     exception.expect(IllegalArgumentException.class);
-    matrix1.plus(matrix2);
+    A.plus(B);
   }
 
   @Test
-  public void whenMatrixDiffWithInvalidDimensionsExceptionThrown() {
-    matrix2 = new Matrix(2, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5);
+  public void whenMatrixDiffWithInvalidDimensionsException() {
+    B = new Matrix(2, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5);
     exception.expect(IllegalArgumentException.class);
-    matrix1.minus(matrix2);
+    A.minus(B);
   }
 
   @Test
-  public void whenMatrixDiffWithInvalidColumnDimensionsExceptionThrown() {
-    matrix2 = new Matrix(3, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5, 4.0, 1.0, 3.5);
+  public void whenMatrixDiffWithInvalidColumnDimensionsException() {
+    B = new Matrix(3, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5, 4.0, 1.0, 3.5);
     exception.expect(IllegalArgumentException.class);
-    matrix1.minus(matrix2);
+    A.minus(B);
   }
 
   @Test
-  public void whenMatrixDimensionsNotMatchAmountOfDataThenExceptionThrown() {
+  public void whenMatrixDimensionsNotMatchAmountOfDataThenException() {
     exception.expect(IllegalArgumentException.class);
-    matrix1 = new Matrix(2, 2, 5.0, 9.0, 2.0);
+    A = new Matrix(2, 2, 5.0, 9.0, 2.0);
   }
   
   @Test
-  public void whenMatrixSumComputedResultCorrect() {
-    final Matrix sum = matrix1.plus(matrix2);
+  public void whenMatrixSumComputedThenSumIsAccurate() {
+    final Matrix sum = A.plus(B);
     final double[] expectedResult = new double[] {9.0, 11.0, 3.5, 7.5, 4.5, 10.5};
     assertThat(sum.data(), is(expectedResult));
   }
   
   @Test
-  public void whenMatrixProductComputedResultCorrect() {
-    matrix2 = new Matrix(2, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5);
-    final Matrix product = matrix1.times(matrix2);
+  public void whenMatrixProductComputedThenProductIsAccurate() {
+    B = new Matrix(2, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5);
+    final Matrix product = A.times(B);
     final double[] expectedResult = new double[] {30.0, 43.0, 23.0, 20.0, 22.25, 21.75, 20.0, 19.5, 24.5};
     assertThat(product.data(), is(expectedResult));
   }
   
   @Test
-  public void whenMatrixVectorProductComputedResultCorrect() {
+  public void whenMatrixVectorProductComputedThenProductIsAccurate() {
     final Matrix matrix = new Matrix(3, 2, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
     final Vector vector = new Vector(5.0, 9.0);
     final Vector product = matrix.times(vector);
@@ -93,7 +93,7 @@ public final class MatrixSpec {
   }
 
   @Test
-  public void whenIdentityBuilderThenBuiltMatrixCorrect() {
+  public void whenIdentityBuilderThenCorrectMatrixBuilt() {
     final Matrix.IdentityBuilder builder = new Matrix.IdentityBuilder(3);
     final Matrix matrix = builder.set(1, 2, 3.0).set(1, 0, 4.5).build();
     final double[][] expectedResult = new double[][] {{1.0, 0.0, 0.0}, {4.5, 1.0, 3.0}, {0.0, 0.0, 1.0}};
@@ -101,35 +101,40 @@ public final class MatrixSpec {
   }
 
   @Test
-  public void whenFillConstructorThenNewMatrixCorrect() {
+  public void whenFillConstructorThenCorrectMatrix() {
     final double[][] expectedResult = new double[][] {{3.0, 3.0}, {3.0, 3.0}, {3.0, 3.0}};
     assertThat(new Matrix(3, 2, 3.0).data2D(), is(expectedResult));
   }
 
   @Test
-  public void whenTwoDimConstructorThenNewMatrixCorrect() {
-    matrix1 = new Matrix(2, 3, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
-    Matrix expectedResult = matrix1;
+  public void whenTwoDimConstructorThenCorrectMatrixt() {
+    Matrix expectedResult = new Matrix(2, 3, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
     double[][] data = new double[][] {{4.0, 2.0, 1.5}, {2.5, 1.0, 3.0}};
     assertThat(new Matrix(data), is(expectedResult));
   }
 
-  @SuppressWarnings("EqualsWithItself")
   @Test
-  public void whenMatrixHashCodeAndEqualsThenValuesCorrect() {
-    assertThat(matrix1.equals(matrix1), is(true));
-    assertThat(matrix1.equals(matrix2), is(false));
-    Matrix newMatrix = new Matrix(3, 2, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
-    assertThat(matrix1.equals(newMatrix), is(true));
-    assertThat(matrix1.hashCode(), is(newMatrix.hashCode()));
-    assertThat(matrix1.hashCode(), is(not(matrix2.hashCode())));
+  public void whenStaticMethodConstructorThenCorrectMatrix() {
+    double[] m = new double[] {4.0, 2.0, 1.5, 2.5, 1.0, 3.0};
+    Matrix expectedResult = Matrix.create(2, 3, m);
+    double[][] data = new double[][] {{4.0, 2.0, 1.5}, {2.5, 1.0, 3.0}};
+    assertThat(new Matrix(data), is(expectedResult));
+  }
+
+  @Test
+  public void whenMatrixHashCodeAndEqualsThenCorrectResponse() {
+    assertThat(A.equals(B), is(false));
+    Matrix C = new Matrix(3, 2, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
+    assertThat(A.equals(C), is(true));
+    assertThat(A.hashCode(), is(C.hashCode()));
+    assertThat(A.hashCode(), is(not(B.hashCode())));
     //noinspection ObjectEqualsNull
-    assertThat(matrix1.equals(null), is(false));
-    assertThat(matrix1.equals(new Object()), is(false));
-    newMatrix = new Matrix(3, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5, 4.0, 1.0, 3.5);
-    assertThat(matrix1.equals(newMatrix), is(false));
-    newMatrix = new Matrix(2, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5);
-    assertThat(matrix1.equals(newMatrix), is(false));
+    assertThat(A.equals(null), is(false));
+    assertThat(A.equals(new Object()), is(false));
+    C = new Matrix(3, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5, 4.0, 1.0, 3.5);
+    assertThat(A.equals(C), is(false));
+    C = new Matrix(2, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5);
+    assertThat(A.equals(C), is(false));
   }
 
 }

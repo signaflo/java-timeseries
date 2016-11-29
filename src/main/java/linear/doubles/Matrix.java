@@ -7,7 +7,7 @@ package linear.doubles;
 import java.util.Arrays;
 
 /**
- * An immutable and thread-safe implementation of a real-valued Matrix.
+ * An immutable and thread-safe implementation of a real-valued matrix.
  * @author jrachiele
  *
  */
@@ -45,17 +45,17 @@ public final class Matrix {
   }
 
   /**
-   * Create a new matrix of the given dimensions filled with the supplied data point.
+   * Create a new matrix with the given dimensions filled with the supplied value.
    * @param nrow the number of rows for the matrix.
    * @param ncol the number of columns for the matrix.
-   * @param datum the data point to fill the matrix with.
+   * @param value the data point to fill the matrix with.
    */
-  public Matrix(final int nrow, final int ncol, final double datum) {
+  public Matrix(final int nrow, final int ncol, final double value) {
     this.nrow = nrow;
     this.ncol = ncol;
     this.data = new double[nrow * ncol];
     for (int i = 0; i < data.length; i++) {
-      this.data[i] = datum;
+      this.data[i] = value;
     }
   }
 
@@ -165,7 +165,12 @@ public final class Matrix {
     }
     return new Matrix(this.nrow, this.ncol, minus);
   }
-  
+
+  /**
+   * Retrieve the elements on the diagonal of this matrix.
+   * @return the elements on the diagonal of this matrix.
+   */
+  @SuppressWarnings("ManualArrayCopy")
   public final double[] diagonal() {
     final double[] diag = new double[Math.min(nrow, ncol)];
     for (int i = 0; i < diag.length; i++) {
@@ -173,7 +178,11 @@ public final class Matrix {
     }
     return diag;
   }
-  
+
+  /**
+   * Obtain the array of data underlying this matrix.
+   * @return the array of data underlying this matrix.
+   */
   public final double[] data() {
     return this.data.clone();
   }
@@ -228,7 +237,11 @@ public final class Matrix {
     
     final int n;
     final double[] data;
-    
+
+    /**
+     * Create a new builder with the given dimension.
+     * @param n the dimension of the matrix.
+     */
     public IdentityBuilder(final int n) {
       this.n = n;
       this.data = new double[n * n];
@@ -236,12 +249,23 @@ public final class Matrix {
         this.data[i * n + i] = 1.0;
       }
     }
-    
+
+    /**
+     * Set the matrix at the given coordinates to the provided value and return the builder.
+     * @param i the row to set the value at.
+     * @param j the column to set the value at.
+     * @param value the value to set.
+     * @return the builder with the value set at the given coordinates.
+     */
     public final IdentityBuilder set(final int i, final int j, final double value) {
       this.data[i * n + j] = value;
       return this;
     }
-    
+
+    /**
+     * Create a new matrix using the data in this builder.
+     * @return a new matrix from this builder.
+     */
     public final Matrix build() {
       return new Matrix(n, n, data);
     }
