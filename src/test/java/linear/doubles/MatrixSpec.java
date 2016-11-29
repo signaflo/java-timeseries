@@ -135,7 +135,7 @@ public final class MatrixSpec {
   }
 
   @Test
-  public void whenMatrixSquareThenTrue() {
+  public void whenMatrixSquareOrNotThenCorrectBooleanReturned() {
     A = new Matrix(2, 2, 1.0, 2.5, 10.0, 5.0);
     assertThat(A.isSquare(), is(true));
     assertThat(B.isSquare(), is(false));
