@@ -167,6 +167,20 @@ public final class Matrix {
     return new Matrix(this.nrow, this.ncol, minus);
   }
 
+  public final boolean isSquare() {
+    return this.nrow == this.ncol;
+  }
+
+  public final Matrix transpose() {
+    final double[] tData = new double[this.data.length];
+    for (int i = 0; i < this.nrow; i++) {
+      for (int j = 0; j < this.ncol; j++) {
+        tData[i + j * this.nrow] = this.data[j + i * ncol];
+      }
+    }
+    return new Matrix(this.ncol, this.nrow, tData);
+  }
+
   /**
    * Retrieve the elements on the diagonal of this matrix.
    * @return the elements on the diagonal of this matrix.

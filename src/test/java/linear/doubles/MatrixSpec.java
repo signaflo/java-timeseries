@@ -122,6 +122,26 @@ public final class MatrixSpec {
   }
 
   @Test
+  public void whenMatrixTransposeThenCorrectMatrixReturned() {
+    double[] data = new double[] {4.0, 1.5, 1.0, 2.0, 2.5, 3.0};
+    Matrix expected = new Matrix(2, 3, data);
+    assertThat(A.transpose(), is(expected));
+    data = new double[] {5.0, 2.0, 3.5, 9.0, 5.0, 7.5};
+    expected = new Matrix(2, 3, data);
+    assertThat(B.transpose(), is(expected));
+    A = new Matrix(2, 2, 1.0, 2.5, 10.0, 5.0);
+    data = new double[] {1.0, 10.0, 2.5, 5.0};
+    assertThat(A.transpose(), is(new Matrix(2, 2, data)));
+  }
+
+  @Test
+  public void whenMatrixSquareThenTrue() {
+    A = new Matrix(2, 2, 1.0, 2.5, 10.0, 5.0);
+    assertThat(A.isSquare(), is(true));
+    assertThat(B.isSquare(), is(false));
+  }
+
+  @Test
   public void whenMatrixHashCodeAndEqualsThenCorrectResponse() {
     assertThat(A.equals(B), is(false));
     Matrix C = new Matrix(3, 2, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
