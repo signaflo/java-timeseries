@@ -39,6 +39,7 @@ public final class Matrix {
    * @param nrow the number of rows for the matrix.
    * @param ncol the number of columns for the matrix.
    * @param data the data in row-major order.
+   * @return a new matrix with the supplied data and dimensions.
    */
   public static Matrix create(final int nrow, final int ncol, final double[] data) {
     return new Matrix(nrow, ncol, data);
@@ -114,7 +115,7 @@ public final class Matrix {
   }
 
   /**
-   * Transform the given vector with this matrix and return the resulting vector.
+   * Transform the given vector with this matrix and return the resulting transformation.
    * @param vector the vector to transform.
    * @return the given vector transformed by this matrix.
    */

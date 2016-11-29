@@ -107,7 +107,7 @@ public final class MatrixSpec {
   }
 
   @Test
-  public void whenTwoDimConstructorThenCorrectMatrixt() {
+  public void whenTwoDimConstructorThenCorrectMatrix() {
     Matrix expectedResult = new Matrix(2, 3, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
     double[][] data = new double[][] {{4.0, 2.0, 1.5}, {2.5, 1.0, 3.0}};
     assertThat(new Matrix(data), is(expectedResult));
