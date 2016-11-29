@@ -143,6 +143,7 @@ public final class MatrixSpec {
 
   @Test
   public void whenMatrixHashCodeAndEqualsThenCorrectResponse() {
+    assertThat(A.equals(A), is(true));
     assertThat(A.equals(B), is(false));
     Matrix C = new Matrix(3, 2, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
     assertThat(A.equals(C), is(true));
