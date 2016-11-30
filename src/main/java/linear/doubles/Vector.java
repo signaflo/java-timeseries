@@ -4,58 +4,63 @@
  */
 package linear.doubles;
 
-import java.util.Arrays;
-
 import stats.Statistics;
+
+import java.util.Arrays;
 
 /**
  * An immutable and thread-safe implementation of a real-valued vector backed by an array of primitive doubles.
- * @author Jacob Rachiele
  *
+ * @author Jacob Rachiele
  */
 public final class Vector {
 
   private final double[] elements;
-  
+
   public static Vector from(double... elements) {
     return new Vector(elements);
   }
-  
+
   /**
    * Create a new vector using the provided elements.
+   *
    * @param elements the array of primitive doubles constituting the elements of the new vector.
    */
   public Vector(double... elements) {
     this.elements = elements.clone();
   }
-  
+
   /**
    * The elements of the vector as an array of primitive doubles.
+   *
    * @return the elements of the vector as an array of primitive doubles.
    */
   public final double[] elements() {
     return this.elements.clone();
   }
-  
+
   /**
    * Return the element at index i, where indexing begins at 0.
+   *
    * @param i the index of the element.
    * @return the element at index i, where indexing begins at 0.
    */
   public final double at(final int i) {
     return this.elements[i];
   }
-  
+
   /**
    * The number of elements in this vector.
+   *
    * @return the number of elements in this vector.
    */
   public final int size() {
     return this.elements.length;
   }
-  
+
   /**
    * Add this vector to the given vector and return the result in a new vector.
+   *
    * @param other the vector to add to this vector.
    * @return this vector added to the given vector.
    */
@@ -66,9 +71,10 @@ public final class Vector {
     }
     return new Vector(summed);
   }
-  
+
   /**
    * Subtract the given vector from this vector and return the result in a new vector.
+   *
    * @param other the vector to subtract from this vector.
    * @return this vector subtracted by the given vector.
    */
@@ -79,9 +85,10 @@ public final class Vector {
     }
     return new Vector(differenced);
   }
-  
+
   /**
    * Subtract the given scalar from this vector and return the result in a new vector.
+   *
    * @param scalar the scalar to subtract from this vector.
    * @return this vector subtracted by the given scalar.
    */
@@ -92,9 +99,10 @@ public final class Vector {
     }
     return new Vector(differenced);
   }
-  
+
   /**
    * Scale this vector by the given scalar and return the result in a new vector.
+   *
    * @param alpha the scalar to scale this vector by.
    * @return this vector scaled by the given scalar.
    */
@@ -105,9 +113,10 @@ public final class Vector {
     }
     return new Vector(scaled);
   }
-  
+
   /**
    * Compute the dot product of this vector with the given vector.
+   *
    * @param other the vector to take the dot product with.
    * @return the dot product of this vector with the given vector.
    */
@@ -130,7 +139,7 @@ public final class Vector {
       }
     }
     return new Matrix(elements.length, other.elements.length, product);
-    
+
   }
 
   final Vector axpy(final Vector other, final double alpha) {
@@ -140,9 +149,10 @@ public final class Vector {
     }
     return new Vector(result);
   }
-  
+
   /**
    * Compute the L2 length of this vector.
+   *
    * @return the L2 length of this vector.
    */
   public final double norm() {

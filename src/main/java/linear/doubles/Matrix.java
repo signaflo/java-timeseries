@@ -8,17 +8,18 @@ import java.util.Arrays;
 
 /**
  * An immutable and thread-safe implementation of a real-valued matrix.
- * @author jrachiele
  *
+ * @author jrachiele
  */
 public final class Matrix {
-  
+
   private final int nrow;
   private final int ncol;
   private final double[] data;
 
   /**
    * Create a new matrix with the supplied data and dimensions. The data is assumed to be in row-major order.
+   *
    * @param nrow the number of rows for the matrix.
    * @param ncol the number of columns for the matrix.
    * @param data the data in row-major order.
@@ -36,6 +37,7 @@ public final class Matrix {
 
   /**
    * Create a new matrix with the supplied data and dimensions. The data is assumed to be in row-major order.
+   *
    * @param nrow the number of rows for the matrix.
    * @param ncol the number of columns for the matrix.
    * @param data the data in row-major order.
@@ -47,8 +49,9 @@ public final class Matrix {
 
   /**
    * Create a new matrix with the given dimensions filled with the supplied value.
-   * @param nrow the number of rows for the matrix.
-   * @param ncol the number of columns for the matrix.
+   *
+   * @param nrow  the number of rows for the matrix.
+   * @param ncol  the number of columns for the matrix.
    * @param value the data point to fill the matrix with.
    */
   public Matrix(final int nrow, final int ncol, final double value) {
@@ -62,6 +65,7 @@ public final class Matrix {
 
   /**
    * Create a new matrix from the given two-dimensional array of data.
+   *
    * @param matrixData the two-dimensional array of data constituting the matrix.
    */
   public Matrix(final double[][] matrixData) {
@@ -75,13 +79,15 @@ public final class Matrix {
 
   /**
    * Add this matrix to the given matrix and return the resulting sum.
+   *
    * @param other the matrix to add to this one.
    * @return this matrix added to the other matrix.
    */
   public final Matrix plus(final Matrix other) {
     if (this.nrow != other.nrow || this.ncol != other.ncol) {
       throw new IllegalArgumentException("The dimensions of this matrix must equal the dimensions of the other matrix. "
-          + "This matrix has dimension (" + this.nrow + ", " + this.ncol + ") and the other matrix has dimension (" + other.nrow
+          + "This matrix has dimension (" + this.nrow + ", " + this.ncol + ") and the other matrix has dimension (" +
+          other.nrow
           + ", " + other.ncol + ")");
     }
     final double[] sum = new double[nrow * ncol];
@@ -92,9 +98,10 @@ public final class Matrix {
     }
     return new Matrix(this.nrow, this.ncol, sum);
   }
-  
+
   /**
    * Multiply this matrix by the given matrix and return the resulting product.
+   *
    * @param other the matrix to multiply by.
    * @return the product of this matrix with the given matrix.
    */
@@ -116,6 +123,7 @@ public final class Matrix {
 
   /**
    * Transform the given vector with this matrix and return the resulting transformation.
+   *
    * @param vector the vector to transform.
    * @return the given vector transformed by this matrix.
    */
@@ -127,15 +135,16 @@ public final class Matrix {
     }
     final double[] product = new double[this.nrow];
     for (int i = 0; i < this.nrow; i++) {
-        for (int k = 0; k < this.ncol; k++) {
-          product[i] += this.data[i * this.ncol + k] * elements[k];
-        }
+      for (int k = 0; k < this.ncol; k++) {
+        product[i] += this.data[i * this.ncol + k] * elements[k];
+      }
     }
     return new Vector(product);
   }
 
   /**
    * Scale this matrix by the given value and return the scaled matrix.
+   *
    * @param c the value to scale this matrix by.
    * @return this matrix scaled by the given value.
    */
@@ -149,13 +158,15 @@ public final class Matrix {
 
   /**
    * Subtract the given matrix from this matrix return the resulting difference.
+   *
    * @param other the matrix to subtract from this one.
    * @return the difference of this matrix and the given matrix.
    */
   public final Matrix minus(final Matrix other) {
     if (this.nrow != other.nrow || this.ncol != other.ncol) {
       throw new IllegalArgumentException("The dimensions of this matrix must equal the dimensions of the other matrix. "
-          + "This matrix has dimension (" + this.nrow + ", " + this.ncol + ") and the other matrix has dimension (" + other.nrow
+          + "This matrix has dimension (" + this.nrow + ", " + this.ncol + ") and the other matrix has dimension (" +
+          other.nrow
           + ", " + other.ncol + ")");
     }
     final double[] minus = new double[nrow * ncol];
@@ -169,6 +180,7 @@ public final class Matrix {
 
   /**
    * Returns true if the matrix is square and false otherwise.
+   *
    * @return true if the matrix is square and false otherwise.
    */
   public final boolean isSquare() {
@@ -177,6 +189,7 @@ public final class Matrix {
 
   /**
    * Transpose this matrix and return the resulting transposition.
+   *
    * @return the transpose of this matrix.
    */
   public final Matrix transpose() {
@@ -191,6 +204,7 @@ public final class Matrix {
 
   /**
    * Retrieve the elements on the diagonal of this matrix.
+   *
    * @return the elements on the diagonal of this matrix.
    */
   @SuppressWarnings("ManualArrayCopy")
@@ -204,6 +218,7 @@ public final class Matrix {
 
   /**
    * Obtain the array of data underlying this matrix.
+   *
    * @return the array of data underlying this matrix.
    */
   public final double[] data() {
@@ -212,6 +227,7 @@ public final class Matrix {
 
   /**
    * Obtain the data in this matrix as a two-dimensional array.
+   *
    * @return the data in this matrix as a two-dimensional array.
    */
   final double[][] data2D() {
@@ -253,16 +269,17 @@ public final class Matrix {
   /**
    * A class that allows one to start with an identity matrix, then set specific elements before creating
    * an immutable Matrix.
-   * @author Jacob Rachiele
    *
+   * @author Jacob Rachiele
    */
   public static final class IdentityBuilder {
-    
+
     final int n;
     final double[] data;
 
     /**
      * Create a new builder with the given dimension.
+     *
      * @param n the dimension of the matrix.
      */
     public IdentityBuilder(final int n) {
@@ -275,8 +292,9 @@ public final class Matrix {
 
     /**
      * Set the matrix at the given coordinates to the provided value and return the builder.
-     * @param i the row to set the value at.
-     * @param j the column to set the value at.
+     *
+     * @param i     the row to set the value at.
+     * @param j     the column to set the value at.
      * @param value the value to set.
      * @return the builder with the value set at the given coordinates.
      */
@@ -287,6 +305,7 @@ public final class Matrix {
 
     /**
      * Create a new matrix using the data in this builder.
+     *
      * @return a new matrix from this builder.
      */
     public final Matrix build() {

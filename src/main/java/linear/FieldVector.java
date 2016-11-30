@@ -4,66 +4,72 @@
  */
 package linear;
 
+import math.FieldElement;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import math.FieldElement;
-
 /**
  * An immutable and thread-safe implementation of a vector backed by a list of {@link FieldElement}s.
- * @author Jacob Rachiele
  *
+ * @author Jacob Rachiele
  */
-public final class FieldVector<T extends FieldElement<T>> {
-  
+final class FieldVector<T extends FieldElement<T>> {
+
   private final List<T> elements;
-  
+
   /**
    * Create a new vector using the provided list of elements.
+   *
    * @param elements a list of elements constituting the elements of the new vector.
    */
   public FieldVector(List<T> elements) {
     this.elements = Collections.unmodifiableList(elements);
   }
-  
+
   /**
    * Create a new vector using the provided elements.
+   *
    * @param elements the elements of the new vector.
    */
   @SafeVarargs
   public FieldVector(T... elements) {
     this.elements = Collections.unmodifiableList(Arrays.asList(elements));
   }
-  
+
   /**
    * The elements of the vector as a list of field elements.
+   *
    * @return the elements of the vector as a list of field element.
    */
   public final List<T> elements() {
     return this.elements;
   }
-  
+
   /**
    * Return the element at index i, where indexing begins at 0.
+   *
    * @param i the index of the element.
    * @return the element at index i, where indexing begins at 0.
    */
   public final T at(final int i) {
     return this.elements.get(i);
   }
-  
+
   /**
    * The number of elements in this vector.
+   *
    * @return the number of elements in this vector.
    */
   public final int size() {
     return this.elements.size();
   }
-  
+
   /**
    * Add this vector to the given vector and return the result in a new vector.
+   *
    * @param other the vector to add to this vector.
    * @return this vector added to the given vector.
    */
@@ -74,9 +80,10 @@ public final class FieldVector<T extends FieldElement<T>> {
     }
     return new FieldVector<>(summed);
   }
-  
+
   /**
    * Subtract the given vector from this vector and return the result in a new vector.
+   *
    * @param other the vector to subtract from this vector.
    * @return this vector subtracted by the given vector.
    */
@@ -87,9 +94,10 @@ public final class FieldVector<T extends FieldElement<T>> {
     }
     return new FieldVector<>(differenced);
   }
-  
+
   /**
    * Scale this vector by the given scalar and return the result in a new vector.
+   *
    * @param alpha the scalar to scale this vector by.
    * @return this vector scaled by the given scalar.
    */
@@ -108,9 +116,10 @@ public final class FieldVector<T extends FieldElement<T>> {
     }
     return new FieldVector<>(result);
   }
-  
+
   /**
    * Compute the dot product of this vector with the given vector.
+   *
    * @param other the vector to take the dot product with.
    * @return the dot product of this vector with the given vector.
    */
@@ -124,15 +133,16 @@ public final class FieldVector<T extends FieldElement<T>> {
     }
     throw new IllegalStateException("The dot product is undefined for zero length vectors.");
   }
-  
+
   /**
    * Compute the L2 length of this vector.
+   *
    * @return the L2 length of this vector.
    */
   public final double norm() {
     return Math.sqrt(sumOfSquares());
   }
-  
+
   private double sumOfSquares() {
     double sum = 0.0;
     if (this.size() > 0) {
@@ -143,8 +153,8 @@ public final class FieldVector<T extends FieldElement<T>> {
     }
     return sum;
   }
-  
-  
+
+
   @Override
   public String toString() {
     return "elements: " + elements;
