@@ -92,7 +92,6 @@ public class TimeSeriesSpec {
         3077.3, 3144.52, 3188.7, 3202.32, 3216.94, 3307.296, 3398.754, 3485.434 };
     double[] result = series.movingAverage(5).series();
     assertArrayEquals(expected, result, 1E-2);
-    System.out.println(series.movingAverage(5));
   }
 
   @Test
@@ -102,7 +101,6 @@ public class TimeSeriesSpec {
         3077.7, 3135.5, 3180.475, 3208.85, 3163.525, 3252.25, 3338.97, 3443.0425, 3562.7425 };
     double[] result = series.movingAverage(4).series();
     assertArrayEquals(expected, result, 1E-2);
-    System.out.println(series.movingAverage(4));
   }
 
   @Test
@@ -139,11 +137,5 @@ public class TimeSeriesSpec {
     TimeSeries seriesOne = series.aggregateToYears();
     TimeSeries seriesTwo = series.aggregate(TimeUnit.YEAR);
     assertThat(seriesOne, is(equalTo(seriesTwo)));
-  }
-  
-  @Test
-  public void whenMinuteSeriesCreatedObservationTimesCorrect() throws Exception {
-    TimeSeries series = TestData.debitcards();
-    series.print();  
   }
 }

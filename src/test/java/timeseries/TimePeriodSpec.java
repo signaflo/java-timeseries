@@ -20,33 +20,45 @@ public class TimePeriodSpec {
   }
   
   @Test
-  public final void whenNanosecondsTotalComputedResultCorrect() {
+  public void whenNanosecondsTotalComputedResultCorrect() {
     TimePeriod nanos = new TimePeriod(TimeUnit.NANOSECOND, 480);
     assertThat(nanos.totalSeconds(), is(equalTo(480 * 1E-9)));
   }
   
   @Test
-  public final void whenFrequencyPerComputedResultCorrect() {
+  public void whenFrequencyPerComputedResultCorrect() {
     TimePeriod nanos = new TimePeriod(TimeUnit.MINUTE, 4);
     assertThat(nanos.frequencyPer(TimePeriod.halfHour()), is(equalTo(7.5)));
   }
   
   @Test
-  public final void whenMilliFrequencyPerComputedResultCorrect() {
+  public void whenMilliFrequencyPerComputedResultCorrect() {
     TimePeriod nanos = new TimePeriod(TimeUnit.MILLISECOND, 480);
     assertThat(nanos.frequencyPer(TimePeriod.halfHour()), is(equalTo(3750.0)));
   }
   
   @Test
-  public final void whenNanoFrequencyPerComputedResultCorrect() {
+  public void whenNanoFrequencyPerComputedResultCorrect() {
     TimePeriod nanos = new TimePeriod(TimeUnit.NANOSECOND, 480);
     assertThat(nanos.frequencyPer(TimePeriod.halfHour()), is(closeTo(3750.0*1E+6, 1E-4)));
   }
   
   @Test
-  public final void whenFrequencyPerReverseComputedResultCorrect() {
+  public void whenFrequencyPerReverseComputedResultCorrect() {
     TimePeriod minutes = new TimePeriod(TimeUnit.MINUTE, 45);
     assertThat(minutes.frequencyPer(new TimePeriod(TimeUnit.SECOND, 15)), is(closeTo(0.00555555556, 1E-4)));
+  }
+
+  @Test
+  public void whenHalfDayCreatedThenTwelveHours() {
+    TimePeriod halfDay = TimePeriod.halfDay();
+    assertThat(TimePeriod.oneHour().frequencyPer(halfDay), is(12.0));
+  }
+
+  @Test
+  public void whenOneHourCreatedThenSixtyMinutes() {
+    TimePeriod hour = TimePeriod.oneHour();
+    assertThat(new TimePeriod(TimeUnit.MINUTE, 1).frequencyPer(hour), is(60.0));
   }
 
 }

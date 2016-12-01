@@ -8,6 +8,8 @@ package math.polynomial.interpolation;
 import math.function.CubicFunction;
 import math.function.QuadraticFunction;
 
+import java.util.Arrays;
+
 /**
  * @author Jacob Rachiele
  * Represents the <a target="_blank" href="https://en.wikipedia.org/wiki/Newton_polynomial">Newton form</a>
@@ -82,6 +84,7 @@ public final class NewtonPolynomial {
 
   /**
    *
+
    * Convert this NewtonPolynomial to a the standard form of a quadratic function, <i>f(x)</i>
    * = a<i>x</i><sup>2</sup> + b<i>x</i> + c.
    * @return this Newton Polynomial converted to standard quadratic form.
@@ -116,5 +119,20 @@ public final class NewtonPolynomial {
     double d = coefficients[0] - coefficients[1] * point[0] + coefficients[2] * point[0] * point[1] -
         coefficients[3] * point[0] * point[1] * point[2];
     return new CubicFunction(a, b, c, d);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    NewtonPolynomial that = (NewtonPolynomial) o;
+
+    return Arrays.equals(coefficients, that.coefficients);
+  }
+
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode(coefficients);
   }
 }

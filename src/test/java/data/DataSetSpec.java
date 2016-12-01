@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -131,21 +130,6 @@ public class DataSetSpec {
   }
 
   @Test
-  @Ignore
-  public void whenPlotCalledNoExceptionsThrown() {
-    DataSet dataSet = new DataSet(TestData.ausbeer());
-    dataSet.plot();
-  }
-
-  @Test
-  @Ignore
-  public void whenPlotAgainstCalledNoExceptionsThrown() {
-    DataSet dataSet1 = new DataSet(1.0, 2.0, 3.0);
-    DataSet dataSet2 = new DataSet(1.0, 4.0, 9.0);
-    dataSet1.plotAgainst(dataSet2);
-  }
-
-  @Test
   public void whenSumOfSquaresComputedResultCorrect() {
     DataSet dataSet = new DataSet(1.0, 2.0, 3.0);
     assertThat(dataSet.sumOfSquares(), is(equalTo(14.0)));
@@ -176,14 +160,6 @@ public class DataSetSpec {
     assertThat(dataSet.equals(dataSet2), is(false));
     assertThat(dataSet2.equals(dataSet), is(false));
     assertThat(dataSet.hashCode(), is(not(equalTo(dataSet2.hashCode()))));
-  }
-
-  @SuppressWarnings("EqualsWithItself")
-  @Test
-  public void whenDataSetEqualToItselfThenEqualsAndHashCodeCorrect() {
-    DataSet dataSet = new DataSet(1.0, 2.0, 3.0);
-    assertThat(dataSet.equals(dataSet), is(true));
-    assertThat(dataSet.hashCode(), is(equalTo(dataSet.hashCode())));
   }
   
   @Test

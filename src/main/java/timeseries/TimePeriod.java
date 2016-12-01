@@ -70,7 +70,15 @@ public final class TimePeriod {
     double thisDuration = this.timeUnit.totalDuration();
     return thisDuration * this.periodLength;
   }
-  
+
+  /**
+   * Create and return a new TimePeriod representing exactly one hour.
+   *
+   * @return a new TimePeriod representing exactly one hour.
+   */
+  public static TimePeriod oneHour() {
+    return new TimePeriod(TimeUnit.HOUR, 1);
+  }
   /**
    * Create and return a new TimePeriod representing exactly one year.
    * 
@@ -89,7 +97,7 @@ public final class TimePeriod {
     return new TimePeriod(TimeUnit.YEAR, 2);
   }
 
-  /**
+  /**ex
    * Create and return a new TimePeriod representing one half of a decade.
    * 
    * @return a new TimePeriod representing one half of a decade.

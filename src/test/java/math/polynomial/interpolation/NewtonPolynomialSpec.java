@@ -110,4 +110,18 @@ public class NewtonPolynomialSpec {
     expected = 1.0;
     assertThat(np.getCoefficient(3), is(equalTo(expected)));
   }
+
+  @Test
+  public void testEqualsAndHashCode() {
+    NewtonPolynomial np = new NewtonPolynomial(new double[] {2.0, 4.0, 7.0}, new double[] {4.0, 16.0, 49.0});
+    NewtonPolynomial np2 = new NewtonPolynomial(new double[] {1.0, 2.0, 3.0, 4.0}, new double[]
+        {1.0, 8.0, 27.0, 64.0});
+    NewtonPolynomial npAgain = new NewtonPolynomial(new double[] {2.0, 4.0, 7.0}, new double[] {4.0, 16.0, 49.0});
+    assertThat(np, is(np));
+    assertThat(np, is(not(np2)));
+    assertThat(np.hashCode(), is(not(np2.hashCode())));
+    assertThat(np.hashCode(), is(npAgain.hashCode()));
+    assertThat(np.equals(null), is(false));
+
+  }
 }
