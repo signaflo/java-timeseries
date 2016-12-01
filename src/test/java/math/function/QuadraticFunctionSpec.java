@@ -89,4 +89,20 @@ public class QuadraticFunctionSpec {
     assertThat(function.at(Real.from(3.5)), is(Real.from(0.75)));
   }
 
+  @Test
+  public void testEqualsAndHashCode() {
+    QuadraticFunction a = function;
+    QuadraticFunction b = new QuadraticFunction(-1.0, -5.0, 6.0);
+    QuadraticFunction c = new QuadraticFunction(1.0, -5.0, 6.0);
+    //noinspection ObjectEqualsNull
+    assertThat(a.equals(null), is(false));
+    assertThat(a, is(not(new Object())));
+    assertThat(a, is(not((b))));
+    assertThat(a, is(a));
+    assertThat(a, is(c));
+    assertThat(a.hashCode(), is(c.hashCode()));
+    b = new QuadraticFunction(1.0, 5.0, 6.0);
+    assertThat(a, is(not(b)));
+  }
+
 }

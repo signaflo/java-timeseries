@@ -102,7 +102,6 @@ public class RealSpec {
     assertThat(a, is(a));
     assertThat(a, is(c));
     assertThat(a.hashCode(), is(c.hashCode()));
-    assertThat(a.hashCode(), is(not(b.hashCode())));
   }
 
   @Test
@@ -117,7 +116,5 @@ public class RealSpec {
     assertThat(a, is(a));
     assertThat(a, is(c));
     assertThat(a.hashCode(), is(c.hashCode()));
-    assertThat(a.hashCode(), is(not(b.hashCode())));
-
   }
 }

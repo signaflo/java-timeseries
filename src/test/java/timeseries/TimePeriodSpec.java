@@ -58,7 +58,8 @@ public class TimePeriodSpec {
   @Test
   public void whenOneHourCreatedThenSixtyMinutes() {
     TimePeriod hour = TimePeriod.oneHour();
-    assertThat(new TimePeriod(TimeUnit.MINUTE, 1).frequencyPer(hour), is(60.0));
+    TimePeriod minute = new TimePeriod(TimeUnit.MINUTE, 1);
+    assertThat(minute.frequencyPer(hour), is(60.0));
   }
 
 }

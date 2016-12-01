@@ -7,9 +7,6 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 
-/**
- * Created by jacob on 11/23/16.
- */
 public class GeneralFunctionSpec {
 
   @Test

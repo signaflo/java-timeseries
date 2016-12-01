@@ -157,6 +157,26 @@ public class QuadraticFunction {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    QuadraticFunction that = (QuadraticFunction) o;
+
+    if (!a.equals(that.a)) return false;
+    if (!b.equals(that.b)) return false;
+    return c.equals(that.c);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = a.hashCode();
+    result = 31 * result + b.hashCode();
+    result = 31 * result + c.hashCode();
+    return result;
+  }
+
+  @Override
   public String toString() {
     return "f(x) = " + a.value() + "x^2 + " + b.value() + "x + " + c.value();
   }
