@@ -93,16 +93,31 @@ public class RealSpec {
     assertThat(interval.doesntContain(10.0000001), is(true));
   }
 
-  @SuppressWarnings("EqualsWithItself")
   @Test
-  public void whenEqualsAndHashCodeThenCorrectValues() {
-    assertThat(a.equals(new Object()), is(false));
+  public void testEqualsAndHashCode() {
+    Real c = new Real(3.0);
     //noinspection ObjectEqualsNull
     assertThat(a.equals(null), is(false));
-    assertThat(a.equals(b), is(false));
-    assertThat(a.equals(a), is(true));
-    assertThat(a.equals(new Real(3.0)), is(true));
-    assertThat(a.hashCode(), is(new Real(3.0).hashCode()));
+    assertThat(a, is(not((b))));
+    assertThat(a, is(a));
+    assertThat(a, is(c));
+    assertThat(a.hashCode(), is(c.hashCode()));
     assertThat(a.hashCode(), is(not(b.hashCode())));
+  }
+
+  @Test
+  public void testIntervalEqualsAndHashCode() {
+    Real.Interval a = new Real.Interval(3.0, 5.0);
+    Real.Interval b = new Real.Interval(5.0, 3.0);
+    Real.Interval c = new Real.Interval(3.0, 5.0);
+    //noinspection ObjectEqualsNull
+    assertThat(a.equals(null), is(false));
+    assertThat(a, is(not(new Object())));
+    assertThat(a, is(not((b))));
+    assertThat(a, is(a));
+    assertThat(a, is(c));
+    assertThat(a.hashCode(), is(c.hashCode()));
+    assertThat(a.hashCode(), is(not(b.hashCode())));
+
   }
 }

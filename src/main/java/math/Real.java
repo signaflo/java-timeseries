@@ -172,6 +172,24 @@ public final class Real extends Complex {
     }
 
     @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      Interval interval = (Interval) o;
+
+      if (!lower.equals(interval.lower)) return false;
+      return upper.equals(interval.upper);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = lower.hashCode();
+      result = 31 * result + upper.hashCode();
+      return result;
+    }
+
+    @Override
     public String toString() {
       return "(" + this.lower.value() + ", " + this.upper.value() + ")";
     }

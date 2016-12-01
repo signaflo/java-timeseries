@@ -119,6 +119,7 @@ public class NewtonPolynomialSpec {
     NewtonPolynomial npAgain = new NewtonPolynomial(new double[] {2.0, 4.0, 7.0}, new double[] {4.0, 16.0, 49.0});
     assertThat(np, is(np));
     assertThat(np, is(not(np2)));
+    assertThat(np2, is(not(np)));
     assertThat(np.hashCode(), is(not(np2.hashCode())));
     assertThat(np.hashCode(), is(npAgain.hashCode()));
     assertThat(np.equals(null), is(false));
