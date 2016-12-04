@@ -97,7 +97,7 @@ public class DataSet {
   }
 
   /**
-   * Add every element of this data set with the corresponding element of the given data set.
+   * Add every element of this data set to the corresponding element of the given data set.
    *
    * @param otherData The data to add to.
    * @return A new data set containing every element of this data set added to

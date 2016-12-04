@@ -17,6 +17,11 @@ public final class Vector {
 
   private final double[] elements;
 
+  /**
+   * Create a new vector from the given elements.
+   * @param elements the elements of the new vector.
+   * @return a new vector with the given elements.
+   */
   public static Vector from(double... elements) {
     return new Vector(elements);
   }
@@ -24,7 +29,7 @@ public final class Vector {
   /**
    * Create a new vector using the provided elements.
    *
-   * @param elements the array of primitive doubles constituting the elements of the new vector.
+   * @param elements the elements of the new vector.
    */
   public Vector(double... elements) {
     this.elements = elements.clone();
@@ -131,6 +136,11 @@ public final class Vector {
     throw new IllegalArgumentException("The dot product is undefined for zero length vectors");
   }
 
+  /**
+   * Compute the outer product of this vector and the given vector.
+   * @param other the vector to compute the outer product of this vector with.
+   * @return the outer product of this vector with the given vector.
+   */
   public final Matrix outerProduct(final Vector other) {
     double[] product = new double[elements.length * other.elements.length];
     for (int i = 0; i < elements.length; i++) {
@@ -159,10 +169,18 @@ public final class Vector {
     return Math.sqrt(dotProduct(this));
   }
 
+  /**
+   * Compute the sum of the elements of this vector.
+   * @return the sum of the elements of this vector.
+   */
   public final double sum() {
     return Statistics.sumOf(elements);
   }
 
+  /**
+   * Compute the sum of squared elements of this vector.
+   * @return the sum of squared elements of this vector.
+   */
   public final double sumOfSquares() {
     return Statistics.sumOfSquared(elements);
   }

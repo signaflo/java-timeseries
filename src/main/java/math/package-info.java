@@ -4,7 +4,7 @@
  */
 
 /**
- * Consists of classes for general mathematical constructs.
+ * General mathematical functionality.
  * 
  */
 package math;

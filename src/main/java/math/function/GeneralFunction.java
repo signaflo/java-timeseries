@@ -6,7 +6,7 @@
 package math.function;
 
 /**
- * A thin wrapper for a {@link Function f}. Pass a lambda expression representing f to the constructor
+ * A thin wrapper for a {@link Function function}. Pass a lambda expression representing the function to the constructor
  * to quickly obtain a concrete {@link AbstractFunction} instead of writing a new class that extends AbstractFunction.
  * @author Jacob Rachiele
  */

@@ -17,11 +17,14 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A class for reading data from CSV files.
+ * Reads data from CSV files.
  *
  * @author Jacob Rachiele
  */
-final class CsvReader {
+//TODO: This class must eventually have a method to perform basic type inference on the input columns. The
+  //method should be able to detect Doubles and at least one Date type. Columns not parsable as either should
+  //default to String.
+public final class CsvReader {
 
   private final File csvFile;
   private final List<List<String>> parsedRecords;
@@ -32,7 +35,7 @@ final class CsvReader {
    *
    * @param csvFilePath the path to the file.
    */
-  CsvReader(final String csvFilePath) {
+  public CsvReader(final String csvFilePath) {
     this(csvFilePath, false);
   }
 
@@ -42,13 +45,8 @@ final class CsvReader {
    * @param csvFilePath the path to the file.
    * @param headerRow   indicates whether the file contains a header row.
    */
-  CsvReader(final String csvFilePath, final boolean headerRow) {
-    URL resource = getClass().getClassLoader().getResource(csvFilePath);
-    if (resource == null) {
-      throw new IllegalArgumentException("The resource given by " + csvFilePath + " could not be found on the file system.");
-    } else {
-      this.csvFile = new File(resource.getFile());
-    }
+  public CsvReader(final String csvFilePath, final boolean headerRow) {
+    this.csvFile = new File(csvFilePath);
     final CSVParser parser = getParser(csvFile);
     List<CSVRecord> records = Collections.emptyList();
     if (parser == null) {
@@ -107,7 +105,7 @@ final class CsvReader {
    *
    * @return the csv file.
    */
-  final File csvFile() {
+  public final File csvFile() {
     return this.csvFile;
   }
 
@@ -116,7 +114,7 @@ final class CsvReader {
    *
    * @return the data row-by-row.
    */
-  final List<List<String>> getRows() {
+  public final List<List<String>> getRows() {
     return this.parsedRecords;
   }
 
@@ -126,7 +124,7 @@ final class CsvReader {
    * @param i the index of the row.
    * @return the ith row of data.
    */
-  final List<String> getRow(final int i) {
+  public final List<String> getRow(final int i) {
     return this.parsedRecords.get(i);
   }
 
@@ -136,7 +134,7 @@ final class CsvReader {
    * @param i the index of the column.
    * @return the ith column of data.
    */
-  final List<String> getColumn(final int i) {
+  public final List<String> getColumn(final int i) {
     List<String> column = new ArrayList<>(this.parsedRecords.size());
     for (List<String> record : parsedRecords) {
       column.add(record.get(i));
@@ -149,7 +147,7 @@ final class CsvReader {
    *
    * @return the header row.
    */
-  final List<String> getHeader() {
+  public final List<String> getHeader() {
     return Collections.unmodifiableList(this.header);
   }
 
@@ -158,7 +156,7 @@ final class CsvReader {
    *
    * @return the data column-by-column.
    */
-  final List<List<String>> getColumns() {
+  public final List<List<String>> getColumns() {
     int nCols = this.parsedRecords.get(0).size();
     List<List<String>> columns = new ArrayList<>(nCols);
     List<String> column;
@@ -179,7 +177,7 @@ final class CsvReader {
    * @param columnName the name of the column.
    * @return the column with the given name.
    */
-  final List<String> getColumn(final String columnName) {
+  public final List<String> getColumn(final String columnName) {
     List<String> headerRow = getHeader();
     for (int i = 0; i < headerRow.size(); i++) {
       if (headerRow.get(i).equals(columnName)) {

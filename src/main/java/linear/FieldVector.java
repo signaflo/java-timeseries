@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author Jacob Rachiele
  */
-final class FieldVector<T extends FieldElement<T>> {
+public final class FieldVector<T extends FieldElement<T>> {
 
   private final List<T> elements;
 
