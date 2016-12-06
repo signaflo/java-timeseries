@@ -8,25 +8,33 @@ import java.util.List;
  */
 public class DataFrame {
 
-  private List<DataColumn<?>> data;
+  private final List<Column<?>> data;
 
   public DataFrame() {
     data = new ArrayList<>();
   }
 
-  public DataFrame(final List<DataColumn<?>> data) {
+  public DataFrame(final List<Column<?>> data) {
     this.data = data;
   }
 
-  public void add(DataColumn<?> column) {
+  public void add(Column<?> column) {
     data.add(column);
   }
 
-  public DataColumn<?> removeColumn(final int i) {
+  public Column<?> removeColumn(final int i) {
     return this.data.remove(i);
   }
 
-  public DataColumn<?> getColumn(final int i) {
+  public Column<?> getColumn(final int i) {
     return this.data.get(i);
+  }
+
+  public Column<Double> getColumnAsDouble(final int i) {
+    return this.data.get(i).asDouble();
+  }
+
+  public Column<String> getColumnAsString(final int i) {
+    return this.data.get(i).asString();
   }
 }

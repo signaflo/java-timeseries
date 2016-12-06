@@ -10,7 +10,6 @@ import org.apache.commons.csv.CSVRecord;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +28,7 @@ public final class CsvReader {
   private final File csvFile;
   private final List<List<String>> parsedRecords;
   private final List<String> header;
+  private DataFrame df;
 
   /**
    * Create a new CSV reader using the given file path. This constructor assumes no header row is present.
@@ -185,6 +185,24 @@ public final class CsvReader {
       }
     }
     throw new IllegalArgumentException("A column with the provided column name was not found.");
+  }
+
+  public DataFrame createDataFrame() {
+    df = new DataFrame();
+    if (this.parsedRecords.size() == 0) {
+      return df;
+    }
+    List<List<String>> columns = getColumns();
+    for (List<String> column : columns) {
+      if (TypeConverter.isDouble(column.get(0))) {
+        Column<Double> dataColumn = new Column<>(TypeConverter.toDoubleList(column));
+        df.add(dataColumn);
+      } else {
+        Column<String> dataColumn = new Column<>(column).asString();
+        df.add(dataColumn);
+      }
+    }
+    return df;
   }
 
 }

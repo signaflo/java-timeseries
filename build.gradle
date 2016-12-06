@@ -5,6 +5,10 @@ apply plugin: 'maven'
 
 version = "0.1-SNAPSHOT"
 
+compileJava {
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
+
 repositories {
     mavenCentral()
 }

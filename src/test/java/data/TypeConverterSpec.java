@@ -51,12 +51,12 @@ public class TypeConverterSpec {
     ds.add(-400.8);
     ds.add(0.43);
     DataFrame df = new DataFrame();
-    DataColumn<String> stringDataColumn = new DataColumn<>(strings);
-    DataColumn<Double> doubleDataColumn = new DataColumn<>(ds);
-    df.add(stringDataColumn);
-    df.add(doubleDataColumn);
-    doubleDataColumn = df.getColumn(0).toDoubleColumn();
-    doubleDataColumn = df.getColumn(1).toDoubleColumn();
+    Column<String> stringColumn = new Column<>(strings);
+    Column<Double> doubleColumn = new Column<>(ds);
+    df.add(stringColumn);
+    df.add(doubleColumn);
+    doubleColumn = df.getColumn(0).asDouble();
+    doubleColumn = df.getColumn(1).asDouble();
 
   }
 }
