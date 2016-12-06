@@ -35,7 +35,7 @@ public class Column<T> {
     List<Double> doubleData = new ArrayList<>(data.size());
     for (T t : data) {
       String s = t.toString();
-      if (TypeConverter.isDouble(s)) {
+      if (TypeConversion.isDouble(s)) {
         doubleData.add(Double.valueOf(s));
       } else {
         throw new NotADoubleException(s + " could not be parsed as a Double.");

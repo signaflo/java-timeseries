@@ -194,11 +194,11 @@ public final class CsvReader {
     }
     List<List<String>> columns = getColumns();
     for (List<String> column : columns) {
-      if (TypeConverter.isDouble(column.get(0))) {
-        Column<Double> dataColumn = new Column<>(TypeConverter.toDoubleList(column));
+      if (TypeConversion.isDouble(column.get(0))) {
+        Column<Double> dataColumn = new Column<>(TypeConversion.toDoubleList(column));
         df.add(dataColumn);
       } else {
-        Column<String> dataColumn = new Column<>(column).asString();
+        Column<String> dataColumn = new Column<>(column);
         df.add(dataColumn);
       }
     }

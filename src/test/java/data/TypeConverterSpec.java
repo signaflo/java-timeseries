@@ -16,15 +16,15 @@ public class TypeConverterSpec {
   @Test
   public void whenStringIsDoubleThenTrue() {
     String pi = "3.14";
-    assertThat(TypeConverter.isDouble(pi), is(true));
+    assertThat(TypeConversion.isDouble(pi), is(true));
   }
 
   @Test
   public void whenStringIsNotDoubleThenFalse() {
     String pi = "pi";
-    assertThat(TypeConverter.isDouble(pi), is(false));
+    assertThat(TypeConversion.isDouble(pi), is(false));
     pi = "3.41l";
-    assertThat(TypeConverter.isDouble(pi), is(false));
+    assertThat(TypeConversion.isDouble(pi), is(false));
   }
 
   @Test
@@ -37,7 +37,7 @@ public class TypeConverterSpec {
     ds.add(3.5);
     ds.add(-400.8);
     ds.add(0.43);
-    assertThat(ds, is(TypeConverter.toDoubleList(strings)));
+    assertThat(ds, is(TypeConversion.toDoubleList(strings)));
   }
 
   @Test

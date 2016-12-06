@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 /**
  * Created by jacob on 12/4/16.
  */
-public class TypeConverter {
+public class TypeConversion {
 
 
   public static boolean isDouble(String pi) {
