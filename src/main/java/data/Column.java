@@ -10,8 +10,31 @@ import java.util.List;
 public class Column<T> {
 
   private final List<T> data;
+  private final Class<T> clazz;
 
   public Column(final List<T> data) {
+    this.clazz = inferType(data);
+    this.data = Collections.unmodifiableList(data);
+  }
+
+  @SuppressWarnings("unchecked")
+  private Class<T> inferType(List<T> data) {
+    if (data.size() == 0) {
+      return (Class<T>)Object.class;
+    }
+
+    T item = data.get(0);
+    if (item.getClass().equals(Double.class)) {
+      return (Class<T>)Double.class;
+    } else if (item.getClass().equals(String.class)){
+      return (Class<T>)String.class;
+    } else {
+      return (Class<T>)Object.class;
+    }
+  }
+
+  public Column(final List<T> data, final Class<T> clazz) {
+    this.clazz = clazz;
     this.data = Collections.unmodifiableList(data);
   }
 

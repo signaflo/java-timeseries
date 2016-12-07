@@ -5,8 +5,17 @@ apply plugin: 'maven'
 
 version = "0.1-SNAPSHOT"
 
-compileJava {
-    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+//compileJava {
+//    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+//}
+
+
+sourceSets {
+    test {
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
 }
 
 repositories {
