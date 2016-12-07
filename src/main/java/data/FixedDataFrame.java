@@ -24,46 +24,14 @@
 
 package data;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * @author Jacob Rachiele
  * Date: Dec 07 2016
  *
  * TODO: Describe what this class is.
+ * An immutable version of a ${@link DataFrame}.
  */
-public class DataFrame {
+public class FixedDataFrame {
 
-  private final List<Column<?>> data;
-
-  public DataFrame() {
-    data = new ArrayList<>();
-  }
-
-  public DataFrame(final List<Column<?>> data) {
-    this.data = data;
-  }
-
-  public void add(final Column<?> columnData) {
-    this.data.add(columnData);
-  }
-
-  public Column<?> removeColumn(final int i) {
-    return this.data.remove(i);
-  }
-
-  public Column<?> getColumn(final int i) {
-    return this.data.get(i);
-  }
-
-  public Column<Double> getColumnAsDouble(final int i) {
-    return this.data.get(i).asDouble();
-  }
-
-  public Column<String> getColumnAsString(final int i) {
-    return this.data.get(i).asString();
-  }
 
 }
