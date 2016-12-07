@@ -29,7 +29,6 @@ public final class CsvReader {
   private final File csvFile;
   private final List<List<String>> parsedRecords;
   private final List<String> header;
-  private DataFrame df;
 
   /**
    * Create a new CSV reader using the given file path. This constructor assumes no header row is present.
@@ -54,7 +53,7 @@ public final class CsvReader {
       this.csvFile = new File(resource.getFile());
     }
     final CSVParser parser = getParser(csvFile);
-    List<CSVRecord> records = Collections.emptyList();
+    List<CSVRecord> records;
     if (parser == null) {
       throw new IllegalArgumentException("The resource given by " + csvFilePath + " could not be found on the file system.");
     } else {
@@ -194,7 +193,7 @@ public final class CsvReader {
   }
 
   public DataFrame createDataFrame() {
-    df = new DataFrame();
+    DataFrame df = new DataFrame();
     if (this.parsedRecords.size() == 0) {
       return df;
     }
