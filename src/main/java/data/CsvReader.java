@@ -10,6 +10,7 @@ import org.apache.commons.csv.CSVRecord;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +47,12 @@ public final class CsvReader {
    * @param headerRow   indicates whether the file contains a header row.
    */
   public CsvReader(final String csvFilePath, final boolean headerRow) {
-    this.csvFile = new File(csvFilePath);
+    URL resource = getClass().getClassLoader().getResource(csvFilePath);
+    if (resource == null) {
+      throw new IllegalArgumentException("The resource given by " + csvFilePath + " could not be found on the file system.");
+    } else {
+      this.csvFile = new File(resource.getFile());
+    }
     final CSVParser parser = getParser(csvFile);
     List<CSVRecord> records = Collections.emptyList();
     if (parser == null) {

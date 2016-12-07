@@ -43,7 +43,7 @@ public class TypeConverterSpec {
   @Test
   public void testDataFrame() {
     List<String> strings = new ArrayList<>(3);
-    strings.add("3.5l");
+    strings.add("3.5f");
     strings.add("-400.8f");
     strings.add("0.43");
     List<Double> ds = new ArrayList<>(3);
