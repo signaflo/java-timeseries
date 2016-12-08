@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
  */
 public class TypeConversion {
 
+  private TypeConversion() {}
+
 
   public static boolean isDouble(String pi) {
     final String Digits     = "(\\p{Digit}+)";

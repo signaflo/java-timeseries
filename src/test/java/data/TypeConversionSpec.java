@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * Created by jacob on 12/4/16.
  */
-public class TypeConverterSpec {
+public class TypeConversionSpec {
 
   @Test
   public void whenStringIsDoubleThenTrue() {
@@ -41,22 +41,9 @@ public class TypeConverterSpec {
   }
 
   @Test
-  public void testDataFrame() {
-    List<String> strings = new ArrayList<>(3);
-    strings.add("3.5f");
-    strings.add("-400.8f");
-    strings.add("0.43");
-    List<Double> ds = new ArrayList<>(3);
-    ds.add(3.5);
-    ds.add(-400.8);
-    ds.add(0.43);
-    DataFrame df = new DataFrame();
-    Column<String> stringColumn = new Column<>(strings);
-    Column<Double> doubleColumn = new Column<>(ds);
-    df.add(stringColumn);
-    df.add(doubleColumn);
-    doubleColumn = df.getColumn(0).asDouble();
-    doubleColumn = df.getColumn(1).asDouble();
+  public void whenNotADoubleThenGoodMessage() {
+    NotADoubleException e = new NotADoubleException();
+    assertThat(e.getMessage(), is("An attempt was made to treat a non-Double object as a Double."));
 
   }
 }

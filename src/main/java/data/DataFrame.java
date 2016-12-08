@@ -66,4 +66,18 @@ public class DataFrame {
     return this.data.get(i).asString();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    DataFrame dataFrame = (DataFrame) o;
+
+    return data.equals(dataFrame.data);
+  }
+
+  @Override
+  public int hashCode() {
+    return data.hashCode();
+  }
 }
