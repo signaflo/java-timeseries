@@ -24,6 +24,8 @@
 
 package data;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,12 +45,12 @@ public final class Column<T> {
 
   public Column(final List<T> data) {
     this.clazz = inferType(data);
-    this.data = Collections.unmodifiableList(data);
+    this.data = ImmutableList.copyOf(data);
   }
 
   @SuppressWarnings("unchecked")
   private Class<T> inferType(List<T> data) {
-    if (data.size() == 0) {
+    if (data.isEmpty()) {
       return (Class<T>)Object.class;
     }
 
@@ -64,7 +66,7 @@ public final class Column<T> {
 
   public Column(final List<T> data, final Class<T> clazz) {
     this.clazz = clazz;
-    this.data = Collections.unmodifiableList(data);
+    this.data = ImmutableList.copyOf(data);
   }
 
   public final List<T> getData() {
@@ -96,7 +98,37 @@ public final class Column<T> {
     return new Column<>(doubleData);
   }
 
+  public Class<T> getType() {
+    return this.clazz;
+  }
+
+  public String getTypeName() {
+    return this.clazz.getTypeName();
+  }
+
+  public String getSimpleTypeName() {
+    return this.clazz.getSimpleName();
+  }
+
   public final int size() {
     return this.data.size();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Column<?> column = (Column<?>) o;
+
+    if (!data.equals(column.data)) return false;
+    return clazz.equals(column.clazz);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = data.hashCode();
+    result = 31 * result + clazz.hashCode();
+    return result;
   }
 }

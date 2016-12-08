@@ -24,6 +24,9 @@
 
 package data;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Jacob Rachiele
  * Date: Dec 07 2016
@@ -33,5 +36,22 @@ package data;
  */
 public class FixedDataFrame {
 
+  private final List<Column<?>> data;
+
+  public FixedDataFrame(final List<Column<?>> data) {
+    this.data = Collections.unmodifiableList(data);
+  }
+
+  public Column<?> getColumn(final int i) {
+    return this.data.get(i);
+  }
+
+  public Column<Double> getColumnAsDouble(final int i) {
+    return this.data.get(i).asDouble();
+  }
+
+  public Column<String> getColumnAsString(final int i) {
+    return this.data.get(i).asString();
+  }
 
 }
