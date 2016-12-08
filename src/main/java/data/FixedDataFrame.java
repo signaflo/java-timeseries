@@ -54,4 +54,18 @@ public class FixedDataFrame {
     return this.data.get(i).asString();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    FixedDataFrame that = (FixedDataFrame) o;
+
+    return data.equals(that.data);
+  }
+
+  @Override
+  public int hashCode() {
+    return data.hashCode();
+  }
 }
