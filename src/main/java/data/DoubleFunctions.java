@@ -2,6 +2,8 @@ package data;
 
 import stats.Statistics;
 
+import java.util.List;
+
 /**
  * Static methods for creating, manipulating, and operating on arrays of primitive doubles.
  * @author Jacob Rachiele
@@ -18,6 +20,24 @@ public final class DoubleFunctions {
    */
   public static double[] newArray(double... data) {
     return data.clone();
+  }
+
+  public static double[] newArray(List<Double> data) {
+    final int size = data.size();
+    final double[] doubles = new double[size];
+    for (int i = 0; i < size; i++) {
+      doubles[i] = data.get(i);
+    }
+    return doubles;
+  }
+
+  public static double[] newArray(Column<Double> data) {
+    final int size = data.size();
+    final double[] doubles = new double[size];
+    for (int i = 0; i < size; i++) {
+      doubles[i] = data.get(i);
+    }
+    return doubles;
   }
 
   /**

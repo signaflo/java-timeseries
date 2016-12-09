@@ -62,7 +62,7 @@ public final class TimeSeries extends DataSet {
 
   /**
    * Construct a new TimeSeries using the given unit of time, the time of first observation, and the observation data.
-   * 
+   *
    * @param timeUnit the unit of time in which observations are made.
    * @param startTime the time at which the first observation was made. May be an approximation.
    * @param series the observation data.

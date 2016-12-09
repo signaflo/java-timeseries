@@ -25,6 +25,7 @@
 package data;
 
 import com.google.common.collect.ImmutableList;
+import timeseries.TimeSeries;
 
 import java.util.ArrayList;
 import java.util.List;
