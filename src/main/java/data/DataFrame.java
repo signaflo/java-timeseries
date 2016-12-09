@@ -29,39 +29,72 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ *
+ * A potentially heteregoneous collection of {@link Column}s of data. This class is mutable and not thread-safe. The
+ * the immutable and thread-safe version of this class is {@link FixedDataFrame}.
+ *
  * @author Jacob Rachiele
  * Date: Dec 07 2016
- *
- * TODO: Describe what this class is.
  */
 public class DataFrame {
 
   private final List<Column<?>> data;
 
+  /**
+   * Create a new empty dataframe.
+   */
   public DataFrame() {
     data = new ArrayList<>();
   }
 
+  /**
+   * Create a new dataframe filled with the given columns.
+   * @param data the columns to fill the dataframe with.
+   */
   public DataFrame(final List<Column<?>> data) {
     this.data = data;
   }
 
+  /**
+   * Add a column of data to this dataframe.
+   * @param columnData the column to add to this dataframe.
+   */
   public void add(final Column<?> columnData) {
     this.data.add(columnData);
   }
 
+  /**
+   * Remove and return the ith column from this dataframe.
+   * @param i the index of the column to remove.
+   * @return the removed column.
+   */
   public Column<?> removeColumn(final int i) {
     return this.data.remove(i);
   }
 
+  /**
+   * Get the ith column of this dataframe.
+   * @param i the index of the column to retrieve;
+   * @return the ith column of this dataframe.
+   */
   public Column<?> getColumn(final int i) {
     return this.data.get(i);
   }
 
+  /**
+   * Get the ith column of this dataframe as a column of type Double.
+   * @param i the index of the column to retrieve;
+   * @return the ith column of this dataframe as a column of type Double.
+   */
   public Column<Double> getColumnAsDouble(final int i) {
     return this.data.get(i).asDouble();
   }
 
+  /**
+   * Get the ith column of this dataframe as a column of type String.
+   * @param i the index of the column to retrieve;
+   * @return the ith column of this dataframe as a column of type String.
+   */
   public Column<String> getColumnAsString(final int i) {
     return this.data.get(i).asString();
   }
@@ -111,5 +144,12 @@ public class DataFrame {
       }
     }
     return sb.toString();
+  }
+
+  /**
+   * Print the string representation of this dataframe to the console.
+   */
+  public void print() {
+    System.out.println(toString());
   }
 }

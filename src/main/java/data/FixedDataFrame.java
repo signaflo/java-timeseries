@@ -28,28 +28,47 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * An immutable version of a {@link DataFrame}.
+ *
  * @author Jacob Rachiele
  * Date: Dec 07 2016
  *
- * TODO: Describe what this class is.
- * An immutable version of a ${@link DataFrame}.
  */
 public class FixedDataFrame {
 
   private final List<Column<?>> data;
 
+  /**
+   * Create a new fixed dataframe filled with the given columns.
+   * @param data the columns to fill the dataframe with.
+   */
   public FixedDataFrame(final List<Column<?>> data) {
     this.data = Collections.unmodifiableList(data);
   }
 
+  /**
+   * Get the ith column of this dataframe.
+   * @param i the index of the column to retrieve;
+   * @return the ith column of this dataframe.
+   */
   public Column<?> getColumn(final int i) {
     return this.data.get(i);
   }
 
+  /**
+   * Get the ith column of this dataframe as a column of type Double.
+   * @param i the index of the column to retrieve;
+   * @return the ith column of this dataframe as a column of type Double.
+   */
   public Column<Double> getColumnAsDouble(final int i) {
     return this.data.get(i).asDouble();
   }
 
+  /**
+   * Get the ith column of this dataframe as a column of type String.
+   * @param i the index of the column to retrieve;
+   * @return the ith column of this dataframe as a column of type String.
+   */
   public Column<String> getColumnAsString(final int i) {
     return this.data.get(i).asString();
   }
@@ -67,5 +86,12 @@ public class FixedDataFrame {
   @Override
   public int hashCode() {
     return data.hashCode();
+  }
+
+  /**
+   * Print the string representation of this dataframe to the console.
+   */
+  public void print() {
+    System.out.println(toString());
   }
 }

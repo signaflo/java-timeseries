@@ -30,12 +30,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Jacob Rachiele
- * Date: Dec 07 2016
- *
  * An immutable and thread-safe column of data. Objects of this class typically compose a {@link DataFrame}, but may
  * exist seperately. A column consists of the data itself together with a {@link Class} variable that acts as
  * metadata indicating the data's type. This is done to allow dataframes to hold columns of differing types.
+ *
+ * @author Jacob Rachiele
+ * Date: Dec 07 2016
+ *
  */
 public final class Column<T> {
 
@@ -94,9 +95,9 @@ public final class Column<T> {
   }
 
   /**
-   * Retrieve the piece of data in the i<i>th</i> index position.
+   * Retrieve the piece of data in the ith index position.
    * @param i the index position of the data in the column
-   * @return the piece of data in the i<i>th</i> index position.
+   * @return the piece of data in the ith index position.
    */
   public final T get(final int i) {
     return data.get(i);

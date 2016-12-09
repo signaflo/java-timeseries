@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Reads data from CSV files.
+ * Represents data from a CSV file.
  *
  * @author Jacob Rachiele
  */
@@ -28,7 +28,7 @@ public final class CsvData {
   private final List<String> header;
 
   /**
-   * Create a new CSV reader using the given file path. This constructor assumes no header row is present.
+   * Create a new CSV data object using the given file path. This constructor assumes no header row is present.
    *
    * @param csvFilePath the path to the file.
    */
@@ -37,7 +37,7 @@ public final class CsvData {
   }
 
   /**
-   * Create a new CSV reader using the given file path and header flag.
+   * Create a new CSV data object using the given file path and header flag.
    *
    * @param csvFilePath the path to the file.
    * @param headerRow   indicates whether the file contains a header row.
@@ -191,7 +191,7 @@ public final class CsvData {
 
   /**
    * Create a new DataFrame from this csv data.
-   * @return
+   * @return a new DataFrame from this csv data.
    */
   public DataFrame createDataFrame() {
     DataFrame df = new DataFrame();
