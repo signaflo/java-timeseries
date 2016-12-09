@@ -39,6 +39,13 @@ public class FixedDataFrame {
   private final List<Column<?>> data;
 
   /**
+   * Create a new, empty fixed dataframe.
+   */
+  public FixedDataFrame() {
+    this.data = Collections.unmodifiableList(Collections.emptyList());
+  }
+
+  /**
    * Create a new fixed dataframe filled with the given columns.
    * @param data the columns to fill the dataframe with.
    */
