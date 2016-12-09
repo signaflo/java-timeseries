@@ -27,7 +27,6 @@ package data;
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,13 +40,22 @@ import java.util.List;
 public final class Column<T> {
 
   private final List<T> data;
-  private final Class<T> clazz;
+  private final Class<T> type;
 
+  /**
+   * Create a new column from the list of input data. The class of the column will be inferred from the data.
+   * @param data the column data.
+   */
   public Column(final List<T> data) {
-    this.clazz = inferType(data);
+    this.type = inferType(data);
     this.data = ImmutableList.copyOf(data);
   }
 
+  /**
+   * Performs very simple type inference on the list of input data and returns the inferred class.
+   * @param data the list of data whose type is to be inferred.
+   * @return the inferred class.
+   */
   @SuppressWarnings("unchecked")
   private Class<T> inferType(List<T> data) {
     if (data.isEmpty()) {
@@ -55,7 +63,9 @@ public final class Column<T> {
     }
 
     T item = data.get(0);
-    if (item.getClass().equals(Double.class)) {
+    /*if (item.getClass().getSuperclass().equals(Number.class)) {
+      return (Class<T>)Number.class;
+    } else */if (item.getClass().equals(Double.class)) {
       return (Class<T>)Double.class;
     } else if (item.getClass().equals(String.class)){
       return (Class<T>)String.class;
@@ -64,19 +74,38 @@ public final class Column<T> {
     }
   }
 
-  public Column(final List<T> data, final Class<T> clazz) {
-    this.clazz = clazz;
+  /**
+   * Create a new column of the given type from the list of input data. The class variable is used so that
+   * a {@link DataFrame} may hold columns of different types.
+   * @param data the column data.
+   * @param type the type of data the column contains.
+   */
+  public Column(final List<T> data, final Class<T> type) {
+    this.type = type;
     this.data = ImmutableList.copyOf(data);
   }
 
+  /**
+   * Retrieve the list of data in the column.
+   * @return the list of data in the column.
+   */
   public final List<T> getData() {
     return this.data;
   }
 
+  /**
+   * Retrieve the piece of data in the i<i>th</i> index position.
+   * @param i the index position of the data in the column
+   * @return the piece of data in the i<i>th</i> index position.
+   */
   public final T get(final int i) {
     return data.get(i);
   }
 
+  /**
+   * Convert the data to a list of strings and return the result in a new column.
+   * @return a new column of string data.
+   */
   public Column<String> asString() {
     List<String> stringData = new ArrayList<>(data.size());
     for (T t : data) {
@@ -85,6 +114,10 @@ public final class Column<T> {
     return new Column<>(stringData);
   }
 
+  /**
+   * Convert the data to a list of (wrapped) doubles and return the result in a new column.
+   * @return a new column of (wrapped) double data.
+   */
   public Column<Double> asDouble() {
     List<Double> doubleData = new ArrayList<>(data.size());
     for (T t : data) {
@@ -98,18 +131,34 @@ public final class Column<T> {
     return new Column<>(doubleData);
   }
 
+  /**
+   * Retrieve the column type.
+   * @return the column type.
+   */
   public Class<T> getType() {
-    return this.clazz;
+    return this.type;
   }
 
+  /**
+   * Retrieve the string representation of the column type.
+   * @return the string representation of the column type.
+   */
   public String getTypeName() {
-    return this.clazz.getTypeName();
+    return this.type.getTypeName();
   }
 
+  /**
+   * Retrieve the simple string representation of the column type.
+   * @return the simple string representation of the column type.
+   */
   public String getSimpleTypeName() {
-    return this.clazz.getSimpleName();
+    return this.type.getSimpleName();
   }
 
+  /**
+   * Retrieve the size of the column.
+   * @return the size of the column.
+   */
   public final int size() {
     return this.data.size();
   }
@@ -122,13 +171,19 @@ public final class Column<T> {
     Column<?> column = (Column<?>) o;
 
     if (!data.equals(column.data)) return false;
-    return clazz.equals(column.clazz);
+    return type.equals(column.type);
   }
 
   @Override
   public int hashCode() {
     int result = data.hashCode();
-    result = 31 * result + clazz.hashCode();
+    result = 31 * result + type.hashCode();
     return result;
+  }
+
+  @Override
+  public String toString() {
+    return getSimpleTypeName() + " Column" +
+        "\n" + data;
   }
 }

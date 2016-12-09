@@ -25,7 +25,7 @@ public class DataFrameSpec {
   }
 
   @Test
-  public void whenDataFramColumnAsStringThenStringColumnReturned() {
+  public void whenDataFrameColumnAsStringThenStringColumnReturned() {
     List<Double> data = Arrays.asList(3.0, 1.5, -4.0);
     Column<Double> col = new Column<>(data);
     Column<String> expected = new Column<>(Arrays.asList("3.0", "1.5", "-4.0"));

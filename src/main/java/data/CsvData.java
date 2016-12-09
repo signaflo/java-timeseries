@@ -21,10 +21,7 @@ import java.util.List;
  *
  * @author Jacob Rachiele
  */
-//TODO: This class must eventually have a method to perform basic type inference on the input columns. The
-  //method should be able to detect Doubles and at least one Date type. Columns not parsable as either should
-  //default to String.
-public final class CsvReader {
+public final class CsvData {
 
   private final File csvFile;
   private final List<List<String>> parsedRecords;
@@ -35,7 +32,7 @@ public final class CsvReader {
    *
    * @param csvFilePath the path to the file.
    */
-  public CsvReader(final String csvFilePath) {
+  public CsvData(final String csvFilePath) {
     this(csvFilePath, false);
   }
 
@@ -45,7 +42,7 @@ public final class CsvReader {
    * @param csvFilePath the path to the file.
    * @param headerRow   indicates whether the file contains a header row.
    */
-  public CsvReader(final String csvFilePath, final boolean headerRow) {
+  public CsvData(final String csvFilePath, final boolean headerRow) {
     URL resource = getClass().getClassLoader().getResource(csvFilePath);
     if (resource == null) {
       throw new IllegalArgumentException("The resource given by " + csvFilePath + " could not be found on the file system.");
@@ -192,6 +189,10 @@ public final class CsvReader {
     throw new IllegalArgumentException("A column with the provided column name was not found.");
   }
 
+  /**
+   * Create a new DataFrame from this csv data.
+   * @return
+   */
   public DataFrame createDataFrame() {
     DataFrame df = new DataFrame();
     if (this.parsedRecords.size() == 0) {
@@ -210,4 +211,27 @@ public final class CsvReader {
     return df;
   }
 
+  public DataFrame createDataFrame(List<Class<?>> classes) {
+    DataFrame df = new DataFrame();
+    if (this.parsedRecords.size() == 0) {
+      return df;
+    }
+    List<List<String>> columns = getColumns();
+    if (classes.size() != columns.size()) {
+      throw new IllegalArgumentException("The argument list of classes had length " + classes.size()
+          + " while the number of CSV columns was " + columns.size() + ". These two should be equal.");
+    }
+    for (int i = 0; i < columns.size(); i++) {
+      df.add(newDataColumn(columns.get(i), classes.get(i)));
+    }
+    return df;
+  }
+
+  @SuppressWarnings("unchecked")
+  private Column<?> newDataColumn(List<String> column, Class<?> clazz) {
+    if (clazz.equals(Double.class)) {
+      return new Column(TypeConversion.toDoubleList(column), clazz);
+    }
+    return new Column(column, clazz);
+  }
 }

@@ -80,4 +80,36 @@ public class DataFrame {
   public int hashCode() {
     return data.hashCode();
   }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    final int nrows = (data.size() > 0)? data.get(0).size() : 0;
+    Column<?> columnData;
+    String s;
+    int stringLength;
+    sb.append("Type ||");
+    for (int i = 0; i < data.size(); i++) {
+      columnData = data.get(i);
+      s = data.get(i).getSimpleTypeName();
+      stringLength = s.length();
+      sb.append(String.format("%-" + stringLength + "s", columnData.getSimpleTypeName()));
+      sb.append("|");
+    }
+    sb.append("\n");
+    for (int j = 0; j < nrows; j++) {
+      sb.append("Value||");
+      for (int i = 0; i < data.size(); i++) {
+        columnData = data.get(i);
+        s = data.get(i).getSimpleTypeName();
+        stringLength = s.length();
+        sb.append(String.format("%-" + stringLength + "s", columnData.get(j)));
+        sb.append("|");
+      }
+      if (j != nrows - 1) {
+        sb.append("\n");
+      }
+    }
+    return sb.toString();
+  }
 }
