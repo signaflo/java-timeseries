@@ -88,6 +88,32 @@ public class FixedDataFrame {
     return data.hashCode();
   }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    final int nrows = (data.size() > 0)? data.get(0).size() : 0;
+    final int fixedWidth = 15;
+    Column<?> columnData;
+    String s;
+    for (int i = 0; i < data.size(); i++) {
+      s = "Type:" + data.get(i).getSimpleTypeName();
+      sb.append(String.format("%-" + fixedWidth + "." + fixedWidth + "s", s));
+      sb.append("|");
+    }
+    sb.append("\n");
+    for (int j = 0; j < nrows; j++) {
+      for (int i = 0; i < data.size(); i++) {
+        columnData = data.get(i);
+        sb.append(String.format("%-" + fixedWidth + "." + fixedWidth + "s", columnData.get(j)));
+        sb.append("|");
+      }
+      if (j != nrows - 1) {
+        sb.append("\n");
+      }
+    }
+    return sb.toString();
+  }
+
   /**
    * Print the string representation of this dataframe to the console.
    */

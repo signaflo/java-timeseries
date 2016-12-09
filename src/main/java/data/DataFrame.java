@@ -31,7 +31,7 @@ import java.util.List;
 /**
  *
  * A potentially heteregoneous collection of {@link Column}s of data. This class is mutable and not thread-safe. The
- * the immutable and thread-safe version of this class is {@link FixedDataFrame}.
+ * immutable and thread-safe version of this class is {@link FixedDataFrame}.
  *
  * @author Jacob Rachiele
  * Date: Dec 07 2016
@@ -118,25 +118,19 @@ public class DataFrame {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     final int nrows = (data.size() > 0)? data.get(0).size() : 0;
+    final int fixedWidth = 15;
     Column<?> columnData;
     String s;
-    int stringLength;
-    sb.append("Type ||");
     for (int i = 0; i < data.size(); i++) {
-      columnData = data.get(i);
-      s = data.get(i).getSimpleTypeName();
-      stringLength = s.length();
-      sb.append(String.format("%-" + stringLength + "s", columnData.getSimpleTypeName()));
+      s = "Type:" + data.get(i).getSimpleTypeName();
+      sb.append(String.format("%-" + fixedWidth + "." + fixedWidth + "s", s));
       sb.append("|");
     }
     sb.append("\n");
     for (int j = 0; j < nrows; j++) {
-      sb.append("Value||");
       for (int i = 0; i < data.size(); i++) {
         columnData = data.get(i);
-        s = data.get(i).getSimpleTypeName();
-        stringLength = s.length();
-        sb.append(String.format("%-" + stringLength + "s", columnData.get(j)));
+        sb.append(String.format("%-" + fixedWidth + "." + fixedWidth + "s", columnData.get(j)));
         sb.append("|");
       }
       if (j != nrows - 1) {
