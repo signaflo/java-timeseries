@@ -39,9 +39,9 @@ import java.util.List;
  * Date: Dec 07 2016
  *
  */
-public final class Column<T> {
+public final class Column {
 
-  private final List<T> data;
+  private final List<String> data;
   private final Class<T> type;
 
   /**
