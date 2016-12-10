@@ -15,14 +15,19 @@ public class KalmanFilterSpec {
     double[] ma = new double[] {-0.8373430,  0.0,  0.0,  0.3854193, -0.3227282};
     double[] y = TestData.ukcars().difference().series();
     StateSpaceARMA ss = new StateSpaceARMA(y, ar, ma);
-    new KalmanFilter(ss);
-    new KalmanFilter(ss);
-    new KalmanFilter(ss);
+    new ArmaKalmanFilter(ss);
+    new ArmaKalmanFilter(ss);
+    new ArmaKalmanFilter(ss);
     long start = System.currentTimeMillis();
     for (int i = 0; i < 25; i++) {
-      new KalmanFilter(ss);
+      new ArmaKalmanFilter(ss);
     }
     long end = System.currentTimeMillis();
     System.out.println("Time taken: " + (end - start) + " millis.");
+  }
+
+  @Test
+  public void testTrainProblem() {
+
   }
 }

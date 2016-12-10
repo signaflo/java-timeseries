@@ -15,7 +15,7 @@ import data.TestData;
 import timeseries.TimeUnit;
 import timeseries.TimeSeries;
 
-public class MeanSpec {
+public class MeanModelSpec {
 	
 	@Test
 	public final void whenMeanForecastComputedForecastValuesCorrect() {

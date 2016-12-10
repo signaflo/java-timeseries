@@ -7,7 +7,19 @@ import org.ejml.data.RowD1Matrix64F;
 
 import timeseries.models.arima.StateSpaceARMA;
 
-public final class KalmanFilter {
+/**
+ * An implementation of the <a target="_blank"
+ * href="https://www.cl.cam.ac.uk/~rmf25/papers/Understanding%20the%20Basis%20of%20the%20Kalman%20Filter.pdf">
+ * Kalman Filter specifically designed for estimation of ARMA models.
+ *
+ *
+ * @author Jacob Rachiele
+ * Date: Dec 09 2016
+ *
+ * TODO: Make faster by initializing prediction covariance without explicit inversion of large matrix.
+ *
+ */
+final class ArmaKalmanFilter {
   
   private final double[] y;
   private final int r; // r = max(p, q + 1);
@@ -19,12 +31,12 @@ public final class KalmanFilter {
   private final RowD1Matrix64F filteredStateCovariance;
   private final double[] predictionErrorVariance;
   private final double[] predictionError;
-  //M is the first column of the predictedCovariance matrix.
+  // the following is the first column of the predictedCovariance matrix.
   private final DenseMatrix64F predictedCovarianceFirstColumn; 
   // We don't include Z. It is a row vector with a 1 in the first position and zeros
   // elsewhere. Any of its transformations are done manually as documented below.
   
-  KalmanFilter(final StateSpaceARMA ss) {
+  ArmaKalmanFilter(final StateSpaceARMA ss) {
     this.y = ss.differencedSeries();
     this.r = ss.r();
     this.transitionFunction = new DenseMatrix64F(ss.transitionMatrix());
@@ -128,7 +140,7 @@ public final class KalmanFilter {
 //  private final double[] f;
 //  private final double[] K;
 //  
-//  public KalmanFilter(final StateSpaceARMA ss) {
+//  public ArmaKalmanFilter(final StateSpaceARMA ss) {
 //    this.series = ss.differencedSeries();
 //    this.arParams = ss.arParams();
 //    this.maParams = ss.maParams();
