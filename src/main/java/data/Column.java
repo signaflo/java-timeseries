@@ -25,15 +25,12 @@
 package data;
 
 import com.google.common.collect.ImmutableList;
-import timeseries.TimeSeries;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * An immutable and thread-safe column of data. Objects of this class typically compose a {@link DataFrame}, but may
  * exist seperately. A column consists of the data itself together with a {@link Class} variable that acts as
- * metadata indicating the data's type. This is done to allow dataframes to hold columns of differing types.
+ * metadata indicating the data's dataType. This is done to allow dataframes to hold columns of differing types.
  *
  * @author Jacob Rachiele
  * Date: Dec 07 2016
@@ -42,47 +39,25 @@ import java.util.List;
 public final class Column {
 
   private final List<String> data;
-  private final Class<T> type;
+  private final DataType type;
 
   /**
-   * Create a new column from the list of input data. The class of the column will be inferred from the data.
+   * Create a new column from the list of input data. The class of the column will be inferred from the data as long
+   * as the list is non-empty.
    * @param data the column data.
    */
-  public Column(final List<T> data) {
-    this.type = inferType(data);
+  public Column(final List<String> data) {
+    this.type = DataType.STRING;
     this.data = ImmutableList.copyOf(data);
   }
 
   /**
-   * Performs very simple type inference on the list of input data and returns the inferred class.
-   * @param data the list of data whose type is to be inferred.
-   * @return the inferred class.
-   */
-  @SuppressWarnings("unchecked")
-  private Class<T> inferType(List<T> data) {
-    if (data.isEmpty()) {
-      return (Class<T>)Object.class;
-    }
-
-    T item = data.get(0);
-    /*if (item.getClass().getSuperclass().equals(Number.class)) {
-      return (Class<T>)Number.class;
-    } else */if (item.getClass().equals(Double.class)) {
-      return (Class<T>)Double.class;
-    } else if (item.getClass().equals(String.class)){
-      return (Class<T>)String.class;
-    } else {
-      return (Class<T>)Object.class;
-    }
-  }
-
-  /**
-   * Create a new column of the given type from the list of input data. The class variable is used so that
+   * Create a new column of the given dataType from the list of input data. The class variable is used so that
    * a {@link DataFrame} may hold columns of different types.
    * @param data the column data.
-   * @param type the type of data the column contains.
+   * @param type the dataType of data the column contains.
    */
-  public Column(final List<T> data, final Class<T> type) {
+  public Column(final List<String> data, final DataType type) {
     this.type = type;
     this.data = ImmutableList.copyOf(data);
   }
@@ -91,7 +66,7 @@ public final class Column {
    * Retrieve the list of data in the column.
    * @return the list of data in the column.
    */
-  public final List<T> getData() {
+  public final List<String> data() {
     return this.data;
   }
 
@@ -100,7 +75,7 @@ public final class Column {
    * @param i the index position of the data in the column
    * @return the piece of data in the ith index position.
    */
-  public final T get(final int i) {
+  public final String get(final int i) {
     return data.get(i);
   }
 
@@ -108,53 +83,33 @@ public final class Column {
    * Convert the data to a list of strings and return the result in a new column.
    * @return a new column of string data.
    */
-  public Column<String> asString() {
-    List<String> stringData = new ArrayList<>(data.size());
-    for (T t : data) {
-      stringData.add(t.toString());
-    }
-    return new Column<>(stringData);
+  public Column asString() {
+    return new Column(this.data, DataType.STRING);
   }
 
   /**
    * Convert the data to a list of (wrapped) doubles and return the result in a new column.
    * @return a new column of (wrapped) double data.
    */
-  public Column<Double> asDouble() {
-    List<Double> doubleData = new ArrayList<>(data.size());
-    for (T t : data) {
-      String s = t.toString();
-      if (TypeConversion.isDouble(s)) {
-        doubleData.add(Double.valueOf(s));
-      } else {
-        throw new NotADoubleException(s + " could not be parsed as a Double.");
-      }
-    }
-    return new Column<>(doubleData);
+  public Column asDouble() {
+
+    return new Column(this.data, DataType.DOUBLE);
   }
 
   /**
-   * Retrieve the column type.
-   * @return the column type.
+   * Retrieve the column dataType.
+   * @return the column dataType.
    */
-  public Class<T> getType() {
+  public DataType dataType() {
     return this.type;
   }
 
   /**
-   * Retrieve the string representation of the column type.
-   * @return the string representation of the column type.
+   * Retrieve the string representation of the column dataType.
+   * @return the string representation of the column dataType.
    */
-  public String getTypeName() {
-    return this.type.getTypeName();
-  }
-
-  /**
-   * Retrieve the simple string representation of the column type.
-   * @return the simple string representation of the column type.
-   */
-  public String getSimpleTypeName() {
-    return this.type.getSimpleName();
+  public String typeName() {
+    return this.type.toString();
   }
 
   /**
@@ -170,7 +125,7 @@ public final class Column {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    Column<?> column = (Column<?>) o;
+    Column column = (Column) o;
 
     if (!data.equals(column.data)) return false;
     return type.equals(column.type);
@@ -185,7 +140,7 @@ public final class Column {
 
   @Override
   public String toString() {
-    return getSimpleTypeName() + " Column" +
+    return typeName() + " Column" +
         "\n" + data;
   }
 }

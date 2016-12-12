@@ -5,7 +5,7 @@ package math;
  * href="https://en.wikipedia.org/wiki/Field_(mathematics)">field</a>.
  * @author Jacob Rachiele
  *
- * @param <T> The type of field element.
+ * @param <T> The dataType of field element.
  */
 public interface FieldElement<T> {
 

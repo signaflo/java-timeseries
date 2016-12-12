@@ -24,6 +24,9 @@
 
 package data;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -51,7 +54,7 @@ public class TypeConversion {
     // signed decimal integer.
     final String Exp        = "[eE][+-]?"+Digits;
     final String fpRegex    =
-        ("[\\x00-\\x20]*"+  // Optional leading "whitespace"
+        "[\\x00-\\x20]*"+  // Optional leading "whitespace"
             "[+-]?(" + // Optional sign character
             "NaN|" +           // "NaN" string
             "Infinity|" +      // "Infinity" string
@@ -82,7 +85,7 @@ public class TypeConversion {
 
             ")[pP][+-]?" + Digits + "))" +
             "[fFdD]?))" +
-            "[\\x00-\\x20]*");// Optional trailing "whitespace"
+            "[\\x00-\\x20]*";// Optional trailing "whitespace"
 
     return Pattern.matches(fpRegex, pi);
   }
@@ -93,10 +96,57 @@ public class TypeConversion {
    * @return the given list of strings converted to a list of doubles.
    */
   public static List<Double> toDoubleList(List<String> strings) {
-    List<Double> ds = new ArrayList<>(strings.size());
+    List<Double> doubles = new ArrayList<>(strings.size());
     for (String s : strings) {
-      ds.add(Double.valueOf(s));
+      doubles.add(Double.valueOf(s));
     }
-    return ds;
+    return doubles;
+  }
+
+  public static boolean isLocalDateTime(final String s) {
+    try {
+      LocalDateTime.parse(s);
+    } catch (DateTimeParseException e) {
+      return false;
+    }
+    return true;
+  }
+
+  public static boolean isOffsetDateTime(final String s) {
+    try {
+      OffsetDateTime.parse(s);
+    } catch (DateTimeParseException e) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Convert the given list of strings to a list of OffsetDateTimes. This method returns the result in a new List.
+   * @param strings the list of strings to convert.
+   * @return the given list of strings converted to a list of OffsetDateTimes.
+   */
+  public static List<OffsetDateTime> toOffsetDateTimeList(List<String> strings) {
+    List<OffsetDateTime> dateTimes = new ArrayList<>(strings.size());
+    for (String s : strings) {
+      dateTimes.add(OffsetDateTime.parse(s));
+    }
+    return dateTimes;
+  }
+
+  public static List<LocalDateTime> toLocalDateTimeList(List<String> strings) {
+    List<LocalDateTime> dateTimes = new ArrayList<>(strings.size());
+    for (String s : strings) {
+      dateTimes.add(LocalDateTime.parse(s));
+    }
+    return dateTimes;
+  }
+
+  static List<Boolean> toBooleanList(List<String> strings) {
+    List<Boolean> booleans = new ArrayList<>(strings.size());
+    for (String s : strings) {
+      booleans.add(Boolean.parseBoolean(s));
+    }
+    return booleans;
   }
 }

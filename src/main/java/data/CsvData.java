@@ -8,6 +8,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -24,7 +25,7 @@ import java.util.List;
 public final class CsvData {
 
   private final File csvFile;
-  private final List<List<String>> parsedRecords;
+  private final List<CSVRecord> parsedRecords;
   private final List<String> header;
 
   /**
@@ -75,21 +76,8 @@ public final class CsvData {
       } else {
         this.header = Collections.emptyList();
       }
-      this.parsedRecords = parseRecords(records);
+      this.parsedRecords = records;
     }
-  }
-
-  private List<List<String>> parseRecords(List<CSVRecord> records) {
-    List<String> row;
-    List<List<String>> allRows = new ArrayList<>(records.size());
-    for (CSVRecord record : records) {
-      row = new ArrayList<>(record.size());
-      for (String s : record) {
-        row.add(s);
-      }
-      allRows.add(row);
-    }
-    return Collections.unmodifiableList(allRows);
   }
 
   private CSVParser getParser(final File csvFile) {
@@ -116,7 +104,7 @@ public final class CsvData {
    *
    * @return the data row-by-row.
    */
-  public final List<List<String>> getRows() {
+  public final List<CSVRecord> getRows() {
     return this.parsedRecords;
   }
 
@@ -126,7 +114,7 @@ public final class CsvData {
    * @param i the index of the row.
    * @return the ith row of data.
    */
-  public final List<String> getRow(final int i) {
+  public final CSVRecord getRow(final int i) {
     return this.parsedRecords.get(i);
   }
 
@@ -138,7 +126,7 @@ public final class CsvData {
    */
   public final List<String> getColumn(final int i) {
     List<String> column = new ArrayList<>(this.parsedRecords.size());
-    for (List<String> record : parsedRecords) {
+    for (CSVRecord record : parsedRecords) {
       column.add(record.get(i));
     }
     return column;
@@ -164,7 +152,7 @@ public final class CsvData {
     List<String> column;
     for (int i = 0; i < nCols; i++) {
       column = new ArrayList<>(this.parsedRecords.size());
-      for (List<String> row : this.parsedRecords) {
+      for (CSVRecord row: this.parsedRecords) {
         column.add(row.get(i));
       }
       columns.add(column);
@@ -200,13 +188,7 @@ public final class CsvData {
     }
     List<List<String>> columns = getColumns();
     for (List<String> column : columns) {
-      if (TypeConversion.isDouble(column.get(0))) {
-        Column<Double> dataColumn = new Column<>(TypeConversion.toDoubleList(column));
-        df.add(dataColumn);
-      } else {
-        Column<String> dataColumn = new Column<>(column);
-        df.add(dataColumn);
-      }
+      df.add(new Column(column, DataType.STRING));
     }
     return df;
   }
@@ -220,66 +202,56 @@ public final class CsvData {
       return new FixedDataFrame(Collections.emptyList());
     }
     List<List<String>> columns = getColumns();
-    List<Column<?>> dataFrameColumns = new ArrayList<>(columns.size());
+    List<Column> dataFrameColumns = new ArrayList<>(columns.size());
     for (List<String> column : columns) {
-      if (TypeConversion.isDouble(column.get(0))) {
-        Column<Double> dataColumn = new Column<>(TypeConversion.toDoubleList(column));
-        dataFrameColumns.add(dataColumn);
-      } else {
-        Column<String> dataColumn = new Column<>(column);
-        dataFrameColumns.add(dataColumn);
-      }
+      dataFrameColumns.add(new Column(column, DataType.STRING));
     }
     return new FixedDataFrame(dataFrameColumns);
   }
 
   /**
    * Create a new DataFrame with the given column types from this CSV data.
-   * @param classes The column types listed in the same order as the columns in the CSV data.
+   * @param types The column types listed in the same order as the columns in the CSV data.
    * @return a new DataFrame with the given column types.
    */
-  public DataFrame createDataFrame(List<Class<?>> classes) {
+  public DataFrame createDataFrame(List<DataType> types) {
     DataFrame df = new DataFrame();
     if (this.parsedRecords.size() == 0) {
       return df;
     }
     List<List<String>> columns = getColumns();
-    if (classes.size() != columns.size()) {
-      throw new IllegalArgumentException("The argument list of classes had length " + classes.size()
+    if (types.size() != columns.size()) {
+      throw new IllegalArgumentException("The argument list of classes had length " + types.size()
           + " while the number of CSV columns was " + columns.size() + ". These two should be equal.");
     }
     for (int i = 0; i < columns.size(); i++) {
-      df.add(newDataColumn(columns.get(i), classes.get(i)));
+      df.add(newDataColumn(columns.get(i), types.get(i)));
     }
     return df;
   }
 
   /**
    * Create a new FixedDataFrame with the given column types from this CSV data.
-   * @param classes The column types listed in the same order as the columns in the CSV data.
+   * @param types The column types listed in the same order as the columns in the CSV data.
    * @return a new FixedDataFrame with the given column types.
    */
-  public FixedDataFrame createFixedDataFrame(List<Class<?>> classes) {
+  public FixedDataFrame createFixedDataFrame(List<DataType> types) {
     if (this.parsedRecords.size() == 0) {
       return new FixedDataFrame(Collections.emptyList());
     }
     List<List<String>> columns = getColumns();
-    List<Column<?>> dataFrameColumns = new ArrayList<>(columns.size());
-    if (classes.size() != columns.size()) {
-      throw new IllegalArgumentException("The argument list of classes had length " + classes.size()
+    List<Column> dataFrameColumns = new ArrayList<>(columns.size());
+    if (types.size() != columns.size()) {
+      throw new IllegalArgumentException("The argument list of classes had length " + types.size()
           + " while the number of CSV columns was " + columns.size() + ". These two should be equal.");
     }
     for (int i = 0; i < columns.size(); i++) {
-      dataFrameColumns.add(newDataColumn(columns.get(i), classes.get(i)));
+      dataFrameColumns.add(newDataColumn(columns.get(i), types.get(i)));
     }
     return new FixedDataFrame(dataFrameColumns);
   }
 
-  @SuppressWarnings("unchecked")
-  private Column<?> newDataColumn(List<String> column, Class<?> clazz) {
-    if (clazz.equals(Double.class)) {
-      return new Column(TypeConversion.toDoubleList(column), clazz);
-    }
-    return new Column(column, clazz);
+  private Column newDataColumn(List<String> column, DataType type) {
+    return new Column(column, type);
   }
 }

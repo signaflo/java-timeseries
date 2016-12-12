@@ -84,15 +84,15 @@ public class CsvDataSpec {
 
   @Test
   public void whenCreateDataFrameThenExpectedDataFrameReturned() {
-    Column<String> stringColumn = new Column<>(Arrays.asList("A", "B", "C"));
-    Column<Double> doubleColumn = new Column<>(Arrays.asList(1.0, 2.5, -3.0));
+    Column stringColumn = new Column(Arrays.asList("A", "B", "C"));
+    Column doubleColumn = new Column(Arrays.asList("1.0", "2.5", "-3.0"));
     DataFrame expected = new DataFrame(Arrays.asList(stringColumn, doubleColumn));
 
     csvPath = "test-data.csv";
     csvData = new CsvData(csvPath);
-    List<Class<?>> classes = new ArrayList<>(2);
-    classes.add(String.class); classes.add(Double.class);
-    DataFrame df = csvData.createDataFrame(classes);
+    List<DataType> types = new ArrayList<>(2);
+    types.add(DataType.STRING); types.add(DataType.STRING);
+    DataFrame df = csvData.createDataFrame(types);
     assertThat(df, is(expected));
     df = csvData.createDataFrame();
     assertThat(df, is(expected));
@@ -100,15 +100,15 @@ public class CsvDataSpec {
 
   @Test
   public void whenCreateFixedDataFrameThenExpectedDataFrameReturned() {
-    Column<String> stringColumn = new Column<>(Arrays.asList("A", "B", "C"));
-    Column<Double> doubleColumn = new Column<>(Arrays.asList(1.0, 2.5, -3.0));
+    Column stringColumn = new Column(Arrays.asList("A", "B", "C"), DataType.STRING);
+    Column doubleColumn = new Column(Arrays.asList("1.0", "2.5", "-3.0"), DataType.STRING);
     FixedDataFrame expected = new FixedDataFrame(Arrays.asList(stringColumn, doubleColumn));
 
     csvPath = "test-data.csv";
     csvData = new CsvData(csvPath);
-    List<Class<?>> classes = new ArrayList<>(2);
-    classes.add(String.class); classes.add(Double.class);
-    FixedDataFrame df = csvData.createFixedDataFrame(classes);
+    List<DataType> types = new ArrayList<>(2);
+    types.add(DataType.STRING); types.add(DataType.STRING);
+    FixedDataFrame df = csvData.createFixedDataFrame(types);
     assertThat(df, is(expected));
     df = csvData.createFixedDataFrame();
     assertThat(df, is(expected));
@@ -116,31 +116,31 @@ public class CsvDataSpec {
 
   @Test
   public void whenCreateDataFrameWithWrongNumberOfClassesThenException() {
-    Column<String> stringColumn = new Column<>(Arrays.asList("A", "B", "C"));
-    Column<Double> doubleColumn = new Column<>(Arrays.asList(1.0, 2.5, -3.0));
-    DataFrame expected = new DataFrame(Arrays.asList(stringColumn, doubleColumn));
-
-    List<Class<?>> classes = new ArrayList<>(1);
-    classes.add(String.class);
+    List<DataType> types = new ArrayList<>(1);
+    types.add(DataType.STRING);
     exception.expect(IllegalArgumentException.class);
-    csvData.createDataFrame(classes);
+    csvData.createDataFrame(types);
   }
 
 
   @Test
-  public void whenCreateFixedDataFrameWithWrongNumberOfClassesThenException() {
-    Column<String> stringColumn = new Column<>(Arrays.asList("A", "B", "C"));
-    Column<Double> doubleColumn = new Column<>(Arrays.asList(1.0, 2.5, -3.0));
-    DataFrame expected = new DataFrame(Arrays.asList(stringColumn, doubleColumn));
+  public void whenCreateFixedDataFrameWithWrongNumberOfTypesThenException() {
+    Column stringColumn = new Column(Arrays.asList("A", "B", "C"));
+    Column doubleColumn = new Column(Arrays.asList("1.0", "2.5", "-3.0"));
 
-    List<Class<?>> classes = new ArrayList<>(1);
-    classes.add(String.class);
+    List<DataType> types = new ArrayList<>(1);
+    types.add(DataType.STRING);
     exception.expect(IllegalArgumentException.class);
-    csvData.createFixedDataFrame(classes);
+    csvData.createFixedDataFrame(types);
   }
 
   @Test
   public void whenEmptyCSVThenEmptyDataFrame() {
+
+    csvPath = "2015-03-01.csv";
+    List<DataType> schema = Arrays.asList(DataType.STRING, DataType.OFFSET_DATE_TIME, DataType.DOUBLE,
+        DataType.STRING, DataType.STRING, DataType.DOUBLE, DataType.DOUBLE, DataType.STRING);
+    DataFrame dataFrame = new CsvData(csvPath, true).createDataFrame(schema);
     DataFrame df = new DataFrame();
     FixedDataFrame fdf = new FixedDataFrame();
     csvPath = "empty.csv";

@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class FixedDataFrame {
 
-  private final List<Column<?>> data;
+  private final List<Column> data;
 
   /**
    * Create a new, empty fixed dataframe.
@@ -49,7 +49,7 @@ public class FixedDataFrame {
    * Create a new fixed dataframe filled with the given columns.
    * @param data the columns to fill the dataframe with.
    */
-  public FixedDataFrame(final List<Column<?>> data) {
+  public FixedDataFrame(final List<Column> data) {
     this.data = Collections.unmodifiableList(data);
   }
 
@@ -58,25 +58,25 @@ public class FixedDataFrame {
    * @param i the index of the column to retrieve;
    * @return the ith column of this dataframe.
    */
-  public Column<?> getColumn(final int i) {
+  public Column getColumn(final int i) {
     return this.data.get(i);
   }
 
   /**
-   * Get the ith column of this dataframe as a column of type Double.
+   * Get the ith column of this dataframe as a column of dataType Double.
    * @param i the index of the column to retrieve;
-   * @return the ith column of this dataframe as a column of type Double.
+   * @return the ith column of this dataframe as a column of dataType Double.
    */
-  public Column<Double> getColumnAsDouble(final int i) {
+  public Column getColumnAsDouble(final int i) {
     return this.data.get(i).asDouble();
   }
 
   /**
-   * Get the ith column of this dataframe as a column of type String.
+   * Get the ith column of this dataframe as a column of dataType String.
    * @param i the index of the column to retrieve;
-   * @return the ith column of this dataframe as a column of type String.
+   * @return the ith column of this dataframe as a column of dataType String.
    */
-  public Column<String> getColumnAsString(final int i) {
+  public Column getColumnAsString(final int i) {
     return this.data.get(i).asString();
   }
 
@@ -100,10 +100,10 @@ public class FixedDataFrame {
     StringBuilder sb = new StringBuilder();
     final int nrows = (data.size() > 0)? data.get(0).size() : 0;
     final int fixedWidth = 15;
-    Column<?> columnData;
+    Column columnData;
     String s;
     for (int i = 0; i < data.size(); i++) {
-      s = "Type:" + data.get(i).getSimpleTypeName();
+      s = "Type:" + data.get(i).typeName();
       sb.append(String.format("%-" + fixedWidth + "." + fixedWidth + "s", s));
       sb.append("|");
     }

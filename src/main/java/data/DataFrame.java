@@ -25,7 +25,6 @@
 package data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,7 +37,7 @@ import java.util.List;
  */
 public class DataFrame {
 
-  private final List<Column<?>> data;
+  private final List<Column> data;
 
   /**
    * Create a new empty dataframe.
@@ -51,7 +50,7 @@ public class DataFrame {
    * Create a new dataframe filled with the given columns.
    * @param data the columns to fill the dataframe with.
    */
-  public DataFrame(final List<Column<?>> data) {
+  public DataFrame(final List<Column> data) {
     this.data = data;
   }
 
@@ -59,7 +58,7 @@ public class DataFrame {
    * Add a column of data to this dataframe.
    * @param columnData the column to add to this dataframe.
    */
-  public void add(final Column<?> columnData) {
+  public void add(final Column columnData) {
     this.data.add(columnData);
   }
 
@@ -68,7 +67,7 @@ public class DataFrame {
    * @param i the index of the column to remove.
    * @return the removed column.
    */
-  public Column<?> removeColumn(final int i) {
+  public Column removeColumn(final int i) {
     return this.data.remove(i);
   }
 
@@ -77,25 +76,25 @@ public class DataFrame {
    * @param i the index of the column to retrieve;
    * @return the ith column of this dataframe.
    */
-  public Column<?> getColumn(final int i) {
+  public Column getColumn(final int i) {
     return this.data.get(i);
   }
 
   /**
-   * Get the ith column of this dataframe as a column of type Double.
+   * Get the ith column of this dataframe as a column of dataType Double.
    * @param i the index of the column to retrieve;
-   * @return the ith column of this dataframe as a column of type Double.
+   * @return the ith column of this dataframe as a column of dataType Double.
    */
-  public Column<Double> getColumnAsDouble(final int i) {
+  public Column getColumnAsDouble(final int i) {
     return this.data.get(i).asDouble();
   }
 
   /**
-   * Get the ith column of this dataframe as a column of type String.
+   * Get the ith column of this dataframe as a column of dataType String.
    * @param i the index of the column to retrieve;
-   * @return the ith column of this dataframe as a column of type String.
+   * @return the ith column of this dataframe as a column of dataType String.
    */
-  public Column<String> getColumnAsString(final int i) {
+  public Column getColumnAsString(final int i) {
     return this.data.get(i).asString();
   }
 
@@ -119,10 +118,10 @@ public class DataFrame {
     StringBuilder sb = new StringBuilder();
     final int nrows = (data.size() > 0)? data.get(0).size() : 0;
     final int fixedWidth = 15;
-    Column<?> columnData;
+    Column columnData;
     String s;
     for (int i = 0; i < data.size(); i++) {
-      s = "Type:" + data.get(i).getSimpleTypeName();
+      s = "Type:" + data.get(i).typeName();
       sb.append(String.format("%-" + fixedWidth + "." + fixedWidth + "s", s));
       sb.append("|");
     }
