@@ -1,7 +1,5 @@
 package data;
 
-import javax.xml.crypto.Data;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
@@ -14,41 +12,41 @@ public enum DataType {
 
   BOOLEAN("Boolean") {
     @Override
-    Column convert(List<String> strings) {
+    public Column convert(List<String> strings) {
       return new Column(strings, this);
     }
     @Override
-    Boolean convert(String s) {
+    public Boolean convert(String s) {
       return Boolean.parseBoolean(s);
     }
     @Override
-    List<Boolean> convertList(List<String> strings) {
+    public List<Boolean> convertList(List<String> strings) {
       return TypeConversion.toBooleanList(strings);
     }
   },
 
   DOUBLE("Double") {
     @Override
-    Column convert(List<String> strings) {
+    public Column convert(List<String> strings) {
       return new Column(strings, DataType.DOUBLE);
     }
     @Override
-    Double convert(String s) {
+    public Double convert(String s) {
       return Double.parseDouble(s);
     }
     @Override
-    List<Double> convertList(List<String> strings) {
+    public List<Double> convertList(List<String> strings) {
       return TypeConversion.toDoubleList(strings);
     }
   },
 
   LOCAL_DATE_TIME("LocalDateTime") {
     @Override
-    Column convert(List<String> strings) {
+    public Column convert(List<String> strings) {
       return new Column(strings, DataType.LOCAL_DATE_TIME);
     }
     @Override
-    LocalDateTime convert(String s) {
+    public LocalDateTime convert(String s) {
       try {
         return LocalDateTime.parse(s);
       } catch (DateTimeParseException e) {
@@ -57,18 +55,18 @@ public enum DataType {
       return null;
     }
     @Override
-    List<LocalDateTime> convertList(List<String> strings) {
+    public List<LocalDateTime> convertList(List<String> strings) {
       return TypeConversion.toLocalDateTimeList(strings);
     }
   },
 
   OFFSET_DATE_TIME("OffsetDateTime") {
     @Override
-    Column convert(List<String> strings) {
+    public Column convert(List<String> strings) {
       return new Column(strings, DataType.OFFSET_DATE_TIME);
     }
     @Override
-    OffsetDateTime convert(String s) {
+    public OffsetDateTime convert(String s) {
       try {
         return OffsetDateTime.parse(s);
       } catch (DateTimeParseException e) {
@@ -77,22 +75,22 @@ public enum DataType {
       return null;
     }
     @Override
-    List<OffsetDateTime> convertList(List<String> strings) {
+    public List<OffsetDateTime> convertList(List<String> strings) {
       return TypeConversion.toOffsetDateTimeList(strings);
     }
   },
 
   STRING("String") {
     @Override
-    Column convert(List<String> string) {
+    public Column convert(List<String> string) {
       return new Column(string, DataType.STRING);
     }
     @Override
-    String convert(String s) {
+    public String convert(String s) {
       return s;
     }
     @Override
-    List<String> convertList(List<String> strings) {
+    public List<String> convertList(List<String> strings) {
       return new ArrayList<>(strings);
     }
   };
@@ -108,9 +106,9 @@ public enum DataType {
     return symbol;
   }
 
-  abstract List<?> convertList(List<String> strings);
-  abstract Column convert(List<String> strings);
-  abstract Object convert(String s);
+  public abstract List<?> convertList(List<String> strings);
+  public abstract Column convert(List<String> strings);
+  public abstract Object convert(String s);
 
   private static final Map<String, DataType> stringToEnum = new HashMap<>();
 

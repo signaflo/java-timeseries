@@ -25,7 +25,9 @@
 package data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -37,7 +39,21 @@ import java.util.List;
  */
 public class DataFrame {
 
+  private static class ColumnInfo {
+    private final int index;
+    private final Class<?> clazz;
+
+    ColumnInfo(int index, Class<?> clazz) {
+      this.index = index;
+      this.clazz = clazz;
+    }
+  }
+
   private final List<Column> data;
+  private List<Integer> indices;
+  private List<Class<?>> types;
+  private Map<ColumnInfo, Object> map;
+
 
   /**
    * Create a new empty dataframe.
@@ -52,6 +68,14 @@ public class DataFrame {
    */
   public DataFrame(final List<Column> data) {
     this.data = data;
+  }
+
+  public DataFrame(final List<Column> data, final List<Class<?>> classes) {
+    this.data = data;
+    this.types = classes;
+    this.indices = new ArrayList<>(classes.size());
+    this.map = new HashMap<>(classes.size());
+
   }
 
   /**
