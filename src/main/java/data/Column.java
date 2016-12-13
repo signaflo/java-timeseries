@@ -28,6 +28,7 @@ import com.google.common.collect.ImmutableList;
 import timeseries.TimeSeries;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -41,16 +42,16 @@ import java.util.List;
  */
 public final class Column<T> {
 
-  private final List<T> data;
+  private final T[] data;
   private final Class<T> type;
 
   /**
    * Create a new column from the list of input data. The class of the column will be inferred from the data.
    * @param data the column data.
    */
-  public Column(final List<T> data) {
+  public Column(final T[] data) {
     this.type = inferType(data);
-    this.data = ImmutableList.copyOf(data);
+    this.data = data.clone();
   }
 
   /**
@@ -59,12 +60,12 @@ public final class Column<T> {
    * @return the inferred class.
    */
   @SuppressWarnings("unchecked")
-  private Class<T> inferType(List<T> data) {
-    if (data.isEmpty()) {
+  private Class<T> inferType(T[] data) {
+    if (data.length == 0) {
       return (Class<T>)Object.class;
     }
 
-    T item = data.get(0);
+    T item = data[0];
     /*if (item.getClass().getSuperclass().equals(Number.class)) {
       return (Class<T>)Number.class;
     } else */if (item.getClass().equals(Double.class)) {
@@ -82,16 +83,16 @@ public final class Column<T> {
    * @param data the column data.
    * @param type the type of data the column contains.
    */
-  public Column(final List<T> data, final Class<T> type) {
+  public Column(final T[] data, final Class<T> type) {
     this.type = type;
-    this.data = ImmutableList.copyOf(data);
+    this.data = data;
   }
 
   /**
    * Retrieve the list of data in the column.
    * @return the list of data in the column.
    */
-  public final List<T> getData() {
+  public final T[] getData() {
     return this.data;
   }
 
@@ -101,7 +102,7 @@ public final class Column<T> {
    * @return the piece of data in the ith index position.
    */
   public final T get(final int i) {
-    return data.get(i);
+    return data[i];
   }
 
   /**
@@ -109,9 +110,9 @@ public final class Column<T> {
    * @return a new column of string data.
    */
   public Column<String> asString() {
-    List<String> stringData = new ArrayList<>(data.size());
-    for (T t : data) {
-      stringData.add(t.toString());
+    String[] stringData = new String[(data.length)];
+    for (int i = 0; i < data.length; i++) {
+      stringData[i] = data[i].toString();
     }
     return new Column<>(stringData);
   }
@@ -121,7 +122,7 @@ public final class Column<T> {
    * @return a new column of (wrapped) double data.
    */
   public Column<Double> asDouble() {
-    List<Double> doubleData = new ArrayList<>(data.size());
+    List<Double> doubleData = new ArrayList<>(data.length);
     for (T t : data) {
       String s = t.toString();
       if (TypeConversion.isDouble(s)) {
@@ -130,7 +131,7 @@ public final class Column<T> {
         throw new NotADoubleException(s + " could not be parsed as a Double.");
       }
     }
-    return new Column<>(doubleData);
+    return new Column<>(doubleData.toArray(new Double[] {}));
   }
 
   /**
@@ -162,7 +163,7 @@ public final class Column<T> {
    * @return the size of the column.
    */
   public final int size() {
-    return this.data.size();
+    return this.data.length;
   }
 
   @Override
@@ -172,13 +173,13 @@ public final class Column<T> {
 
     Column<?> column = (Column<?>) o;
 
-    if (!data.equals(column.data)) return false;
+    if (!Arrays.equals(data, column.data)) return false;
     return type.equals(column.type);
   }
 
   @Override
   public int hashCode() {
-    int result = data.hashCode();
+    int result = Arrays.hashCode(data);
     result = 31 * result + type.hashCode();
     return result;
   }
@@ -186,6 +187,6 @@ public final class Column<T> {
   @Override
   public String toString() {
     return getSimpleTypeName() + " Column" +
-        "\n" + data;
+        "\n" + Arrays.toString(data);
   }
 }
