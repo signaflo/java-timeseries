@@ -27,6 +27,7 @@ package data;
 import com.google.common.collect.ImmutableList;
 import timeseries.TimeSeries;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,6 +56,16 @@ public final class Column<T> {
   }
 
   /**
+   * Create a new column from the list of input data. The class of the column will be inferred from the data.
+   * @param data the column data.
+   */
+  @SuppressWarnings("unchecked")
+  public Column(final List<T> data) {
+    this.type = inferType(data);
+    this.data = data.toArray((T[])Array.newInstance(type, 0));
+  }
+
+  /**
    * Performs very simple type inference on the list of input data and returns the inferred class.
    * @param data the list of data whose type is to be inferred.
    * @return the inferred class.
@@ -78,6 +89,29 @@ public final class Column<T> {
   }
 
   /**
+   * Performs very simple type inference on the list of input data and returns the inferred class.
+   * @param data the list of data whose type is to be inferred.
+   * @return the inferred class.
+   */
+  @SuppressWarnings("unchecked")
+  private Class<T> inferType(List<T> data) {
+    if (data.size() == 0) {
+      return (Class<T>)Object.class;
+    }
+
+    T item = data.get(0);
+    /*if (item.getClass().getSuperclass().equals(Number.class)) {
+      return (Class<T>)Number.class;
+    } else */if (item.getClass().equals(Double.class)) {
+      return (Class<T>)Double.class;
+    } else if (item.getClass().equals(String.class)){
+      return (Class<T>)String.class;
+    } else {
+      return (Class<T>)Object.class;
+    }
+  }
+
+  /**
    * Create a new column of the given type from the list of input data. The class variable is used so that
    * a {@link DataFrame} may hold columns of different types.
    * @param data the column data.
@@ -86,6 +120,18 @@ public final class Column<T> {
   public Column(final T[] data, final Class<T> type) {
     this.type = type;
     this.data = data;
+  }
+
+  /**
+   * Create a new column of the given type from the list of input data. The class variable is used so that
+   * a {@link DataFrame} may hold columns of different types.
+   * @param data the column data.
+   * @param type the type of data the column contains.
+   */
+  @SuppressWarnings("unchecked")
+  public Column(final List<T> data, final Class<T> type) {
+    this.type = type;
+    this.data = data.toArray((T[])Array.newInstance(type, 0));
   }
 
   /**

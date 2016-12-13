@@ -1,12 +1,12 @@
 package data;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,44 +15,47 @@ import java.util.List;
  */
 public class ColumnSpec {
 
+  private Double[] doubles;
+  private String[] strings;
+
+  @Before
+  public void beforeMethod() {
+    doubles = new Double[] {3.0, 1.5, -4.0};
+    strings = new String[] {"A", "B", "C"};
+  }
   @Rule
   public ExpectedException exception = ExpectedException.none();
 
   @Test
   public void whenModifyReturnedDataThenObjectDataUnchanged() {
-    List<Double> data = new ArrayList<>(3);
-    data.add(3.0); data.add(1.5); data.add(-4.0);
-    Column<Double> col = new Column<>(data);
-    List<Double> colData = col.getData();
+    Column<Double> col = new Column<>(doubles);
+    List<Double> colData = Arrays.asList(col.getData());
     exception.expect(UnsupportedOperationException.class);
     colData.remove(2);
   }
 
   @Test
   public void whenNotADoubleThenAsDoubleThrowsException() {
-    List<String> data = Arrays.asList("A", "B", "C");
-    Column<String> col = new Column<>(data);
+    Column<String> col = new Column<>(strings);
     exception.expect(NotADoubleException.class);
     col.asDouble();
   }
 
   @Test
   public void whenColumnWithEmptyDataThenTypeIsObject() {
-    Column<Double> col = new Column<>(new ArrayList<>());
+    Column<Double> col = new Column<>(new Double[] {});
     assertThat(col.getType(), is(equalTo(Object.class)));
   }
 
   @Test
   public void whenColumnWithDoubleDataThenTypeIsDouble() {
-    List<Double> data = Arrays.asList(3.0, 1.5, -4.0);
-    Column<Double> col = new Column<>(data);
+    Column<Double> col = new Column<>(doubles);
     assertThat(col.getType(), is(equalTo(Double.class)));
   }
 
   @Test
   public void whenColumnWithStringDataThenTypeIsString() {
-    List<String> data = Arrays.asList("A", "B", "C");
-    Column<String> col = new Column<>(data);
+    Column<String> col = new Column<>(strings);
     assertThat(col.getType(), is(equalTo(String.class)));
   }
 
@@ -80,8 +83,8 @@ public class ColumnSpec {
 
   @Test
   public void whenDoubleColumnAsStringThenStringColumnReturned() {
-    List<Double> data = Arrays.asList(3.0, 1.5, -4.0);
-    Column<Double> col = new Column<>(data);
+    List<Number> data = Arrays.asList(3.0, 1.5, -4.0);
+    Column<Number> col = new Column<>(data);
     Column<String> expected = new Column<>(Arrays.asList("3.0", "1.5", "-4.0"));
     assertThat(col.asString(), is(expected));
   }
