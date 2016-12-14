@@ -28,12 +28,6 @@ public class Row {
     return info.clazz.cast(typeMap.get(info));
   }
 
-  public <T> T get (final int i) throws Exception {
-    System.out.println(rowInfoMap.get(i).clazz.getClass().getTypeParameters()[0]);
-    //RowInfo<T> info = rowInfoMap.get(i);
-    return get(i, (Class<T>)Double.class);
-  }
-
   private static class RowInfo<T> {
 
     private final int rowIndex;

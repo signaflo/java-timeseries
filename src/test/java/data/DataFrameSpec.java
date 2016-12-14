@@ -1,6 +1,8 @@
 package data;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +16,9 @@ import static org.hamcrest.Matchers.*;
  * Created by jacob on 12/8/16.
  */
 public class DataFrameSpec {
+
+  @Rule
+  public ExpectedException exception = ExpectedException.none();
 
   @Test
   public void whenDataFrameColumnAsDoubleThenDoubleColumnReturned() {
@@ -81,7 +86,7 @@ public class DataFrameSpec {
   public void whenGetColumnCalledFixedDataFrameUnchanged() throws Exception {
     Row row = new Row();
     row.put(Double.class, 3.5);
-    row.get(0);
+    row.get(0, Double.class);
     List<String> stringData = Arrays.asList("3.0", "1.5", "-4.0");
     List<Double> doubleData = Arrays.asList(3.0, 1.5, -4.0);
     List<Column<?>> columns = new ArrayList<>(2);
@@ -90,11 +95,32 @@ public class DataFrameSpec {
     FixedDataFrame df2 = new FixedDataFrame(columns);
     Column<?> retrievedColumn = df2.getColumn(0);
     assertThat(retrievedColumn, is(new Column<>(stringData)));
+  }
+
+  @Test
+  public void whenGetByIndexAndClassThenResultCorrect() {
     DataFrame df = new DataFrame();
     Double[] doubles = new Double[] {4.5, 3.0, 1.5};
     df.put(Double[].class, doubles);
     Double[] result = df.get(0, Double[].class);
     assertThat(result, is(doubles));
+  }
+
+  @Test
+  public void whenGetListThenResultCorrect() {
+    DataFrame df = new DataFrame();
+    Double[] doubles = new Double[] {4.5, 3.0, 1.5};
+    df.put(Double[].class, doubles);
+    List<Double> result = df.getList(0, Double[].class);
+    assertThat(result, is(Arrays.asList(doubles)));
+  }
+
+  @Test
+  public void whenGetWithNullClassThenNullPointerException() {
+    DataFrame df = new DataFrame();
+    Double[] doubles = new Double[] {4.5, 3.0, 1.5};
+    exception.expect(NullPointerException.class);
+    df.put(null, doubles);
   }
 
   @Test

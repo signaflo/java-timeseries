@@ -25,10 +25,7 @@
 package data;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -44,14 +41,6 @@ public class DataFrame {
   private Map<ColumnInfo<?>, Object> columnMap = new HashMap<>();
 
   private final List<Column<?>> data;
-
-  public <T> void put(Class<T[]> type, T[] instance) {
-    if (type == null) {
-      throw new NullPointerException();
-    }
-    ColumnInfo<T> colInfo = new ColumnInfo<>(colIndex++, type);
-    columnMap.put(colInfo, instance);
-  }
 
   /**
    * Create a new empty dataframe.
@@ -77,6 +66,20 @@ public class DataFrame {
   }
 
   /**
+   * Add the array of the given type to the data frame.
+   * @param type the class type of the data in the array.
+   * @param instance the array of data.
+   * @param <T> the type of the data in the array.
+   */
+  public <T> void put(Class<T[]> type, T[] instance) {
+    if (type == null) {
+      throw new NullPointerException("The class type was null.");
+    }
+    ColumnInfo<T> colInfo = new ColumnInfo<>(colIndex++, type);
+    columnMap.put(colInfo, instance);
+  }
+
+  /**
    * Remove and return the ith column from this dataframe.
    * @param i the index of the column to remove.
    * @return the removed column.
@@ -94,11 +97,39 @@ public class DataFrame {
     return this.data.get(i);
   }
 
+  /**
+   * Retrieve the data in the ith column as a list of the given type.
+   * @param i the index of the column to retrieve.
+   * @param type the class type of the data in the array.
+   * @param <T> the type of the data in the array.
+   * @return the data in the ith column as a list of the given type.
+   */
+  public <T> List<T> getList(final int i, final Class<T[]> type) {
+    ColumnInfo<T> info = new ColumnInfo<>(i, type);
+    T[] column = get(info);
+    return Arrays.asList(column);
+  }
+
+  /**
+   * Retrieve the data in the ith column as an array of the given type.
+   * The array class type is required for type safety. For an example of how to use this method,
+   * Double[] columnData = ne w
+   * @param i the index of the column to retrieve.
+   * @param type the class type of the data in the array.
+   * @param <T> the type of the data in the array.
+   * @return the data in the ith column as an array of the given type.
+   */
   public <T> T[] get(final int i, final Class<T[]> type) {
     ColumnInfo<T> info = new ColumnInfo<>(i, type);
     return get(info);
   }
 
+  /**
+   * Retrieve a column of data from the data frame using the provided column information.
+   * @param info the column information to use to retrieve the data.
+   * @param <T> the type of the data in the array.
+   * @return the data in the ith column as an array of the given type.
+   */
   public <T> T[] get(final ColumnInfo<T> info) {
     return info.clazz.cast(columnMap.get(info));
   }
