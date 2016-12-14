@@ -78,7 +78,10 @@ public class DataFrameSpec {
   }
 
   @Test
-  public void whenGetColumnCalledFixedDataFrameUnchanged() {
+  public void whenGetColumnCalledFixedDataFrameUnchanged() throws Exception {
+    Row row = new Row();
+    row.put(Double.class, 3.5);
+    row.get(0);
     List<String> stringData = Arrays.asList("3.0", "1.5", "-4.0");
     List<Double> doubleData = Arrays.asList(3.0, 1.5, -4.0);
     List<Column<?>> columns = new ArrayList<>(2);
@@ -87,6 +90,11 @@ public class DataFrameSpec {
     FixedDataFrame df2 = new FixedDataFrame(columns);
     Column<?> retrievedColumn = df2.getColumn(0);
     assertThat(retrievedColumn, is(new Column<>(stringData)));
+    DataFrame df = new DataFrame();
+    Double[] doubles = new Double[] {4.5, 3.0, 1.5};
+    df.put(Double[].class, doubles);
+    Double[] result = df.get(0, Double[].class);
+    assertThat(result, is(doubles));
   }
 
   @Test

@@ -1,28 +1,37 @@
 package data;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.reflect.TypeParameter;
+
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * Created by jacob on 12/13/16.
  */
 public class Row {
 
-  private int rowIndex;
-
-  private Map<RowInfo, Object> typeMap = new HashMap<>();
+  private int rowIndex = 0;
+  private Map<Integer, RowInfo<?>> rowInfoMap = new HashMap<>();
+  private Map<RowInfo<?>, Object> typeMap = new HashMap<>();
 
   public <T> void put(Class<T> type, T instance) {
     if (type == null) {
       throw new NullPointerException("Type is null.");
     }
-    RowInfo<T> info = new RowInfo<>(rowIndex++, type);
+    RowInfo<T> info = new RowInfo<>(rowIndex, type);
+    rowInfoMap.put(rowIndex++, info);
     typeMap.put(info, instance);
   }
 
   public <T> T get(final int i, final Class<T> type) {
     RowInfo<T> info = new RowInfo<>(i, type);
     return info.clazz.cast(typeMap.get(info));
+  }
+
+  public <T> T get (final int i) throws Exception {
+    System.out.println(rowInfoMap.get(i).clazz.getClass().getTypeParameters()[0]);
+    //RowInfo<T> info = rowInfoMap.get(i);
+    return get(i, (Class<T>)Double.class);
   }
 
   private static class RowInfo<T> {

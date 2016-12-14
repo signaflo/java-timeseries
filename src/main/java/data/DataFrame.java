@@ -24,9 +24,11 @@
 
 package data;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -38,7 +40,18 @@ import java.util.List;
  */
 public class DataFrame {
 
+  private int colIndex;
+  private Map<ColumnInfo<?>, Object> columnMap = new HashMap<>();
+
   private final List<Column<?>> data;
+
+  public <T> void put(Class<T[]> type, T[] instance) {
+    if (type == null) {
+      throw new NullPointerException();
+    }
+    ColumnInfo<T> colInfo = new ColumnInfo<>(colIndex++, type);
+    columnMap.put(colInfo, instance);
+  }
 
   /**
    * Create a new empty dataframe.
@@ -80,6 +93,16 @@ public class DataFrame {
   public Column<?> getColumn(final int i) {
     return this.data.get(i);
   }
+
+  public <T> T[] get(final int i, final Class<T[]> type) {
+    ColumnInfo<T> info = new ColumnInfo<>(i, type);
+    return get(info);
+  }
+
+  public <T> T[] get(final ColumnInfo<T> info) {
+    return info.clazz.cast(columnMap.get(info));
+  }
+
 
   /**
    * Get the ith column of this dataframe as a column of type Double.
@@ -145,5 +168,34 @@ public class DataFrame {
    */
   public void print() {
     System.out.println(toString());
+  }
+
+  static class ColumnInfo<T> {
+
+    private final int columnIndex;
+    private final Class<T[]> clazz;
+
+    ColumnInfo(final int columnIndex, final Class<T[]> clazz) {
+      this.columnIndex = columnIndex;
+      this.clazz = clazz;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      ColumnInfo<?> columnInfo = (ColumnInfo<?>) o;
+
+      if (columnIndex != columnInfo.columnIndex) return false;
+      return clazz.equals(columnInfo.clazz);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = columnIndex;
+      result = 31 * result + clazz.hashCode();
+      return result;
+    }
   }
 }
