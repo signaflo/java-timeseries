@@ -82,21 +82,6 @@ public class CsvDataSpec {
     assertThat(Double.parseDouble(column.get(0)), is(equalTo(76378.0)));
   }
 
-  @Test
-  public void whenCreateDataFrameThenExpectedDataFrameReturned() {
-    Column<String> stringColumn = new Column<>(Arrays.asList("A", "B", "C"));
-    Column<Double> doubleColumn = new Column<>(Arrays.asList(1.0, 2.5, -3.0));
-    DataFrame expected = new DataFrame(Arrays.asList(stringColumn, doubleColumn));
-
-    csvPath = "test-data.csv";
-    csvData = new CsvData(csvPath);
-    List<Class<?>> classes = new ArrayList<>(2);
-    classes.add(String.class); classes.add(Double.class);
-    DataFrame df = csvData.createDataFrame(classes);
-    assertThat(df, is(expected));
-    df = csvData.createDataFrame();
-    assertThat(df, is(expected));
-  }
 
   @Test
   public void whenCreateFixedDataFrameThenExpectedDataFrameReturned() {
@@ -115,39 +100,12 @@ public class CsvDataSpec {
   }
 
   @Test
-  public void whenCreateDataFrameWithWrongNumberOfClassesThenException() {
-    Column<String> stringColumn = new Column<>(Arrays.asList("A", "B", "C"));
-    Column<Double> doubleColumn = new Column<>(Arrays.asList(1.0, 2.5, -3.0));
-    DataFrame expected = new DataFrame(Arrays.asList(stringColumn, doubleColumn));
-
-    List<Class<?>> classes = new ArrayList<>(1);
-    classes.add(String.class);
-    exception.expect(IllegalArgumentException.class);
-    csvData.createDataFrame(classes);
-  }
-
-
-  @Test
-  public void whenCreateFixedDataFrameWithWrongNumberOfClassesThenException() {
-    Column<String> stringColumn = new Column<>(Arrays.asList("A", "B", "C"));
-    Column<Double> doubleColumn = new Column<>(Arrays.asList(1.0, 2.5, -3.0));
-    DataFrame expected = new DataFrame(Arrays.asList(stringColumn, doubleColumn));
-
-    List<Class<?>> classes = new ArrayList<>(1);
-    classes.add(String.class);
-    exception.expect(IllegalArgumentException.class);
-    csvData.createFixedDataFrame(classes);
-  }
-
-  @Test
   public void whenEmptyCSVThenEmptyDataFrame() {
     DataFrame df = new DataFrame();
     FixedDataFrame fdf = new FixedDataFrame();
     csvPath = "empty.csv";
     csvData = new CsvData(csvPath);
-    assertThat(csvData.createDataFrame(), is(df));
     assertThat(csvData.createFixedDataFrame(), is(fdf));
-    assertThat(csvData.createDataFrame(Collections.emptyList()), is(df));
     assertThat(csvData.createFixedDataFrame(Collections.emptyList()), is(fdf));
   }
 

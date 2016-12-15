@@ -38,31 +38,15 @@ import java.util.*;
 public class DataFrame {
 
   private int colIndex;
-  private Map<ColumnInfo<?>, Object> columnMap = new HashMap<>();
-
-  private final List<Column<?>> data;
+  private final Map<Integer, Class<?>> columnIndexMap;
+  private final Map<ColumnInfo<?>, Object> columnMap;
 
   /**
    * Create a new empty dataframe.
    */
   public DataFrame() {
-    data = new ArrayList<>();
-  }
-
-  /**
-   * Create a new dataframe filled with the given columns.
-   * @param data the columns to fill the dataframe with.
-   */
-  public DataFrame(final List<Column<?>> data) {
-    this.data = data;
-  }
-
-  /**
-   * Add a column of data to this dataframe.
-   * @param columnData the column to add to this dataframe.
-   */
-  public void add(final Column<?> columnData) {
-    this.data.add(columnData);
+    this.columnIndexMap = new HashMap<>();
+    this.columnMap = new HashMap<>();
   }
 
   /**
@@ -71,43 +55,55 @@ public class DataFrame {
    * @param instance the array of data.
    * @param <T> the type of the data in the array.
    */
-  public <T> void put(Class<T[]> type, T[] instance) {
+  public <T> void add(Class<T[]> type, T[] instance) {
     if (type == null) {
       throw new NullPointerException("The class type was null.");
     }
+    columnIndexMap.put(colIndex, type);
     ColumnInfo<T> colInfo = new ColumnInfo<>(colIndex++, type);
     columnMap.put(colInfo, instance);
+  }
+
+  public <T> void add(Class<T[]> type, List<T> instance) {
+    if (type == null) {
+      throw new NullPointerException();
+    }
+    columnIndexMap.put(colIndex, type);
+    T[] asArray = type.cast(instance.toArray());
+    ColumnInfo<T> colInfo = new ColumnInfo<T>(colIndex++, type);
+    columnMap.put(colInfo, asArray);
   }
 
   /**
    * Remove and return the ith column from this dataframe.
    * @param i the index of the column to remove.
+   * @param type the class type of the column to remove.
+   * @param <T> the type of the data in the column to remove.
    * @return the removed column.
    */
-  public Column<?> removeColumn(final int i) {
-    return this.data.remove(i);
-  }
-
-  /**
-   * Get the ith column of this dataframe.
-   * @param i the index of the column to retrieve;
-   * @return the ith column of this dataframe.
-   */
-  public Column<?> getColumn(final int i) {
-    return this.data.get(i);
+  public <T> T[] removeColumn(final int i, Class<T[]> type) {
+    return type.cast(this.columnMap.remove(new ColumnInfo<>(i, type)));
   }
 
   /**
    * Retrieve the data in the ith column as a list of the given type.
    * @param i the index of the column to retrieve.
-   * @param type the class type of the data in the array.
-   * @param <T> the type of the data in the array.
+   * @param type the class type of the data in the column.
+   * @param <T> the type of the data in the column.
    * @return the data in the ith column as a list of the given type.
    */
   public <T> List<T> getList(final int i, final Class<T[]> type) {
     ColumnInfo<T> info = new ColumnInfo<>(i, type);
     T[] column = get(info);
     return Arrays.asList(column);
+  }
+
+  public Class<?> getColumnClass(final int i) {
+    return columnIndexMap.get(i);
+  }
+
+  public String getColumnClassName(final int i) {
+    return columnIndexMap.get(i).getSimpleName();
   }
 
   /**
@@ -134,24 +130,31 @@ public class DataFrame {
     return info.clazz.cast(columnMap.get(info));
   }
 
-
-  /**
-   * Get the ith column of this dataframe as a column of type Double.
-   * @param i the index of the column to retrieve;
-   * @return the ith column of this dataframe as a column of type Double.
-   */
-  public Column<Double> getColumnAsDouble(final int i) {
-    return this.data.get(i).asDouble();
-  }
-
-  /**
-   * Get the ith column of this dataframe as a column of type String.
-   * @param i the index of the column to retrieve;
-   * @return the ith column of this dataframe as a column of type String.
-   */
-  public Column<String> getColumnAsString(final int i) {
-    return this.data.get(i).asString();
-  }
+//  @Override
+//  public String toString() {
+//    StringBuilder sb = new StringBuilder();
+//    final int nrows = (data.size() > 0)? data.get(0).size() : 0;
+//    final int fixedWidth = 15;
+//    Column<?> columnData;
+//    String s;
+//    for (int i = 0; i < data.size(); i++) {
+//      s = "Type:" + data.get(i).getSimpleTypeName();
+//      sb.append(String.format("%-" + fixedWidth + "." + fixedWidth + "s", s));
+//      sb.append("|");
+//    }
+//    sb.append("\n");
+//    for (int j = 0; j < nrows; j++) {
+//      for (int i = 0; i < data.size(); i++) {
+//        columnData = data.get(i);
+//        sb.append(String.format("%-" + fixedWidth + "." + fixedWidth + "s", columnData.get(j)));
+//        sb.append("|");
+//      }
+//      if (j != nrows - 1) {
+//        sb.append("\n");
+//      }
+//    }
+//    return sb.toString();
+//  }
 
   @Override
   public boolean equals(Object o) {
@@ -160,38 +163,17 @@ public class DataFrame {
 
     DataFrame dataFrame = (DataFrame) o;
 
-    return data.equals(dataFrame.data);
+    if (colIndex != dataFrame.colIndex) return false;
+    if (!columnIndexMap.equals(dataFrame.columnIndexMap)) return false;
+    return columnMap.equals(dataFrame.columnMap);
   }
 
   @Override
   public int hashCode() {
-    return data.hashCode();
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    final int nrows = (data.size() > 0)? data.get(0).size() : 0;
-    final int fixedWidth = 15;
-    Column<?> columnData;
-    String s;
-    for (int i = 0; i < data.size(); i++) {
-      s = "Type:" + data.get(i).getSimpleTypeName();
-      sb.append(String.format("%-" + fixedWidth + "." + fixedWidth + "s", s));
-      sb.append("|");
-    }
-    sb.append("\n");
-    for (int j = 0; j < nrows; j++) {
-      for (int i = 0; i < data.size(); i++) {
-        columnData = data.get(i);
-        sb.append(String.format("%-" + fixedWidth + "." + fixedWidth + "s", columnData.get(j)));
-        sb.append("|");
-      }
-      if (j != nrows - 1) {
-        sb.append("\n");
-      }
-    }
-    return sb.toString();
+    int result = colIndex;
+    result = 31 * result + columnIndexMap.hashCode();
+    result = 31 * result + columnMap.hashCode();
+    return result;
   }
 
   /**

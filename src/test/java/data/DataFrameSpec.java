@@ -21,24 +21,6 @@ public class DataFrameSpec {
   public ExpectedException exception = ExpectedException.none();
 
   @Test
-  public void whenDataFrameColumnAsDoubleThenDoubleColumnReturned() {
-    List<String> data = Arrays.asList("3.0", "1.5", "-4.0");
-    Column<String> col = new Column<>(data);
-    Column<Double> expected = new Column<>(Arrays.asList(3.0, 1.5, -4.0));
-    DataFrame df = new DataFrame(Collections.singletonList(col));
-    assertThat(df.getColumnAsDouble(0), is(expected));
-  }
-
-  @Test
-  public void whenDataFrameColumnAsStringThenStringColumnReturned() {
-    List<Double> data = Arrays.asList(3.0, 1.5, -4.0);
-    Column<Double> col = new Column<>(data);
-    Column<String> expected = new Column<>(Arrays.asList("3.0", "1.5", "-4.0"));
-    DataFrame df = new DataFrame(Collections.singletonList(col));
-    assertThat(df.getColumnAsString(0), is(expected));
-  }
-
-  @Test
   public void whenFixedDataFrameColumnAsDoubleThenDoubleColumnReturned() {
     List<String> data = Arrays.asList("3.0", "1.5", "-4.0");
     Column<String> col = new Column<>(data);
@@ -54,32 +36,6 @@ public class DataFrameSpec {
     Column<String> expected = new Column<>(Arrays.asList("3.0", "1.5", "-4.0"));
     FixedDataFrame df = new FixedDataFrame(Collections.singletonList(col));
     assertThat(df.getColumnAsString(0), is(expected));
-  }
-
-  @Test
-  public void whenColumnRemovedThenNoLongerPresent() {
-    List<String> stringData = Arrays.asList("3.0", "1.5", "-4.0");
-    List<Double> doubleData = Arrays.asList(3.0, 1.5, -4.0);
-    DataFrame df = new DataFrame(Collections.singletonList(new Column<>(stringData)));
-    List<Column<?>> columns = new ArrayList<>(2);
-    DataFrame df2 = new DataFrame();
-    df2.add(new Column<>(stringData));
-    df2.add(new Column<>(doubleData));
-    df2.removeColumn(1);
-    assertThat(df, is(df2));
-  }
-
-  @Test
-  public void whenGetColumnCalledDataFrameUnchanged() {
-    List<String> stringData = Arrays.asList("3.0", "1.5", "-4.0");
-    List<Double> doubleData = Arrays.asList(3.0, 1.5, -4.0);
-    DataFrame df = new DataFrame(Collections.singletonList(new Column<>(stringData)));
-    List<Column<?>> columns = new ArrayList<>(2);
-    DataFrame df2 = new DataFrame();
-    df2.add(new Column<>(stringData));
-    Column<?> retrievedColumn = df2.getColumn(0);
-    assertThat(retrievedColumn, is(new Column<>(stringData)));
-    assertThat(df, is(df2));
   }
 
   @Test
@@ -101,7 +57,7 @@ public class DataFrameSpec {
   public void whenGetByIndexAndClassThenResultCorrect() {
     DataFrame df = new DataFrame();
     Double[] doubles = new Double[] {4.5, 3.0, 1.5};
-    df.put(Double[].class, doubles);
+    df.add(Double[].class, doubles);
     Double[] result = df.get(0, Double[].class);
     assertThat(result, is(doubles));
   }
@@ -110,7 +66,9 @@ public class DataFrameSpec {
   public void whenGetListThenResultCorrect() {
     DataFrame df = new DataFrame();
     Double[] doubles = new Double[] {4.5, 3.0, 1.5};
-    df.put(Double[].class, doubles);
+    df.add(Double[].class, doubles);
+    System.out.println(df.getColumnClass(0));
+    System.out.println(df.getColumnClassName(0));
     List<Double> result = df.getList(0, Double[].class);
     assertThat(result, is(Arrays.asList(doubles)));
   }
@@ -120,7 +78,7 @@ public class DataFrameSpec {
     DataFrame df = new DataFrame();
     Double[] doubles = new Double[] {4.5, 3.0, 1.5};
     exception.expect(NullPointerException.class);
-    df.put(null, doubles);
+    df.add(null, doubles);
   }
 
   @Test
@@ -132,8 +90,6 @@ public class DataFrameSpec {
     DataFrame df = new DataFrame();
     DataFrame df2 = new DataFrame();
 
-    df.add(new Column<>(stringData)); df.add(new Column<>(doubleData));
-    df2.add(new Column<>(stringData2)); df2.add(new Column<>(doubleData2));
     assertThat(df, is(df));
     assertThat(df, is(df2));
     assertThat(df, is(not(stringData)));
@@ -142,7 +98,7 @@ public class DataFrameSpec {
     stringData2 = Arrays.asList("1.5", "-4.0");
     doubleData2 = Arrays.asList(3.0, -4.0);
     df2 = new DataFrame();
-    df2.add(new Column<>(stringData2)); df.add(new Column<>(doubleData2));
+    df2.add(String[].class, stringData2);
     assertThat(df, is(not(df2)));
     assertThat(df.equals(null), is(false));
   }

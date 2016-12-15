@@ -190,28 +190,6 @@ public final class CsvData {
   }
 
   /**
-   * Create a new DataFrame from this CSV data.
-   * @return a new DataFrame.
-   */
-  public DataFrame createDataFrame() {
-    DataFrame df = new DataFrame();
-    if (this.parsedRecords.size() == 0) {
-      return df;
-    }
-    List<List<String>> columns = getColumns();
-    for (List<String> column : columns) {
-      if (TypeConversion.isDouble(column.get(0))) {
-        Column<Double> dataColumn = new Column<>(TypeConversion.toDoubleList(column));
-        df.add(dataColumn);
-      } else {
-        Column<String> dataColumn = new Column<>(column);
-        df.add(dataColumn);
-      }
-    }
-    return df;
-  }
-
-  /**
    * Create a new FixedDataFrame from this CSV data.
    * @return a new FixedDataFrame.
    */
@@ -231,27 +209,6 @@ public final class CsvData {
       }
     }
     return new FixedDataFrame(dataFrameColumns);
-  }
-
-  /**
-   * Create a new DataFrame with the given column types from this CSV data.
-   * @param classes The column types listed in the same order as the columns in the CSV data.
-   * @return a new DataFrame with the given column types.
-   */
-  public DataFrame createDataFrame(List<Class<?>> classes) {
-    DataFrame df = new DataFrame();
-    if (this.parsedRecords.size() == 0) {
-      return df;
-    }
-    List<List<String>> columns = getColumns();
-    if (classes.size() != columns.size()) {
-      throw new IllegalArgumentException("The argument list of classes had length " + classes.size()
-          + " while the number of CSV columns was " + columns.size() + ". These two should be equal.");
-    }
-    for (int i = 0; i < columns.size(); i++) {
-      df.add(newDataColumn(columns.get(i), classes.get(i)));
-    }
-    return df;
   }
 
   /**
