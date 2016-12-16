@@ -8,7 +8,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -176,10 +175,15 @@ public final class CsvData {
         return getColumn(i);
       }
     }
-    throw new IllegalArgumentException("A column with the provided column name was not found.");
+    throw new IllegalArgumentException("A column with the name " + columnName + " was not found.");
   }
 
-  public final DataFrame createDataFrame(List<DataType> schema) {
+  /**
+   * Create a new dataframe with the column types set according to the given schema.
+   * @param schema a list of data types for each column in the dataframe.
+   * @return a new dataframe with the column types set according to the given schema.
+   */
+  public final DataFrame createDataFrame(Schema schema) {
     List<List<String>> columns = getColumns();
     if (schema.size() != columns.size()) {
       throw new IllegalArgumentException("The schema size was " + schema.size() + " but the number of columns was " +
@@ -221,5 +225,25 @@ public final class CsvData {
     }
     return df;
   }
+
+  /**
+   * Create a dataframe from this csv data with each column type set to String.
+   * @return a new dataframe from this csv data with each column type set to String.
+   */
+  public final DataFrame createDataFrame() {
+    List<List<String>> columns = getColumns();
+    DataFrame df = new DataFrame(columns.size());
+    int colId = 0;
+    String stringColId;
+    List<String> column;
+    List<String> header = this.getHeader();
+    for (int i = 0; i < columns.size(); i++) {
+      stringColId = (header.isEmpty())? Integer.toString(colId++) : header.get(i);
+      column = columns.get(i);
+      df.add(stringColId, String[].class, Types.toStringArray(column));
+    }
+    return df;
+  }
+
 
 }
