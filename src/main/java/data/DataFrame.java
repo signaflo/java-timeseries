@@ -28,7 +28,7 @@ import java.util.*;
 
 /**
  *
- * A potentially heteregoneous collection of columns of data. This class is mutable and not thread-safe. The
+ * A potentially heterogeneous collection of columns of data. This class is mutable and not thread-safe. The
  * immutable and thread-safe version of this class is {FixedDataFrame}.
  *
  * @author Jacob Rachiele
@@ -40,13 +40,30 @@ public final class DataFrame {
   private final Map<ColumnInfo<?>, Object> columnMap;
 
   /**
-   * Create a new empty dataframe.
+   * Create a new empty dataframe with the default column capacity. The column capacity will grow and
+   * shrink as necessary.
    */
   public DataFrame() {
     this.columnIdMap = new HashMap<>();
     this.columnMap = new HashMap<>();
   }
 
+  /**
+   * Create a new empty dataframe with the given initial column capacity. The column capacity will grow and shrink
+   * as necessary.
+   */
+  public DataFrame(final int numColumns) {
+    this.columnIdMap = new HashMap<>(numColumns);
+    this.columnMap = new HashMap<>(numColumns);
+  }
+
+  public final int size() {
+    return this.columnMap.size();
+  }
+
+  public Set<String> getColumnIds() {
+    return this.columnIdMap.keySet();
+  }
 
   /**
    * Add the array of the given type to the data frame.
@@ -59,6 +76,30 @@ public final class DataFrame {
     if (type == null) {
       throw new NullPointerException("The class type was null.");
     }
+    if (columnIdMap.containsKey(id)) {
+      throw new IllegalArgumentException("The column id, " + id + ", already exists. The column id must be unique.");
+    }
+    ColumnInfo<T> colInfo = new ColumnInfo<>(id, type);
+    columnIdMap.put(id, colInfo);
+    columnMap.put(colInfo, instance);
+  }
+
+  /**
+   * Add the array of the given type to the data frame.
+   * @param id the unique id of the new column.
+   * @param type the class type of the data in the array.
+   * @param instance the array of data.
+   * @param <T> the type of the data in the array.
+   */
+  public final <T> void replace(final String id, final Class<T[]> type, final T[] instance) {
+    if (type == null) {
+      throw new NullPointerException("The class type was null.");
+    }
+    if (!columnIdMap.containsKey(id)) {
+      throw new IllegalArgumentException("The column id, " + id + ", doesn't exist, so there is nothing to replace.");
+    }
+    ColumnInfo<?> oldInfo = columnIdMap.get(id);
+    columnMap.remove(oldInfo);
     ColumnInfo<T> colInfo = new ColumnInfo<>(id, type);
     columnIdMap.put(id, colInfo);
     columnMap.put(colInfo, instance);
@@ -73,7 +114,7 @@ public final class DataFrame {
    */
   public <T> void add(final String id, Class<T[]> type, List<T> instance) {
     if (type == null) {
-      throw new NullPointerException();
+      throw new NullPointerException("The class type was null.");
     }
     T[] asArray = type.cast(instance.toArray());
     ColumnInfo<T> colInfo = new ColumnInfo<>(id, type);

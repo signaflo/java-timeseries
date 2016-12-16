@@ -38,9 +38,9 @@ import java.util.regex.Pattern;
  * Date: Dec 09 2016
  *
  */
-public class TypeConversion {
+public class Types {
 
-  private TypeConversion() {}
+  private Types() {}
 
   /**
    * Test if the given string is representable as a double.
@@ -103,6 +103,32 @@ public class TypeConversion {
     return doubles;
   }
 
+  /**
+   * Convert the given list of strings to an array of doubles. This method returns the result in a new array.
+   * @param strings the list of strings to convert.
+   * @return the given list of strings converted to an array of doubles.
+   */
+  public static Double[] toDoubleArray(List<String> strings) {
+    Double[] doubles = new Double[strings.size()];
+    for (int i = 0; i < doubles.length; i++) {
+      doubles[i] = Double.valueOf(strings.get(i));
+    }
+    return doubles;
+  }
+
+  /**
+   * Convert the given list of strings to an array of strings. This method returns the result in a new array.
+   * @param strings the list of strings to convert to an array.
+   * @return the given list of strings converted to an array of strings.
+   */
+  public static String[] toStringArray(List<String> strings) {
+    String[] stringArray = new String[strings.size()];
+    for (int i = 0; i < stringArray.length; i++) {
+      stringArray[i] = strings.get(i);
+    }
+    return stringArray;
+  }
+
   public static boolean isLocalDateTime(final String s) {
     try {
       LocalDateTime.parse(s);
@@ -112,6 +138,9 @@ public class TypeConversion {
     return true;
   }
 
+  // Shouldn't use exceptions for control flow, but parsing date-times is absurdly difficult to get right,
+  // so using the fact that the OffsetDateTime parse method has already done it. Downside is that this
+  // way of doing it will cause a performance hit.
   public static boolean isOffsetDateTime(final String s) {
     try {
       OffsetDateTime.parse(s);
@@ -134,6 +163,19 @@ public class TypeConversion {
     return dateTimes;
   }
 
+  /**
+   * Convert the given list of strings to an array of OffsetDateTimes. This method returns the result in a new array.
+   * @param strings the list of strings to convert.
+   * @return the given list of strings converted to an array of OffsetDateTimes.
+   */
+  public static OffsetDateTime[] toOffsetDateTimeArray(List<String> strings) {
+    OffsetDateTime[] dateTimes = new OffsetDateTime[strings.size()];
+    for (int i = 0; i < dateTimes.length; i++) {
+      dateTimes[i] = OffsetDateTime.parse(strings.get(i));
+    }
+    return dateTimes;
+  }
+
   public static List<LocalDateTime> toLocalDateTimeList(List<String> strings) {
     List<LocalDateTime> dateTimes = new ArrayList<>(strings.size());
     for (String s : strings) {
@@ -142,10 +184,26 @@ public class TypeConversion {
     return dateTimes;
   }
 
+  public static LocalDateTime[] toLocalDateTimeArray(List<String> strings) {
+    LocalDateTime[] dateTimes = new LocalDateTime[strings.size()];
+    for (int i = 0; i < dateTimes.length; i++) {
+      dateTimes[i] = LocalDateTime.parse(strings.get(i));
+    }
+    return dateTimes;
+  }
+
   static List<Boolean> toBooleanList(List<String> strings) {
     List<Boolean> booleans = new ArrayList<>(strings.size());
     for (String s : strings) {
       booleans.add(Boolean.parseBoolean(s));
+    }
+    return booleans;
+  }
+
+  static Boolean[] toBooleanArray(List<String> strings) {
+    Boolean[] booleans = new Boolean[strings.size()];
+    for (int i = 0; i < booleans.length; i++) {
+      booleans[i] = Boolean.parseBoolean(strings.get(i));
     }
     return booleans;
   }

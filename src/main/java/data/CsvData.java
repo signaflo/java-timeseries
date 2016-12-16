@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -175,6 +177,49 @@ public final class CsvData {
       }
     }
     throw new IllegalArgumentException("A column with the provided column name was not found.");
+  }
+
+  public final DataFrame createDataFrame(List<DataType> schema) {
+    List<List<String>> columns = getColumns();
+    if (schema.size() != columns.size()) {
+      throw new IllegalArgumentException("The schema size was " + schema.size() + " but the number of columns was " +
+          columns.size() + ". There must be one data type for each column.");
+    }
+    DataFrame df = new DataFrame(schema.size());
+    int colId = 0;
+    String stringColId;
+    DataType type;
+    List<String> column;
+    List<String> header = this.getHeader();
+    for (int i = 0; i < schema.size(); i++) {
+      type = schema.get(i);
+      stringColId = (header.isEmpty())? Integer.toString(colId++) : header.get(i);
+      column = columns.get(i);
+      switch (type) {
+        case DOUBLE:
+          Double[] doubles = Types.toDoubleArray(column);
+          df.add(stringColId, Double[].class, doubles);
+          break;
+        case BOOLEAN:
+          Boolean[] booleans = Types.toBooleanArray(column);
+          df.add(stringColId, Boolean[].class, booleans);
+          break;
+        case LOCAL_DATE_TIME:
+          LocalDateTime[] localDateTimes = Types.toLocalDateTimeArray(column);
+          df.add(stringColId, LocalDateTime[].class, localDateTimes);
+          break;
+        case OFFSET_DATE_TIME:
+          OffsetDateTime[] offsetDateTimes = Types.toOffsetDateTimeArray(column);
+          df.add(stringColId, OffsetDateTime[].class, offsetDateTimes);
+          break;
+        case STRING:
+          df.add(stringColId, String[].class, Types.toStringArray(column));
+          break;
+        default:
+          df.add(stringColId, String[].class, Types.toStringArray(column));
+      }
+    }
+    return df;
   }
 
 }

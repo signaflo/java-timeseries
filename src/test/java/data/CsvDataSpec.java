@@ -5,9 +5,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -79,6 +77,13 @@ public class CsvDataSpec {
   @Test
   public void whenColumnByNameThenRightColumnDataReturned() {
     List<String> column = csvData.getColumn("Pigs Slaughtered");
+    List<DataType> schema = new ArrayList<>(2);
+    schema.add(DataType.STRING);
+    schema.add(DataType.DOUBLE);
+    DataFrame df = csvData.createDataFrame(schema);
+    System.out.println(df.getColumnIds());
+    df.replace("Month", Double[].class, (new Double[0]));
+    Double[] months = df.get("Month", Double[].class);
     assertThat(Double.parseDouble(column.get(0)), is(equalTo(76378.0)));
   }
 
