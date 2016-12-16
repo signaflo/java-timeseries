@@ -31,11 +31,11 @@ public final class DoubleFunctions {
     return doubles;
   }
 
-  public static double[] newArray(Column data) {
-    final int size = data.size();
+  public static double[] newArray(Double[] data) {
+    final int size = data.length;
     final double[] doubles = new double[size];
     for (int i = 0; i < size; i++) {
-      doubles[i] = Double.parseDouble(data.get(i));
+      doubles[i] = data[i];
     }
     return doubles;
   }

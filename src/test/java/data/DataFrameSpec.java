@@ -1,8 +1,10 @@
 package data;
 
-import com.sun.prism.PixelFormat;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,84 +18,68 @@ import static org.hamcrest.Matchers.*;
  */
 public class DataFrameSpec {
 
+  @Rule
+  public ExpectedException exception = ExpectedException.none();
+
   @Test
-  public void whenDataFrameColumnAsDoubleThenDoubleColumnReturned() {
-    List<String> data = Arrays.asList("3.0", "1.5", "-4.0");
-    Column col = new Column(data);
-    Column expected = new Column(Arrays.asList("3.0", "1.5", "-4.0"), DataType.DOUBLE);
-    DataFrame df = new DataFrame(Collections.singletonList(col));
-    assertThat(df.getColumnAsDouble(0), is(expected));
+  public void whenRemoveColumnThenNoLongerThere() {
+    Double[] data = new Double[] {4.5, 3.0, 1.5};
+    DataFrame df = new DataFrame();
+    df.add("0", Double[].class, data);
+    df.remove("0", Double[].class);
   }
 //
   @Test
-  public void whenDataFrameColumnAsStringThenStringColumnReturned() {
-    List<String> data = Arrays.asList("3.0", "1.5", "-4.0");
-    Column col = new Column(data);
-    Column expected = new Column(Arrays.asList("3.0", "1.5", "-4.0"), DataType.STRING);
-    DataFrame df = new DataFrame(Collections.singletonList(col));
-    assertThat(df.getColumnAsString(0), is(expected));
-  }
-//
-  @Test
-  public void whenFixedDataFrameColumnAsDoubleThenDoubleColumnReturned() {
-    List<String> data = Arrays.asList("3.0", "1.5", "-4.0");
-    Column col = new Column(data, DataType.STRING);
-    Column expected = new Column(data, DataType.DOUBLE);
-    FixedDataFrame df = new FixedDataFrame(Collections.singletonList(col));
-    assertThat(df.getColumnAsDouble(0), is(expected));
+  public void whenNullClassWithArrayAddThenException() {
+    Double[] data = new Double[] {4.5, 3.0, 1.5};
+    DataFrame df = new DataFrame();
+    exception.expect(NullPointerException.class);
+    df.add("0", null, data);
   }
 
   @Test
-  public void whenFixedDataFrameColumnAsStringThenStringColumnReturned() {
-    List<String> data = Arrays.asList("3.0", "1.5", "-4.0");
-    Column col = new Column(data);
-    Column expected = new Column(data, DataType.STRING);
-    FixedDataFrame df = new FixedDataFrame(Collections.singletonList(col));
-    assertThat(df.getColumnAsString(0), is(expected));
+  public void whenNullClassWithListAddThenException() {
+    Double[] data = new Double[] {4.5, 3.0, 1.5};
+    DataFrame df = new DataFrame();
+    exception.expect(NullPointerException.class);
+    df.add("0", null, Arrays.asList(data));
   }
 
   @Test
-  public void whenColumnRemovedThenNoLongerPresent() {
-    List<String> stringData = Arrays.asList("3.0", "1.5", "-4.0");
-    DataFrame df = new DataFrame(Collections.singletonList(new Column(stringData, DataType.STRING)));
-    DataFrame df2 = new DataFrame();
-    df2.add(new Column(stringData, DataType.STRING));
-    df2.add(new Column(stringData));
-    df2.removeColumn(1);
-    assertThat(df, is(df2));
+  public void whenGetByIndexAndClassThenResultCorrect() {
+    DataFrame df = new DataFrame();
+    Double[] doubles = new Double[] {4.5, 3.0, 1.5};
+    df.add("0", Double[].class, doubles);
+    Double[] result = df.get("0", Double[].class);
+    assertThat(result, is(doubles));
   }
 
   @Test
-  public void whenGetColumnCalledDataFrameUnchanged() {
-    List<String> stringData = Arrays.asList("3.0", "1.5", "-4.0");
-    DataFrame df = new DataFrame(Collections.singletonList(new Column(stringData)));
-    DataFrame df2 = new DataFrame();
-    df2.add(new Column(stringData));
-    Column retrievedColumn = df2.getColumn(0);
-    assertThat(retrievedColumn, is(new Column(stringData)));
-    assertThat(df, is(df2));
+  public void whenGetListThenResultCorrect() {
+    DataFrame df = new DataFrame();
+    Double[] doubles = new Double[] {4.5, 3.0, 1.5};
+    df.add("0", Double[].class, doubles);
+    System.out.println(df.getColumnClass("0"));
+    System.out.println(df.getColumnClassName("0"));
+    List<Double> result = df.getList("0", Double[].class);
+    assertThat(result, is(Arrays.asList(doubles)));
   }
 
   @Test
-  public void whenGetColumnCalledFixedDataFrameUnchanged() {
-    List<String> stringData = Arrays.asList("3.0", "1.5", "-4.0");
-    List<Column> columns = new ArrayList<>(2);
-    columns.add(new Column(stringData, DataType.STRING));
-    columns.add(new Column(stringData));
-    FixedDataFrame df2 = new FixedDataFrame(columns);
-    Column retrievedColumn = df2.getColumn(0);
-    assertThat(retrievedColumn, is(new Column(stringData, DataType.STRING)));
+  public void whenGetWithNullClassThenNullPointerException() {
+    DataFrame df = new DataFrame();
+    Double[] doubles = new Double[] {4.5, 3.0, 1.5};
+    exception.expect(NullPointerException.class);
+    df.add("0", null, doubles);
   }
 
   @Test
   public void testEqualsAndHashCode() {
     List<String> stringData = Arrays.asList("3.0", "1.5", "-4.0");
-    List<String> stringData2 = Arrays.asList("3.0", "1.5", "-4.0");
+    List<String> stringData2;
     DataFrame df = new DataFrame();
     DataFrame df2 = new DataFrame();
 
-    df.add(new Column(stringData, DataType.STRING)); df.add(new Column(stringData, DataType.DOUBLE));
-    df2.add(new Column(stringData2, DataType.STRING)); df2.add(new Column(stringData2, DataType.DOUBLE));
     assertThat(df, is(df));
     assertThat(df, is(df2));
     assertThat(df, is(not(stringData)));
@@ -101,29 +87,18 @@ public class DataFrameSpec {
 
     stringData2 = Arrays.asList("1.5", "-4.0");
     df2 = new DataFrame();
-    df2.add(new Column(stringData2, DataType.STRING)); df.add(new Column(stringData2, DataType.DOUBLE));
+    df2.add("0", String[].class, stringData2);
     assertThat(df, is(not(df2)));
     assertThat(df.equals(null), is(false));
-  }
 
-  @Test
-  public void testEqualsAndHashCodeFixedDataFrame() {
-    List<String> stringData = Arrays.asList("3.0", "1.5", "-4.0");
-    List<String> stringData2 = Arrays.asList("3.0", "1.5", "-4.0");
-    FixedDataFrame df = new FixedDataFrame(Arrays.asList(new Column(stringData, DataType.STRING),
-        new Column(stringData, DataType.DOUBLE)));
-    FixedDataFrame df2 = new FixedDataFrame(Arrays.asList(new Column(stringData2, DataType.STRING),
-        new Column(stringData2, DataType.DOUBLE)));
-
-    assertThat(df, is(df));
-    assertThat(df, is(df2));
-    assertThat(df, is(not(stringData)));
-    assertThat(df.hashCode(), is(df2.hashCode()));
-
-    stringData2 = Arrays.asList("1.5", "-4.0");
-    df2 = new FixedDataFrame(Arrays.asList(new Column(stringData2, DataType.STRING),
-        new Column(stringData2, DataType.DOUBLE)));
-    assertThat(df, is(not(df2)));
-    assertThat(df.equals(null), is(false));
+    DataFrame.ColumnInfo<String> columnInfo = new DataFrame.ColumnInfo<>("0", String[].class);
+    assertThat(columnInfo, is(df2.getColumnInfo("0")));
+    assertThat(columnInfo, is(not(df.getColumnInfo("0"))));
+    assertThat(columnInfo, is(not(new Object())));
+    DataFrame.ColumnInfo<Double> colInfo = new DataFrame.ColumnInfo<>("0", Double[].class);
+    assertThat(colInfo, is(not(columnInfo)));
+    assertThat(colInfo, is(colInfo));
+    columnInfo = new DataFrame.ColumnInfo<>("1", String[].class);
+    assertThat(columnInfo, is(not(df2.getColumnInfo("0"))));
   }
 }

@@ -24,50 +24,44 @@
 
 package data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
- * A potentially heteregoneous collection of {@link Column}s of data. This class is mutable and not thread-safe. The
- * immutable and thread-safe version of this class is {@link FixedDataFrame}.
+ * A potentially heteregoneous collection of columns of data. This class is mutable and not thread-safe. The
+ * immutable and thread-safe version of this class is {FixedDataFrame}.
  *
  * @author Jacob Rachiele
  * Date: Dec 07 2016
  */
-public class DataFrame {
+public final class DataFrame {
 
-  private static class ColumnInfo {
-    private final int index;
-    private final Class<?> clazz;
-
-    ColumnInfo(int index, Class<?> clazz) {
-      this.index = index;
-      this.clazz = clazz;
-    }
-  }
-
-  private final List<Column> data;
-  private List<Integer> indices;
-  private List<Class<?>> types;
-  private Map<ColumnInfo, Object> map;
-
+  private final Map<String, ColumnInfo<?>> columnIdMap;
+  private final Map<ColumnInfo<?>, Object> columnMap;
 
   /**
    * Create a new empty dataframe.
    */
   public DataFrame() {
-    data = new ArrayList<>();
+    this.columnIdMap = new HashMap<>();
+    this.columnMap = new HashMap<>();
   }
 
+
   /**
-   * Create a new dataframe filled with the given columns.
-   * @param data the columns to fill the dataframe with.
+   * Add the array of the given type to the data frame.
+   * @param id the unique id of the new column.
+   * @param type the class type of the data in the array.
+   * @param instance the array of data.
+   * @param <T> the type of the data in the array.
    */
-  public DataFrame(final List<Column> data) {
-    this.data = data;
+  public final <T> void add(final String id, final Class<T[]> type, final T[] instance) {
+    if (type == null) {
+      throw new NullPointerException("The class type was null.");
+    }
+    ColumnInfo<T> colInfo = new ColumnInfo<>(id, type);
+    columnIdMap.put(id, colInfo);
+    columnMap.put(colInfo, instance);
   }
 
   public DataFrame(final List<Column> data, final List<Class<?>> classes) {
@@ -79,47 +73,113 @@ public class DataFrame {
   }
 
   /**
-   * Add a column of data to this dataframe.
-   * @param columnData the column to add to this dataframe.
+   * Add the array of the given type to the data frame.
+   * @param id the id of the new column.
+   * @param type the class type of the data in the array.
+   * @param instance the list of data.
+   * @param <T> the type of the data in the list.
    */
-  public void add(final Column columnData) {
-    this.data.add(columnData);
+  public <T> void add(final String id, Class<T[]> type, List<T> instance) {
+    if (type == null) {
+      throw new NullPointerException();
+    }
+    T[] asArray = type.cast(instance.toArray());
+    ColumnInfo<T> colInfo = new ColumnInfo<>(id, type);
+    columnIdMap.put(id, colInfo);
+    columnMap.put(colInfo, asArray);
   }
 
   /**
-   * Remove and return the ith column from this dataframe.
-   * @param i the index of the column to remove.
+   * Remove and return the specified column from this dataframe.
+   * @param id the identifier of the column to remove.
+   * @param type the class type of the column to remove.
+   * @param <T> the type of the data in the column to remove.
    * @return the removed column.
    */
-  public Column removeColumn(final int i) {
-    return this.data.remove(i);
+  public <T> T[] remove(final String id, Class<T[]> type) {
+    return type.cast(this.columnMap.remove(new ColumnInfo<>(id, type)));
   }
 
   /**
-   * Get the ith column of this dataframe.
-   * @param i the index of the column to retrieve;
-   * @return the ith column of this dataframe.
+   * Retrieve the data in the specified column as a list of the given type.
+   * @param id the identifier of the column to retrieve.
+   * @param type the class type of the data in the column.
+   * @param <T> the type of the data in the column.
+   * @return the data in the ith column as a list of the given type.
    */
-  public Column getColumn(final int i) {
-    return this.data.get(i);
+  public <T> List<T> getList(final String id, final Class<T[]> type) {
+    ColumnInfo<T> info = new ColumnInfo<>(id, type);
+    T[] column = get(info);
+    return Arrays.asList(column);
+  }
+
+  public ColumnInfo<?> getColumnInfo(final String id) {
+    return this.columnIdMap.get(id);
+  }
+
+  public Class<?> getColumnClass(final String id) {
+    return columnIdMap.get(id).clazz;
+  }
+
+  public String getColumnClassName(final String id) {
+    return columnIdMap.get(id).clazz.getSimpleName();
   }
 
   /**
-   * Get the ith column of this dataframe as a column of dataType Double.
-   * @param i the index of the column to retrieve;
-   * @return the ith column of this dataframe as a column of dataType Double.
+   * Retrieve the data in the specified column as an array of the given type.
+   * The array class type is required for type safety. For an example of how to use this method,
+   * Double[] columnData = ne w
+   * @param id the identifier of the column to retrieve.
+   * @param type the class type of the data in the array.
+   * @param <T> the type of the data in the array.
+   * @return the data in the ith column as an array of the given type.
    */
-  public Column getColumnAsDouble(final int i) {
-    return this.data.get(i).asDouble();
+  public <T> T[] get(final String id, final Class<T[]> type) {
+    ColumnInfo<T> info = new ColumnInfo<>(id, type);
+    return get(info);
   }
 
   /**
-   * Get the ith column of this dataframe as a column of dataType String.
-   * @param i the index of the column to retrieve;
-   * @return the ith column of this dataframe as a column of dataType String.
+   * Retrieve a column of data from the data frame using the provided column information.
+   * @param info the column information to use to retrieve the data.
+   * @param <T> the type of the data in the array.
+   * @return the data in the ith column as an array of the given type.
    */
-  public Column getColumnAsString(final int i) {
-    return this.data.get(i).asString();
+  public <T> T[] get(final ColumnInfo<T> info) {
+    return info.clazz.cast(columnMap.get(info));
+  }
+
+//  @Override
+//  public String toString() {
+//    StringBuilder sb = new StringBuilder();
+//    final int nrows = (data.size() > 0)? data.get(0).size() : 0;
+//    final int fixedWidth = 15;
+//    Column<?> columnData;
+//    String s;
+//    for (int i = 0; i < data.size(); i++) {
+//      s = "Type:" + data.get(i).getSimpleTypeName();
+//      sb.append(String.format("%-" + fixedWidth + "." + fixedWidth + "s", s));
+//      sb.append("|");
+//    }
+//    sb.append("\n");
+//    for (int j = 0; j < nrows; j++) {
+//      for (int i = 0; i < data.size(); i++) {
+//        columnData = data.get(i);
+//        sb.append(String.format("%-" + fixedWidth + "." + fixedWidth + "s", columnData.get(j)));
+//        sb.append("|");
+//      }
+//      if (j != nrows - 1) {
+//        sb.append("\n");
+//      }
+//    }
+//    return sb.toString();
+//  }
+
+  /**
+   * Print the string representation of this dataframe to the console.
+   */
+  public void print() {
+    System.out.println(toString());
   }
 
   @Override
@@ -129,44 +189,43 @@ public class DataFrame {
 
     DataFrame dataFrame = (DataFrame) o;
 
-    return data.equals(dataFrame.data);
+    if (!columnIdMap.equals(dataFrame.columnIdMap)) return false;
+    return columnMap.equals(dataFrame.columnMap);
   }
 
   @Override
   public int hashCode() {
-    return data.hashCode();
+    int result = columnIdMap.hashCode();
+    result = 31 * result + columnMap.hashCode();
+    return result;
   }
 
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    final int nrows = (data.size() > 0)? data.get(0).size() : 0;
-    final int fixedWidth = 15;
-    Column columnData;
-    String s;
-    for (int i = 0; i < data.size(); i++) {
-      s = "Type:" + data.get(i).typeName();
-      sb.append(String.format("%-" + fixedWidth + "." + fixedWidth + "s", s));
-      sb.append("|");
-    }
-    sb.append("\n");
-    for (int j = 0; j < nrows; j++) {
-      for (int i = 0; i < data.size(); i++) {
-        columnData = data.get(i);
-        sb.append(String.format("%-" + fixedWidth + "." + fixedWidth + "s", columnData.get(j)));
-        sb.append("|");
-      }
-      if (j != nrows - 1) {
-        sb.append("\n");
-      }
-    }
-    return sb.toString();
-  }
+  public static class ColumnInfo<T> {
 
-  /**
-   * Print the string representation of this dataframe to the console.
-   */
-  public void print() {
-    System.out.println(toString());
+    private final String columnId;
+    private final Class<T[]> clazz;
+
+    public ColumnInfo(final String columnId, final Class<T[]> clazz) {
+      this.columnId = columnId;
+      this.clazz = clazz;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      ColumnInfo<?> that = (ColumnInfo<?>) o;
+
+      if (!columnId.equals(that.columnId)) return false;
+      return clazz.equals(that.clazz);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = columnId.hashCode();
+      result = 31 * result + clazz.hashCode();
+      return result;
+    }
   }
 }
