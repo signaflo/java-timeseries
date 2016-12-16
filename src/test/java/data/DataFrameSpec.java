@@ -4,6 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +31,7 @@ public class DataFrameSpec {
   }
 
   @Test
-  public void whenFixedDataFramColumnAsStringThenStringColumnReturned() {
+  public void whenFixedDataFrameColumnAsStringThenStringColumnReturned() {
     List<Double> data = Arrays.asList(3.0, 1.5, -4.0);
     Column<Double> col = new Column<>(data);
     Column<String> expected = new Column<>(Arrays.asList("3.0", "1.5", "-4.0"));
@@ -54,11 +55,35 @@ public class DataFrameSpec {
   }
 
   @Test
+  public void whenRemoveColumnThenNoLongerThere() {
+    Double[] data = new Double[] {4.5, 3.0, 1.5};
+    DataFrame df = new DataFrame();
+    df.add("0", Double[].class, data);
+    df.remove("0", Double[].class);
+  }
+
+  @Test
+  public void whenNullClassWithArrayAddThenException() {
+    Double[] data = new Double[] {4.5, 3.0, 1.5};
+    DataFrame df = new DataFrame();
+    exception.expect(NullPointerException.class);
+    df.add("0", null, data);
+  }
+
+  @Test
+  public void whenNullClassWithListAddThenException() {
+    Double[] data = new Double[] {4.5, 3.0, 1.5};
+    DataFrame df = new DataFrame();
+    exception.expect(NullPointerException.class);
+    df.add("0", null, Arrays.asList(data));
+  }
+
+  @Test
   public void whenGetByIndexAndClassThenResultCorrect() {
     DataFrame df = new DataFrame();
     Double[] doubles = new Double[] {4.5, 3.0, 1.5};
-    df.add(Double[].class, doubles);
-    Double[] result = df.get(0, Double[].class);
+    df.add("0", Double[].class, doubles);
+    Double[] result = df.get("0", Double[].class);
     assertThat(result, is(doubles));
   }
 
@@ -66,10 +91,10 @@ public class DataFrameSpec {
   public void whenGetListThenResultCorrect() {
     DataFrame df = new DataFrame();
     Double[] doubles = new Double[] {4.5, 3.0, 1.5};
-    df.add(Double[].class, doubles);
-    System.out.println(df.getColumnClass(0));
-    System.out.println(df.getColumnClassName(0));
-    List<Double> result = df.getList(0, Double[].class);
+    df.add("0", Double[].class, doubles);
+    System.out.println(df.getColumnClass("0"));
+    System.out.println(df.getColumnClassName("0"));
+    List<Double> result = df.getList("0", Double[].class);
     assertThat(result, is(Arrays.asList(doubles)));
   }
 
@@ -78,7 +103,7 @@ public class DataFrameSpec {
     DataFrame df = new DataFrame();
     Double[] doubles = new Double[] {4.5, 3.0, 1.5};
     exception.expect(NullPointerException.class);
-    df.add(null, doubles);
+    df.add("0", null, doubles);
   }
 
   @Test
@@ -98,7 +123,7 @@ public class DataFrameSpec {
     stringData2 = Arrays.asList("1.5", "-4.0");
     doubleData2 = Arrays.asList(3.0, -4.0);
     df2 = new DataFrame();
-    df2.add(String[].class, stringData2);
+    df2.add("0", String[].class, stringData2);
     assertThat(df, is(not(df2)));
     assertThat(df.equals(null), is(false));
   }

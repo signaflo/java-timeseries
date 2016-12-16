@@ -1,9 +1,7 @@
 package data;
 
-import com.google.common.reflect.TypeParameter;
-
-import java.lang.reflect.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by jacob on 12/13/16.
