@@ -82,31 +82,4 @@ public class CsvDataSpec {
     assertThat(Double.parseDouble(column.get(0)), is(equalTo(76378.0)));
   }
 
-
-  @Test
-  public void whenCreateFixedDataFrameThenExpectedDataFrameReturned() {
-    Column<String> stringColumn = new Column<>(Arrays.asList("A", "B", "C"));
-    Column<Double> doubleColumn = new Column<>(Arrays.asList(1.0, 2.5, -3.0));
-    FixedDataFrame expected = new FixedDataFrame(Arrays.asList(stringColumn, doubleColumn));
-
-    csvPath = "test-data.csv";
-    csvData = new CsvData(csvPath);
-    List<Class<?>> classes = new ArrayList<>(2);
-    classes.add(String.class); classes.add(Double.class);
-    FixedDataFrame df = csvData.createFixedDataFrame(classes);
-    assertThat(df, is(expected));
-    df = csvData.createFixedDataFrame();
-    assertThat(df, is(expected));
-  }
-
-  @Test
-  public void whenEmptyCSVThenEmptyDataFrame() {
-    DataFrame df = new DataFrame();
-    FixedDataFrame fdf = new FixedDataFrame();
-    csvPath = "empty.csv";
-    csvData = new CsvData(csvPath);
-    assertThat(csvData.createFixedDataFrame(), is(fdf));
-    assertThat(csvData.createFixedDataFrame(Collections.emptyList()), is(fdf));
-  }
-
 }

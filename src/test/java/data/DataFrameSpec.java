@@ -22,39 +22,6 @@ public class DataFrameSpec {
   public ExpectedException exception = ExpectedException.none();
 
   @Test
-  public void whenFixedDataFrameColumnAsDoubleThenDoubleColumnReturned() {
-    List<String> data = Arrays.asList("3.0", "1.5", "-4.0");
-    Column<String> col = new Column<>(data);
-    Column<Double> expected = new Column<>(Arrays.asList(3.0, 1.5, -4.0));
-    FixedDataFrame df = new FixedDataFrame(Collections.singletonList(col));
-    assertThat(df.getColumnAsDouble(0), is(expected));
-  }
-
-  @Test
-  public void whenFixedDataFrameColumnAsStringThenStringColumnReturned() {
-    List<Double> data = Arrays.asList(3.0, 1.5, -4.0);
-    Column<Double> col = new Column<>(data);
-    Column<String> expected = new Column<>(Arrays.asList("3.0", "1.5", "-4.0"));
-    FixedDataFrame df = new FixedDataFrame(Collections.singletonList(col));
-    assertThat(df.getColumnAsString(0), is(expected));
-  }
-
-  @Test
-  public void whenGetColumnCalledFixedDataFrameUnchanged() throws Exception {
-    Row row = new Row();
-    row.put(Double.class, 3.5);
-    row.get(0, Double.class);
-    List<String> stringData = Arrays.asList("3.0", "1.5", "-4.0");
-    List<Double> doubleData = Arrays.asList(3.0, 1.5, -4.0);
-    List<Column<?>> columns = new ArrayList<>(2);
-    columns.add(new Column<>(stringData));
-    columns.add(new Column<>(doubleData));
-    FixedDataFrame df2 = new FixedDataFrame(columns);
-    Column<?> retrievedColumn = df2.getColumn(0);
-    assertThat(retrievedColumn, is(new Column<>(stringData)));
-  }
-
-  @Test
   public void whenRemoveColumnThenNoLongerThere() {
     Double[] data = new Double[] {4.5, 3.0, 1.5};
     DataFrame df = new DataFrame();
@@ -109,9 +76,7 @@ public class DataFrameSpec {
   @Test
   public void testEqualsAndHashCode() {
     List<String> stringData = Arrays.asList("3.0", "1.5", "-4.0");
-    List<String> stringData2 = Arrays.asList("3.0", "1.5", "-4.0");
-    List<Double> doubleData = Arrays.asList(3.0, 1.5, -4.0);
-    List<Double> doubleData2 = Arrays.asList(3.0, 1.5, -4.0);
+    List<String> stringData2;
     DataFrame df = new DataFrame();
     DataFrame df2 = new DataFrame();
 
@@ -121,31 +86,19 @@ public class DataFrameSpec {
     assertThat(df.hashCode(), is(df2.hashCode()));
 
     stringData2 = Arrays.asList("1.5", "-4.0");
-    doubleData2 = Arrays.asList(3.0, -4.0);
     df2 = new DataFrame();
     df2.add("0", String[].class, stringData2);
     assertThat(df, is(not(df2)));
     assertThat(df.equals(null), is(false));
-  }
 
-  @Test
-  public void testEqualsAndHashCodeFixedDataFrame() {
-    List<String> stringData = Arrays.asList("3.0", "1.5", "-4.0");
-    List<String> stringData2 = Arrays.asList("3.0", "1.5", "-4.0");
-    List<Double> doubleData = Arrays.asList(3.0, 1.5, -4.0);
-    List<Double> doubleData2 = Arrays.asList(3.0, 1.5, -4.0);
-    FixedDataFrame df = new FixedDataFrame(Arrays.asList(new Column<>(stringData), new Column<>(doubleData)));
-    FixedDataFrame df2 = new FixedDataFrame(Arrays.asList(new Column<>(stringData2), new Column<>(doubleData2)));
-
-    assertThat(df, is(df));
-    assertThat(df, is(df2));
-    assertThat(df, is(not(stringData)));
-    assertThat(df.hashCode(), is(df2.hashCode()));
-
-    stringData2 = Arrays.asList("1.5", "-4.0");
-    doubleData2 = Arrays.asList(3.0, -4.0);
-    df2 = new FixedDataFrame(Arrays.asList(new Column<>(stringData2), new Column<>(doubleData2)));
-    assertThat(df, is(not(df2)));
-    assertThat(df.equals(null), is(false));
+    DataFrame.ColumnInfo<String> columnInfo = new DataFrame.ColumnInfo<>("0", String[].class);
+    assertThat(columnInfo, is(df2.getColumnInfo("0")));
+    assertThat(columnInfo, is(not(df.getColumnInfo("0"))));
+    assertThat(columnInfo, is(not(new Object())));
+    DataFrame.ColumnInfo<Double> colInfo = new DataFrame.ColumnInfo<>("0", Double[].class);
+    assertThat(colInfo, is(not(columnInfo)));
+    assertThat(colInfo, is(colInfo));
+    columnInfo = new DataFrame.ColumnInfo<>("1", String[].class);
+    assertThat(columnInfo, is(not(df2.getColumnInfo("0"))));
   }
 }

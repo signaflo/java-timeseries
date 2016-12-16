@@ -29,14 +29,14 @@ import java.util.*;
 /**
  *
  * A potentially heteregoneous collection of columns of data. This class is mutable and not thread-safe. The
- * immutable and thread-safe version of this class is {@link FixedDataFrame}.
+ * immutable and thread-safe version of this class is {FixedDataFrame}.
  *
  * @author Jacob Rachiele
  * Date: Dec 07 2016
  */
 public final class DataFrame {
 
-  private final Map<String, Class<?>> columnIdMap;
+  private final Map<String, ColumnInfo<?>> columnIdMap;
   private final Map<ColumnInfo<?>, Object> columnMap;
 
   /**
@@ -59,8 +59,8 @@ public final class DataFrame {
     if (type == null) {
       throw new NullPointerException("The class type was null.");
     }
-    columnIdMap.put(id, type);
     ColumnInfo<T> colInfo = new ColumnInfo<>(id, type);
+    columnIdMap.put(id, colInfo);
     columnMap.put(colInfo, instance);
   }
 
@@ -75,9 +75,9 @@ public final class DataFrame {
     if (type == null) {
       throw new NullPointerException();
     }
-    columnIdMap.put(id, type);
     T[] asArray = type.cast(instance.toArray());
     ColumnInfo<T> colInfo = new ColumnInfo<>(id, type);
+    columnIdMap.put(id, colInfo);
     columnMap.put(colInfo, asArray);
   }
 
@@ -105,12 +105,16 @@ public final class DataFrame {
     return Arrays.asList(column);
   }
 
-  public Class<?> getColumnClass(final String i) {
-    return columnIdMap.get(i);
+  public ColumnInfo<?> getColumnInfo(final String id) {
+    return this.columnIdMap.get(id);
   }
 
-  public String getColumnClassName(final String i) {
-    return columnIdMap.get(i).getSimpleName();
+  public Class<?> getColumnClass(final String id) {
+    return columnIdMap.get(id).clazz;
+  }
+
+  public String getColumnClassName(final String id) {
+    return columnIdMap.get(id).clazz.getSimpleName();
   }
 
   /**
@@ -188,12 +192,12 @@ public final class DataFrame {
     return result;
   }
 
-  static class ColumnInfo<T> {
+  public static class ColumnInfo<T> {
 
     private final String columnId;
     private final Class<T[]> clazz;
 
-    ColumnInfo(final String columnId, final Class<T[]> clazz) {
+    public ColumnInfo(final String columnId, final Class<T[]> clazz) {
       this.columnId = columnId;
       this.clazz = clazz;
     }
