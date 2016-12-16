@@ -64,14 +64,6 @@ public final class DataFrame {
     columnMap.put(colInfo, instance);
   }
 
-  public DataFrame(final List<Column> data, final List<Class<?>> classes) {
-    this.data = data;
-    this.types = classes;
-    this.indices = new ArrayList<>(classes.size());
-    this.map = new HashMap<>(classes.size());
-
-  }
-
   /**
    * Add the array of the given type to the data frame.
    * @param id the id of the new column.
