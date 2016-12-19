@@ -28,9 +28,11 @@ public class ArimaSpec {
   @Test
   public void whenArimaModelFitDebitcardsThenParametersSimilarToROutput() throws Exception {
     TimeSeries series = TestData.debitcards();
-    ModelOrder order = new ModelOrder(0, 1, 1, 0, 1, 1);
-    Arima model = Arima.model(series, order, TimePeriod.oneYear());
+    ModelOrder order = new ModelOrder(1, 1, 1, 1, 1, 1);
+    Arima model = Arima.model(series, order, TimePeriod.oneYear(), FittingStrategy.CSS);
     System.out.println(model.coefficients());
+    System.out.println(model.sigma2());
+    System.out.println(Arrays.toString(model.forecast(12)));
   }
   
   @Test
@@ -55,6 +57,17 @@ public class ArimaSpec {
     System.out.println(fcst.computeLowerPredictionValues(12, 0.05));
     System.out.println(fcst.computeUpperPredictionValues(12, 0.05));
     //assertArrayEquals(new double[] {1.0, 1.144516, 1.238173}, fcst.getPsiCoefficients(), 1E-4);
+  }
+
+  @Test
+  public void testOdyssey() {
+    TimeSeries series = TestData.odyssey();
+    ModelOrder order = new ModelOrder(1, 0, 1, 1, 0, 1);
+    Arima model = Arima.model(series, order, TimePeriod.oneYear(), FittingStrategy.USS);
+    System.out.println(model.coefficients());
+    System.out.println(Arrays.toString(model.stdErrors()));
+    System.out.println(model.sigma2());
+    System.out.println(Arrays.toString(model.forecast(12)));
   }
 
 }

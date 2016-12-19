@@ -119,9 +119,14 @@ final class StrongWolfeLineSearch {
             dPsiAlphaUpper);
         trials++;
       }
+      if (Double.isNaN(alphaT)) {
+        throw new NaNStepLengthException("The step length in Strong Wolfe line search was NaN");
+      }
       psiAlphaT = psi.at(alphaT);
       dPsiAlphaT = dPsi.at(alphaT);
-      if (psiAlphaT <= tolerance  && ((abs(dPsiAlphaT + c1 * slope0) - c2 * abs(slope0)) < tolerance)) {
+//      double phiAlphaT = phi.at(alphaT);
+//      double dPhiAlphaT = phi.slopeAt(alphaT);
+      if (psiAlphaT <= 0  && ((abs(dPsiAlphaT - c1 * slope0) - c2 * abs(slope0)) < 0)) {
         return alphaT;
       }
       updateInterval(alphaLower, alphaT, alphaUpper, psiAlphaLower, psiAlphaT, dPsiAlphaT);

@@ -70,29 +70,49 @@ public final class BFGS {
     double relativeChangeDenominator;
     gradient = f.gradientAt(startingPoint, functionValue);
     int maxIterations = 100;
-    while (gradient.norm() > gradientTolerance && relativeChange > relativeErrorTolerance
-        && k < maxIterations) {
-      searchDirection = (H.times(gradient).scaledBy(-1.0));
-      double stepSize = updateStepSize(functionValue);
-      Vector nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
-      s = nextIterate.minus(iterate);
-      priorFunctionValue = functionValue;
-      functionValue = f.at(nextIterate);
-      relativeChangeDenominator = max(abs(priorFunctionValue), abs(nextIterate.norm()));
-      //Hamming, Numerical Methods, 2nd edition, pg. 22
-      relativeChange = Math.abs((priorFunctionValue - functionValue) / relativeChangeDenominator);
-      Vector nextGradient = f.gradientAt(nextIterate, functionValue);
-      y = nextGradient.minus(gradient);
-      rho = 1 / y.dotProduct(s);
-      H = updateHessian();
-      iterate = nextIterate;
-      gradient = nextGradient;
-      k += 1;
+    double stepSize;
+    double yDotS;
+    boolean stop = false;
+    if (gradient.size() > 0) {
+      while (gradient.norm() > gradientTolerance && !stop
+          && k < maxIterations) {
+        searchDirection = (H.times(gradient).scaledBy(-1.0));
+        try {
+          stepSize = updateStepSize(functionValue);
+        } catch (Exception e) {
+          break;
+        }
+        Vector nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
+        s = nextIterate.minus(iterate);
+        priorFunctionValue = functionValue;
+        functionValue = f.at(nextIterate);
+        relativeChangeDenominator = max(abs(priorFunctionValue), abs(nextIterate.norm()));
+        //Hamming, Numerical Methods, 2nd edition, pg. 22
+        relativeChange = Math.abs((priorFunctionValue - functionValue) / relativeChangeDenominator);
+        if (relativeChange <= relativeErrorTolerance) {
+          stop = true;
+        }
+        Vector nextGradient = f.gradientAt(nextIterate);
+        y = nextGradient.minus(gradient);
+        yDotS = y.dotProduct(s);
+        if (yDotS > 0) {
+          rho = 1 / yDotS;
+          H = updateHessian();
+          iterate = nextIterate;
+          gradient = nextGradient;
+        } else {
+          stop = true;
+        }
+        k += 1;
+      }
     }
   }
 
   private double updateStepSize(final double functionValue) {
     final double slope0 = gradient.dotProduct(searchDirection);
+    if (slope0 > 0) {
+      System.out.println("The slope at step size 0 is positive");
+    }
     final QuasiNewtonLineFunction lineFunction = new QuasiNewtonLineFunction(this.f, iterate, searchDirection);
     StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(lineFunction, functionValue, slope0).c1(c1)
         .c2(c2).alphaMax(50).alpha0(1.0).build();

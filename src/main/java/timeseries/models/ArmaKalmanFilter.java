@@ -125,6 +125,103 @@ final class ArmaKalmanFilter {
       subtract(predictedStateCovariance, adjustedPredictionCovariance, filteredStateCovariance);
     }
   }
+
+  private int starma(final int ip, final int iq, final int ir, final int np, final double[] phi, final double[] theta,
+                      final double[] a, final double[] p, final double[] v, final double[] thetab, final double[] xnext,
+                      final double[] xrow, final double[] rbar, final int nrbar) {
+    int ifault = validate(ip, iq, ir, np, nrbar);
+    if (ifault != 0) {
+      return ifault;
+    }
+
+    int ind;
+    for (int i = 1; i < ir; i++) {
+      a[i] = 0.0;
+      if (i >= ip) {
+        phi[i] = 0.0;
+      }
+      v[i] = 0.0;
+      if (i <= iq) {
+        v[i] = theta[i - 1];
+      }
+    }
+    a[0] = 0.0;
+    if (ip == 0) {
+      phi[0] = 0.0;
+    }
+    v[0] = 1.0;
+
+    ind = ir;
+    return 0;
+
+  }
+
+  private int validate(int ip, int iq, int ir, int np, int nrbar) {
+    if (ip < 0) {
+      return 1;
+    }
+    if (iq < 0) {
+      return 2;
+    }
+    if (ip < 0 && iq < 0) {
+      return 3;
+    }
+    if (ip == 0 && iq == 0) {
+      return 4;
+    }
+    if (ir != Math.max(ip, iq + 1)) {
+      return 5;
+    }
+    if (np != ir * (ir + 1) / 2) {
+      return 6;
+    }
+    if (nrbar != np * (np - 1) / 2) {
+      return 7;
+    }
+    if (ip == 1 && iq == 0) {
+      return 8;
+    }
+    return 0;
+  }
+
+  private void karma(final int ip, final int iq, final int ir, final int np, final double[] phi, final double[] theta,
+                     final double[] a, final double[] p, final double[] v, final int n, final double[] w,
+                     final double[] resid, double sumlog, double ssq, final int iupd,
+                     final double delta, final double[] e, final int nit) {
+
+  }
+
+  private void kalform(final int m, final int ip, final int ir, final int np, final double[] phi, final double[] a,
+                       final double[] p, final double[] v, final double[] work) {
+
+  }
+
+  private void inclu2(final int np, final int nrbar, final double weight, final double[] xnext, final double[] xrow,
+                      final double[] ynext, final int d, final double[] rbar, final double[] thetab, final double ssqerr,
+                      final double recres, final int irank, final int ifault) {
+
+  }
+  private void regres(final int np, final int nrbar, final double[] rbar, final double[] thetab, final double[] beta) {
+    int ithisr = nrbar;
+    int im = np;
+    double bi;
+    double i1;
+    int jm;
+    for (int i = 0; i < np; i++) {
+      bi = thetab[im - 1];
+      if (im != np) {
+        i1 = i - 1;
+        jm = np;
+        for (int j = 0; j < i1; j++) {
+          bi = bi - rbar[ithisr - 1] * beta[jm - 1];
+          ithisr--;
+          jm--;
+        }
+      }
+      beta[im - 1] = bi;
+      im--;
+    }
+  }
   
 //  private final double[] series;
 //  private final double[] initialStateVector;

@@ -210,6 +210,8 @@ public final class Arima implements Model {
       }
       this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
       this.residuals = this.observations.minus(this.fittedSeries);
+//      this.residuals = new TimeSeries(observations.timePeriod(), observations.observationTimes(),
+//          slice(residuals, offset - diffs, residuals.length));
     }
   }
 
@@ -289,8 +291,9 @@ public final class Arima implements Model {
     final double[] residuals = new double[n];
 
     for (int t = offset; t < fitted.length; t++) {
+      fitted[t] = mean;
       for (int i = 0; i < arCoeffs.length; i++) {
-        fitted[t] += mean + arCoeffs[i] * (differencedSeries.at(t - i - 1) - mean);
+        fitted[t] += arCoeffs[i] * (differencedSeries.at(t - i - 1) - mean);
       }
       for (int j = 0; j < Math.min(t, maCoeffs.length); j++) {
         fitted[t] += maCoeffs[j] * residuals[t - j - 1];
@@ -353,7 +356,7 @@ public final class Arima implements Model {
     }
 
     n = differencedSeries.n();
-    final double sigma2 = sumOfSquared(residuals) / n;
+    final double sigma2 = sumOfSquared(residuals) / (n - order.sumARMA() - order.constant);
     final double logLikelihood = (-n / 2.0) * (Math.log(2 * Math.PI * sigma2) + 1);
     return new ModelInformation(sigma2, logLikelihood, residuals, extendedFit);
   }
