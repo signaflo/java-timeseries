@@ -66,7 +66,7 @@ public final class BFGS {
     int k = 0;
     double priorFunctionValue;
     functionValue = f.at(startingPoint);
-    double relativeChange = Double.MAX_VALUE;
+    double relativeChange;
     double relativeChangeDenominator;
     gradient = f.gradientAt(startingPoint, functionValue);
     int maxIterations = 100;
@@ -79,8 +79,9 @@ public final class BFGS {
         searchDirection = (H.times(gradient).scaledBy(-1.0));
         try {
           stepSize = updateStepSize(functionValue);
-        } catch (Exception e) {
-          break;
+        } catch (NaNStepLengthException | ViolatedTheoremAssumptionsException e) {
+          stop = true;
+          continue;
         }
         Vector nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
         s = nextIterate.minus(iterate);
