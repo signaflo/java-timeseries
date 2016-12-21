@@ -27,7 +27,10 @@ public class KalmanFilterSpec {
   }
 
   @Test
-  public void testTrainProblem() {
+  public void testStarmaProcedure() {
+    double[] phi = new double[] {0.5};
+    double[] theta = new double[] {0.7};
+    double[] p =ArmaKalmanFilter.starma(phi, theta);
 
   }
 }

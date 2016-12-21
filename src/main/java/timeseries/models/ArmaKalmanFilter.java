@@ -126,37 +126,114 @@ final class ArmaKalmanFilter {
     }
   }
 
-  private int starma(final int ip, final int iq, final int ir, final int np, final double[] phi, final double[] theta,
-                      final double[] a, final double[] p, final double[] v, final double[] thetab, final double[] xnext,
-                      final double[] xrow, final double[] rbar, final int nrbar) {
+  static double[] starma(final double[] phi, final double[] theta) {
+    final int ip = phi.length;
+    final int iq = theta.length;
+    final int ir = Math.max(ip, iq + 1);
+    final int np = ir * (ir + 1) / 2;
+    final double[] p = new double[np];
+    final double[] v = new double[np];
+    final double[] xrow = new double[np];
+    final int nrbar = np * (np - 1) / 2;
     int ifault = validate(ip, iq, ir, np, nrbar);
     if (ifault != 0) {
-      return ifault;
+      throw new RuntimeException("validation error");
     }
 
-    int ind;
     for (int i = 1; i < ir; i++) {
-      a[i] = 0.0;
-      if (i >= ip) {
-        phi[i] = 0.0;
-      }
       v[i] = 0.0;
       if (i <= iq) {
         v[i] = theta[i - 1];
       }
     }
-    a[0] = 0.0;
-    if (ip == 0) {
-      phi[0] = 0.0;
-    }
     v[0] = 1.0;
 
-    ind = ir;
-    return 0;
+    int ind = ir;
+    double vj;
+    for (int j = 1; j < ir; j++) {
+      vj = v[j];
+      for (int i = j; i < ir; i++) {
+        v[ind++] = v[i] * vj;
+      }
+    }
+
+    if (ip == 0) {
+      // goto 300
+      int indn = np;
+      ind = np;
+      for (int i = 0; i < ir; i++) {
+        for (int j = 0; j <= i; j++) {
+          ind--;
+          p[ind] = v[ind];
+          if (j != 0) {
+            indn--;
+            p[ind] += p[indn];
+          }
+        }
+      }
+    } else {
+      int ir1 = ir - 1;
+      int irank = 0;
+      int ifail = 0;
+      double ssqerr = 0;
+      double[] rbar = new double[nrbar];
+      double[] thetab = new double[np];
+      double[] xnext = new double[np];
+      ind = 0;
+      int ind1 = -1;
+      int npr = np - ir;
+      int npr1 = npr + 1;
+      int indj = npr;
+      int ind2 = npr - 1;
+      double phij;
+      double ynext;
+      double phii;
+      int indi;
+
+      for (int j = 0; j < ir; j++) {
+        phij = (j < ip)? phi[j] : 0.0;
+        indj++;
+        indi = npr1 + j;
+        for (int i = j; i < ir; i++) {
+          ynext = v[ind++];
+          phii = (i < ip)? phi[i] : 0.0;
+          if (j + 1 == ir) {
+            xnext[npr1] = -phii * phij;
+            ind2++;
+            if (ind2 >= np) {
+              ind2 = 0;
+            }
+            xnext[ind2] += 1.0;
+            inclu2(np, nrbar, 1.0, xnext, xrow, ynext, p, rbar, thetab);
+            xnext[ind2] = 0.0;
+            if (i != ir - 1) {
+              xnext[indi++] = 0.0;
+              xnext[ind1] = 0.0;
+            }
+          }
+        }
+      }
+
+      regres(np, nrbar, rbar, thetab, p);
+
+      ind = npr - 1;
+      for (int i = 0; i < ir; i++) {
+        xnext[i] = ++ind;
+      }
+      ind = np - 1;
+      ind1 = npr - 1;
+      for (int i = 0; i < npr; i++) {
+        p[ind--] = p[ind1--];
+      }
+      for (int i = 0; i < ir; i++) {
+        p[i] = xnext[i];
+      }
+    }
+    return p;
 
   }
 
-  private int validate(int ip, int iq, int ir, int np, int nrbar) {
+  private static int validate(int ip, int iq, int ir, int np, int nrbar) {
     if (ip < 0) {
       return 1;
     }
@@ -196,12 +273,59 @@ final class ArmaKalmanFilter {
 
   }
 
-  private void inclu2(final int np, final int nrbar, final double weight, final double[] xnext, final double[] xrow,
-                      final double[] ynext, final int d, final double[] rbar, final double[] thetab, final double ssqerr,
-                      final double recres, final int irank, final int ifault) {
+  private static int inclu2(final int np, final int nrbar, final double weight, final double[] xnext, final double[] xrow,
+                      final double ynext, final double[] d, final double[] rbar, final double[] thetab) {
+
+    int irank = 0;
+    double y = ynext;
+    double wt = weight;
+    double xi, di, dpi, cbar, sbar, xk, rbthis;
+    double recres = 0.0;
+    double ssqerr = 0.0;
+    for (int i = 0; i < np; i++) {
+      xrow[i] = xnext[i];
+    }
+    if (wt <= 0) {
+      return 1;
+    }
+    int ithisr = 0;
+    for (int i = 0; i < np; i++) {
+      if (xrow[i] == 0.0) {
+        ithisr += (np - i);
+      } else {
+        xi = xrow[i];
+        di = d[i];
+        dpi = di + wt * xi * xi;
+        d[i] = dpi;
+        cbar = di/dpi;
+        sbar = wt * xi / dpi;
+        wt = cbar * wt;
+        if (i != np - 1) {
+          int i1 = i + 1;
+          for (int k = i1; k < np; k++) {
+            xk = xrow[k];
+            rbthis = rbar[++ithisr];
+            xrow[k] = xk - xi * rbthis;
+            rbar[ithisr] = cbar * rbthis + sbar * xk;
+          }
+        }
+        xk = y;
+        y = xk - xi * thetab[i];
+        thetab[i] = cbar * thetab[i] + sbar * xk;
+        if (di == 0) {
+          irank++;
+          return 0;
+        }
+      }
+    }
+    ssqerr += (wt * y * y);
+    recres = y * Math.sqrt(wt);
+    return 0;
+
+
 
   }
-  private void regres(final int np, final int nrbar, final double[] rbar, final double[] thetab, final double[] beta) {
+  private static void regres(final int np, final int nrbar, final double[] rbar, final double[] thetab, final double[] beta) {
     int ithisr = nrbar;
     int im = np;
     double bi;
