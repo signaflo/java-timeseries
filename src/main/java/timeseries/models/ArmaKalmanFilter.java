@@ -218,7 +218,7 @@ final class ArmaKalmanFilter {
 
       ind = npr - 1;
       for (int i = 0; i < ir; i++) {
-        xnext[i] = ++ind;
+        xnext[i] = p[++ind];
       }
       ind = np - 1;
       ind1 = npr - 1;
@@ -290,9 +290,7 @@ final class ArmaKalmanFilter {
     }
     int ithisr = 0;
     for (int i = 0; i < np; i++) {
-      if (xrow[i] == 0.0) {
-        ithisr += (np - i);
-      } else {
+      if (Math.abs(xrow[i]) > 1E-12) {
         xi = xrow[i];
         di = d[i];
         dpi = di + wt * xi * xi;
@@ -300,22 +298,22 @@ final class ArmaKalmanFilter {
         cbar = di/dpi;
         sbar = wt * xi / dpi;
         wt = cbar * wt;
-        if (i != np - 1) {
           int i1 = i + 1;
           for (int k = i1; k < np; k++) {
             xk = xrow[k];
-            rbthis = rbar[++ithisr];
+            rbthis = rbar[ithisr];
             xrow[k] = xk - xi * rbthis;
-            rbar[ithisr] = cbar * rbthis + sbar * xk;
+            rbar[ithisr++] = cbar * rbthis + sbar * xk;
           }
-        }
         xk = y;
         y = xk - xi * thetab[i];
         thetab[i] = cbar * thetab[i] + sbar * xk;
-        if (di == 0) {
-          irank++;
+        if (Math.abs(di) < 1E-12) {
           return 0;
         }
+      }
+      else {
+        ithisr = ithisr + np - i - 1;
       }
     }
     ssqerr += (wt * y * y);
@@ -326,23 +324,23 @@ final class ArmaKalmanFilter {
 
   }
   private static void regres(final int np, final int nrbar, final double[] rbar, final double[] thetab, final double[] beta) {
-    int ithisr = nrbar;
-    int im = np;
+    int ithisr = nrbar - 1;
+    int im = np - 1;
     double bi;
     double i1;
     int jm;
     for (int i = 0; i < np; i++) {
-      bi = thetab[im - 1];
-      if (im != np) {
-        i1 = i - 1;
-        jm = np;
+      bi = thetab[im];
+      if (im != np - 1) {
+        i1 = i - 2;
+        jm = np - 1;
         for (int j = 0; j < i1; j++) {
-          bi = bi - rbar[ithisr - 1] * beta[jm - 1];
+          bi = bi - rbar[ithisr] * beta[jm];
           ithisr--;
           jm--;
         }
       }
-      beta[im - 1] = bi;
+      beta[im] = bi;
       im--;
     }
   }
