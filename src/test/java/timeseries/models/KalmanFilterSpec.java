@@ -74,6 +74,7 @@ public class KalmanFilterSpec {
     // makeARIMA(phi = c(0.5, 0.2, -0.3, 0.1), theta = c(0.7), Delta = numeric())$Pn
     double[] expected = {4.560784, 0.74, 0.2, 0.29, 0.1, 0.04};
     assertArrayEquals(expected, P, 1E-6);
+    double[] full = ArmaKalmanFilter.unpack(P);
   }
 
   @Test

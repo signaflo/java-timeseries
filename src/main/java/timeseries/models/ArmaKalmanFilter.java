@@ -42,7 +42,7 @@ final class ArmaKalmanFilter {
     multOuter(R, stateDisturbance);
     this.predictedState = new DenseMatrix64F(r, 1, true, new double[r]);
     this.filteredState = new DenseMatrix64F(r, 1, true, new double[r]);
-    this.predictedStateCovariance = initializePredictedCovariance();
+    this.predictedStateCovariance = initializePredictedCovariance(ss);
     this.filteredStateCovariance = new DenseMatrix64F(r, r);
     this.predictionErrorVariance = new double[y.length];
     this.predictionError = new double[y.length];
@@ -170,7 +170,7 @@ final class ArmaKalmanFilter {
     for (int i = 0; i < r; i++) {
       P[i] = xnext[i];
     }
-    return P;
+    return unpack(P);
   }
 
   private static int validate(int ip, int iq, int ir, int np, int nrbar) {
@@ -267,23 +267,9 @@ final class ArmaKalmanFilter {
     }
   }
 
-  private DenseMatrix64F initializePredictedCovariance() {
-    final DenseMatrix64F P = new DenseMatrix64F(r * r, 1);
-    final RowD1Matrix64F id = identity(r * r);
-    final DenseMatrix64F kronT = new DenseMatrix64F(r * r, r * r);
-    kron(transitionFunction, transitionFunction, kronT);
-    final DenseMatrix64F idKronT = new DenseMatrix64F(r * r, r * r);
-    subtract(id, kronT, idKronT);
-    final DenseMatrix64F RQR = this.stateDisturbance.copy();
-    RQR.reshape(r * r, 1);
-    final boolean solved = invert(idKronT);
-    if (solved) {
-      mult(idKronT, RQR, P);
-    } else {
-      fill(P, 1.0);
-    }
-    P.reshape(r, r);
-    return P;
+  private DenseMatrix64F initializePredictedCovariance(final StateSpaceARMA ss) {
+    double[] P = getInitialStateCovariance(ss.arParams(), ss.maParams());
+    return new DenseMatrix64F(ss.m(), ss.m(), true, P);
   }
 
   private void filter() {
@@ -348,6 +334,27 @@ final class ArmaKalmanFilter {
   private void kalform(final int m, final int ip, final int ir, final int np, final double[] phi, final double[] a,
                        final double[] p, final double[] v, final double[] work) {
 
+  }
+
+  static double[] unpack(final double[] triangularMatrix) {
+    int c = triangularMatrix.length;
+    //x^2 + x - 2c = 0
+    //(-1 + sqrt(1 + 4*2c))/2
+    int r = (-1 + (int)Math.sqrt(1 + 4 * 2 * c)) / 2;
+    double[] full = new double[r * r];
+    int k = 0;
+    int indext = 0;
+    for (int i = 0; i < r; i++, k++) {
+      for (int j = 0; j < r - k; j++) {
+        full[j + k + i * r] = triangularMatrix[indext++];
+      }
+    }
+    for (int i = 0; i < r - 1; i++) {
+      for (int j = i + 1; j < r; j++) {
+        full[i + r * j] = full[j + i * r];
+      }
+    }
+    return full;
   }
 
 //  private final double[] series;
