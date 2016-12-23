@@ -170,7 +170,7 @@ final class ArmaKalmanFilter {
     for (int i = 0; i < r; i++) {
       P[i] = xnext[i];
     }
-    return unpack(P);
+    return P;
   }
 
   private static int validate(int ip, int iq, int ir, int np, int nrbar) {
@@ -269,7 +269,7 @@ final class ArmaKalmanFilter {
 
   private DenseMatrix64F initializePredictedCovariance(final StateSpaceARMA ss) {
     double[] P = getInitialStateCovariance(ss.arParams(), ss.maParams());
-    return new DenseMatrix64F(ss.m(), ss.m(), true, P);
+    return new DenseMatrix64F(ss.m(), ss.m(), true, unpack(P));
   }
 
   private void filter() {
@@ -339,7 +339,6 @@ final class ArmaKalmanFilter {
   static double[] unpack(final double[] triangularMatrix) {
     int c = triangularMatrix.length;
     //x^2 + x - 2c = 0
-    //(-1 + sqrt(1 + 4*2c))/2
     int r = (-1 + (int)Math.sqrt(1 + 4 * 2 * c)) / 2;
     double[] full = new double[r * r];
     int k = 0;
