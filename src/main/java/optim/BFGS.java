@@ -93,7 +93,7 @@ public final class BFGS {
         if (relativeChange <= relativeErrorTolerance) {
           stop = true;
         }
-        Vector nextGradient = f.gradientAt(nextIterate);
+        Vector nextGradient = f.gradientAt(nextIterate, functionValue);
         y = nextGradient.minus(gradient);
         yDotS = y.dotProduct(s);
         if (yDotS > 0) {

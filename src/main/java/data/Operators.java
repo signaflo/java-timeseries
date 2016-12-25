@@ -99,4 +99,12 @@ public final class Operators {
     }
     return scaled;
   }
+
+  public static double[] subtract(final double[] data, final double value) {
+    final double[] diff = new double[data.length];
+    for (int i = 0; i < diff.length; i++) {
+      diff[i] = data[i] - value;
+    }
+    return diff;
+  }
 }

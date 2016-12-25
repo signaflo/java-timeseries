@@ -15,14 +15,14 @@ public class KalmanFilterSpec {
   @Ignore
   public void testKalmanFilter() throws Exception {
     double[] ar = {0.3114114};
-    double[] ma = {-0.8373430,  0.0,  0.0,  0.3854193, -0.3227282};
+    double[] ma = {-0.8373430,  0.0,  0.0, 0.3854193, -0.3227282};
     double[] y = TestData.ukcars().difference().series();
     StateSpaceARMA ss = new StateSpaceARMA(y, ar, ma);
     new ArmaKalmanFilter(ss);
     new ArmaKalmanFilter(ss);
     new ArmaKalmanFilter(ss);
     long start = System.currentTimeMillis();
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < 2; i++) {
       new ArmaKalmanFilter(ss);
     }
     long end = System.currentTimeMillis();

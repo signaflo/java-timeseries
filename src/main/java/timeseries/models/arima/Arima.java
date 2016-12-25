@@ -19,6 +19,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import data.Operators;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -36,6 +37,7 @@ import math.function.AbstractMultivariateFunction;
 import optim.BFGS;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
+import timeseries.models.ArmaKalmanFilter;
 import timeseries.models.Forecast;
 import timeseries.models.Model;
 import timeseries.operators.LagPolynomial;
@@ -304,6 +306,14 @@ public final class Arima implements Model {
     final double sigma2 = sumOfSquared(residuals) / m;
     final double logLikelihood = (-n / 2.0) * (Math.log(2 * Math.PI * sigma2) + 1);
     return new ModelInformation(sigma2, logLikelihood, residuals, fitted);
+  }
+
+  static ArmaKalmanFilter.KalmanOutput fitML(final TimeSeries differencedSeries, final double[] arCoeffs,
+                                             final double[] maCoeffs, final double mean) {
+    final double[] series = Operators.subtract(differencedSeries.series(), mean);
+    StateSpaceARMA ss = new StateSpaceARMA(series, arCoeffs, maCoeffs);
+    ArmaKalmanFilter kalmanFilter = new ArmaKalmanFilter(ss);
+    return kalmanFilter.output();
   }
 
   /**
@@ -1091,6 +1101,11 @@ public final class Arima implements Model {
       final double[] arCoeffs = Arima.expandArCoefficients(arParams, sarParams, seasonalFrequency);
       final double[] maCoeffs = Arima.expandMaCoefficients(maParams, smaParams, seasonalFrequency);
       final double mean = (order.constant == 1) ? params[params.length - 1] : 0.0;
+      if (fittingStrategy == FittingStrategy.ML) {
+        final int n = differencedSeries.n();
+        ArmaKalmanFilter.KalmanOutput output = Arima.fitML(differencedSeries, arCoeffs, maCoeffs, mean);
+        return 0.5 * (Math.log(output.ssq() / n) + output.sumLog() / n);
+      }
       final ModelInformation info = (fittingStrategy == FittingStrategy.CSS)
           ? Arima.fitCss(differencedSeries, arCoeffs, maCoeffs, mean, order)
           : Arima.fitUss(differencedSeries, arCoeffs, maCoeffs, mean, order);

@@ -55,10 +55,6 @@ public final class StateSpaceARMA {
   public double[] maParams() {
     return maParams.clone();
   }
-
-  public int m() {
-    return r;
-  }
   
   private double[] R() {
     double[] R = new double[r];

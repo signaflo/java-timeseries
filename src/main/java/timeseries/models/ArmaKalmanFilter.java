@@ -13,10 +13,8 @@ import static org.ejml.ops.CommonOps.*;
  *
  * @author Jacob Rachiele
  *         Date: Dec 09 2016
- *         <p>
- *         TODO: Make faster by initializing prediction covariance without explicit inversion of large matrix.
  */
-final class ArmaKalmanFilter {
+public final class ArmaKalmanFilter {
 
   private final double[] y;
   private final int r; // r = max(p, q + 1);
@@ -31,9 +29,11 @@ final class ArmaKalmanFilter {
   // the following is the first column of the predictedCovariance matrix.
   private final DenseMatrix64F predictedCovarianceFirstColumn;
   // We don't include Z. It is a row vector with a 1 in the first position and zeros
-  // elsewhere. Any of its transformations are done manually as documented below.
+  // elsewhere. Any of its transformations are done manually as documented in the filter method.
 
-  ArmaKalmanFilter(final StateSpaceARMA ss) {
+  private final KalmanOutput kalmanOutput;
+
+  public ArmaKalmanFilter(final StateSpaceARMA ss) {
     this.y = ss.differencedSeries();
     this.r = ss.r();
     this.transitionFunction = new DenseMatrix64F(ss.transitionMatrix());
@@ -48,7 +48,87 @@ final class ArmaKalmanFilter {
     this.predictionError = new double[y.length];
     this.predictedCovarianceFirstColumn = new DenseMatrix64F(r, 1);
     extractColumn(predictedStateCovariance, 0, predictedCovarianceFirstColumn);
-    filter();
+    this.kalmanOutput = filter();
+  }
+
+  public double[] predictionError() {
+    return this.predictionError.clone();
+  }
+
+  public double ssq() {
+    return this.kalmanOutput.ssq;
+  }
+
+  public double logLikelihood() {
+    return this.kalmanOutput.logLikelihood;
+  }
+
+  public KalmanOutput output() {
+    return this.kalmanOutput;
+  }
+
+  private KalmanOutput filter() {
+
+    double f;
+    predictionError[0] = y[0];
+    // f[t] is always the first element of the first column of the predicted covariance matrix,
+    // because f[t] = Z * M, where Z is a row vector with a 1 in the first (index 0) position and zeros elsewhere,
+    // and M is the first column of the predicted covariance matrix.
+    f = predictionErrorVariance[0] = predictedCovarianceFirstColumn.get(0);
+
+    double ssq = ((predictionError[0] * predictionError[0]) / f);
+    double sumlog = Math.log(f);
+    // Initialize filteredState.
+    RowD1Matrix64F newInfo = this.predictedCovarianceFirstColumn.copy();
+    scale(predictionError[0], newInfo);
+    divide(newInfo, predictionErrorVariance[0]);
+    add(predictedState, newInfo, filteredState);
+
+    // Initialize filteredCovariance.
+    final RowD1Matrix64F adjustedPredictionCovariance = new DenseMatrix64F(r, r);
+    multOuter(predictedCovarianceFirstColumn, adjustedPredictionCovariance);
+    divide(adjustedPredictionCovariance, predictionErrorVariance[0]);
+    subtract(predictedStateCovariance, adjustedPredictionCovariance, filteredStateCovariance);
+
+    final RowD1Matrix64F filteredCovarianceTransition = new DenseMatrix64F(r, r);
+    final RowD1Matrix64F stateCovarianceTransition = new DenseMatrix64F(r, r);
+    final DenseMatrix64F transitionTranspose = transitionFunction.copy();
+    transpose(transitionTranspose);
+
+
+    for (int t = 1; t < y.length; t++) {
+
+      // Update predicted mean of the state vector.
+      mult(transitionFunction, filteredState, predictedState);
+
+      // Update predicted covariance of the state vector.
+      mult(transitionFunction, filteredStateCovariance, filteredCovarianceTransition);
+      mult(filteredCovarianceTransition, transitionTranspose, stateCovarianceTransition);
+      add(stateCovarianceTransition, stateDisturbance, predictedStateCovariance);
+
+      predictionError[t] = y[t] - predictedState.get(0);
+      extractColumn(predictedStateCovariance, 0, predictedCovarianceFirstColumn);
+      f = predictionErrorVariance[t] = predictedCovarianceFirstColumn.get(0);
+      ssq += ((predictionError[t] * predictionError[t]) / f);
+      sumlog += Math.log(f);
+
+      // Update filteredState.
+      newInfo = this.predictedCovarianceFirstColumn.copy();
+      scale(predictionError[t], newInfo);
+      divide(newInfo, predictionErrorVariance[t]);
+      add(predictedState, newInfo, filteredState);
+
+      // Update filteredCovariance.
+      multOuter(predictedCovarianceFirstColumn, adjustedPredictionCovariance);
+      divide(adjustedPredictionCovariance, predictionErrorVariance[t]);
+      subtract(predictedStateCovariance, adjustedPredictionCovariance, filteredStateCovariance);
+    }
+    return new KalmanOutput(this.y.length, ssq, sumlog);
+  }
+
+  private DenseMatrix64F initializePredictedCovariance(final StateSpaceARMA ss) {
+    double[] P = getInitialStateCovariance(ss.arParams(), ss.maParams());
+    return new DenseMatrix64F(ss.r(), ss.r(), true, unpack(P));
   }
 
   /**
@@ -146,7 +226,7 @@ final class ArmaKalmanFilter {
           index2 = 0;
         }
         xnext[index2] += 1.0;
-        inclu2(np,1.0, xnext, xrow, ynext, P, rbar, thetab);
+        inclu2(np, xnext, xrow, ynext, P, rbar, thetab);
         xnext[index2] = 0.0;
         if (i != r - 1) {
           xnext[indexi++] = 0.0;
@@ -159,35 +239,20 @@ final class ArmaKalmanFilter {
 
     index = npr - 1;
     for (int i = 0; i < r; i++) {
-      index++;
-      xnext[i] = P[index];
+      xnext[i] = P[++index];
     }
     index = np - 1;
     index1 = npr - 1;
     for (int i = 0; i < npr; i++) {
       P[index--] = P[index1--];
     }
-    for (int i = 0; i < r; i++) {
-      P[i] = xnext[i];
-    }
+    System.arraycopy(xnext, 0, P, 0, r);
     return P;
   }
 
   private static int validate(int ip, int iq, int ir, int np, int nrbar) {
-    if (ip < 0) {
-      return 1;
-    }
-    if (iq < 0) {
-      return 2;
-    }
-    if (ip < 0 && iq < 0) {
-      return 3;
-    }
     if (ip == 0 && iq == 0) {
       return 4;
-    }
-    if (ir != Math.max(ip, iq + 1)) {
-      return 5;
     }
     if (np != ir * (ir + 1) / 2) {
       return 6;
@@ -198,18 +263,13 @@ final class ArmaKalmanFilter {
     return 0;
   }
 
-  private static int inclu2(final int np,final double weight, final double[] xnext, final double[] xrow,
+  private static int inclu2(final int np, final double[] xnext, final double[] xrow,
                             final double ynext, final double[] d, final double[] rbar, final double[] thetab) {
 
     double y = ynext;
-    double wt = weight;
+    double wt = 1.0;
     double xi, di, dpi, cbar, sbar, xk, rbthis;
-    for (int i = 0; i < np; i++) {
-      xrow[i] = xnext[i];
-    }
-    if (wt <= 0) {
-      return 1;
-    }
+    System.arraycopy(xnext, 0, xrow, 0, np);
     int ithisr = 0;
     for (int i = 0; i < np; i++) {
       if (Math.abs(xrow[i]) > 1E-12) {
@@ -267,68 +327,60 @@ final class ArmaKalmanFilter {
     }
   }
 
-  private DenseMatrix64F initializePredictedCovariance(final StateSpaceARMA ss) {
-    double[] P = getInitialStateCovariance(ss.arParams(), ss.maParams());
-    return new DenseMatrix64F(ss.m(), ss.m(), true, unpack(P));
-  }
+  private static void karma(final int ip, final int iq, final int ir, final int np, final double[] phi, final double[] theta,
+                     final double[] a, final double[] p, final double[] v, final int n, final double[] w,
+                     final double[] resid, double sumlog, double ssq, final int iupd,
+                     final double delta, int nit) {
+    int ir1 = ir - 1;
+    final double[] e = new double[ir];
+    int inde = 0;
 
-  private void filter() {
-
-    predictionError[0] = y[0];
-    // f[t] is always the first element of column vector M because f[t] = Z*M, where
-    // Z is a row vector with a 1 in the first (index 0) position and zeros elsewhere.
-    predictionErrorVariance[0] = predictedCovarianceFirstColumn.get(0);
-
-    // Initialize filteredState.
-    RowD1Matrix64F newInfo = this.predictedCovarianceFirstColumn.copy();
-    scale(predictionError[0], newInfo);
-    divide(newInfo, predictionErrorVariance[0]);
-    add(predictedState, newInfo, filteredState);
-
-    // Initialize filteredCovariance.
-    final RowD1Matrix64F adjustedPredictionCovariance = new DenseMatrix64F(r, r);
-    multOuter(predictedCovarianceFirstColumn, adjustedPredictionCovariance);
-    divide(adjustedPredictionCovariance, predictionErrorVariance[0]);
-    subtract(predictedStateCovariance, adjustedPredictionCovariance, filteredStateCovariance);
-
-    final RowD1Matrix64F filteredCovarianceTransition = new DenseMatrix64F(r, r);
-    final RowD1Matrix64F stateCovarianceTransition = new DenseMatrix64F(r, r);
-    final DenseMatrix64F transitionTranspose = transitionFunction.copy();
-    transpose(transitionTranspose);
-
-
-    for (int t = 1; t < y.length; t++) {
-
-      // Update predicted mean of the state vector.
-      mult(transitionFunction, filteredState, predictedState);
-
-      // Update predicted covariance of the state vector.
-      mult(transitionFunction, filteredStateCovariance, filteredCovarianceTransition);
-      mult(filteredCovarianceTransition, transitionTranspose, stateCovarianceTransition);
-      add(stateCovarianceTransition, stateDisturbance, predictedStateCovariance);
-
-      predictionError[t] = y[t] - predictedState.get(0);
-      extractColumn(predictedStateCovariance, 0, predictedCovarianceFirstColumn);
-      predictionErrorVariance[t] = predictedCovarianceFirstColumn.get(0);
-
-      // Update filteredState.
-      newInfo = this.predictedCovarianceFirstColumn.copy();
-      scale(predictionError[t], newInfo);
-      divide(newInfo, predictionErrorVariance[t]);
-      add(predictedState, newInfo, filteredState);
-
-      // Update filteredCovariance.
-      multOuter(predictedCovarianceFirstColumn, adjustedPredictionCovariance);
-      divide(adjustedPredictionCovariance, predictionErrorVariance[t]);
-      subtract(predictedStateCovariance, adjustedPredictionCovariance, filteredStateCovariance);
+    if (nit != 0) {
+      goto600(n, w, ip, iq, phi, theta, inde, e, resid, ssq);
+      double wnext;
+      double dt;
+      for (int i = 0; i < n; i++) {
+        wnext = w[i];
+        if (iupd != 1 || i != 0) {
+          dt = 0.0;
+        }
+      }
     }
   }
 
-  private void karma(final int ip, final int iq, final int ir, final int np, final double[] phi, final double[] theta,
-                     final double[] a, final double[] p, final double[] v, final int n, final double[] w,
-                     final double[] resid, double sumlog, double ssq, final int iupd,
-                     final double delta, final double[] e, final int nit) {
-
+  private static void goto600(int n, double[] w, int ip, int iq, double[] phi, double[] theta, int inde, double[] e, double
+      [] resid, double ssq) {
+      int i = 0;
+      double et;
+      int indw;
+      for (int ii = i; ii < n; ii++) {
+        et = w[ii];
+        indw = ii;
+        if (ip != 0) {
+          for (int j = 0; j < ip; j++) {
+            indw--;
+            if (indw >= 0) {
+              et -= (phi[j] * w[indw]);
+            } else {
+              break;
+            }
+          }
+        }
+        if (iq != 0) {
+          for (int j = 0; j < iq; j++) {
+            if (--inde == -1) {
+              inde = iq - 1;
+            }
+            et -= (theta[j] * e[inde]);
+          }
+        }
+        e[inde++] = et;
+        resid[ii] = et;
+        ssq += et * et;
+        if (inde >= iq) {
+          inde = 0;
+        }
+      }
   }
 
   private void kalform(final int m, final int ip, final int ir, final int np, final double[] phi, final double[] a,
@@ -356,6 +408,34 @@ final class ArmaKalmanFilter {
     return full;
   }
 
+  public static class KalmanOutput {
+
+    private final double ssq;
+    private final double sumlog;
+    private final double sigma2ML;
+    private final double logLikelihood;
+
+    KalmanOutput(final int n, final double ssq, final double sumlog) {
+      this.ssq = ssq;
+      this.sumlog = sumlog;
+      this.sigma2ML = ssq/n;
+      this.logLikelihood = -0.5 * (n * (Math.log(sigma2ML) + Math.log(2 * Math.PI)) + sumlog + (ssq/ sigma2ML));
+    }
+
+    public double ssq() {
+      return this.ssq;
+    }
+
+    public double sumLog() {
+      return this.sumlog;
+    }
+
+    public double sigma2() {
+      return this.sigma2ML;
+    }
+
+  }
+
 //  private final double[] series;
 //  private final double[] initialStateVector;
 //  private final double[] arParams;
@@ -374,7 +454,7 @@ final class ArmaKalmanFilter {
 //    this.series = ss.differencedSeries();
 //    this.arParams = ss.arParams();
 //    this.maParams = ss.maParams();
-//    this.m = ss.m();
+//    this.m = ss.r();
 //    this.initialStateVector = new double[m];
 //    this.filteredState = new double[m];
 //    this.V = ss.V();

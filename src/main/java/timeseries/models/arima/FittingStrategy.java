@@ -16,10 +16,10 @@ public enum FittingStrategy {
    * Unconditional sum-of-squares.
    */
   USS,
-//  
-//  /**
-//   * Maximum likelihod.
-//   */
-//  ML;
+
+  /**
+   * Maximum likelihod.
+   */
+  ML;
 
 }
