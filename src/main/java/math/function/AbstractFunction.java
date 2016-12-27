@@ -24,6 +24,11 @@ public abstract class AbstractFunction implements Function {
     slopeEvaluations++;
     return NumericalDerivatives.centralDifferenceApproximation(this, point, 1E-4);
   }
+
+  public double slopeAt(final double point, final double functionValue) {
+    slopeEvaluations++;
+    return NumericalDerivatives.forwardDifferenceApproximation(this, point, 1E-4, functionValue);
+  }
   
   /**
    * The number of times this function has been evaluated.

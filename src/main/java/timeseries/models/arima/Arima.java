@@ -1112,6 +1112,24 @@ public final class Arima implements Model {
       return 0.5 * Math.log(info.sigma2);
     }
 
+    static double[] transformParameters(final double[] arParams) {
+      double phi;
+      int p = arParams.length;
+      double[] work = new double[p];
+      double[] transformed = new double[p];
+      for (int i = 0; i < p; i++) {
+        transformed[i] = Math.tanh(arParams[i]);
+      }
+      for (int j = 1; j < p; j++) {
+        phi = transformed[j];
+        for (int k = 0; k < j; k++) {
+          work[k] -= phi * transformed[j - k  - 1];
+        }
+        System.arraycopy(work, 0, transformed, 0, j);
+      }
+      return transformed;
+    }
+
     @Override
     public String toString() {
       return "differencedSeries: " + differencedSeries + "\norder: " + order + "\nfittingStrategy: " + fittingStrategy + "\nseasonalFrequency: " + seasonalFrequency + "\narParams: " + Arrays.toString(arParams) + "\nmaParams: " + Arrays.toString(maParams) + "\nsarParams: " + Arrays.toString(sarParams) + "\nsmaParams: " + Arrays.toString(smaParams);

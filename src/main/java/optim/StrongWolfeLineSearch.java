@@ -7,6 +7,7 @@ package optim;
 import math.Real;
 import math.function.AbstractFunction;
 import math.function.Function;
+import math.function.SlopeFunction;
 
 import static java.lang.Math.abs;
 
@@ -27,7 +28,7 @@ final class StrongWolfeLineSearch {
   private final double alphaMin;
   private final double alphaMax;
   private final Function psi;
-  private final Function dPsi;
+  private final SlopeFunction dPsi;
   int m = 0; // A count of the highest level iteration.
   private double alphaLower;
   private double psiAlphaLower;
@@ -55,9 +56,10 @@ final class StrongWolfeLineSearch {
     this.alphaMax = builder.alphaMax;
     this.alphaT = builder.alpha0;
     this.psi = (alpha) -> phi.at(alpha) - f0 - c1 * slope0 * alpha;
-    this.dPsi = (alpha) -> phi.slopeAt(alpha) - c1 * slope0;
+    this.dPsi = (alpha, psiAlpha) -> phi.slopeAt(alpha, psiAlpha) - c1 * slope0;
     this.psiAlphaT = psi.at(alphaT);
-    this.dPsiAlphaT = dPsi.at(alphaT);
+    double phiAlpha = psiAlphaT + f0 + c1 * slope0 * alphaT;
+    this.dPsiAlphaT = dPsi.at(alphaT, phiAlpha);
     this.alphaLower = 0;
     this.psiAlphaLower = 0;
     this.dPsiAlphaLower = slope0 * (1 - c1);
@@ -82,6 +84,9 @@ final class StrongWolfeLineSearch {
    * @return an element satisfying the strong Wolfe conditions.
    */
   final double search() {
+    if (!Double.isFinite(psiAlphaT)) {
+      return 0.2;
+    }
     if (psiAlphaT <= tolerance  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < tolerance)) {
       return alphaT;
     }
@@ -106,7 +111,7 @@ final class StrongWolfeLineSearch {
       while (Double.isInfinite(psiAlphaUpper) && k < MAX_UPDATE_ITERATIONS) {
         alphaUpper = 0.5 * alphaUpper;
         psiAlphaUpper = psi.at(alphaUpper);
-        dPsiAlphaUpper = dPsi.at(alphaUpper);
+        dPsiAlphaUpper = dPsi.at(alphaUpper, psiAlphaUpper + f0 + c1 * slope0 * alphaUpper);
         k++;
       }
       newIntervalLength = abs(alphaUpper - alphaLower);
@@ -123,7 +128,7 @@ final class StrongWolfeLineSearch {
         throw new NaNStepLengthException("The step length in Strong Wolfe line search was NaN");
       }
       psiAlphaT = psi.at(alphaT);
-      dPsiAlphaT = dPsi.at(alphaT);
+      dPsiAlphaT = dPsi.at(alphaT, psiAlphaT + f0 + c1 * slope0 * alphaT);
 //      double phiAlphaT = phi.at(alphaT);
 //      double dPhiAlphaT = phi.slopeAt(alphaT);
       if (psiAlphaT <= 0  && ((abs(dPsiAlphaT - c1 * slope0) - c2 * abs(slope0)) < 0)) {
@@ -186,7 +191,7 @@ final class StrongWolfeLineSearch {
         if (psiAlphaT <= 0 && dPsiAlphaT < 0) {
           alphaT = Math.min(alphaT + DELTA_MAX * (alphaT - priorAlphaLower), alphaMax);
           psiAlphaT = psi.at(alphaT);
-          dPsiAlphaT = dPsi.at(alphaT);
+          dPsiAlphaT = dPsi.at(alphaT, psiAlphaT + f0 + c1 * slope0 * alphaT);
         }
         if (alphaT == alphaMax) {
           return new Real.Interval(alphaMax, alphaMax);

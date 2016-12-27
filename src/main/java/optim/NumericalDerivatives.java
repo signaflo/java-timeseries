@@ -23,6 +23,11 @@ public final class NumericalDerivatives {
   public static double centralDifferenceApproximation(final Function f, final double point, final double h) {
     return (f.at(point + 0.5*h) - f.at(point - 0.5*h)) / h;
   }
+
+  public static double forwardDifferenceApproximation(final Function f, final double point, final double h,
+                                                      final double functionValue) {
+    return (functionValue - f.at(point - h)) / h;
+  }
   
   public static double[] forwardDifferenceGradient(final MultivariateDoubleFunction f, final double[] point,
                                                    final double h) {

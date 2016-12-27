@@ -24,6 +24,7 @@ public final class ArmaKalmanFilter {
   private final RowD1Matrix64F filteredState;
   private final DenseMatrix64F predictedStateCovariance;
   private final RowD1Matrix64F filteredStateCovariance;
+  private final RowD1Matrix64F Z;
   private final double[] predictionErrorVariance;
   private final double[] predictionError;
   // the following is the first column of the predictedCovariance matrix.
@@ -36,6 +37,8 @@ public final class ArmaKalmanFilter {
   public ArmaKalmanFilter(final StateSpaceARMA ss) {
     this.y = ss.differencedSeries();
     this.r = ss.r();
+    this.Z = new DenseMatrix64F(1, r);
+
     this.transitionFunction = new DenseMatrix64F(ss.transitionMatrix());
     final RowD1Matrix64F R = new DenseMatrix64F(r, 1, true, ss.movingAverageVector());
     this.stateDisturbance = new DenseMatrix64F(r, r);
@@ -80,6 +83,7 @@ public final class ArmaKalmanFilter {
     double sumlog = Math.log(f);
     // Initialize filteredState.
     RowD1Matrix64F newInfo = this.predictedCovarianceFirstColumn.copy();
+    RowD1Matrix64F adjustedCovarianceVector = new DenseMatrix64F(r, r);
     scale(predictionError[0], newInfo);
     divide(newInfo, predictionErrorVariance[0]);
     add(predictedState, newInfo, filteredState);
@@ -115,12 +119,14 @@ public final class ArmaKalmanFilter {
       // Update filteredState.
       newInfo = this.predictedCovarianceFirstColumn.copy();
       scale(predictionError[t], newInfo);
-      divide(newInfo, predictionErrorVariance[t]);
+      divide(newInfo, f);
       add(predictedState, newInfo, filteredState);
 
       // Update filteredCovariance.
+      fill(adjustedPredictionCovariance, 0.0);
+
       multOuter(predictedCovarianceFirstColumn, adjustedPredictionCovariance);
-      divide(adjustedPredictionCovariance, predictionErrorVariance[t]);
+      divide(adjustedPredictionCovariance, f);
       subtract(predictedStateCovariance, adjustedPredictionCovariance, filteredStateCovariance);
     }
     return new KalmanOutput(this.y.length, ssq, sumlog);
