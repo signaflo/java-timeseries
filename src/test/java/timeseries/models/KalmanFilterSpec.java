@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 
 import data.TestData;
 import timeseries.models.arima.StateSpaceARMA;
+import timeseries.operators.LagPolynomial;
 
 import java.util.Arrays;
 
@@ -14,9 +15,12 @@ public class KalmanFilterSpec {
   @Test
   @Ignore
   public void testKalmanFilter() throws Exception {
-    double[] ar = {0.3114114};
+    LagPolynomial arPoly = LagPolynomial.autoRegressive(0.3114114);
+    LagPolynomial diffPoly = LagPolynomial.firstDifference();
+    LagPolynomial arDiff = arPoly.times(diffPoly);
+    double[] ar = arDiff.inverseParams();
     double[] ma = {-0.8373430,  0.0,  0.0, 0.3854193, -0.3227282};
-    double[] y = TestData.ukcars().difference().series();
+    double[] y = TestData.ukcars().series();
     StateSpaceARMA ss = new StateSpaceARMA(y, ar, ma);
     new ArmaKalmanFilter(ss);
     new ArmaKalmanFilter(ss);
@@ -112,5 +116,11 @@ public class KalmanFilterSpec {
     double[] P = ArmaKalmanFilter.getInitialStateCovariance(phi, theta);
     double[] expected = {1.0};
     assertArrayEquals(expected, P, 1E-6);
+
+    phi = new double[] {-0.12721, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -0.197255, -0.025093};
+    theta = new double[] {-0.645583, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -0.407286, 0.262937};
+    P = ArmaKalmanFilter.getInitialStateCovariance(phi, theta);
+    double[] Pnew = ArmaKalmanFilter.unpack(P);
+    System.out.println(Arrays.toString(P));
   }
 }

@@ -5,7 +5,7 @@ import math.function.Function;
 import math.function.MultivariateDoubleFunction;
 import math.function.MultivariateFunction;
 
-import static linear.doubles.Vector.from;
+import linear.doubles.Vector;
 
 /**
  * Static methods for computing numerical derivatives.
@@ -64,10 +64,10 @@ public final class NumericalDerivatives {
     final double functionValue = f.at(point);
     for (int i = 0; i < partials.length; i++) {
       newPoints[i] = point.at(i) + h;
-      partials[i] = (f.at(from(newPoints)) - functionValue) / h;
+      partials[i] = (f.at(Vector.from(newPoints)) - functionValue) / h;
       newPoints = point.elements().clone();
     }
-    return from(partials);
+    return Vector.from(partials);
   }
   
   public static Vector forwardDifferenceGradient(final MultivariateFunction f, final Vector point,
@@ -76,10 +76,10 @@ public final class NumericalDerivatives {
     final double[] partials = new double[point.size()];
     for (int i = 0; i < partials.length; i++) {
       newPoints[i] = point.at(i) + h;
-      partials[i] = (f.at(from(newPoints)) - functionValue) / h;
+      partials[i] = (f.at(Vector.from(newPoints)) - functionValue) / h;
       newPoints = point.elements().clone();
     }
-    return from(partials);
+    return Vector.from(partials);
   }
   
   public static Vector centralDifferenceGradient(final MultivariateFunction f, final Vector point,
@@ -88,13 +88,12 @@ public final class NumericalDerivatives {
     double[] backwardPoints = point.elements().clone();
     final double[] partials = new double[point.size()];
     for (int i = 0; i < partials.length; i++) {
-      forwardPoints[i] = point.at(i) + 0.5*h;
-      backwardPoints[i] = point.at(i) - 0.5*h;
-      partials[i] = (f.at(from(forwardPoints)) - f.at(from(backwardPoints))) / h;
+      forwardPoints[i] = point.at(i) + h;
+      backwardPoints[i] = point.at(i) - h;
+      partials[i] = (f.at(Vector.from(forwardPoints)) - f.at(Vector.from(backwardPoints))) / (2 * h);
       forwardPoints = point.elements().clone();
       backwardPoints = point.elements().clone();
     }
-    return from(partials);
+    return Vector.from(partials);
   }
-
 }

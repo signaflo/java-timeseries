@@ -4,13 +4,13 @@
  */
 package optim;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-
 import linear.doubles.Matrices;
 import linear.doubles.Matrix;
 import linear.doubles.Vector;
 import math.function.AbstractMultivariateFunction;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
 
 /**
  * An implementation of the Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm for unconstrained
@@ -70,30 +70,42 @@ public final class BFGS {
     double relativeChangeDenominator;
     gradient = f.gradientAt(startingPoint, functionValue);
     int maxIterations = 100;
-    double stepSize;
-    double yDotS;
-    boolean stop = false;
     if (gradient.size() > 0) {
-      while (gradient.norm() > gradientTolerance && !stop
-          && k < maxIterations) {
+      double stepSize;
+      double yDotS;
+      Vector nextIterate;
+      boolean stop = gradient.norm() < gradientTolerance;
+      while (!stop) {
         searchDirection = (H.times(gradient).scaledBy(-1.0));
-        try {
-          stepSize = updateStepSize(functionValue);
-        } catch (NaNStepLengthException | ViolatedTheoremAssumptionsException e) {
-          stop = true;
-          continue;
-        }
-        Vector nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
+        stepSize = 1.0;
+//        try {
+//          stepSize = updateStepSize(functionValue);
+//        } catch (NaNStepLengthException | ViolatedTheoremAssumptionsException e) {
+//          stop = true;
+//          continue;
+//        }
+        nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
         s = nextIterate.minus(iterate);
         priorFunctionValue = functionValue;
         functionValue = f.at(nextIterate);
+        while (!(Double.isFinite(functionValue)) && k < maxIterations) {
+          stepSize *= 0.2;
+          nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
+          s = nextIterate.minus(iterate);
+          functionValue = f.at(nextIterate);
+          k++;
+        }
         relativeChangeDenominator = max(abs(priorFunctionValue), abs(nextIterate.norm()));
         //Hamming, Numerical Methods, 2nd edition, pg. 22
         relativeChange = Math.abs((priorFunctionValue - functionValue) / relativeChangeDenominator);
         if (relativeChange <= relativeErrorTolerance) {
           stop = true;
+          //continue;
         }
         Vector nextGradient = f.gradientAt(nextIterate, functionValue);
+        if (nextGradient.norm() < gradientTolerance) {
+          stop = true;
+        }
         y = nextGradient.minus(gradient);
         yDotS = y.dotProduct(s);
         if (yDotS > 0) {
@@ -105,6 +117,9 @@ public final class BFGS {
           stop = true;
         }
         k += 1;
+        if (k > maxIterations) {
+          stop = true;
+        }
       }
     }
   }
@@ -152,6 +167,152 @@ public final class BFGS {
    */
   public final Matrix inverseHessian() {
     return this.H;
+  }
+
+  static double[][] Lmatrix(final int n) {
+    int i = 0;
+    double[][] m;
+    m = new double[n][];
+    for (i = 0; i < n; i++) {
+      m[i] = new double[i + 1];
+    }
+    return m;
+  }
+
+  public static void vmmin(final AbstractMultivariateFunction fminfn, final Vector startingPoint, final double
+      gradientTolerance,
+                           final double reltol, final Matrix initialHessian) {
+
+    final int maxit = 100;
+    final double abstol = Double.NEGATIVE_INFINITY;
+    final double reltest = 10.0;
+    final double stepredn = 0.2;
+    final double acctol = 0.0001;
+    final int n0 = startingPoint.size();
+    double[] b = startingPoint.elements();
+
+
+    boolean accpoint, enough;
+    double[] g, t, X, c;
+    int count, funcount, gradcount;
+    double f, gradproj;
+    int i, j, ilast, iter = 0;
+    double s, steplength;
+    double D1, D2;
+
+    int[] l = new int[n0];
+    int n = 0;
+    for (i = 0; i < n0; i++) l[n++] = i;
+    g = new double[n];
+    t = new double[n];
+    X = new double[n];
+    c = new double[n];
+    double[][] B = Lmatrix(n);
+    f = fminfn.at(Vector.from(b));
+    double fmin = f;
+    funcount = gradcount = 1;
+    g = fminfn.gradientAt(Vector.from(b)).elements();
+    iter++;
+    ilast = gradcount;
+
+    do {
+      if (ilast == gradcount) {
+        for (i = 0; i < n; i++) {
+          for (j = 0; j < i; j++) B[i][j] = 0.0;
+          B[i][i] = 1.0;
+        }
+      }
+      for (i = 0; i < n; i++) {
+        X[i] = b[l[i]];
+        c[i] = g[l[i]];
+      }
+      gradproj = 0.0;
+      for (i = 0; i < n; i++) {
+        s = 0.0;
+        for (j = 0; j <= i; j++) s -= B[i][j] * g[l[j]];
+        for (j = i + 1; j < n; j++) s -= B[j][i] * g[l[j]];
+        t[i] = s;
+        gradproj += s * g[l[i]];
+      }
+
+      if (gradproj < 0.0) {	/* search direction is downhill */
+        steplength = 1.0;
+        accpoint = false;
+        do {
+          count = 0;
+          for (i = 0; i < n; i++) {
+            b[l[i]] = X[i] + steplength * t[i];
+            if (reltest + X[i] == reltest + b[l[i]]) /* no change */
+              count++;
+          }
+          if (count < n) {
+            f = fminfn.at(Vector.from(b));
+            funcount++;
+            accpoint = Double.isFinite(f) &&
+                (f <= fmin + gradproj * steplength * acctol);
+            if (!accpoint) {
+              steplength *= stepredn;
+            }
+          }
+        } while (!(count == n || accpoint));
+        enough = (f > abstol) &&
+            Math.abs(f - fmin) > reltol * (abs(fmin) + reltol);
+      /* stop if value if small or if relative change is low */
+        if (!enough) {
+          count = n;
+          fmin = f;
+        }
+        if (count < n) {/* making progress */
+          fmin = f;
+          g = fminfn.gradientAt(Vector.from(b)).elements();
+          gradcount++;
+          iter++;
+          D1 = 0.0;
+          for (i = 0; i < n; i++) {
+            t[i] = steplength * t[i];
+            c[i] = g[l[i]] - c[i];
+            D1 += t[i] * c[i];
+          }
+          if (D1 > 0) {
+            D2 = 0.0;
+            for (i = 0; i < n; i++) {
+              s = 0.0;
+              for (j = 0; j <= i; j++)
+                s += B[i][j] * c[j];
+              for (j = i + 1; j < n; j++)
+                s += B[j][i] * c[j];
+              X[i] = s;
+              D2 += s * c[i];
+            }
+            D2 = 1.0 + D2 / D1;
+            for (i = 0; i < n; i++) {
+              for (j = 0; j <= i; j++)
+                B[i][j] += (D2 * t[i] * t[j]
+                    - X[i] * t[j] - t[i] * X[j]) / D1;
+            }
+          } else {	/* D1 < 0 */
+            ilast = gradcount;
+          }
+        } else {	/* no progress */
+          if (ilast < gradcount) {
+            count = 0;
+            ilast = gradcount;
+          }
+        }
+      } else {		/* uphill search */
+        count = 0;
+        if (ilast == gradcount) count = n;
+        else ilast = gradcount;
+	    /* Resets unless has just been reset */
+      }
+      if (iter >= maxit) break;
+      if (gradcount - ilast > 2 * n)
+        ilast = gradcount;	/* periodic restart */
+    } while (count != n || ilast != gradcount);
+    int fail = (iter < maxit) ? 0 : 1;
+    int fncount = funcount;
+    int grcount = gradcount;
+
   }
 
 }

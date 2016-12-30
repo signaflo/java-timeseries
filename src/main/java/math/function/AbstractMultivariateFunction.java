@@ -15,7 +15,7 @@ public abstract class AbstractMultivariateFunction implements MultivariateFuncti
   
   protected int functionEvaluations = 0;
   protected int gradientEvalutations = 0;
-  private static final double gradientTolerance = 1E-3;
+  private static final double gradientTolerance = 1E-6;
   
   public Vector gradientAt(Vector point) {
     gradientEvalutations++;

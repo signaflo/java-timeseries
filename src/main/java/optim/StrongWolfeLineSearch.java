@@ -56,10 +56,9 @@ final class StrongWolfeLineSearch {
     this.alphaMax = builder.alphaMax;
     this.alphaT = builder.alpha0;
     this.psi = (alpha) -> phi.at(alpha) - f0 - c1 * slope0 * alpha;
-    this.dPsi = (alpha, psiAlpha) -> phi.slopeAt(alpha, psiAlpha) - c1 * slope0;
+    this.dPsi = (alpha, f) -> phi.slopeAt(alpha, f) - c1 * slope0;
     this.psiAlphaT = psi.at(alphaT);
-    double phiAlpha = psiAlphaT + f0 + c1 * slope0 * alphaT;
-    this.dPsiAlphaT = dPsi.at(alphaT, phiAlpha);
+    this.dPsiAlphaT = dPsi.at(alphaT, psiAlphaT + f0 + c1 * slope0 * alphaT);
     this.alphaLower = 0;
     this.psiAlphaLower = 0;
     this.dPsiAlphaLower = slope0 * (1 - c1);
@@ -84,9 +83,6 @@ final class StrongWolfeLineSearch {
    * @return an element satisfying the strong Wolfe conditions.
    */
   final double search() {
-    if (!Double.isFinite(psiAlphaT)) {
-      return 0.2;
-    }
     if (psiAlphaT <= tolerance  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < tolerance)) {
       return alphaT;
     }
