@@ -226,6 +226,11 @@ public final class Arima implements Model {
     return new Arima(observations, order, seasonalCycle, fittingStrategy);
   }
 
+  public static Arima model(final TimeSeries observations, final ModelOrder order,
+                            final FittingStrategy fittingStrategy) {
+    return new Arima(observations, order, TimePeriod.oneYear(), fittingStrategy);
+  }
+
   /**
    * Create a new ARIMA model from the given observations, model order, and seasonal cycle. This method sets the
    * model {@link FittingStrategy} to unconditional sum-of-squares.

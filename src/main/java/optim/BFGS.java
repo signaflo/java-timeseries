@@ -82,7 +82,7 @@ public final class BFGS {
 //          stepSize = updateStepSize(functionValue);
 //        } catch (NaNStepLengthException | ViolatedTheoremAssumptionsException e) {
 //          stop = true;
-//          continue;
+////          continue;
 //        }
         nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
         s = nextIterate.minus(iterate);
@@ -108,10 +108,10 @@ public final class BFGS {
         }
         y = nextGradient.minus(gradient);
         yDotS = y.dotProduct(s);
-        rho = 1 / yDotS;
-        H = updateHessian();
-        iterate = nextIterate;
-        gradient = nextGradient;
+          rho = 1 / yDotS;
+          H = updateHessian();
+          iterate = nextIterate;
+          gradient = nextGradient;
         k += 1;
         if (k > maxIterations) {
           stop = true;

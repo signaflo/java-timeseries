@@ -70,4 +70,22 @@ public class ArimaSpec {
     System.out.println(Arrays.toString(model.forecast(12)));
   }
 
+  @Test
+  public void testEqualsAndHashCode() {
+    TimeSeries series = TestData.livestock();
+    ModelOrder order = ModelOrder.order(1, 1, 1);
+    ModelOrder order2 = ModelOrder.order(1, 0, 1, true);
+    Arima model1 = Arima.model(series, order);
+    Arima model2 = Arima.model(series, order2, FittingStrategy.CSS);
+    System.out.println(model2.coefficients());
+    assertThat(model1, is(model1));
+    assertThat(model1, is(not(new Object())));
+    assertThat(model1, is(not(nullValue())));
+    assertThat(model1, is(not(model2)));
+
+    Arima model3 = Arima.model(series, order);
+    assertThat(model1, is(model3));
+    assertThat(model1.hashCode(), is(model3.hashCode()));
+  }
+
 }
