@@ -24,6 +24,7 @@ public final class BFGS {
   private static final double c2 = 0.9;
 
   private final AbstractMultivariateFunction f;
+  private final Matrix identity;
   private Vector iterate;
   private Vector gradient;
   private Vector searchDirection;
@@ -32,7 +33,6 @@ public final class BFGS {
   private Vector s;
   private Vector y;
   private Matrix H;
-  private final Matrix identity;
 
   /**
    * Create a new BFGS object with the given information. The identity matrix will be used for
@@ -108,14 +108,10 @@ public final class BFGS {
         }
         y = nextGradient.minus(gradient);
         yDotS = y.dotProduct(s);
-        if (yDotS > 0) {
-          rho = 1 / yDotS;
-          H = updateHessian();
-          iterate = nextIterate;
-          gradient = nextGradient;
-        } else {
-          stop = true;
-        }
+        rho = 1 / yDotS;
+        H = updateHessian();
+        iterate = nextIterate;
+        gradient = nextGradient;
         k += 1;
         if (k > maxIterations) {
           stop = true;
@@ -124,53 +120,8 @@ public final class BFGS {
     }
   }
 
-  private double updateStepSize(final double functionValue) {
-    final double slope0 = gradient.dotProduct(searchDirection);
-    if (slope0 > 0) {
-      System.out.println("The slope at step size 0 is positive");
-    }
-    final QuasiNewtonLineFunction lineFunction = new QuasiNewtonLineFunction(this.f, iterate, searchDirection);
-    StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(lineFunction, functionValue, slope0).c1(c1)
-        .c2(c2).alphaMax(50).alpha0(1.0).build();
-    return lineSearch.search();
-  }
-
-  private Matrix updateHessian() {
-    Matrix a = identity.minus(s.outerProduct(y).scaledBy(rho));
-    Matrix b = identity.minus(y.outerProduct(s).scaledBy(rho));
-    Matrix c = s.outerProduct(s).scaledBy(rho);
-    return a.times(H).times(b).plus(c);
-  }
-
-  /**
-   * Return the final value of the target function.
-   *
-   * @return the final value of the target function.
-   */
-  public final double functionValue() {
-    return this.functionValue;
-  }
-
-  /**
-   * Return the final, optimized input parameters.
-   *
-   * @return the final, optimized input parameters.
-   */
-  public final Vector parameters() {
-    return this.iterate;
-  }
-
-  /**
-   * Return the final approximation to the inverse Hessian.
-   *
-   * @return the final approximation to the inverse Hessian.
-   */
-  public final Matrix inverseHessian() {
-    return this.H;
-  }
-
   static double[][] Lmatrix(final int n) {
-    int i = 0;
+    int i;
     double[][] m;
     m = new double[n][];
     for (i = 0; i < n; i++) {
@@ -203,7 +154,6 @@ public final class BFGS {
     int[] l = new int[n0];
     int n = 0;
     for (i = 0; i < n0; i++) l[n++] = i;
-    g = new double[n];
     t = new double[n];
     X = new double[n];
     c = new double[n];
@@ -303,7 +253,7 @@ public final class BFGS {
         count = 0;
         if (ilast == gradcount) count = n;
         else ilast = gradcount;
-	    /* Resets unless has just been reset */
+      /* Resets unless has just been reset */
       }
       if (iter >= maxit) break;
       if (gradcount - ilast > 2 * n)
@@ -313,6 +263,51 @@ public final class BFGS {
     int fncount = funcount;
     int grcount = gradcount;
 
+  }
+
+  private double updateStepSize(final double functionValue) {
+    final double slope0 = gradient.dotProduct(searchDirection);
+    if (slope0 > 0) {
+      System.out.println("The slope at step size 0 is positive");
+    }
+    final QuasiNewtonLineFunction lineFunction = new QuasiNewtonLineFunction(this.f, iterate, searchDirection);
+    StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(lineFunction, functionValue, slope0).c1(c1)
+        .c2(c2).alphaMax(50).alpha0(1.0).build();
+    return lineSearch.search();
+  }
+
+  private Matrix updateHessian() {
+    Matrix a = identity.minus(s.outerProduct(y).scaledBy(rho));
+    Matrix b = identity.minus(y.outerProduct(s).scaledBy(rho));
+    Matrix c = s.outerProduct(s).scaledBy(rho);
+    return a.times(H).times(b).plus(c);
+  }
+
+  /**
+   * Return the final value of the target function.
+   *
+   * @return the final value of the target function.
+   */
+  public final double functionValue() {
+    return this.functionValue;
+  }
+
+  /**
+   * Return the final, optimized input parameters.
+   *
+   * @return the final, optimized input parameters.
+   */
+  public final Vector parameters() {
+    return this.iterate;
+  }
+
+  /**
+   * Return the final approximation to the inverse Hessian.
+   *
+   * @return the final approximation to the inverse Hessian.
+   */
+  public final Matrix inverseHessian() {
+    return this.H;
   }
 
 }

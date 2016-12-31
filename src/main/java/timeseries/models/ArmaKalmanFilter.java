@@ -1,10 +1,7 @@
 package timeseries.models;
 
-import data.DoubleFunctions;
-import data.Operators;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.data.RowD1Matrix64F;
-import stats.Statistics;
 import timeseries.models.arima.StateSpaceARMA;
 
 import static org.ejml.ops.CommonOps.*;
@@ -27,7 +24,6 @@ public final class ArmaKalmanFilter {
   private final RowD1Matrix64F filteredState;
   private final DenseMatrix64F predictedStateCovariance;
   private final RowD1Matrix64F filteredStateCovariance;
-  private final RowD1Matrix64F Z;
   private final double[] predictionErrorVariance;
   private final double[] predictionError;
   // the following is the first column of the predictedCovariance matrix.
@@ -40,7 +36,6 @@ public final class ArmaKalmanFilter {
   public ArmaKalmanFilter(final StateSpaceARMA ss) {
     this.y = ss.differencedSeries();
     this.r = ss.r();
-    this.Z = new DenseMatrix64F(1, r);
 
     this.transitionFunction = new DenseMatrix64F(ss.transitionMatrix());
     final RowD1Matrix64F R = new DenseMatrix64F(r, 1, true, ss.movingAverageVector());
@@ -284,8 +279,8 @@ public final class ArmaKalmanFilter {
     return 0;
   }
 
-  private static int inclu2(final int np, final double[] xnext, final double[] xrow,
-                            final double ynext, final double[] d, final double[] rbar, final double[] thetab) {
+  private static void inclu2(final int np, final double[] xnext, final double[] xrow,
+                             final double ynext, final double[] d, final double[] rbar, final double[] thetab) {
 
     double xi, di, dpi, cbar, sbar, xk, rbthis;
     System.arraycopy(xnext, 0, xrow, 0, np);
@@ -314,13 +309,12 @@ public final class ArmaKalmanFilter {
         y = xk - xi * thetab[i];
         thetab[i] = cbar * thetab[i] + sbar * xk;
         if (di == 0.0) {
-          return 0;
+          return;
         }
       } else {
         ithisr = ithisr + np - i - 1;
       }
     }
-    return 0;
 
 
   }
@@ -525,10 +519,7 @@ public final class ArmaKalmanFilter {
       if (!Double.isNaN(y[l])) {
         double resid = y[l] - anew[0];
 
-        for (int i = 0; i < rd; i++) {
-          double tmp = Pnew[i];
-          M[i] = tmp;
-        }
+        System.arraycopy(Pnew, 0, M, 0, rd);
 
         double gain = M[0];
         if (gain < 1e4) {
@@ -536,16 +527,16 @@ public final class ArmaKalmanFilter {
           ssq += resid * resid / gain;
           sumlog += Math.log(gain);
         }
-        if (useResid) rsResid[l] = resid / Math.sqrt(gain);
+        rsResid[l] = resid / Math.sqrt(gain);
         for (int i = 0; i < rd; i++)
           a[i] = anew[i] + M[i] * resid / gain;
         for (int i = 0; i < rd; i++)
           for (int j = 0; j < rd; j++)
             P[i + j * rd] = Pnew[i + j * rd] - M[i] * M[j] / gain;
       } else {
-        for (int i = 0; i < rd; i++) a[i] = anew[i];
-        for (int i = 0; i < rd * rd; i++) P[i] = Pnew[i];
-        if (useResid) rsResid[l] = Double.NaN;
+        System.arraycopy(anew, 0, a, 0, rd);
+        System.arraycopy(Pnew, 0, P, 0, rd * rd);
+        rsResid[l] = Double.NaN;
       }
     }
     return new KalmanOutput(n, ssq, sumlog, rsResid);

@@ -4,22 +4,12 @@
  */
 package timeseries.models.arima;
 
-import static data.DoubleFunctions.slice;
-import static data.Operators.differenceOf;
-import static stats.Statistics.sumOf;
-import static stats.Statistics.sumOfSquared;
-
-import java.awt.Color;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
+import data.DoubleFunctions;
 import data.Operators;
+import linear.doubles.Matrix;
+import linear.doubles.Vector;
+import math.function.AbstractMultivariateFunction;
+import optim.BFGS;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -29,12 +19,6 @@ import org.knowm.xchart.style.Styler.ChartTheme;
 import org.knowm.xchart.style.XYStyler;
 import org.knowm.xchart.style.markers.Circle;
 import org.knowm.xchart.style.markers.None;
-
-import data.DoubleFunctions;
-import linear.doubles.Matrix;
-import linear.doubles.Vector;
-import math.function.AbstractMultivariateFunction;
-import optim.BFGS;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.models.ArmaKalmanFilter;
@@ -42,11 +26,23 @@ import timeseries.models.Forecast;
 import timeseries.models.Model;
 import timeseries.operators.LagPolynomial;
 
+import javax.swing.*;
+import java.awt.*;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import static data.DoubleFunctions.slice;
+import static data.Operators.differenceOf;
+import static stats.Statistics.sumOf;
+import static stats.Statistics.sumOfSquared;
+
 /**
  * A seasonal autoregressive integrated moving average (ARIMA) model. This class is immutable and thread-safe.
- * 
- * @author Jacob Rachiele
  *
+ * @author Jacob Rachiele
  */
 public final class Arima implements Model {
 
@@ -69,87 +65,17 @@ public final class Arima implements Model {
   private final double[] arSarCoeffs;
   private final double[] maSmaCoeffs;
   private final double[] stdErrors;
-  
-  public static Arima model(final TimeSeries observations, final ModelOrder order,
-                            final TimePeriod seasonalCycle, final FittingStrategy fittingStrategy) {
-    return new Arima(observations, order, seasonalCycle, fittingStrategy);
-  }
-
-  /**
-   * Create a new ARIMA model from the given observations, model order, and seasonal cycle. This method sets the
-   * model {@link FittingStrategy} to unconditional sum-of-squares.
-   * 
-   * @param observations the time series of observations.
-   * @param order the order of the ARIMA model.
-   * @param seasonalCycle the amount of time it takes for the seasonal pattern to complete one cycle. For example,
-   *        monthly data usually has a cycle of one year, hourly data a cycle of one day, etc... For a non-typical
-   *        example, one could specify a seasonal cycle of half a year using a time period of six months, or,
-   *        equivalently, two quarters.
-   * @return a new ARIMA model from the given observations, model order, and seasonal cycle.
-   */
-  public static Arima model(final TimeSeries observations, final ModelOrder order,
-                            final TimePeriod seasonalCycle) {
-    return new Arima(observations, order, seasonalCycle);
-  }
-
-  /**
-   * Create a new ARIMA model from the given observations, model order. This constructor sets the
-   * model {@link FittingStrategy} to unconditional sum-of-squares and the seasonal cycle to 
-   * the same periodicity of the observations.
-   * 
-   * @param observations the time series of observations.
-   * @param order the order of the ARIMA model.
-   * @return a new ARIMA model from the given observations, model order.
-   */
-  public static Arima model(final TimeSeries observations, final ModelOrder order) {
-    return new Arima(observations, order, TimePeriod.oneYear());
-  }
-  
-  /**
-   * Create a new ARIMA model from the given observations, model coefficients, seasonal cycle, and fitting strategy.
-   * 
-   * @param observations the time series of observations.
-   * @param coeffs the parameter coefficients of the model.
-   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle. For
-   *        example, monthly or quarterly data typically has a cycle of one year, hourly data may have a cycle of one
-   *        day, etc... For less typical situations, one could specify a seasonal cycle of, e.g., half of a year, five
-   *        milliseconds, or two decades.
-   * @param fittingStrategy the strategy to use to fit the model to the data. Results may differ from dataset to
-   *        dataset, but on average, unconditional sum-of-squares outperforms conditional sum-of-squares.
-   *  @return a new ARIMA model from the given observations, model coefficients, seasonal cycle, and fitting strategy. 
-   */
-  public static Arima model(final TimeSeries observations, final ModelCoefficients coeffs,
-                            final TimePeriod seasonalCycle, final FittingStrategy fittingStrategy) {
-    return new Arima(observations, coeffs, seasonalCycle, fittingStrategy);
-  }
-  
-  /**
-   * Create a new ARIMA model from the given observations, model coefficients, and seasonal cycle. This constructor sets
-   * the model {@link FittingStrategy} to unconditional sum-of-squares.
-   * 
-   * @param observations the time series of observations.
-   * @param coeffs the parameter coefficients of the model.
-   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle. For
-   *        example, monthly or quarterly data typically has a cycle of one year, hourly data may have a cycle of one
-   *        day, etc... For less typical situations, one could specify a seasonal cycle of, e.g., half of a year, five
-   *        milliseconds, or two decades.
-   * @return a new ARIMA model from the given observations, model coefficients, and seasonal cycle.
-   */
-  public static Arima model(final TimeSeries observations, final ModelCoefficients coeffs,
-                            final TimePeriod seasonalCycle) {
-    return new Arima(observations, coeffs, seasonalCycle, FittingStrategy.USS);
-  }
 
   /**
    * Create a new ARIMA model from the given observations, model order, and seasonal cycle. This constructor sets the
    * model {@link FittingStrategy} to unconditional sum-of-squares.
-   * 
-   * @param observations the time series of observations.
-   * @param order the order of the ARIMA model.
+   *
+   * @param observations  the time series of observations.
+   * @param order         the order of the ARIMA model.
    * @param seasonalCycle the amount of time it takes for the seasonal pattern to complete one cycle. For example,
-   *        monthly data usually has a cycle of one year, hourly data a cycle of one day, etc... For a non-typical
-   *        example, one could specify a seasonal cycle of half a year using a time period of six months, or,
-   *        equivalently, two quarters.
+   *                      monthly data usually has a cycle of one year, hourly data a cycle of one day, etc... For a
+   *                      non-typical example, one could specify a seasonal cycle of half a year using a time period
+   *                      of six months, or, equivalently, two quarters.
    */
   private Arima(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle) {
     this(observations, order, seasonalCycle, FittingStrategy.USS);
@@ -158,19 +84,22 @@ public final class Arima implements Model {
   /**
    * Create a new ARIMA model from the given observations, model order, seasonal cycle, and fitting strategy. The model
    * coefficients will be optimized using the provided fitting strategy.
-   * 
-   * @param observations the time series of observations.
-   * @param order the model order.
-   * @param seasonalCycle the amount of time it takes for the seasonal pattern to complete one cycle. For example,
-   *        monthly data usually has a cycle of one year, hourly data a cycle of one day, etc... For a non-typical
-   *        example, one could specify a seasonal cycle of half a year using a time period of six months, or,
-   *        equivalently, two quarters.
+   *
+   * @param observations    the time series of observations.
+   * @param order           the model order.
+   * @param seasonalCycle   the amount of time it takes for the seasonal pattern to complete one cycle. For example,
+   *                        monthly data usually has a cycle of one year, hourly data a cycle of one day, etc... For
+   *                        a non-typical
+   *                        example, one could specify a seasonal cycle of half a year using a time period of six
+   *                        months, or,
+   *                        equivalently, two quarters.
    * @param fittingStrategy the strategy to use to fit the model to the data. Results may differ from dataset to
-   *        dataset, but on average, unconditional sum-of-squares outperforms conditional sum-of-squares in both speed
-   *        and accuracy.
+   *                        dataset, but on average, unconditional sum-of-squares outperforms conditional
+   *                        sum-of-squares in both speed
+   *                        and accuracy.
    */
   private Arima(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle,
-      final FittingStrategy fittingStrategy) {
+                final FittingStrategy fittingStrategy) {
     this.observations = observations;
     this.order = order;
     this.seasonalFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
@@ -230,13 +159,15 @@ public final class Arima implements Model {
   /**
    * Create a new ARIMA model from the given observations, model coefficients, and seasonal cycle. This constructor sets
    * the model {@link FittingStrategy} to unconditional sum-of-squares.
-   * 
-   * @param observations the time series of observations.
-   * @param coeffs the parameter coefficients of the model.
+   *
+   * @param observations  the time series of observations.
+   * @param coeffs        the parameter coefficients of the model.
    * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle. For
-   *        example, monthly or quarterly data typically has a cycle of one year, hourly data may have a cycle of one
-   *        day, etc... For less typical situations, one could specify a seasonal cycle of, e.g., half of a year, five
-   *        milliseconds, or two decades.
+   *                      example, monthly or quarterly data typically has a cycle of one year, hourly data may have
+   *                      a cycle of one
+   *                      day, etc... For less typical situations, one could specify a seasonal cycle of, e.g., half
+   *                      of a year, five
+   *                      milliseconds, or two decades.
    */
   private Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimePeriod seasonalCycle) {
     this(observations, coeffs, seasonalCycle, FittingStrategy.USS);
@@ -244,18 +175,21 @@ public final class Arima implements Model {
 
   /**
    * Create a new ARIMA model from the given observations, model coefficients, seasonal cycle, and fitting strategy.
-   * 
-   * @param observations the time series of observations.
-   * @param coeffs the parameter coefficients of the model.
-   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle. For
-   *        example, monthly or quarterly data typically has a cycle of one year, hourly data may have a cycle of one
-   *        day, etc... For less typical situations, one could specify a seasonal cycle of, e.g., half of a year, five
-   *        milliseconds, or two decades.
+   *
+   * @param observations    the time series of observations.
+   * @param coeffs          the parameter coefficients of the model.
+   * @param seasonalCycle   the amount of time it takes for the seasonal part of the model to complete one cycle. For
+   *                        example, monthly or quarterly data typically has a cycle of one year, hourly data may
+   *                        have a cycle of one
+   *                        day, etc... For less typical situations, one could specify a seasonal cycle of, e.g.,
+   *                        half of a year, five
+   *                        milliseconds, or two decades.
    * @param fittingStrategy the strategy to use to fit the model to the data. Results may differ from dataset to
-   *        dataset, but on average, unconditional sum-of-squares outperforms conditional sum-of-squares.
+   *                        dataset, but on average, unconditional sum-of-squares outperforms conditional
+   *                        sum-of-squares.
    */
   private Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimePeriod seasonalCycle,
-      final FittingStrategy fittingStrategy) {
+                final FittingStrategy fittingStrategy) {
     this.observations = observations;
     this.modelCoefficients = coeffs;
     this.order = coeffs.extractModelOrder();
@@ -287,11 +221,85 @@ public final class Arima implements Model {
     }
   }
 
+  public static Arima model(final TimeSeries observations, final ModelOrder order,
+                            final TimePeriod seasonalCycle, final FittingStrategy fittingStrategy) {
+    return new Arima(observations, order, seasonalCycle, fittingStrategy);
+  }
+
+  /**
+   * Create a new ARIMA model from the given observations, model order, and seasonal cycle. This method sets the
+   * model {@link FittingStrategy} to unconditional sum-of-squares.
+   *
+   * @param observations  the time series of observations.
+   * @param order         the order of the ARIMA model.
+   * @param seasonalCycle the amount of time it takes for the seasonal pattern to complete one cycle. For example,
+   *                      monthly data usually has a cycle of one year, hourly data a cycle of one day, etc... For a
+   *                      non-typical
+   *                      example, one could specify a seasonal cycle of half a year using a time period of six
+   *                      months, or,
+   *                      equivalently, two quarters.
+   * @return a new ARIMA model from the given observations, model order, and seasonal cycle.
+   */
+  public static Arima model(final TimeSeries observations, final ModelOrder order,
+                            final TimePeriod seasonalCycle) {
+    return new Arima(observations, order, seasonalCycle);
+  }
+
+  /**
+   * Create a new ARIMA model from the given observations, model order. This constructor sets the
+   * model {@link FittingStrategy} to unconditional sum-of-squares and the seasonal cycle to
+   * the same periodicity of the observations.
+   *
+   * @param observations the time series of observations.
+   * @param order        the order of the ARIMA model.
+   * @return a new ARIMA model from the given observations, model order.
+   */
+  public static Arima model(final TimeSeries observations, final ModelOrder order) {
+    return new Arima(observations, order, TimePeriod.oneYear());
+  }
+
+  /**
+   * Create a new ARIMA model from the given observations, model coefficients, seasonal cycle, and fitting strategy.
+   *
+   * @param observations    the time series of observations.
+   * @param coeffs          the parameter coefficients of the model.
+   * @param seasonalCycle   the amount of time it takes for the seasonal part of the model to complete one cycle. For
+   *                        example, monthly or quarterly data typically has a cycle of one year, hourly data may
+   *                        have a cycle of one day, etc... For less typical situations, one could specify a
+   *                        seasonal cycle of, e.g., half of a year, five milliseconds, or two decades.
+   * @param fittingStrategy the strategy to use to fit the model to the data. Results may differ from dataset to
+   *                        dataset, but on average, unconditional sum-of-squares outperforms conditional
+   *                        sum-of-squares.
+   * @return a new ARIMA model from the given observations, model coefficients, seasonal cycle, and fitting strategy.
+   */
+  public static Arima model(final TimeSeries observations, final ModelCoefficients coeffs,
+                            final TimePeriod seasonalCycle, final FittingStrategy fittingStrategy) {
+    return new Arima(observations, coeffs, seasonalCycle, fittingStrategy);
+  }
+
+  /**
+   * Create a new ARIMA model from the given observations, model coefficients, and seasonal cycle. This constructor sets
+   * the model {@link FittingStrategy} to unconditional sum-of-squares.
+   *
+   * @param observations  the time series of observations.
+   * @param coeffs        the parameter coefficients of the model.
+   * @param seasonalCycle the amount of time it takes for the seasonal part of the model to complete one cycle. For
+   *                      example, monthly or quarterly data typically has a cycle of one year, hourly data may have
+   *                      a cycle of one
+   *                      day, etc... For less typical situations, one could specify a seasonal cycle of, e.g., half
+   *                      of a year, five
+   *                      milliseconds, or two decades.
+   * @return a new ARIMA model from the given observations, model coefficients, and seasonal cycle.
+   */
+  public static Arima model(final TimeSeries observations, final ModelCoefficients coeffs,
+                            final TimePeriod seasonalCycle) {
+    return new Arima(observations, coeffs, seasonalCycle, FittingStrategy.USS);
+  }
+
   /**
    * Fit the model using conditional sum-of-squares.
-   * 
+   *
    * @param order the order of the model to be fit.
-   * 
    * @return information about the model fit.
    */
   static ModelInformation fitCss(final TimeSeries differencedSeries, final double[] arCoeffs,
@@ -318,10 +326,10 @@ public final class Arima implements Model {
     return new ModelInformation(sigma2, logLikelihood, residuals, fitted);
   }
 
-  static ModelInformation fitML(final TimeSeries differencedSeries, final double[] arCoeffs,
-                                             final double[] maCoeffs, final double mean) {
+  private static ModelInformation fitML(final TimeSeries differencedSeries, final double[] arCoeffs,
+                                final double[] maCoeffs, final double mean) {
     final double[] series = Operators.subtract(differencedSeries.series(), mean);
-    ArmaKalmanFilter.KalmanOutput output =  kalmanFit(differencedSeries, arCoeffs, maCoeffs, mean);
+    ArmaKalmanFilter.KalmanOutput output = kalmanFit(differencedSeries, arCoeffs, maCoeffs, mean);
     final double sigma2 = output.sigma2();
     final int n = series.length;
     final double logLikelihood = (-n / 2.0) * (Math.log(2 * Math.PI * sigma2) + 1);
@@ -331,7 +339,7 @@ public final class Arima implements Model {
   }
 
   private static ArmaKalmanFilter.KalmanOutput kalmanFit(final TimeSeries differencedSeries, final double[] arCoeffs,
-                                             final double[] maCoeffs, final double mean) {
+                                                         final double[] maCoeffs, final double mean) {
     final double[] series = Operators.subtract(differencedSeries.series(), mean);
     StateSpaceARMA ss = new StateSpaceARMA(series, arCoeffs, maCoeffs);
     ArmaKalmanFilter kalmanFilter = new ArmaKalmanFilter(ss);
@@ -342,9 +350,8 @@ public final class Arima implements Model {
    * Fit the model using unconditional sum-of-squares, utilizing back-forecasting to estimate the residuals for the
    * first few observations. This method, compared to conditional sum-of-squares, often gives estimates much closer to
    * those obtained from maximum-likelihood fitting, especially for shorter series.
-   * 
+   *
    * @param order the order of the model to be fit.
-   * 
    * @return information about the model fit.
    */
   static ModelInformation fitUss(final TimeSeries differencedSeries, final double[] arCoeffs,
@@ -393,9 +400,51 @@ public final class Arima implements Model {
     return new ModelInformation(sigma2, logLikelihood, residuals, extendedFit);
   }
 
+  // Expand the autoregressive coefficients by combining the non-seasonal and seasonal coefficients into a single
+  // array, which takes advantage of the fact that a seasonal AR model is a special case of a non-seasonal
+  // AR model with zero coefficients at the non-seasonal indices.
+  static double[] expandArCoefficients(final double[] arCoeffs, final double[] sarCoeffs,
+                                       final int seasonalFrequency) {
+    double[] arSarCoeffs = new double[arCoeffs.length + sarCoeffs.length * seasonalFrequency];
+
+    System.arraycopy(arCoeffs, 0, arSarCoeffs, 0, arCoeffs.length);
+
+    // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
+    // which arises because the model's ar and sar polynomials are multiplied together.
+    for (int i = 0; i < sarCoeffs.length; i++) {
+      arSarCoeffs[(i + 1) * seasonalFrequency - 1] = sarCoeffs[i];
+      for (int j = 0; j < arCoeffs.length; j++) {
+        arSarCoeffs[(i + 1) * seasonalFrequency + j] = -sarCoeffs[i] * arCoeffs[j];
+      }
+    }
+
+    return arSarCoeffs;
+  }
+
+  // Expand the moving average coefficients by combining the non-seasonal and seasonal coefficients into a single
+  // array, which takes advantage of the fact that a seasonal MA model is a special case of a non-seasonal
+  // MA model with zero coefficients at the non-seasonal indices.
+  static double[] expandMaCoefficients(final double[] maCoeffs, final double[] smaCoeffs,
+                                       final int seasonalFrequency) {
+    double[] maSmaCoeffs = new double[maCoeffs.length + smaCoeffs.length * seasonalFrequency];
+
+    System.arraycopy(maCoeffs, 0, maSmaCoeffs, 0, maCoeffs.length);
+
+    // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
+    // which arises because the model's ma and sma polynomials are multiplied together.
+    // In contrast to the ar polynomial, the ma and sma product maintains a positive sign.
+    for (int i = 0; i < smaCoeffs.length; i++) {
+      maSmaCoeffs[(i + 1) * seasonalFrequency - 1] = smaCoeffs[i];
+      for (int j = 0; j < maCoeffs.length; j++) {
+        maSmaCoeffs[(i + 1) * seasonalFrequency + j] = smaCoeffs[i] * maCoeffs[j];
+      }
+    }
+    return maSmaCoeffs;
+  }
+
   /**
    * Forecast the given number of steps ahead and return the result in a new array of doubles.
-   * 
+   *
    * @param steps the number of time steps ahead to forecast.
    * @return a forecast from this model for the given number of steps.
    */
@@ -480,48 +529,6 @@ public final class Arima implements Model {
     return initParams;
   }
 
-  // Expand the autoregressive coefficients by combining the non-seasonal and seasonal coefficients into a single
-  // array, which takes advantage of the fact that a seasonal AR model is a special case of a non-seasonal
-  // AR model with zero coefficients at the non-seasonal indices.
-  static double[] expandArCoefficients(final double[] arCoeffs, final double[] sarCoeffs,
-                                       final int seasonalFrequency) {
-    double[] arSarCoeffs = new double[arCoeffs.length + sarCoeffs.length * seasonalFrequency];
-
-    System.arraycopy(arCoeffs, 0, arSarCoeffs, 0, arCoeffs.length);
-
-    // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
-    // which arises because the model's ar and sar polynomials are multiplied together.
-    for (int i = 0; i < sarCoeffs.length; i++) {
-      arSarCoeffs[(i + 1) * seasonalFrequency - 1] = sarCoeffs[i];
-      for (int j = 0; j < arCoeffs.length; j++) {
-        arSarCoeffs[(i + 1) * seasonalFrequency + j] = -sarCoeffs[i] * arCoeffs[j];
-      }
-    }
-
-    return arSarCoeffs;
-  }
-
-  // Expand the moving average coefficients by combining the non-seasonal and seasonal coefficients into a single
-  // array, which takes advantage of the fact that a seasonal MA model is a special case of a non-seasonal
-  // MA model with zero coefficients at the non-seasonal indices.
-  static double[] expandMaCoefficients(final double[] maCoeffs, final double[] smaCoeffs,
-                                       final int seasonalFrequency) {
-    double[] maSmaCoeffs = new double[maCoeffs.length + smaCoeffs.length * seasonalFrequency];
-
-    System.arraycopy(maCoeffs, 0, maSmaCoeffs, 0, maCoeffs.length);
-
-    // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
-    // which arises because the model's ma and sma polynomials are multiplied together.
-    // In contrast to the ar polynomial, the ma and sma product maintains a positive sign.
-    for (int i = 0; i < smaCoeffs.length; i++) {
-      maSmaCoeffs[(i + 1) * seasonalFrequency - 1] = smaCoeffs[i];
-      for (int j = 0; j < maCoeffs.length; j++) {
-        maSmaCoeffs[(i + 1) * seasonalFrequency + j] = smaCoeffs[i] * maCoeffs[j];
-      }
-    }
-    return maSmaCoeffs;
-  }
-
   private double[] getSarCoeffs(final Vector optimizedParams) {
     final double[] sarCoeffs = new double[order.P];
     for (int i = 0; i < order.P; i++) {
@@ -572,9 +579,9 @@ public final class Arima implements Model {
   /**
    * The maximum-likelihood estimate of the model variance, equal to the sum of squared residuals divided by the number
    * of observations.
-   * 
+   *
    * @return the maximum-likelihood estimate of the model variance, equal to the sum of squared residuals divided by the
-   *         number of observations.
+   * number of observations.
    */
   public final double sigma2() {
     return modelInfo.sigma2;
@@ -582,7 +589,7 @@ public final class Arima implements Model {
 
   /**
    * The frequency of observations on a seasonal basis.
-   * 
+   *
    * @return the frequency of observations on a seasonal basis.
    */
   public final int seasonalFrequency() {
@@ -591,7 +598,7 @@ public final class Arima implements Model {
 
   /**
    * The standard errors of the model parameters.
-   * 
+   *
    * @return the standard errors of the model parameters.
    */
   public final double[] stdErrors() {
@@ -600,7 +607,7 @@ public final class Arima implements Model {
 
   /**
    * The model intercept term. Note that this is <i>not</i> the model mean, as in R, but the actual intercept.
-   * 
+   *
    * @return the model intercept term.
    */
   public final double intercept() {
@@ -609,7 +616,7 @@ public final class Arima implements Model {
 
   /**
    * The coefficients of this ARIMA model.
-   * 
+   *
    * @return the coefficients of this ARIMA model.
    */
   public final ModelCoefficients coefficients() {
@@ -618,7 +625,7 @@ public final class Arima implements Model {
 
   /**
    * The model order.
-   * 
+   *
    * @return the model order.
    */
   public final ModelOrder order() {
@@ -627,7 +634,7 @@ public final class Arima implements Model {
 
   /**
    * The natural logarithm of the likelihood of the model parameters given the data.
-   * 
+   *
    * @return the natural logarithm of the likelihood of the model parameters.
    */
   public final double logLikelihood() {
@@ -694,509 +701,10 @@ public final class Arima implements Model {
   }
   // ********** Plots **********//
 
-  /**
-   * The order of an ARIMA model, consisting of the number of autoregressive and moving average parameters, along with
-   * the degree of differencing and whether or not a constant is in the model. This class is immutable and thread-safe.
-   * 
-   * @author Jacob Rachiele
-   *
-   */
-  public static final class ModelOrder {
-
-    final int p;
-    final int d;
-    final int q;
-    final int P;
-    final int D;
-    final int Q;
-    final int constant;
-
-    /**
-     * Create a new ModelOrder using the provided number of autoregressive and moving-average parameters, as well as the
-     * degree of differencing and whether or not to fit a constant (or mean).
-     * 
-     * @param p the number of non-seasonal autoregressive coefficients.
-     * @param d the degree of non-seasonal differencing.
-     * @param q the number of non-seasonal moving-average coefficients.
-     * @param P the number of seasonal autoregressive coefficients.
-     * @param D the degree of seasonal differencing.
-     * @param Q the number of seasonal moving-average coefficients.
-     * @param constant determines whether or not a constant (or mean) is fitted to the model.
-     */
-    public ModelOrder(final int p, final int d, final int q, final int P, final int D, final int Q,
-        final boolean constant) {
-      this.p = p;
-      this.d = d;
-      this.q = q;
-      this.P = P;
-      this.D = D;
-      this.Q = Q;
-      this.constant = (constant) ? 1 : 0;
-    }
-
-    /**
-     * Create a new ModelOrder using the provided number of autoregressive and moving-average parameters, as well as the
-     * degree of differencing and whether or not to fit a constant (or mean).
-     *
-     * @param p the number of non-seasonal autoregressive coefficients.
-     * @param d the degree of non-seasonal differencing.
-     * @param q the number of non-seasonal moving-average coefficients.
-     * @param P the number of seasonal autoregressive coefficients.
-     * @param D the degree of seasonal differencing.
-     * @param Q the number of seasonal moving-average coefficients.
-     */
-    public ModelOrder(final int p, final int d, final int q, final int P, final int D, final int Q) {
-      this.p = p;
-      this.d = d;
-      this.q = q;
-      this.P = P;
-      this.D = D;
-      this.Q = Q;
-      this.constant = (d == 0 && D == 0) ? 1 : 0;
-    }
-
-    /**
-     * Create and return a new non-seasonal model order with the given number of coefficients.
-     * 
-     * @param p the number of non-seasonal autoregressive coefficients.
-     * @param d the degree of non-seasonal differencing.
-     * @param q the number of non-seasonal moving-average coefficients.
-     * @return a new model order with the given number of coefficients.
-     */
-    public static ModelOrder order(final int p, final int d, final int q) {
-      return new ModelOrder(p, d, q, 0, 0, 0, d <= 0);
-    }
-
-    /**
-     * Create and return a new non-seasonal model order with the given number of coefficients.
-     * 
-     * @param p the number of non-seasonal autoregressive coefficients.
-     * @param d the degree of non-seasonal differencing.
-     * @param q the number of non-seasonal moving-average coefficients.
-     * @param constant whether or not to fit a constant to the model.
-     * @return a new model order with the given number of coefficients.
-     */
-    public static ModelOrder order(final int p, final int d, final int q, final boolean constant) {
-      return new ModelOrder(p, d, q, 0, 0, 0, constant);
-    }
-
-    public static ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q) {
-      return new ModelOrder(p, d, q, P, D, Q, !(d > 0 || D > 0));
-    }
-
-    public static ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q,
-                                   final boolean constant) {
-      return new ModelOrder(p, d, q, P, D, Q, constant);
-    }
-
-    // This returns the total number of nonseasonal and seasonal ARMA parameters.
-    private int sumARMA() {
-      return this.p + this.q + this.P + this.Q;
-    }
-
-    @Override
-    public String toString() {
-      boolean isSeasonal = P > 0 || Q > 0 || D > 0;
-      StringBuilder builder = new StringBuilder();
-      if (isSeasonal) {
-        builder.append("Seasonal ");
-      }
-      builder.append("ARIMA (").append(p).append(", ").append(d).append(", ").append(q);
-      if (isSeasonal) {
-        builder.append(") x (").append(P).append(", ").append(D).append(", ").append(Q);
-      }
-      builder.append(") with").append((constant == 1) ? " a constant" : " no constant");
-      return builder.toString();
-    }
-
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + D;
-      result = prime * result + P;
-      result = prime * result + Q;
-      result = prime * result + constant;
-      result = prime * result + d;
-      result = prime * result + p;
-      result = prime * result + q;
-      return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj) return true;
-      if (obj == null) return false;
-      if (getClass() != obj.getClass()) return false;
-      ModelOrder other = (ModelOrder) obj;
-      if (D != other.D) return false;
-      if (P != other.P) return false;
-      if (Q != other.Q) return false;
-      if (constant != other.constant) return false;
-      if (d != other.d) return false;
-      return p == other.p && q == other.q;
-    }
-  }
-
-  /**
-   * Represents the autoregressive and moving-average cofficients, as well as the degree of differencing and the mean
-   * for a seasonal ARIMA model.
-   * 
-   * @author Jacob Rachiele
-   *
-   */
-  public static final class ModelCoefficients {
-
-    private final double[] arCoeffs;
-    private final double[] maCoeffs;
-    private final double[] sarCoeffs;
-    private final double[] smaCoeffs;
-    private final int d;
-    private final int D;
-    private final double mean;
-
-    /**
-     * Create a structure holding the coefficients of an ARIMA model, the degrees of differencing, and the model mean.
-     * 
-     * @param arCoeffs the non-seasonal autoregressive coefficients.
-     * @param maCoeffs the non-seasonal moving-average coefficients.
-     * @param sarCoeffs the seasonal autoregressive coefficients.
-     * @param smaCoeffs the seasonal moving-average coefficients.
-     * @param d the non-seasonal degree of differencing.
-     * @param D the seasonal degree of differencing.
-     * @param mean the process mean.
-     */
-    ModelCoefficients(final double[] arCoeffs, final double[] maCoeffs, final double[] sarCoeffs,
-        final double[] smaCoeffs, final int d, final int D, final double mean) {
-      this.arCoeffs = arCoeffs.clone();
-      this.maCoeffs = maCoeffs.clone();
-      this.sarCoeffs = sarCoeffs.clone();
-      this.smaCoeffs = smaCoeffs.clone();
-      this.d = d;
-      this.D = D;
-      this.mean = mean;
-    }
-
-    private ModelCoefficients(Builder builder) {
-      this.arCoeffs = builder.arCoeffs.clone();
-      this.maCoeffs = builder.maCoeffs.clone();
-      this.sarCoeffs = builder.sarCoeffs.clone();
-      this.smaCoeffs = builder.smaCoeffs.clone();
-      this.d = builder.d;
-      this.D = builder.D;
-      this.mean = builder.mean;
-    }
-
-    public final double[] arCoeffs() {
-      return arCoeffs.clone();
-    }
-
-    public final double[] maCoeffs() {
-      return maCoeffs.clone();
-    }
-
-    public final double[] sarCoeffs() {
-      return sarCoeffs.clone();
-    }
-
-    public final double[] smaCoeffs() {
-      return smaCoeffs.clone();
-    }
-
-    public final int d() {
-      return d;
-    }
-
-    public final int D() {
-      return D;
-    }
-
-    public final double getMean() {
-      return mean;
-    }
-
-    /**
-     * The order of the ARIMA model corresponding to the model coefficients.
-     * 
-     * @return the order of the ARIMA model corresponding to the model coefficients.
-     */
-    public final ModelOrder extractModelOrder() {
-      return new ModelOrder(arCoeffs.length, d, maCoeffs.length, sarCoeffs.length, D, smaCoeffs.length,
-          (Math.abs(mean) > 1E-8));
-    }
-
-    @Override
-    public String toString() {
-      return "arCoeffs: " + Arrays.toString(arCoeffs) + "\nmaCoeffs: " + Arrays.toString(maCoeffs) + "\nsarCoeffs: " + Arrays.toString(sarCoeffs) + "\nsmaCoeffs: " + Arrays.toString(smaCoeffs) + "\nd: " + d + "\nD: " + D + "\nmean: " + mean;
-    }
-
-    /**
-     * Get a new builder for a ModelCoefficients object.
-     * 
-     * @return a new builder for a ModelCoefficients object.
-     */
-    public static Builder newBuilder() {
-      return new Builder();
-    }
-
-    /**
-     * A builder class for ARIMA model coefficients.
-     * @author Jacob Rachiele
-     *
-     */
-    public static final class Builder {
-      private double[] arCoeffs = new double[] {};
-      private double[] maCoeffs = new double[] {};
-      private double[] sarCoeffs = new double[] {};
-      private double[] smaCoeffs = new double[] {};
-      private int d = 0;
-      private int D = 0;
-      private double mean = 0.0;
-
-      private Builder() {
-      }
-
-      public Builder setArCoeffs(double... arCoeffs) {
-        this.arCoeffs = arCoeffs;
-        return this;
-      }
-
-      public Builder setSarCoeffs(double... sarCoeffs) {
-        this.sarCoeffs = sarCoeffs;
-        return this;
-      }
-
-      public Builder setMaCoeffs(double... maCoeffs) {
-        this.maCoeffs = maCoeffs;
-        return this;
-      }
-
-      public Builder setSmaCoeffs(double... smaCoeffs) {
-        this.smaCoeffs = smaCoeffs;
-        return this;
-      }
-
-      public Builder setDiff(int d) {
-        this.d = d;
-        return this;
-      }
-
-      public Builder setSeasDiff(int D) {
-        this.D = D;
-        return this;
-      }
-
-      public Builder setMean(double mean) {
-        this.mean = mean;
-        return this;
-      }
-
-      public ModelCoefficients build() {
-        return new ModelCoefficients(this);
-      }
-    }
-
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + D;
-      result = prime * result + Arrays.hashCode(arCoeffs);
-      result = prime * result + d;
-      result = prime * result + Arrays.hashCode(maCoeffs);
-      long temp;
-      temp = Double.doubleToLongBits(mean);
-      result = prime * result + (int) (temp ^ (temp >>> 32));
-      result = prime * result + Arrays.hashCode(sarCoeffs);
-      result = prime * result + Arrays.hashCode(smaCoeffs);
-      return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj) return true;
-      if (obj == null) return false;
-      if (getClass() != obj.getClass()) return false;
-      ModelCoefficients other = (ModelCoefficients) obj;
-      if (D != other.D) return false;
-      if (!Arrays.equals(arCoeffs, other.arCoeffs)) return false;
-      if (d != other.d) return false;
-      if (!Arrays.equals(maCoeffs, other.maCoeffs)) return false;
-      if (Double.doubleToLongBits(mean) != Double.doubleToLongBits(other.mean)) return false;
-      return Arrays.equals(sarCoeffs, other.sarCoeffs) && Arrays.equals(smaCoeffs, other.smaCoeffs);
-    }
-  }
-
-  /**
-   * A numerical description of an ARIMA model.
-   * 
-   * @author Jacob Rachiele
-   *
-   */
-  static final class ModelInformation {
-    private final double sigma2;
-    private final double logLikelihood;
-    private final double[] residuals;
-    private final double[] fitted;
-
-    /**
-     * Construct a new object with the provided set of data.
-     * 
-     * @param sigma2 an estimate of the model variance.
-     * @param logLikelihood the natural logarithms of the likelihood of the model parameters.
-     * @param residuals the difference between the observations and the fitted values.
-     * @param fitted the values fitted by the model to the data.
-     */
-    ModelInformation(final double sigma2, final double logLikelihood, final double[] residuals, final double[] fitted) {
-      this.sigma2 = sigma2;
-      this.logLikelihood = logLikelihood;
-      this.residuals = residuals.clone();
-      this.fitted = fitted.clone();
-    }
-
-    @Override
-    public String toString() {
-      return "sigma2: " + sigma2 + "\nlogLikelihood: " + logLikelihood;
-    }
-
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + Arrays.hashCode(fitted);
-      long temp;
-      temp = Double.doubleToLongBits(logLikelihood);
-      result = prime * result + (int) (temp ^ (temp >>> 32));
-      result = prime * result + Arrays.hashCode(residuals);
-      temp = Double.doubleToLongBits(sigma2);
-      result = prime * result + (int) (temp ^ (temp >>> 32));
-      return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj) return true;
-      if (obj == null) return false;
-      if (getClass() != obj.getClass()) return false;
-      ModelInformation other = (ModelInformation) obj;
-      if (!Arrays.equals(fitted, other.fitted)) return false;
-      if (Double.doubleToLongBits(logLikelihood) != Double.doubleToLongBits(other.logLikelihood)) return false;
-      return Arrays.equals(residuals, other.residuals) && Double.doubleToLongBits(sigma2) == Double.doubleToLongBits(other.sigma2);
-    }
-  }
-
-  public static final class OptimFunction extends AbstractMultivariateFunction {
-
-    private final TimeSeries differencedSeries;
-    private final ModelOrder order;
-    private final FittingStrategy fittingStrategy;
-    private final int seasonalFrequency;
-    private final double[] arParams;
-    private final double[] maParams;
-    private final double[] sarParams;
-    private final double[] smaParams;
-
-    public OptimFunction(final TimeSeries differencedSeries, final ModelOrder order, final FittingStrategy fittingStrategy,
-        final int seasonalFrequency) {
-      this.differencedSeries = differencedSeries;
-      this.order = order;
-      this.fittingStrategy = fittingStrategy;
-      this.seasonalFrequency = seasonalFrequency;
-      this.arParams = new double[order.p];
-      this.maParams = new double[order.q];
-      this.sarParams = new double[order.P];
-      this.smaParams = new double[order.Q];
-    }
-
-    @Override
-    public final double at(final Vector point) {
-      functionEvaluations++;
-      final double[] params = point.elements();
-      System.arraycopy(params, 0, arParams, 0, order.p);
-      System.arraycopy(params, order.p, maParams, 0, order.q);
-      for (int i = 0; i < order.P; i++) {
-        sarParams[i] = params[i + order.p + order.q];
-      }
-      for (int i = 0; i < order.Q; i++) {
-        smaParams[i] = params[i + order.p + order.q + order.P];
-      }
-      final double[] arCoeffs = Arima.expandArCoefficients(arParams, sarParams, seasonalFrequency);
-      final double[] maCoeffs = Arima.expandMaCoefficients(maParams, smaParams, seasonalFrequency);
-      final double mean = (order.constant == 1) ? params[params.length - 1] : 0.0;
-      if (fittingStrategy == FittingStrategy.ML) {
-        final int n = differencedSeries.n();
-        ArmaKalmanFilter.KalmanOutput output = Arima.kalmanFit(differencedSeries, arCoeffs, maCoeffs, mean);
-        return 0.5 * (Math.log(output.ssq() / n) + output.sumLog() / n);
-      }
-      final ModelInformation info = (fittingStrategy == FittingStrategy.CSS)
-          ? Arima.fitCss(differencedSeries, arCoeffs, maCoeffs, mean, order)
-          : Arima.fitUss(differencedSeries, arCoeffs, maCoeffs, mean, order);
-      return 0.5 * Math.log(info.sigma2);
-    }
-
-    static double[] transformParameters(final double[] arParams) {
-      double phi;
-      int p = arParams.length;
-      double[] work = new double[p];
-      double[] transformed = new double[p];
-      for (int i = 0; i < p; i++) {
-        transformed[i] = Math.tanh(arParams[i]);
-      }
-      for (int j = 1; j < p; j++) {
-        phi = transformed[j];
-        for (int k = 0; k < j; k++) {
-          work[k] -= phi * transformed[j - k  - 1];
-        }
-        System.arraycopy(work, 0, transformed, 0, j);
-      }
-      return transformed;
-    }
-
-    @Override
-    public String toString() {
-      return "differencedSeries: " + differencedSeries + "\norder: " + order + "\nfittingStrategy: " + fittingStrategy + "\nseasonalFrequency: " + seasonalFrequency + "\narParams: " + Arrays.toString(arParams) + "\nmaParams: " + Arrays.toString(maParams) + "\nsarParams: " + Arrays.toString(sarParams) + "\nsmaParams: " + Arrays.toString(smaParams);
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + Arrays.hashCode(arParams);
-      result = prime * result + ((differencedSeries == null) ? 0 : differencedSeries.hashCode());
-      result = prime * result + ((fittingStrategy == null) ? 0 : fittingStrategy.hashCode());
-      result = prime * result + Arrays.hashCode(maParams);
-      result = prime * result + ((order == null) ? 0 : order.hashCode());
-      result = prime * result + Arrays.hashCode(sarParams);
-      result = prime * result + seasonalFrequency;
-      result = prime * result + Arrays.hashCode(smaParams);
-      return result;
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj) return true;
-      if (obj == null) return false;
-      if (getClass() != obj.getClass()) return false;
-      OptimFunction other = (OptimFunction) obj;
-      if (!Arrays.equals(arParams, other.arParams)) return false;
-      if (differencedSeries == null) {
-        if (other.differencedSeries != null) return false;
-      } else if (!differencedSeries.equals(other.differencedSeries)) return false;
-      if (fittingStrategy != other.fittingStrategy) return false;
-      if (!Arrays.equals(maParams, other.maParams)) return false;
-      if (order == null) {
-        if (other.order != null) return false;
-      } else if (!order.equals(other.order)) return false;
-      if (!Arrays.equals(sarParams, other.sarParams)) return false;
-      return seasonalFrequency == other.seasonalFrequency && Arrays.equals(smaParams, other.smaParams);
-    }
-  }
-
   @Override
   public String toString() {
-    return "\norder: " + order + "\nmodelInfo: " + modelInfo + "\nmodelCoefficients: " + modelCoefficients + "\nintercept: " + intercept;
+    return "\norder: " + order + "\nmodelInfo: " + modelInfo + "\nmodelCoefficients: " + modelCoefficients +
+        "\nintercept: " + intercept;
   }
 
   @Override
@@ -1274,5 +782,507 @@ public final class Arima implements Model {
     } else if (!residuals.equals(other.residuals))
       return false;
     return seasonalFrequency == other.seasonalFrequency;
+  }
+
+  /**
+   * The order of an ARIMA model, consisting of the number of autoregressive and moving average parameters, along with
+   * the degree of differencing and whether or not a constant is in the model. This class is immutable and thread-safe.
+   *
+   * @author Jacob Rachiele
+   */
+  public static final class ModelOrder {
+
+    final int p;
+    final int d;
+    final int q;
+    final int P;
+    final int D;
+    final int Q;
+    final int constant;
+
+    /**
+     * Create a new ModelOrder using the provided number of autoregressive and moving-average parameters, as well as the
+     * degree of differencing and whether or not to fit a constant (or mean).
+     *
+     * @param p        the number of non-seasonal autoregressive coefficients.
+     * @param d        the degree of non-seasonal differencing.
+     * @param q        the number of non-seasonal moving-average coefficients.
+     * @param P        the number of seasonal autoregressive coefficients.
+     * @param D        the degree of seasonal differencing.
+     * @param Q        the number of seasonal moving-average coefficients.
+     * @param constant determines whether or not a constant (or mean) is fitted to the model.
+     */
+    ModelOrder(final int p, final int d, final int q, final int P, final int D, final int Q,
+                      final boolean constant) {
+      this.p = p;
+      this.d = d;
+      this.q = q;
+      this.P = P;
+      this.D = D;
+      this.Q = Q;
+      this.constant = (constant) ? 1 : 0;
+    }
+
+    /**
+     * Create a new ModelOrder using the provided number of autoregressive and moving-average parameters, as well as the
+     * degree of differencing and whether or not to fit a constant (or mean).
+     *
+     * @param p the number of non-seasonal autoregressive coefficients.
+     * @param d the degree of non-seasonal differencing.
+     * @param q the number of non-seasonal moving-average coefficients.
+     * @param P the number of seasonal autoregressive coefficients.
+     * @param D the degree of seasonal differencing.
+     * @param Q the number of seasonal moving-average coefficients.
+     */
+    ModelOrder(final int p, final int d, final int q, final int P, final int D, final int Q) {
+      this(p, d, q, P, D, Q, (d == 0 && D == 0));
+    }
+
+    /**
+     * Create and return a new non-seasonal model order with the given number of coefficients.
+     *
+     * @param p the number of non-seasonal autoregressive coefficients.
+     * @param d the degree of non-seasonal differencing.
+     * @param q the number of non-seasonal moving-average coefficients.
+     * @return a new model order with the given number of coefficients.
+     */
+    public static ModelOrder order(final int p, final int d, final int q) {
+      return new ModelOrder(p, d, q, 0, 0, 0, d <= 0);
+    }
+
+    /**
+     * Create and return a new non-seasonal model order with the given number of coefficients.
+     *
+     * @param p        the number of non-seasonal autoregressive coefficients.
+     * @param d        the degree of non-seasonal differencing.
+     * @param q        the number of non-seasonal moving-average coefficients.
+     * @param constant whether or not to fit a constant to the model.
+     * @return a new model order with the given number of coefficients.
+     */
+    public static ModelOrder order(final int p, final int d, final int q, final boolean constant) {
+      return new ModelOrder(p, d, q, 0, 0, 0, constant);
+    }
+
+    public static ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q) {
+      return new ModelOrder(p, d, q, P, D, Q, !(d > 0 || D > 0));
+    }
+
+    public static ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q,
+                                   final boolean constant) {
+      return new ModelOrder(p, d, q, P, D, Q, constant);
+    }
+
+    // This returns the total number of nonseasonal and seasonal ARMA parameters.
+    private int sumARMA() {
+      return this.p + this.q + this.P + this.Q;
+    }
+
+    @Override
+    public String toString() {
+      boolean isSeasonal = P > 0 || Q > 0 || D > 0;
+      StringBuilder builder = new StringBuilder();
+      if (isSeasonal) {
+        builder.append("Seasonal ");
+      }
+      builder.append("ARIMA (").append(p).append(", ").append(d).append(", ").append(q);
+      if (isSeasonal) {
+        builder.append(") x (").append(P).append(", ").append(D).append(", ").append(Q);
+      }
+      builder.append(") with").append((constant == 1) ? " a constant" : " no constant");
+      return builder.toString();
+    }
+
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + D;
+      result = prime * result + P;
+      result = prime * result + Q;
+      result = prime * result + constant;
+      result = prime * result + d;
+      result = prime * result + p;
+      result = prime * result + q;
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      ModelOrder other = (ModelOrder) obj;
+      if (D != other.D) return false;
+      if (P != other.P) return false;
+      if (Q != other.Q) return false;
+      if (constant != other.constant) return false;
+      if (d != other.d) return false;
+      return p == other.p && q == other.q;
+    }
+  }
+
+  /**
+   * Represents the autoregressive and moving-average cofficients, as well as the degree of differencing and the mean
+   * for a seasonal ARIMA model.
+   *
+   * @author Jacob Rachiele
+   */
+  public static final class ModelCoefficients {
+
+    private final double[] arCoeffs;
+    private final double[] maCoeffs;
+    private final double[] sarCoeffs;
+    private final double[] smaCoeffs;
+    private final int d;
+    private final int D;
+    private final double mean;
+
+    /**
+     * Create a structure holding the coefficients of an ARIMA model, the degrees of differencing, and the model mean.
+     *
+     * @param arCoeffs  the non-seasonal autoregressive coefficients.
+     * @param maCoeffs  the non-seasonal moving-average coefficients.
+     * @param sarCoeffs the seasonal autoregressive coefficients.
+     * @param smaCoeffs the seasonal moving-average coefficients.
+     * @param d         the non-seasonal degree of differencing.
+     * @param D         the seasonal degree of differencing.
+     * @param mean      the process mean.
+     */
+    ModelCoefficients(final double[] arCoeffs, final double[] maCoeffs, final double[] sarCoeffs,
+                      final double[] smaCoeffs, final int d, final int D, final double mean) {
+      this.arCoeffs = arCoeffs.clone();
+      this.maCoeffs = maCoeffs.clone();
+      this.sarCoeffs = sarCoeffs.clone();
+      this.smaCoeffs = smaCoeffs.clone();
+      this.d = d;
+      this.D = D;
+      this.mean = mean;
+    }
+
+    private ModelCoefficients(Builder builder) {
+      this.arCoeffs = builder.arCoeffs.clone();
+      this.maCoeffs = builder.maCoeffs.clone();
+      this.sarCoeffs = builder.sarCoeffs.clone();
+      this.smaCoeffs = builder.smaCoeffs.clone();
+      this.d = builder.d;
+      this.D = builder.D;
+      this.mean = builder.mean;
+    }
+
+    /**
+     * Get a new builder for a ModelCoefficients object.
+     *
+     * @return a new builder for a ModelCoefficients object.
+     */
+    static Builder newBuilder() {
+      return new Builder();
+    }
+
+    public final double[] arCoeffs() {
+      return arCoeffs.clone();
+    }
+
+    public final double[] maCoeffs() {
+      return maCoeffs.clone();
+    }
+
+    public final double[] sarCoeffs() {
+      return sarCoeffs.clone();
+    }
+
+    public final double[] smaCoeffs() {
+      return smaCoeffs.clone();
+    }
+
+    public final int d() {
+      return d;
+    }
+
+    public final int D() {
+      return D;
+    }
+
+    public final double getMean() {
+      return mean;
+    }
+
+    public final double[] getAllCoeffs() {
+      return DoubleFunctions.append(DoubleFunctions.combine(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs), mean);
+    }
+
+    /**
+     * The order of the ARIMA model corresponding to the model coefficients.
+     *
+     * @return the order of the ARIMA model corresponding to the model coefficients.
+     */
+    private ModelOrder extractModelOrder() {
+      return new ModelOrder(arCoeffs.length, d, maCoeffs.length, sarCoeffs.length, D, smaCoeffs.length,
+          (Math.abs(mean) > 1E-8));
+    }
+
+    @Override
+    public String toString() {
+      return "arCoeffs: " + Arrays.toString(arCoeffs) + "\nmaCoeffs: " + Arrays.toString(maCoeffs) + "\nsarCoeffs: "
+          + Arrays.toString(sarCoeffs) + "\nsmaCoeffs: " + Arrays.toString(smaCoeffs) + "\nd: " + d + "\nD: " + D +
+          "\nmean: " + mean;
+    }
+
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + D;
+      result = prime * result + Arrays.hashCode(arCoeffs);
+      result = prime * result + d;
+      result = prime * result + Arrays.hashCode(maCoeffs);
+      long temp;
+      temp = Double.doubleToLongBits(mean);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      result = prime * result + Arrays.hashCode(sarCoeffs);
+      result = prime * result + Arrays.hashCode(smaCoeffs);
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      ModelCoefficients other = (ModelCoefficients) obj;
+      if (D != other.D) return false;
+      if (!Arrays.equals(arCoeffs, other.arCoeffs)) return false;
+      if (d != other.d) return false;
+      if (!Arrays.equals(maCoeffs, other.maCoeffs)) return false;
+      if (Double.doubleToLongBits(mean) != Double.doubleToLongBits(other.mean)) return false;
+      return Arrays.equals(sarCoeffs, other.sarCoeffs) && Arrays.equals(smaCoeffs, other.smaCoeffs);
+    }
+
+    /**
+     * A builder class for ARIMA model coefficients.
+     *
+     * @author Jacob Rachiele
+     */
+    public static final class Builder {
+      private double[] arCoeffs = new double[]{};
+      private double[] maCoeffs = new double[]{};
+      private double[] sarCoeffs = new double[]{};
+      private double[] smaCoeffs = new double[]{};
+      private int d = 0;
+      private int D = 0;
+      private double mean = 0.0;
+
+      private Builder() {
+      }
+
+      public Builder setArCoeffs(double... arCoeffs) {
+        this.arCoeffs = arCoeffs;
+        return this;
+      }
+
+      public Builder setSarCoeffs(double... sarCoeffs) {
+        this.sarCoeffs = sarCoeffs;
+        return this;
+      }
+
+      public Builder setMaCoeffs(double... maCoeffs) {
+        this.maCoeffs = maCoeffs;
+        return this;
+      }
+
+      public Builder setSmaCoeffs(double... smaCoeffs) {
+        this.smaCoeffs = smaCoeffs;
+        return this;
+      }
+
+      public Builder setDiff(int d) {
+        this.d = d;
+        return this;
+      }
+
+      public Builder setSeasDiff(int D) {
+        this.D = D;
+        return this;
+      }
+
+      public Builder setMean(double mean) {
+        this.mean = mean;
+        return this;
+      }
+
+      public ModelCoefficients build() {
+        return new ModelCoefficients(this);
+      }
+    }
+  }
+
+  /**
+   * A numerical description of an ARIMA model.
+   *
+   * @author Jacob Rachiele
+   */
+  static final class ModelInformation {
+    private final double sigma2;
+    private final double logLikelihood;
+    private final double[] residuals;
+    private final double[] fitted;
+
+    /**
+     * Construct a new object with the provided set of data.
+     *
+     * @param sigma2        an estimate of the model variance.
+     * @param logLikelihood the natural logarithms of the likelihood of the model parameters.
+     * @param residuals     the difference between the observations and the fitted values.
+     * @param fitted        the values fitted by the model to the data.
+     */
+    ModelInformation(final double sigma2, final double logLikelihood, final double[] residuals, final double[] fitted) {
+      this.sigma2 = sigma2;
+      this.logLikelihood = logLikelihood;
+      this.residuals = residuals.clone();
+      this.fitted = fitted.clone();
+    }
+
+    @Override
+    public String toString() {
+      return "sigma2: " + sigma2 + "\nlogLikelihood: " + logLikelihood;
+    }
+
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + Arrays.hashCode(fitted);
+      long temp;
+      temp = Double.doubleToLongBits(logLikelihood);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      result = prime * result + Arrays.hashCode(residuals);
+      temp = Double.doubleToLongBits(sigma2);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      ModelInformation other = (ModelInformation) obj;
+      if (!Arrays.equals(fitted, other.fitted)) return false;
+      if (Double.doubleToLongBits(logLikelihood) != Double.doubleToLongBits(other.logLikelihood)) return false;
+      return Arrays.equals(residuals, other.residuals) && Double.doubleToLongBits(sigma2) == Double.doubleToLongBits
+          (other.sigma2);
+    }
+  }
+
+  public static final class OptimFunction extends AbstractMultivariateFunction {
+
+    private final TimeSeries differencedSeries;
+    private final ModelOrder order;
+    private final FittingStrategy fittingStrategy;
+    private final int seasonalFrequency;
+    private final double[] arParams;
+    private final double[] maParams;
+    private final double[] sarParams;
+    private final double[] smaParams;
+
+    public OptimFunction(final TimeSeries differencedSeries, final ModelOrder order, final FittingStrategy
+        fittingStrategy,
+                         final int seasonalFrequency) {
+      this.differencedSeries = differencedSeries;
+      this.order = order;
+      this.fittingStrategy = fittingStrategy;
+      this.seasonalFrequency = seasonalFrequency;
+      this.arParams = new double[order.p];
+      this.maParams = new double[order.q];
+      this.sarParams = new double[order.P];
+      this.smaParams = new double[order.Q];
+    }
+
+    @Override
+    public final double at(final Vector point) {
+      functionEvaluations++;
+      final double[] params = point.elements();
+      System.arraycopy(params, 0, arParams, 0, order.p);
+      System.arraycopy(params, order.p, maParams, 0, order.q);
+      for (int i = 0; i < order.P; i++) {
+        sarParams[i] = params[i + order.p + order.q];
+      }
+      for (int i = 0; i < order.Q; i++) {
+        smaParams[i] = params[i + order.p + order.q + order.P];
+      }
+      final double[] arCoeffs = Arima.expandArCoefficients(arParams, sarParams, seasonalFrequency);
+      final double[] maCoeffs = Arima.expandMaCoefficients(maParams, smaParams, seasonalFrequency);
+      final double mean = (order.constant == 1) ? params[params.length - 1] : 0.0;
+      if (fittingStrategy == FittingStrategy.ML) {
+        final int n = differencedSeries.n();
+        ArmaKalmanFilter.KalmanOutput output = Arima.kalmanFit(differencedSeries, arCoeffs, maCoeffs, mean);
+        return 0.5 * (Math.log(output.ssq() / n) + output.sumLog() / n);
+      }
+      final ModelInformation info = (fittingStrategy == FittingStrategy.CSS)
+          ? Arima.fitCss(differencedSeries, arCoeffs, maCoeffs, mean, order)
+          : Arima.fitUss(differencedSeries, arCoeffs, maCoeffs, mean, order);
+      return 0.5 * Math.log(info.sigma2);
+    }
+
+//    static double[] transformParameters(final double[] arParams) {
+//      double phi;
+//      int p = arParams.length;
+//      double[] work = new double[p];
+//      double[] transformed = new double[p];
+//      for (int i = 0; i < p; i++) {
+//        transformed[i] = Math.tanh(arParams[i]);
+//      }
+//      for (int j = 1; j < p; j++) {
+//        phi = transformed[j];
+//        for (int k = 0; k < j; k++) {
+//          work[k] -= phi * transformed[j - k  - 1];
+//        }
+//        System.arraycopy(work, 0, transformed, 0, j);
+//      }
+//      return transformed;
+//    }
+
+    @Override
+    public String toString() {
+      return "differencedSeries: " + differencedSeries + "\norder: " + order + "\nfittingStrategy: " +
+          fittingStrategy + "\nseasonalFrequency: " + seasonalFrequency + "\narParams: " + Arrays.toString(arParams)
+          + "\nmaParams: " + Arrays.toString(maParams) + "\nsarParams: " + Arrays.toString(sarParams) + "\nsmaParams:" +
+          " " + Arrays.toString(smaParams);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + Arrays.hashCode(arParams);
+      result = prime * result + ((differencedSeries == null) ? 0 : differencedSeries.hashCode());
+      result = prime * result + ((fittingStrategy == null) ? 0 : fittingStrategy.hashCode());
+      result = prime * result + Arrays.hashCode(maParams);
+      result = prime * result + ((order == null) ? 0 : order.hashCode());
+      result = prime * result + Arrays.hashCode(sarParams);
+      result = prime * result + seasonalFrequency;
+      result = prime * result + Arrays.hashCode(smaParams);
+      return result;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      OptimFunction other = (OptimFunction) obj;
+      if (!Arrays.equals(arParams, other.arParams)) return false;
+      if (differencedSeries == null) {
+        if (other.differencedSeries != null) return false;
+      } else if (!differencedSeries.equals(other.differencedSeries)) return false;
+      if (fittingStrategy != other.fittingStrategy) return false;
+      if (!Arrays.equals(maParams, other.maParams)) return false;
+      if (order == null) {
+        if (other.order != null) return false;
+      } else if (!order.equals(other.order)) return false;
+      if (!Arrays.equals(sarParams, other.sarParams)) return false;
+      return seasonalFrequency == other.seasonalFrequency && Arrays.equals(smaParams, other.smaParams);
+    }
   }
 }

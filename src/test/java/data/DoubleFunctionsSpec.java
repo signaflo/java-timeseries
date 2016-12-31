@@ -23,6 +23,31 @@ public class DoubleFunctionsSpec {
     double[] actual = newArray();
     assertThat(actual, is(equalTo(expected)));
   }
+
+  @Test
+  public void whenNewArrayFromTwoThenCombinedIntoOneProperly() {
+    double[] expected = {1.0, 2.0, 3.0, 4.0, 5.0};
+    double[] array1 = {1.0, 2.0};
+    double[] array2 = {3.0, 4.0, 5.0};
+    assertThat(DoubleFunctions.combine(array1, array2), is(expected));
+  }
+
+  @Test
+  public void whenNewArrayFromThreeThenCombinedIntoOneProperly() {
+    double[] expected = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0};
+    double[] array1 = {1.0, 2.0};
+    double[] array2 = {3.0, 4.0, 5.0};
+    double[] array3 = {6.0, 7.0};
+    assertThat(DoubleFunctions.combine(array1, array2, array3), is(expected));
+  }
+
+  @Test
+  public void whenAppendedThenNewArrayCorrect() {
+    double[] expected = {1.0, 2.0, 3.0};
+    double[] array1 = {1.0, 2.0};
+    double value = 3.0;
+    assertThat(DoubleFunctions.append(array1, value), is(expected));
+  }
   
   @Test
   public void whenFillMethodThenArrayFilledWithGivenValue() {

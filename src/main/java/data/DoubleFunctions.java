@@ -22,6 +22,27 @@ public final class DoubleFunctions {
     return data.clone();
   }
 
+  public static double[] combine(double[]... arrays) {
+    int newArrayLength = 0;
+    for (double[] array : arrays) {
+      newArrayLength += array.length;
+    }
+    double[] newArray = new double[newArrayLength];
+    newArrayLength = 0;
+    for (double[] array : arrays) {
+      System.arraycopy(array, 0, newArray, newArrayLength, array.length);
+      newArrayLength += array.length;
+    }
+    return newArray;
+  }
+
+  public static double[] append(double[] original, double value) {
+    double[] newArray = new double[original.length + 1];
+    System.arraycopy(original, 0, newArray, 0, original.length);
+    newArray[original.length] = value;
+    return newArray;
+  }
+
   public static double[] newArray(List<Double> data) {
     final int size = data.size();
     final double[] doubles = new double[size];
