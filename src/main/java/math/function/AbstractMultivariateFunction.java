@@ -15,7 +15,7 @@ public abstract class AbstractMultivariateFunction implements MultivariateFuncti
   
   protected int functionEvaluations = 0;
   protected int gradientEvalutations = 0;
-  private static final double gradientTolerance = 1E-6;
+  private static final double gradientTolerance = 1E-3;
   
   public Vector gradientAt(Vector point) {
     gradientEvalutations++;
@@ -24,7 +24,8 @@ public abstract class AbstractMultivariateFunction implements MultivariateFuncti
   
   public Vector gradientAt(final Vector point, final double functionValue) {
     gradientEvalutations++;
-    return NumericalDerivatives.forwardDifferenceGradient(this, point, gradientTolerance, functionValue);
+    return NumericalDerivatives.forwardDifferenceGradient(this, point, gradientTolerance * gradientTolerance,
+        functionValue);
   }
   
   /**

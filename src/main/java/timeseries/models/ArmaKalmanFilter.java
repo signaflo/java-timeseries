@@ -437,7 +437,7 @@ public final class ArmaKalmanFilter {
       this.ssq = ssq;
       this.sumlog = sumlog;
       this.sigma2ML = ssq / n;
-      this.logLikelihood = -0.5 * (n * (Math.log(sigma2ML) + Math.log(2 * Math.PI)) + sumlog + (ssq / sigma2ML));
+      this.logLikelihood = -0.5 * (n * (Math.log(sigma2ML) + Math.log(2 * Math.PI) + 1.0) + sumlog);
       this.residuals = residuals.clone();
     }
 
@@ -451,6 +451,10 @@ public final class ArmaKalmanFilter {
 
     public double sigma2() {
       return this.sigma2ML;
+    }
+
+    public double logLikelihood() {
+      return this.logLikelihood;
     }
 
     public double[] residuals() {

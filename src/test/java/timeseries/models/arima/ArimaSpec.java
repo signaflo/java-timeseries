@@ -19,7 +19,7 @@ public class ArimaSpec {
   @Test
   public void whenArimaModelFitThenParametersSimilarToROutput() throws Exception {
     TimeSeries series = TestData.livestock();
-    ModelOrder order = new ModelOrder(1, 1, 1, 0, 0, 0, false);
+    ModelOrder order = ModelOrder.order(1, 1, 1);
     Arima model = Arima.model(series, order, TimePeriod.oneYear(), FittingStrategy.ML);
     assertThat(model.coefficients().arCoeffs()[0], is(closeTo(0.64, 0.02)));
     assertThat(model.coefficients().maCoeffs()[0], is(closeTo(-0.50, 0.02)));
@@ -43,7 +43,6 @@ public class ArimaSpec {
         setDiff(1).build();
     Arima model = Arima.model(series, coeffs, TimePeriod.oneYear());
     Arima.model(series, order, TimePeriod.oneYear());
-    Arima.model(series, order, TimePeriod.oneYear());
     System.out.println(Arrays.toString(model.forecast(10)));
   }
   
@@ -61,10 +60,10 @@ public class ArimaSpec {
 
   @Test
   public void testOdyssey() {
-    TimeSeries series = TestData.odyssey();
-    ModelOrder order = new ModelOrder(1, 0, 1, 1, 0, 1);
+    TimeSeries series = TestData.ukcars();
+    ModelOrder order = new ModelOrder(0, 0, 0, 0, 0, 0);
     Arima model = Arima.model(series, order, TimePeriod.oneYear(), FittingStrategy.ML);
-    System.out.println(model.coefficients());
+    System.out.println(model);
     System.out.println(Arrays.toString(model.stdErrors()));
     System.out.println(model.sigma2());
     System.out.println(Arrays.toString(model.forecast(12)));
@@ -77,7 +76,6 @@ public class ArimaSpec {
     ModelOrder order2 = ModelOrder.order(1, 0, 1, true);
     Arima model1 = Arima.model(series, order);
     Arima model2 = Arima.model(series, order2, FittingStrategy.CSS);
-    System.out.println(model2.coefficients());
     assertThat(model1, is(model1));
     assertThat(model1, is(not(new Object())));
     assertThat(model1, is(not(nullValue())));

@@ -30,7 +30,7 @@ public final class BFGSSpec {
   public void testHardProblem() {
     TimeSeries timeSeries = TestData.hardProblem();
     AbstractMultivariateFunction f = new OptimFunction(timeSeries, ModelOrder.order(1, 0, 1, 1, 0, 1), FittingStrategy.USS,
-            12);
+            12, 1.0);
     final Vector initParams = new Vector(0, 0, 0, 0, timeSeries.mean());
     final Matrix initHessian = getInitialHessian(timeSeries, initParams.elements(), 1);
     BFGS optimizer = new BFGS(f, initParams, 1e-8, 1e-8, initHessian);
