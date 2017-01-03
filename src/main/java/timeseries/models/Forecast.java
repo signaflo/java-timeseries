@@ -3,7 +3,7 @@ package timeseries.models;
 import timeseries.TimeSeries;
 
 /**
- * Represents a forecast produced by a time series {@link Model}.
+ * Represents a fcst produced by a time series {@link Model}.
  * 
  * @author Jacob Rachiele
  *
@@ -25,31 +25,31 @@ public interface Forecast {
   TimeSeries lowerPredictionValues();
 
   /**
-   * Compute the upper end points of a prediction interval with the given number of forecast steps and the provided
+   * Compute the upper end points of a prediction interval with the given number of fcst steps and the provided
    * significance level &alpha;
    * 
-   * @param steps the number of forecast steps.
+   * @param steps the number of fcst steps.
    * @param alpha the significance level for the prediction intervals.
-   * @return the upper end points of a prediction interval with the given number of forecast steps and the provided
+   * @return the upper end points of a prediction interval with the given number of fcst steps and the provided
    *         significance level &alpha;
    */
   TimeSeries computeUpperPredictionValues(int steps, double alpha);
 
   /**
-   * Compute the lower end points of a prediction interval with the given number of forecast steps and the provided
+   * Compute the lower end points of a prediction interval with the given number of fcst steps and the provided
    * significance level &alpha;
    * 
-   * @param steps the number of forecast steps.
+   * @param steps the number of fcst steps.
    * @param alpha the significance level for the prediction intervals.
-   * @return the lower end points of a prediction interval with the given number of forecast steps and the provided
+   * @return the lower end points of a prediction interval with the given number of fcst steps and the provided
    *         significance level &alpha;
    */
   TimeSeries computeLowerPredictionValues(int steps, double alpha);
 
   /**
-   * The point forecast.
+   * The point fcst.
    * 
-   * @return the point forecast.
+   * @return the point fcst.
    */
   TimeSeries forecast();
 

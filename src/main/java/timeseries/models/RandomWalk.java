@@ -56,14 +56,18 @@ public final class RandomWalk implements Model {
    * 
    * @param dist The probability distribution that observations are drawn from.
    * @param n The number of observations to simulate.
-   * @return A simulated RandomWalk model.
+   * @return the simulated series.
    */
-  public static Model simulate(final Distribution dist, final int n) {
-    final double[] series = new double[n];
-    for (int t = 0; t < n; t++) {
-      series[t] = dist.rand();
+  public static TimeSeries simulate(final Distribution dist, final int n) {
+    if (n < 1) {
+      throw new RuntimeException("the number of simulated observations must be a positive integer.");
     }
-    return new RandomWalk(new TimeSeries(series));
+    final double[] series = new double[n];
+    series[0] = dist.rand();
+    for (int t = 1; t < n; t++) {
+      series[t] = series[t - 1] + dist.rand();
+    }
+    return new TimeSeries(series);
   }
 
   /**
@@ -73,9 +77,9 @@ public final class RandomWalk implements Model {
    * @param mean the mean of the Normal distribution the observations are drawn from.
    * @param sigma the standard deviation of the Normal distribution the observations are drawn from.
    * @param n the number of observations to simulate.
-   * @return a new simulated random walk model.
+   * @return the simulated series.
    */
-  public static Model simulate(final double mean, final double sigma, final int n) {
+  public static TimeSeries simulate(final double mean, final double sigma, final int n) {
     final Distribution dist = new Normal(mean, sigma);
     return simulate(dist, n);
   }
@@ -86,9 +90,9 @@ public final class RandomWalk implements Model {
    * 
    * @param sigma the standard deviation of the Normal distribution the observations are drawn from.
    * @param n the number of observations to simulate.
-   * @return a new simulated random walk model.
+   * @return the simulated series.
    */
-  public static Model simulate(final double sigma, final int n) {
+  public static TimeSeries simulate(final double sigma, final int n) {
     final Distribution dist = new Normal(0, sigma);
     return simulate(dist, n);
   }
@@ -97,9 +101,9 @@ public final class RandomWalk implements Model {
    * Simulate a random walk assuming errors follow a standard Normal (Gaussian) Distribution.
    * 
    * @param n the number of observations to simulate.
-   * @return a new simulated random walk model.
+   * @return the simulated series.
    */
-  public static Model simulate(final int n) {
+  public static TimeSeries simulate(final int n) {
     final Distribution dist = new Normal(0, 1);
     return simulate(dist, n);
   }

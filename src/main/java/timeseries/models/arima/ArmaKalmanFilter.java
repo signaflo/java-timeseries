@@ -1,4 +1,4 @@
-package timeseries.models;
+package timeseries.models.arima;
 
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.data.RowD1Matrix64F;
@@ -9,12 +9,12 @@ import static org.ejml.ops.CommonOps.*;
 /**
  * An implementation of the <a target="_blank"
  * href="https://www.cl.cam.ac.uk/~rmf25/papers/Understanding%20the%20Basis%20of%20the%20Kalman%20Filter.pdf">
- * Kalman Filter specifically designed for estimation of ARMA models.
+ * Kalman Filter</a>, specifically designed for estimation of ARMA models.
  *
  * @author Jacob Rachiele
  *         Date: Dec 09 2016
  */
-public final class ArmaKalmanFilter {
+final class ArmaKalmanFilter {
 
   private final double[] y;
   private final int r; // r = max(p, q + 1);
@@ -33,7 +33,7 @@ public final class ArmaKalmanFilter {
 
   private final KalmanOutput kalmanOutput;
 
-  public ArmaKalmanFilter(final StateSpaceARMA ss) {
+  ArmaKalmanFilter(final StateSpaceARMA ss) {
     this.y = ss.differencedSeries();
     this.r = ss.r();
 
@@ -54,19 +54,19 @@ public final class ArmaKalmanFilter {
     //filter();
   }
 
-  public double[] predictionError() {
+  double[] predictionError() {
     return this.predictionError.clone();
   }
 
-  public double ssq() {
+  double ssq() {
     return this.kalmanOutput.ssq;
   }
 
-  public double logLikelihood() {
+  double logLikelihood() {
     return this.kalmanOutput.logLikelihood;
   }
 
-  public KalmanOutput output() {
+  KalmanOutput output() {
     return this.kalmanOutput;
   }
 
@@ -342,69 +342,69 @@ public final class ArmaKalmanFilter {
     }
   }
 
-  private static void karma(final int ip, final int iq, final int ir, final int np, final double[] phi, final
-  double[] theta,
-                            final double[] a, final double[] p, final double[] v, final int n, final double[] w,
-                            final double[] resid, double sumlog, double ssq, final int iupd,
-                            final double delta, int nit) {
-    int ir1 = ir - 1;
-    final double[] e = new double[ir];
-    int inde = 0;
-
-    if (nit != 0) {
-      goto600(n, w, ip, iq, phi, theta, inde, e, resid, ssq);
-      double wnext;
-      double dt;
-      for (int i = 0; i < n; i++) {
-        wnext = w[i];
-        if (iupd != 1 || i != 0) {
-          dt = 0.0;
-        }
-      }
-    }
-  }
-
-  private static void goto600(int n, double[] w, int ip, int iq, double[] phi, double[] theta, int inde, double[] e,
-                              double
-                                  [] resid, double ssq) {
-    int i = 0;
-    double et;
-    int indw;
-    for (int ii = i; ii < n; ii++) {
-      et = w[ii];
-      indw = ii;
-      if (ip != 0) {
-        for (int j = 0; j < ip; j++) {
-          indw--;
-          if (indw >= 0) {
-            et -= (phi[j] * w[indw]);
-          } else {
-            break;
-          }
-        }
-      }
-      if (iq != 0) {
-        for (int j = 0; j < iq; j++) {
-          if (--inde == -1) {
-            inde = iq - 1;
-          }
-          et -= (theta[j] * e[inde]);
-        }
-      }
-      e[inde++] = et;
-      resid[ii] = et;
-      ssq += et * et;
-      if (inde >= iq) {
-        inde = 0;
-      }
-    }
-  }
-
-  private void kalform(final int m, final int ip, final int ir, final int np, final double[] phi, final double[] a,
-                       final double[] p, final double[] v, final double[] work) {
-
-  }
-
+//  private static void karma(final int ip, final int iq, final int ir, final int np, final double[] phi, final
+//  double[] theta,
+//                            final double[] a, final double[] p, final double[] v, final int n, final double[] w,
+//                            final double[] resid, double sumlog, double ssq, final int iupd,
+//                            final double delta, int nit) {
+//    int ir1 = ir - 1;
+//    final double[] e = new double[ir];
+//    int inde = 0;
+//
+//    if (nit != 0) {
+//      goto600(n, w, ip, iq, phi, theta, inde, e, resid, ssq);
+//      double wnext;
+//      double dt;
+//      for (int i = 0; i < n; i++) {
+//        wnext = w[i];
+//        if (iupd != 1 || i != 0) {
+//          dt = 0.0;
+//        }
+//      }
+//    }
+//  }
+//
+//  private static void goto600(int n, double[] w, int ip, int iq, double[] phi, double[] theta, int inde, double[] e,
+//                              double
+//                                  [] resid, double ssq) {
+//    int i = 0;
+//    double et;
+//    int indw;
+//    for (int ii = i; ii < n; ii++) {
+//      et = w[ii];
+//      indw = ii;
+//      if (ip != 0) {
+//        for (int j = 0; j < ip; j++) {
+//          indw--;
+//          if (indw >= 0) {
+//            et -= (phi[j] * w[indw]);
+//          } else {
+//            break;
+//          }
+//        }
+//      }
+//      if (iq != 0) {
+//        for (int j = 0; j < iq; j++) {
+//          if (--inde == -1) {
+//            inde = iq - 1;
+//          }
+//          et -= (theta[j] * e[inde]);
+//        }
+//      }
+//      e[inde++] = et;
+//      resid[ii] = et;
+//      ssq += et * et;
+//      if (inde >= iq) {
+//        inde = 0;
+//      }
+//    }
+//  }
+//
+//  private void kalform(final int m, final int ip, final int ir, final int np, final double[] phi, final double[] a,
+//                       final double[] p, final double[] v, final double[] work) {
+//
+//  }
+//
   static double[] unpack(final double[] triangularMatrix) {
     int c = triangularMatrix.length;
     //x^2 + x - 2c = 0
@@ -425,7 +425,7 @@ public final class ArmaKalmanFilter {
     return full;
   }
 
-  public static class KalmanOutput {
+  static class KalmanOutput {
 
     private final double ssq;
     private final double sumlog;
@@ -441,110 +441,110 @@ public final class ArmaKalmanFilter {
       this.residuals = residuals.clone();
     }
 
-    public double ssq() {
+    double ssq() {
       return this.ssq;
     }
 
-    public double sumLog() {
+    double sumLog() {
       return this.sumlog;
     }
 
-    public double sigma2() {
+    double sigma2() {
       return this.sigma2ML;
     }
 
-    public double logLikelihood() {
+    double logLikelihood() {
       return this.logLikelihood;
     }
 
-    public double[] residuals() {
+    double[] residuals() {
       return this.residuals.clone();
     }
 
   }
 
-  public KalmanOutput filterR(StateSpaceARMA ss) {
-    boolean useResid = true;
-    double[] y = ss.differencedSeries();
-    double[] rsResid = new double[y.length];
-    double[] phi = ss.arParams();
-    double[] theta = ss.maParams();
-    double sumlog = 0.0, ssq = 0;
-    double[] anew, M, a, Pnew, P;
-    int rd = r;
-    int n = y.length;
-    int p = phi.length;
-    int q = theta.length;
-    Pnew = unpack(getInitialStateCovariance(ss.arParams(), ss.maParams()));
-    P = new double[Pnew.length];
-    a = new double[rd];
-    anew = new double[rd];
-    M = new double[rd];
-    int nu = 0;
-    for (int l = 0; l < n; l++) {
-      if (l > 0) {
-        for (int i = 0; i < r; i++) {
-          double tmp = (i < r - 1) ? a[i + 1] : 0.0;
-          if (i < p) {
-            tmp += phi[i] * a[0];
-          }
-          anew[i] = tmp;
-        }
-        for (int i = 0; i < r; i++) {
-          double vi = 0.0;
-          if (i == 0) {
-            vi = 1.0;
-          } else if (i - 1 < q) {
-            vi = theta[i - 1];
-          }
-          for (int j = 0; j < r; j++) {
-            double tmp = 0.0;
-            if (j == 0) {
-              tmp = vi;
-            } else if (j - 1 < q) {
-              tmp = vi * theta[j - 1];
-            }
-            if (i < p && j < p) {
-              tmp += phi[i] * phi[j] * P[0];
-            }
-            if (i < r - 1 && j < r - 1) {
-              tmp += P[i + 1 + r * (j + 1)];
-            }
-            if (i < p && j < r - 1) {
-              tmp += phi[i] * P[j + 1];
-            }
-            if (j < p && i < r - 1) {
-              tmp += phi[j] * P[i + 1];
-            }
-            Pnew[i + r * j] = tmp;
-          }
-        }
-      }
-      if (!Double.isNaN(y[l])) {
-        double resid = y[l] - anew[0];
-
-        System.arraycopy(Pnew, 0, M, 0, rd);
-
-        double gain = M[0];
-        if (gain < 1e4) {
-          nu++;
-          ssq += resid * resid / gain;
-          sumlog += Math.log(gain);
-        }
-        rsResid[l] = resid / Math.sqrt(gain);
-        for (int i = 0; i < rd; i++)
-          a[i] = anew[i] + M[i] * resid / gain;
-        for (int i = 0; i < rd; i++)
-          for (int j = 0; j < rd; j++)
-            P[i + j * rd] = Pnew[i + j * rd] - M[i] * M[j] / gain;
-      } else {
-        System.arraycopy(anew, 0, a, 0, rd);
-        System.arraycopy(Pnew, 0, P, 0, rd * rd);
-        rsResid[l] = Double.NaN;
-      }
-    }
-    return new KalmanOutput(n, ssq, sumlog, rsResid);
-  }
+//  KalmanOutput filterR(StateSpaceARMA ss) {
+//    boolean useResid = true;
+//    double[] y = ss.differencedSeries();
+//    double[] rsResid = new double[y.length];
+//    double[] phi = ss.arParams();
+//    double[] theta = ss.maParams();
+//    double sumlog = 0.0, ssq = 0;
+//    double[] anew, M, a, Pnew, P;
+//    int rd = r;
+//    int n = y.length;
+//    int p = phi.length;
+//    int q = theta.length;
+//    Pnew = unpack(getInitialStateCovariance(ss.arParams(), ss.maParams()));
+//    P = new double[Pnew.length];
+//    a = new double[rd];
+//    anew = new double[rd];
+//    M = new double[rd];
+//    int nu = 0;
+//    for (int l = 0; l < n; l++) {
+//      if (l > 0) {
+//        for (int i = 0; i < r; i++) {
+//          double tmp = (i < r - 1) ? a[i + 1] : 0.0;
+//          if (i < p) {
+//            tmp += phi[i] * a[0];
+//          }
+//          anew[i] = tmp;
+//        }
+//        for (int i = 0; i < r; i++) {
+//          double vi = 0.0;
+//          if (i == 0) {
+//            vi = 1.0;
+//          } else if (i - 1 < q) {
+//            vi = theta[i - 1];
+//          }
+//          for (int j = 0; j < r; j++) {
+//            double tmp = 0.0;
+//            if (j == 0) {
+//              tmp = vi;
+//            } else if (j - 1 < q) {
+//              tmp = vi * theta[j - 1];
+//            }
+//            if (i < p && j < p) {
+//              tmp += phi[i] * phi[j] * P[0];
+//            }
+//            if (i < r - 1 && j < r - 1) {
+//              tmp += P[i + 1 + r * (j + 1)];
+//            }
+//            if (i < p && j < r - 1) {
+//              tmp += phi[i] * P[j + 1];
+//            }
+//            if (j < p && i < r - 1) {
+//              tmp += phi[j] * P[i + 1];
+//            }
+//            Pnew[i + r * j] = tmp;
+//          }
+//        }
+//      }
+//      if (!Double.isNaN(y[l])) {
+//        double resid = y[l] - anew[0];
+//
+//        System.arraycopy(Pnew, 0, M, 0, rd);
+//
+//        double gain = M[0];
+//        if (gain < 1e4) {
+//          nu++;
+//          ssq += resid * resid / gain;
+//          sumlog += Math.log(gain);
+//        }
+//        rsResid[l] = resid / Math.sqrt(gain);
+//        for (int i = 0; i < rd; i++)
+//          a[i] = anew[i] + M[i] * resid / gain;
+//        for (int i = 0; i < rd; i++)
+//          for (int j = 0; j < rd; j++)
+//            P[i + j * rd] = Pnew[i + j * rd] - M[i] * M[j] / gain;
+//      } else {
+//        System.arraycopy(anew, 0, a, 0, rd);
+//        System.arraycopy(Pnew, 0, P, 0, rd * rd);
+//        rsResid[l] = Double.NaN;
+//      }
+//    }
+//    return new KalmanOutput(n, ssq, sumlog, rsResid);
+//  }
 
 //  private final double[] series;
 //  private final double[] initialStateVector;

@@ -24,7 +24,7 @@ import stats.distributions.Normal;
 import timeseries.TimeSeries;
 
 /**
- * A forecast for a random walk model.
+ * A fcst for a random walk model.
  * @author Jacob Rachiele
  *
  */

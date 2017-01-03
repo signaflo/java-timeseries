@@ -25,7 +25,7 @@ import stats.distributions.StudentsT;
 import timeseries.TimeSeries;
 
 /**
- * A mean model forecast.
+ * A mean model fcst.
  * @author Jacob Rachiele
  *
  */

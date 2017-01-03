@@ -4,13 +4,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 
-import java.util.Arrays;
+import static data.DoubleFunctions.newArray;
 
+import data.DoubleFunctions;
 import org.junit.Test;
 
 import data.TestData;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
+import timeseries.models.Forecast;
 import timeseries.models.arima.Arima.ModelCoefficients;
 import timeseries.models.arima.Arima.ModelOrder;
 
@@ -28,7 +30,7 @@ public class ArimaSpec {
   @Test
   public void whenArimaModelFitDebitcardsThenParametersSimilarToROutput() throws Exception {
     TimeSeries series = TestData.debitcards();
-    ModelOrder order = new ModelOrder(1, 1, 1, 1, 1, 1);
+    ModelOrder order = ModelOrder.order(1, 1, 1, 1, 1, 1);
     Arima model = Arima.model(series, order, TimePeriod.oneYear(), FittingStrategy.ML);
     ModelCoefficients expected = ModelCoefficients.newBuilder().setArCoeffs(-0.1042)
         .setMaCoeffs(-0.6213).setSarCoeffs(0.0051).setSmaCoeffs(-0.5713).setDiff(1).setSeasDiff(1).build();
@@ -38,35 +40,48 @@ public class ArimaSpec {
   @Test
   public void whenArimaModelForecastThenForecastValuesCorrect() throws Exception {
     TimeSeries series = TestData.livestock();
-    ModelOrder order = new ModelOrder(1, 1, 1, 0, 0, 0, false);
+    ModelOrder order = ModelOrder.order(1, 1, 1, 0, 0, 0, false);
     ModelCoefficients coeffs = ModelCoefficients.newBuilder().setArCoeffs(0.6480679).setMaCoeffs(-0.5035514).
         setDiff(1).build();
     Arima model = Arima.model(series, coeffs, TimePeriod.oneYear());
-    Arima.model(series, order, TimePeriod.oneYear());
-    System.out.println(Arrays.toString(model.forecast(10)));
+    double[] expected = {457.660172, 458.904464, 459.71085, 460.233443, 460.572118, 460.791603, 460.933844,
+        461.026026, 461.085766, 461.124482};
+    assertArrayEquals(expected, model.fcst(10), 1E-4);
   }
   
   @Test
-  public void whenArimaModelForecastThenPsiAccurate() throws Exception {
+  public void whenArimaModelForecastThenPredictionLevelsAccurate() throws Exception {
     TimeSeries series = TestData.livestock();
-    ModelCoefficients coeffs = ModelCoefficients.newBuilder().setArCoeffs(-0.4857229)//.setMaCoeffs(-0.5035514).
-        .setDiff(2).build();
-    Arima model = Arima.model(series, coeffs, TimePeriod.oneYear(), FittingStrategy.USS);
-    ArimaForecast fcst = ArimaForecast.forecast(model, 12, 0.05);
-    System.out.println(fcst.computeLowerPredictionValues(12, 0.05));
-    System.out.println(fcst.computeUpperPredictionValues(12, 0.05));
-    //assertArrayEquals(new double[] {1.0, 1.144516, 1.238173}, fcst.getPsiCoefficients(), 1E-4);
+    ModelCoefficients coeffs = ModelCoefficients.newBuilder().setArCoeffs(-0.4857229).setMaCoeffs(-0.5035514)
+        .setDiff(1).build();
+    Arima model = Arima.model(series, coeffs, TimePeriod.oneYear(), FittingStrategy.CSS);
+    Forecast fcst = model.forecast(10);
+    double[] expectedLower = {396.533565, 402.914866, 394.55647, 394.70626, 391.269108, 389.741938, 387.431149,
+        385.602156, 383.635953, 381.820598};
+    double[] expectedUpper = {488.660387, 495.046987, 497.203721, 500.06622, 502.040234, 504.278084, 506.24368,
+        508.240341, 510.125104, 511.980016};
+    double[] actualLower = fcst.computeLowerPredictionValues(10, 0.05).series();
+    double[] actualUpper = fcst.computeUpperPredictionValues(10, 0.05).series();
+    assertArrayEquals(expectedLower, actualLower, 1E-4);
+    assertArrayEquals(expectedUpper, actualUpper, 1E-4);
+  }
+
+  @Test
+  public void whenModelFitThenAICCorrect() {
+    ModelCoefficients coefficients = ModelCoefficients.newBuilder().setArCoeffs(-0.5).setMaCoeffs(-0.5).setDiff(1).build();
+    Arima model = Arima.model(TestData.livestock(), coefficients, FittingStrategy.ML);
+    assertThat(model.aic(), is(closeTo(426.2792, 1E-4)));
   }
 
   @Test
   public void testOdyssey() {
-    TimeSeries series = TestData.ukcars();
-    ModelOrder order = new ModelOrder(0, 0, 0, 0, 0, 0);
-    Arima model = Arima.model(series, order, TimePeriod.oneYear(), FittingStrategy.ML);
-    System.out.println(model);
-    System.out.println(Arrays.toString(model.stdErrors()));
-    System.out.println(model.sigma2());
-    System.out.println(Arrays.toString(model.forecast(12)));
+//    TimeSeries series = TestData.ukcars();
+//    ModelOrder order = new ModelOrder(0, 0, 0, 0, 0, 0);
+//    Arima model = Arima.model(series, order, TimePeriod.oneYear(), FittingStrategy.ML);
+//    System.out.println(model);
+//    System.out.println(Arrays.toString(model.stdErrors()));
+//    System.out.println(model.sigma2ML());
+//    System.out.println(Arrays.toString(model.fcst(12)));
   }
 
   @Test
@@ -78,12 +93,41 @@ public class ArimaSpec {
     Arima model2 = Arima.model(series, order2, FittingStrategy.CSS);
     assertThat(model1, is(model1));
     assertThat(model1, is(not(new Object())));
-    assertThat(model1, is(not(nullValue())));
+    assertThat(model1.equals(null), is(false));
     assertThat(model1, is(not(model2)));
 
     Arima model3 = Arima.model(series, order);
     assertThat(model1, is(model3));
     assertThat(model1.hashCode(), is(model3.hashCode()));
+  }
+
+  @Test
+  public void testModelInfoEqualsAndHashCode() {
+    Arima.ModelInformation info1 = new Arima.ModelInformation(2, 50.0, -100.0,
+        newArray(), newArray());
+    Arima.ModelInformation info2 = new Arima.ModelInformation(2, 45.0, -90.0,
+        newArray(), newArray());
+    Arima.ModelInformation info3 = new Arima.ModelInformation(2, 50.0, -100.0,
+        newArray(), newArray());
+    assertThat(info1, is(info1));
+    assertThat(info1.hashCode(), is(info3.hashCode()));
+    assertThat(info1, is(info3));
+    assertThat(info1, is(not(info2)));
+    assertThat(info1, is(not(new Object())));
+    assertThat(info1.equals(null), is(false));
+  }
+
+  @Test
+  public void testModelCoefficientsEqualsAndHashCode() {
+    Arima.ModelCoefficients coeffs1 = Arima.ModelCoefficients.newBuilder().setArCoeffs(0.3).build();
+    Arima.ModelCoefficients coeffs2 = Arima.ModelCoefficients.newBuilder().setMaCoeffs(-0.2).build();
+    Arima.ModelCoefficients coeffs3 = Arima.ModelCoefficients.newBuilder().setArCoeffs(0.3).build();
+    assertThat(coeffs1, is(coeffs1));
+    assertThat(coeffs1.hashCode(), is(coeffs3.hashCode()));
+    assertThat(coeffs1, is(coeffs3));
+    assertThat(coeffs1, is(not(coeffs2)));
+    assertThat(coeffs1, is(not(new Object())));
+    assertThat(coeffs1.equals(null), is(false));
   }
 
 }

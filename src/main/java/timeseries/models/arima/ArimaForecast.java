@@ -33,7 +33,7 @@ import timeseries.models.Forecast;
 import timeseries.operators.LagPolynomial;
 
 /**
- * A forecast for an ARIMA model.
+ * A fcst for an ARIMA model.
  * @author Jacob Rachiele
  *
  */
@@ -48,12 +48,12 @@ public final class ArimaForecast implements Forecast {
   private final TimeSeries fcstErrors;  
   
   /**
-   * Create a new forecast for the given number of steps from the provided ARIMA model and with the given
+   * Create a new fcst for the given number of steps from the provided ARIMA model and with the given
    * &alpha; significance level.
    * @param model a fitted ARIMA model.
-   * @param steps the number of forecast steps.
+   * @param steps the number of fcst steps.
    * @param alpha the significance level for the prediction intervals.
-   * @return a new forecast for the given number of steps from the provided ARIMA model and with the given
+   * @return a new fcst for the given number of steps from the provided ARIMA model and with the given
    * &alpha; significance level.
    */
   public static ArimaForecast forecast(final Arima model, final int steps, final double alpha) {
@@ -61,11 +61,11 @@ public final class ArimaForecast implements Forecast {
   }
   
   /**
-   * Create a new forecast for the given number of steps from the provided ARIMA model with a default
+   * Create a new fcst for the given number of steps from the provided ARIMA model with a default
    * &alpha; significance level of 0.05.
    * @param model a fitted ARIMA model.
-   * @param steps the number of forecast steps.
-   * @return a new forecast for the given number of steps from the provided ARIMA model with a default
+   * @param steps the number of fcst steps.
+   * @return a new fcst for the given number of steps from the provided ARIMA model with a default
    * &alpha; significance level of 0.05.
    */
   public static ArimaForecast forecast(final Arima model, final int steps) {
@@ -73,10 +73,10 @@ public final class ArimaForecast implements Forecast {
   }
   
   /**
-   * Create a new 12 step ahead forecast from the provided ARIMA model with a default
+   * Create a new 12 step ahead fcst from the provided ARIMA model with a default
    * &alpha; significance level of 0.05.
    * @param model a fitted ARIMA model.
-   * @return a new 12 step ahead forecast from the provided ARIMA model with a default
+   * @return a new 12 step ahead fcst from the provided ARIMA model with a default
    * &alpha; significance level of 0.05.
    */
   public static ArimaForecast forecast(final Arima model) {
@@ -84,20 +84,20 @@ public final class ArimaForecast implements Forecast {
   }
   
   /**
-   * Create a new forecast for the given number of steps from the provided ARIMA model with a default
+   * Create a new fcst for the given number of steps from the provided ARIMA model with a default
    * &alpha; significance level of 0.05.
    * @param model a fitted ARIMA model.
-   * @param steps the number of forecast steps.
+   * @param steps the number of fcst steps.
    */
   private ArimaForecast(final Arima model, final int steps) {
     this(model, steps, 0.05);
   }
 
   /**
-   * Create a new forecast for the given number of steps from the provided ARIMA model and with the given
+   * Create a new fcst for the given number of steps from the provided ARIMA model and with the given
    * &alpha; significance level.
    * @param model a fitted ARIMA model.
-   * @param steps the number of forecast steps.
+   * @param steps the number of fcst steps.
    * @param alpha the significance level for the prediction intervals.
    */
   private ArimaForecast(final Arima model, final int steps, final double alpha) {
@@ -175,7 +175,7 @@ public final class ArimaForecast implements Forecast {
   private double[] getStdErrors(final double criticalValue) {
     double[] psiCoeffs = getPsiCoefficients();
     double[] stdErrors = new double[this.forecast.n()];
-    double sigma = sqrt(model.sigma2());
+    double sigma = sqrt(model.sigma2ML());
     double sd;
     double psiWeightSum = 0.0;
     for (int i = 0; i < stdErrors.length; i++) {

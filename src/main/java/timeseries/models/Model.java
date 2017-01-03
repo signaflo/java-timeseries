@@ -13,22 +13,22 @@ public interface Model {
   /**
    * Produce a time series of point forecasts from this model up to the given number of steps ahead.
    * <p>
-   * To obtain additional information about the forecast, such as prediction intervals, use the {@link #forecast}
+   * To obtain additional information about the fcst, such as prediction intervals, use the {@link #forecast}
    * method and the resulting {@link Forecast} object.
-   * @param steps the number of steps ahead to forecast.
+   * @param steps the number of steps ahead to fcst.
    * @return a time series of point forecasts from this model up to the given number of steps ahead.
    */
   TimeSeries pointForecast(int steps);
 
   /**
-   * Produce a new forecast up to the given number of steps and with the given &alpha; significance level for
+   * Produce a new fcst up to the given number of steps and with the given &alpha; significance level for
    * computing prediction intervals.
-   * @param steps the number of steps ahead to forecast.
+   * @param steps the number of steps ahead to fcst.
    * @param alpha the total probability that a future observation will fall outside the associated (1 - &alpha;)100%
    * prediction interval, given that the model is "correct". Note that the correctness of the model often comes with
    * a high degree of uncertainty and this should be taken into account when making decisions. In other words, the
    * provided prediction intervals will often be overly optimistic.
-   * @return a new forecast up to the given number of steps ahead with the given significance level.
+   * @return a new fcst up to the given number of steps ahead with the given significance level.
    */
   Forecast forecast(int steps, double alpha);
 

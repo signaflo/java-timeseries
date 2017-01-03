@@ -1,11 +1,10 @@
-package timeseries.models;
+package timeseries.models.arima;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 import data.TestData;
-import timeseries.models.arima.StateSpaceARMA;
 import timeseries.operators.LagPolynomial;
 
 import java.util.Arrays;
