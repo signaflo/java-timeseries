@@ -1,6 +1,6 @@
 package timeseries.models.arima;
 
-public final class StateSpaceARMA {
+final class StateSpaceARMA {
   
   private final double[] differencedSeries;
   private final double[] arParams;
@@ -10,7 +10,7 @@ public final class StateSpaceARMA {
   private final double[] observationVector;
   private final int r; // r = max(p, q + 1).
   
-  public StateSpaceARMA(final double[] differencedSeries, final double[] arParams, final double[] maParams) {
+  StateSpaceARMA(final double[] differencedSeries, final double[] arParams, final double[] maParams) {
     this.differencedSeries = differencedSeries.clone();
     this.arParams = arParams.clone();
     this.maParams = maParams.clone();
@@ -44,15 +44,15 @@ public final class StateSpaceARMA {
     return T;
   }
 
-  public double[] differencedSeries() {
+  double[] differencedSeries() {
     return differencedSeries.clone();
   }
 
-  public double[] arParams() {
+  double[] arParams() {
     return arParams.clone();
   }
 
-  public double[] maParams() {
+  double[] maParams() {
     return maParams.clone();
   }
   
@@ -65,7 +65,7 @@ public final class StateSpaceARMA {
     return R;
   }
   
-  public final double[][] V() {
+  final double[][] V() {
     double[] R = R();
     double[][] V = new double[r][r];
     for (int i = 0; i < r; i++) {
@@ -76,19 +76,19 @@ public final class StateSpaceARMA {
     return V;
   }
   
-  public final double[][] transitionMatrix() {
+  final double[][] transitionMatrix() {
     return this.transitionMatrix.clone();
   }
   
-  public final double[] movingAverageVector() {
+  final double[] movingAverageVector() {
     return this.disturbanceVector.clone();
   }
   
-  public final double[] stateEffectsVector() {
+  final double[] stateEffectsVector() {
     return this.observationVector.clone();
   }
 
-  public final int r() {
+  final int r() {
     return this.r;
   }
 }

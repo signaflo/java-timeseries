@@ -5,8 +5,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import data.Operators;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.equalTo;
@@ -68,7 +66,7 @@ public class OperatorsSpec {
 	@Test
 	public void whenScaledMethodThenDataScaled() {
 	  double[] expected = new double[] {1.5, 2.5};
-	  assertThat(Operators.scaled(data1, 0.5), is(equalTo(expected)));
+	  assertThat(Operators.scale(data1, 0.5), is(equalTo(expected)));
 	}
 	
 	@Test

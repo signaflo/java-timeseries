@@ -15,13 +15,15 @@ import timeseries.models.Forecast;
 import timeseries.models.arima.Arima.ModelCoefficients;
 import timeseries.models.arima.Arima.ModelOrder;
 
+import java.util.Arrays;
+
 public class ArimaSpec {
   
   @Test
   public void whenArimaModelFitThenParametersSimilarToROutput() throws Exception {
     TimeSeries series = TestData.livestock();
     ModelOrder order = Arima.order(1, 1, 1);
-    Arima model = Arima.model(series, order, TimePeriod.oneYear(), FittingStrategy.ML);
+    Arima model = Arima.model(series, order, TimePeriod.oneYear(), FittingStrategy.USSML);
     assertThat(model.coefficients().arCoeffs()[0], is(closeTo(0.64, 0.02)));
     assertThat(model.coefficients().maCoeffs()[0], is(closeTo(-0.50, 0.02)));
   }
@@ -30,9 +32,11 @@ public class ArimaSpec {
   public void whenArimaModelFitDebitcardsThenParametersSimilarToROutput() throws Exception {
     TimeSeries series = TestData.debitcards();
     ModelOrder order = Arima.order(1, 1, 1, 1, 1, 1);
-    Arima model = Arima.model(series, order, TimePeriod.oneYear(), FittingStrategy.ML);
+    Arima model = Arima.model(series, order, TimePeriod.oneYear(), FittingStrategy.USSML);;
     ModelCoefficients expected = ModelCoefficients.newBuilder().setARCoeffs(-0.1042)
-                                                  .setMACoeffs(-0.6213).setSeasonalARCoeffs(0.0051).setSeasonalMACoeffs(-0.5713).setDifferences(1).setSeasonalDifferences(1).build();
+                                                  .setMACoeffs(-0.6213).setSeasonalARCoeffs(0.0051)
+                                                  .setSeasonalMACoeffs(-0.5713).setDifferences(1)
+                                                  .setSeasonalDifferences(1).build();
     assertArrayEquals(expected.getAllCoeffs(), model.coefficients().getAllCoeffs(), 1E-4);
   }
   

@@ -33,7 +33,7 @@ import timeseries.models.Forecast;
 import timeseries.operators.LagPolynomial;
 
 /**
- * A fcst for an ARIMA model.
+ * A forecast for an ARIMA model.
  * @author Jacob Rachiele
  *
  */
@@ -48,12 +48,12 @@ public final class ArimaForecast implements Forecast {
   private final TimeSeries fcstErrors;  
   
   /**
-   * Create a new fcst for the given number of steps from the provided ARIMA model and with the given
+   * Create a new forecast for the given number of steps ahead using the given ARIMA model and the given
    * &alpha; significance level.
    * @param model a fitted ARIMA model.
-   * @param steps the number of fcst steps.
+   * @param steps the number of forecast steps.
    * @param alpha the significance level for the prediction intervals.
-   * @return a new fcst for the given number of steps from the provided ARIMA model and with the given
+   * @return a new forecast for the given number of steps ahead using the given ARIMA model and the given
    * &alpha; significance level.
    */
   public static ArimaForecast forecast(final Arima model, final int steps, final double alpha) {
@@ -61,11 +61,11 @@ public final class ArimaForecast implements Forecast {
   }
   
   /**
-   * Create a new fcst for the given number of steps from the provided ARIMA model with a default
+   * Create a new forecast for the given number of steps ahead using the given ARIMA model with a default
    * &alpha; significance level of 0.05.
    * @param model a fitted ARIMA model.
-   * @param steps the number of fcst steps.
-   * @return a new fcst for the given number of steps from the provided ARIMA model with a default
+   * @param steps the number of time periods ahead to forecast.
+   * @return a new forecast for the given number of steps ahead using the given ARIMA model with a default
    * &alpha; significance level of 0.05.
    */
   public static ArimaForecast forecast(final Arima model, final int steps) {
@@ -73,33 +73,20 @@ public final class ArimaForecast implements Forecast {
   }
   
   /**
-   * Create a new 12 step ahead fcst from the provided ARIMA model with a default
+   * Create a new 12 step ahead forecast from the given ARIMA model with a default
    * &alpha; significance level of 0.05.
    * @param model a fitted ARIMA model.
-   * @return a new 12 step ahead fcst from the provided ARIMA model with a default
+   * @return a new 12 step ahead forecast from the given ARIMA model with a default
    * &alpha; significance level of 0.05.
    */
   public static ArimaForecast forecast(final Arima model) {
     return new ArimaForecast(model, 12, 0.05);
   }
-  
-  /**
-   * Create a new fcst for the given number of steps from the provided ARIMA model with a default
-   * &alpha; significance level of 0.05.
-   * @param model a fitted ARIMA model.
-   * @param steps the number of fcst steps.
-   */
+
   private ArimaForecast(final Arima model, final int steps) {
     this(model, steps, 0.05);
   }
 
-  /**
-   * Create a new fcst for the given number of steps from the provided ARIMA model and with the given
-   * &alpha; significance level.
-   * @param model a fitted ARIMA model.
-   * @param steps the number of fcst steps.
-   * @param alpha the significance level for the prediction intervals.
-   */
   private ArimaForecast(final Arima model, final int steps, final double alpha) {
     this.model = model;
     this.forecast = model.pointForecast(steps);
@@ -264,7 +251,6 @@ public final class ArimaForecast implements Forecast {
   }
   //********** Plots **********//
 
-  //********** Boiler Plate **********//
   @Override
   public String toString() {
     NumberFormat numFormatter = new DecimalFormat("#0.0000");
@@ -282,44 +268,34 @@ public final class ArimaForecast implements Forecast {
   }
 
   @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    long temp;
-    temp = Double.doubleToLongBits(criticalValue);
-    result = prime * result + (int) (temp ^ (temp >>> 32));
-    result = prime * result + ((fcstErrors == null)? 0 : fcstErrors.hashCode());
-    result = prime * result + ((forecast == null)? 0 : forecast.hashCode());
-    result = prime * result + ((lowerValues == null)? 0 : lowerValues.hashCode());
-    result = prime * result + ((model == null)? 0 : model.hashCode());
-    result = prime * result + ((upperValues == null)? 0 : upperValues.hashCode());
-    return result;
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    ArimaForecast that = (ArimaForecast) o;
+
+    if (Double.compare(that.alpha, alpha) != 0) return false;
+    if (Double.compare(that.criticalValue, criticalValue) != 0) return false;
+    if (!model.equals(that.model)) return false;
+    if (!forecast.equals(that.forecast)) return false;
+    if (!upperValues.equals(that.upperValues)) return false;
+    if (!lowerValues.equals(that.lowerValues)) return false;
+    return fcstErrors.equals(that.fcstErrors);
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null) return false;
-    if (getClass() != obj.getClass()) return false;
-    ArimaForecast other = (ArimaForecast) obj;
-    if (Double.doubleToLongBits(criticalValue) != Double.doubleToLongBits(other.criticalValue)) return false;
-    if (fcstErrors == null) {
-      if (other.fcstErrors != null) return false;
-    } else if (!fcstErrors.equals(other.fcstErrors)) return false;
-    if (forecast == null) {
-      if (other.forecast != null) return false;
-    } else if (!forecast.equals(other.forecast)) return false;
-    if (lowerValues == null) {
-      if (other.lowerValues != null) return false;
-    } else if (!lowerValues.equals(other.lowerValues)) return false;
-    if (model == null) {
-      if (other.model != null) return false;
-    } else if (!model.equals(other.model)) return false;
-    if (upperValues == null) {
-      if (other.upperValues != null) return false;
-    } else if (!upperValues.equals(other.upperValues)) return false;
-    return true;
+  public int hashCode() {
+    int result;
+    long temp;
+    result = model.hashCode();
+    result = 31 * result + forecast.hashCode();
+    result = 31 * result + upperValues.hashCode();
+    result = 31 * result + lowerValues.hashCode();
+    temp = Double.doubleToLongBits(alpha);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(criticalValue);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + fcstErrors.hashCode();
+    return result;
   }
-  //********** Boiler Plate **********//
-
 }

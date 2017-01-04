@@ -92,7 +92,7 @@ public final class Operators {
    * @param alpha the scaling factor.
    * @return the original data scaled by the given scalar, &alpha;.
    */
-  public static double[] scaled(final double[] original, final double alpha) {
+  public static double[] scale(final double[] original, final double alpha) {
     final double[] scaled = new double[original.length];
     for (int i = 0; i < original.length; i++) {
       scaled[i] = original[i] * alpha;

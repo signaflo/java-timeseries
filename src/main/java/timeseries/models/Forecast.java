@@ -26,12 +26,12 @@ public interface Forecast {
 
   /**
    * Compute the upper end points of a prediction interval with the given number of forecast steps and the provided
-   * significance level &alpha;
+   * &alpha; significance level.
    * 
    * @param steps the number of time periods ahead to forecast.
    * @param alpha the significance level for the prediction intervals.
    * @return the upper end points of a prediction interval with the given number of forecast steps and the provided
-   *         significance level &alpha;
+   *         &alpha; significance level.
    */
   TimeSeries computeUpperPredictionValues(int steps, double alpha);
 
@@ -42,7 +42,7 @@ public interface Forecast {
    * @param steps the number of time periods ahead to forecast.
    * @param alpha the significance level for the prediction intervals.
    * @return the lower end points of a prediction interval with the given number of forecast steps and the provided
-   *         significance level &alpha;
+   *         &alpha; significance level.
    */
   TimeSeries computeLowerPredictionValues(int steps, double alpha);
 

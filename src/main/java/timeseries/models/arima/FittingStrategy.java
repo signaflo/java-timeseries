@@ -20,6 +20,10 @@ public enum FittingStrategy {
   /**
    * Maximum likelihod.
    */
-  ML;
+  ML,
+
+  CSSML,
+
+  USSML;
 
 }
