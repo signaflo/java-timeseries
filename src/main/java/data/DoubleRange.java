@@ -46,7 +46,7 @@ final class DoubleRange {
 	 * Get the range as an array of doubles.
 	 * @return the range as an array of doubles.
 	 */
-	final double[] asArray() {
+	double[] asArray() {
 		return this.range.clone();
 	}
 
@@ -54,7 +54,7 @@ final class DoubleRange {
 	 * Get the sum of the data in the range.
 	 * @return the sum of the data in the range.
 	 */
-  final double sum() {
+  double sum() {
 		return Statistics.sumOf(range);
 	}
 }

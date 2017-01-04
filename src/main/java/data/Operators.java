@@ -1,6 +1,25 @@
 /*
  * Copyright (c) 2016 Jacob Rachiele
  *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
+ * do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Contributors:
+ *
+ * Jacob Rachiele
  */
 package data;
 
@@ -87,10 +106,10 @@ public final class Operators {
   }
 
   /**
-   * Scale the original data by the given scalar, &alpha;, and return the result in a new array.
+   * Scale the original data by alpha and return the result in a new array.
    * @param original the data to be scaled.
    * @param alpha the scaling factor.
-   * @return the original data scaled by the given scalar, &alpha;.
+   * @return the original data scaled by alpha.
    */
   public static double[] scale(final double[] original, final double alpha) {
     final double[] scaled = new double[original.length];
@@ -100,6 +119,13 @@ public final class Operators {
     return scaled;
   }
 
+  /**
+   * Subtract the given value from each element of the supplied data and return the result in a new array.
+   *
+   * @param data the data to subtract the value from.
+   * @param value the value to be subtracted.
+   * @return a new array with each element of the supplied data subtracted by the given value.
+   */
   public static double[] subtract(final double[] data, final double value) {
     final double[] diff = new double[data.length];
     for (int i = 0; i < diff.length; i++) {
@@ -107,4 +133,10 @@ public final class Operators {
     }
     return diff;
   }
+
+//  private static void subtractBang(final double[] data, final double value) {
+//    for (int i = 0; i < data.length; i++) {
+//      data[i] -= value;
+//    }
+//  }
 }

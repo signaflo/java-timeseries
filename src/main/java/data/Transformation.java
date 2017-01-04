@@ -5,7 +5,7 @@ package data;
  * @author Jacob Rachiele
  *
  */
-public enum Transformation {
+enum Transformation {
   /**
    * The natural logarithm.
    */

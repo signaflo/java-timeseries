@@ -21,7 +21,6 @@
  *
  * Jacob Rachiele
  */
-
 package data;
 
 /**
@@ -31,12 +30,12 @@ package data;
  * Date: Dec 09 2016
  *
  */
-public class NotADoubleException extends RuntimeException {
+class NotADoubleException extends RuntimeException {
 
   /**
    * Create a new exception with the default message.
    */
-  public NotADoubleException() {
+  NotADoubleException() {
     this("An attempt was made to treat a non-Double object as a Double.");
   }
 
@@ -44,7 +43,7 @@ public class NotADoubleException extends RuntimeException {
    * Create a new exception with the given message.
    * @param message the message to use to inform the client why the exception was created.
    */
-  public NotADoubleException(String message) {
+  NotADoubleException(String message) {
     super(message);
   }
 }

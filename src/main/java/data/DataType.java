@@ -6,9 +6,9 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 /**
- * Created by jacob on 12/10/16.
+ * A set of basic data types.
  */
-public enum DataType {
+enum DataType {
 
   BOOLEAN("Boolean") {
     @Override

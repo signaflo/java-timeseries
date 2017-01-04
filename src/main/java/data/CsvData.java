@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @author Jacob Rachiele
  */
-public final class CsvData {
+final class CsvData {
 
   private final File csvFile;
   private final List<CSVRecord> parsedRecords;
@@ -34,7 +34,7 @@ public final class CsvData {
    *
    * @param csvFilePath the path to the file.
    */
-  public CsvData(final String csvFilePath) {
+  CsvData(final String csvFilePath) {
     this(csvFilePath, false);
   }
 
@@ -44,7 +44,7 @@ public final class CsvData {
    * @param csvFilePath the path to the file.
    * @param headerRow   indicates whether the file contains a header row.
    */
-  public CsvData(final String csvFilePath, final boolean headerRow) {
+  CsvData(final String csvFilePath, final boolean headerRow) {
     URL resource = getClass().getClassLoader().getResource(csvFilePath);
     if (resource == null) {
       throw new IllegalArgumentException("The resource given by " + csvFilePath + " could not be found on the file system.");
@@ -96,7 +96,7 @@ public final class CsvData {
    *
    * @return the csv file.
    */
-  public final File csvFile() {
+  File csvFile() {
     return this.csvFile;
   }
 
@@ -105,7 +105,7 @@ public final class CsvData {
    *
    * @return the data row-by-row.
    */
-  public final List<CSVRecord> getRows() {
+  List<CSVRecord> getRows() {
     return this.parsedRecords;
   }
 
@@ -115,7 +115,7 @@ public final class CsvData {
    * @param i the index of the row.
    * @return the ith row of data.
    */
-  public final CSVRecord getRow(final int i) {
+  CSVRecord getRow(final int i) {
     return this.parsedRecords.get(i);
   }
 
@@ -125,7 +125,7 @@ public final class CsvData {
    * @param i the index of the column.
    * @return the ith column of data.
    */
-  public final List<String> getColumn(final int i) {
+  List<String> getColumn(final int i) {
     List<String> column = new ArrayList<>(this.parsedRecords.size());
     for (CSVRecord record : parsedRecords) {
       column.add(record.get(i));
@@ -138,7 +138,7 @@ public final class CsvData {
    *
    * @return the header row.
    */
-  public final List<String> getHeader() {
+  List<String> getHeader() {
     return Collections.unmodifiableList(this.header);
   }
 
@@ -147,7 +147,7 @@ public final class CsvData {
    *
    * @return the data column-by-column.
    */
-  public final List<List<String>> getColumns() {
+  List<List<String>> getColumns() {
     int nCols = this.parsedRecords.get(0).size();
     List<List<String>> columns = new ArrayList<>(nCols);
     List<String> column;
@@ -168,7 +168,7 @@ public final class CsvData {
    * @param columnName the name of the column.
    * @return the column with the given name.
    */
-  public final List<String> getColumn(final String columnName) {
+  List<String> getColumn(final String columnName) {
     List<String> headerRow = getHeader();
     for (int i = 0; i < headerRow.size(); i++) {
       if (headerRow.get(i).equals(columnName)) {
@@ -183,7 +183,7 @@ public final class CsvData {
    * @param schema a list of data types for each column in the dataframe.
    * @return a new dataframe with the column types set according to the given schema.
    */
-  public final DataFrame createDataFrame(Schema schema) {
+   DataFrame createDataFrame(Schema schema) {
     List<List<String>> columns = getColumns();
     if (schema.size() != columns.size()) {
       throw new IllegalArgumentException("The schema size was " + schema.size() + " but the number of columns was " +
@@ -230,7 +230,7 @@ public final class CsvData {
    * Create a dataframe from this csv data with each column type set to String.
    * @return a new dataframe from this csv data with each column type set to String.
    */
-  public final DataFrame createDataFrame() {
+  DataFrame createDataFrame() {
     List<List<String>> columns = getColumns();
     DataFrame df = new DataFrame(columns.size());
     int colId = 0;

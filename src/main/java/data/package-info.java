@@ -23,7 +23,7 @@
  */
 
 /**
- * Functionality related to creating and manipulating collections of data.
+ * Create and manipulate collections of data.
  *
  * @author Jacob Rachiele
  *

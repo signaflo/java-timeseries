@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
  * Date: Dec 09 2016
  *
  */
-public class Types {
+final class Types {
 
   private Types() {}
 
@@ -47,7 +47,7 @@ public class Types {
    * @param pi the string to test.
    * @return true if the string can be represented as a double and false otherwise.
    */
-  public static boolean isDouble(String pi) {
+  static boolean isDouble(String pi) {
     final String Digits     = "(\\p{Digit}+)";
     final String HexDigits  = "(\\p{XDigit}+)";
     // an exponent is 'e' or 'E' followed by an optionally
@@ -95,7 +95,7 @@ public class Types {
    * @param strings the list of strings to convert.
    * @return the given list of strings converted to a list of doubles.
    */
-  public static List<Double> toDoubleList(List<String> strings) {
+  static List<Double> toDoubleList(List<String> strings) {
     List<Double> doubles = new ArrayList<>(strings.size());
     for (String s : strings) {
       doubles.add(Double.valueOf(s));
@@ -108,7 +108,7 @@ public class Types {
    * @param strings the list of strings to convert.
    * @return the given list of strings converted to an array of doubles.
    */
-  public static Double[] toDoubleArray(List<String> strings) {
+  static Double[] toDoubleArray(List<String> strings) {
     Double[] doubles = new Double[strings.size()];
     for (int i = 0; i < doubles.length; i++) {
       doubles[i] = Double.valueOf(strings.get(i));
@@ -121,7 +121,7 @@ public class Types {
    * @param strings the list of strings to convert to an array.
    * @return the given list of strings converted to an array of strings.
    */
-  public static String[] toStringArray(List<String> strings) {
+  static String[] toStringArray(List<String> strings) {
     String[] stringArray = new String[strings.size()];
     for (int i = 0; i < stringArray.length; i++) {
       stringArray[i] = strings.get(i);
@@ -129,7 +129,7 @@ public class Types {
     return stringArray;
   }
 
-  public static boolean isLocalDateTime(final String s) {
+  static boolean isLocalDateTime(final String s) {
     try {
       LocalDateTime.parse(s);
     } catch (DateTimeParseException e) {
@@ -141,7 +141,7 @@ public class Types {
   // Shouldn't use exceptions for control flow, but parsing date-times is absurdly difficult to get right,
   // so using the fact that the OffsetDateTime parse method has already done it. Downside is that this
   // way of doing it will cause a performance hit.
-  public static boolean isOffsetDateTime(final String s) {
+  static boolean isOffsetDateTime(final String s) {
     try {
       OffsetDateTime.parse(s);
     } catch (DateTimeParseException e) {
@@ -155,7 +155,7 @@ public class Types {
    * @param strings the list of strings to convert.
    * @return the given list of strings converted to a list of OffsetDateTimes.
    */
-  public static List<OffsetDateTime> toOffsetDateTimeList(List<String> strings) {
+  static List<OffsetDateTime> toOffsetDateTimeList(List<String> strings) {
     List<OffsetDateTime> dateTimes = new ArrayList<>(strings.size());
     for (String s : strings) {
       dateTimes.add(OffsetDateTime.parse(s));
@@ -168,7 +168,7 @@ public class Types {
    * @param strings the list of strings to convert.
    * @return the given list of strings converted to an array of OffsetDateTimes.
    */
-  public static OffsetDateTime[] toOffsetDateTimeArray(List<String> strings) {
+  static OffsetDateTime[] toOffsetDateTimeArray(List<String> strings) {
     OffsetDateTime[] dateTimes = new OffsetDateTime[strings.size()];
     for (int i = 0; i < dateTimes.length; i++) {
       dateTimes[i] = OffsetDateTime.parse(strings.get(i));
@@ -176,7 +176,7 @@ public class Types {
     return dateTimes;
   }
 
-  public static List<LocalDateTime> toLocalDateTimeList(List<String> strings) {
+  static List<LocalDateTime> toLocalDateTimeList(List<String> strings) {
     List<LocalDateTime> dateTimes = new ArrayList<>(strings.size());
     for (String s : strings) {
       dateTimes.add(LocalDateTime.parse(s));
@@ -184,7 +184,7 @@ public class Types {
     return dateTimes;
   }
 
-  public static LocalDateTime[] toLocalDateTimeArray(List<String> strings) {
+  static LocalDateTime[] toLocalDateTimeArray(List<String> strings) {
     LocalDateTime[] dateTimes = new LocalDateTime[strings.size()];
     for (int i = 0; i < dateTimes.length; i++) {
       dateTimes[i] = LocalDateTime.parse(strings.get(i));

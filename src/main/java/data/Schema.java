@@ -27,39 +27,39 @@ package data;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Schema {
+final class Schema {
 
   private final List<DataType> schema;
 
-  public Schema(final List<DataType> schema) {
+  Schema(final List<DataType> schema) {
     this.schema = schema;
   }
 
-  public Schema(final int numColumns) {
+  Schema(final int numColumns) {
     this.schema = new ArrayList<>(numColumns);
   }
 
-  public Schema() {
+  Schema() {
     this.schema = new ArrayList<>();
   }
 
-  public final void add(DataType type) {
+  void add(DataType type) {
     this.schema.add(type);
   }
 
-  public final DataType remove(final int i) {
+  DataType remove(final int i) {
     return this.schema.remove(i);
   }
 
-  public final boolean remove(final DataType type) {
+  boolean remove(final DataType type) {
     return this.schema.remove(type);
   }
 
-  public final DataType get(final int i) {
+  DataType get(final int i) {
     return this.schema.get(i);
   }
 
-  public final int size() {
+  int size() {
     return this.schema.size();
   }
 

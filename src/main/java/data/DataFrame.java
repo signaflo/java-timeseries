@@ -34,7 +34,7 @@ import java.util.*;
  * @author Jacob Rachiele
  * Date: Dec 07 2016
  */
-public final class DataFrame {
+final class DataFrame {
 
   private final Map<String, ColumnInfo<?>> columnIdMap;
   private final Map<ColumnInfo<?>, Object> columnMap;
@@ -43,7 +43,7 @@ public final class DataFrame {
    * Create a new empty dataframe with the default column capacity. The column capacity will grow and
    * shrink as necessary.
    */
-  public DataFrame() {
+  DataFrame() {
     this.columnIdMap = new HashMap<>();
     this.columnMap = new HashMap<>();
   }
@@ -53,12 +53,12 @@ public final class DataFrame {
    * as necessary.
    * @param numColumns the initial column capacity.
    */
-  public DataFrame(final int numColumns) {
+  DataFrame(final int numColumns) {
     this.columnIdMap = new HashMap<>(numColumns);
     this.columnMap = new HashMap<>(numColumns);
   }
 
-  public final int size() {
+  public int size() {
     return this.columnMap.size();
   }
 
@@ -73,7 +73,7 @@ public final class DataFrame {
    * @param instance the array of data.
    * @param <T> the type of the data in the array.
    */
-  public final <T> void add(final String id, final Class<T[]> type, final T[] instance) {
+  public <T> void add(final String id, final Class<T[]> type, final T[] instance) {
     if (type == null) {
       throw new NullPointerException("The class type was null.");
     }
@@ -92,7 +92,7 @@ public final class DataFrame {
    * @param instance the array of data.
    * @param <T> the type of the data in the array.
    */
-  public final <T> void replace(final String id, final Class<T[]> type, final T[] instance) {
+  <T> void replace(final String id, final Class<T[]> type, final T[] instance) {
     if (type == null) {
       throw new NullPointerException("The class type was null.");
     }
@@ -113,7 +113,7 @@ public final class DataFrame {
    * @param instance the list of data.
    * @param <T> the type of the data in the list.
    */
-  public <T> void add(final String id, Class<T[]> type, List<T> instance) {
+  <T> void add(final String id, Class<T[]> type, List<T> instance) {
     if (type == null) {
       throw new NullPointerException("The class type was null.");
     }
@@ -130,7 +130,7 @@ public final class DataFrame {
    * @param <T> the type of the data in the column to remove.
    * @return the removed column.
    */
-  public <T> T[] remove(final String id, Class<T[]> type) {
+  <T> T[] remove(final String id, Class<T[]> type) {
     return type.cast(this.columnMap.remove(new ColumnInfo<>(id, type)));
   }
 
@@ -141,21 +141,21 @@ public final class DataFrame {
    * @param <T> the type of the data in the column.
    * @return the data in the ith column as a list of the given type.
    */
-  public <T> List<T> getList(final String id, final Class<T[]> type) {
+  <T> List<T> getList(final String id, final Class<T[]> type) {
     ColumnInfo<T> info = new ColumnInfo<>(id, type);
     T[] column = get(info);
     return Arrays.asList(column);
   }
 
-  public ColumnInfo<?> getColumnInfo(final String id) {
+  ColumnInfo<?> getColumnInfo(final String id) {
     return this.columnIdMap.get(id);
   }
 
-  public Class<?> getColumnClass(final String id) {
+  Class<?> getColumnClass(final String id) {
     return columnIdMap.get(id).clazz;
   }
 
-  public String getColumnClassName(final String id) {
+  String getColumnClassName(final String id) {
     return columnIdMap.get(id).clazz.getSimpleName();
   }
 
