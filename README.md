@@ -1,6 +1,6 @@
 Java Time Series
 ===============
-Time series analysis on the JVM.
+Time series analysis in Java.
 
 This project is still in the early stages of development, but is seeing great progress so far. Please check back regularly for updates.
 
