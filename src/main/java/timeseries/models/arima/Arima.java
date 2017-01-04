@@ -390,18 +390,6 @@ public final class Arima implements Model {
     return new ModelInformation(npar, sigma2, logLikelihood, residuals, fitted);
   }
 
-  private static ModelInformation fitCSSML(final TimeSeries differencedSeries, final double[] arCoeffs,
-                                           final double[] maCoeffs, final double mean, final ModelOrder order) {
-    final double[] series = Operators.subtract(differencedSeries.series(), mean);
-    ArmaKalmanFilter.KalmanOutput output = kalmanFit(differencedSeries, arCoeffs, maCoeffs, mean);
-    final double sigma2 = output.sigma2();
-    final double logLikelihood = output.logLikelihood();
-    final double[] residuals = output.residuals();
-    final double[] fitted = differenceOf(series, residuals);
-    final int npar = order.sumARMA() + order.constant + 1; // Add 1 for the variance estimate.
-    return new ModelInformation(npar, sigma2, logLikelihood, residuals, fitted);
-  }
-
   private static ArmaKalmanFilter.KalmanOutput kalmanFit(final TimeSeries differencedSeries, final double[] arCoeffs,
                                                          final double[] maCoeffs, final double mean) {
     final double[] series = Operators.subtract(differencedSeries.series(), mean);

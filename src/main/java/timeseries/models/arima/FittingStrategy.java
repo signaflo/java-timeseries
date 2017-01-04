@@ -18,12 +18,18 @@ public enum FittingStrategy {
   USS,
 
   /**
-   * Maximum likelihod.
+   * Maximum likelihood.
    */
   ML,
 
+  /**
+   * Conditional sum-of-squares followed by maximum likelihood.
+   */
   CSSML,
 
+  /**
+   * Unconditional sum-of-squares followed by maximum likelihood.
+   */
   USSML;
 
 }
