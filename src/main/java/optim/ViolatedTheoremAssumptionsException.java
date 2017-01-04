@@ -24,7 +24,7 @@
 
 package optim;
 
-public class ViolatedTheoremAssumptionsException extends RuntimeException {
+class ViolatedTheoremAssumptionsException extends RuntimeException {
 
   ViolatedTheoremAssumptionsException(String message) {
     super(message);

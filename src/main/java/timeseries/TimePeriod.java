@@ -121,7 +121,8 @@ public final class TimePeriod {
    * @return a new TimePeriod representing one half of a month.
    */
   public static TimePeriod halfMonth() {
-    return new TimePeriod(TimeUnit.SECOND, 1314873);
+    final int secondsInHalfMonth = 1314873;
+    return new TimePeriod(TimeUnit.SECOND, secondsInHalfMonth);
   }
 
   /**

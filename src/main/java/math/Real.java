@@ -1,13 +1,32 @@
 /*
  * Copyright (c) 2016 Jacob Rachiele
  *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
+ * do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Contributors:
+ *
+ * Jacob Rachiele
  */
-
 package math;
 
 /**
  * A numerical approximation of a <a target="_blank" href=https://en.wikipedia.org/wiki/Real_number>
  * real number</a>.
+ *
  * @author Jacob Rachiele
  */
 public final class Real extends Complex {
@@ -16,6 +35,7 @@ public final class Real extends Complex {
 
   /**
    * Create a new real number using the given double.
+   *
    * @param value the primitive double approximating the real number.
    */
   public Real(final double value) {
@@ -25,6 +45,7 @@ public final class Real extends Complex {
 
   /**
    * Create a new real number using the given double.
+   *
    * @param value the primitive double approximating the real number.
    * @return a new real number from the given double.
    */
@@ -37,7 +58,7 @@ public final class Real extends Complex {
    * @param other the real number to add to this one.
    * @return the sum of this real number and the given real number.
    */
-  public final Real plus(final Real other) {
+  public Real plus(final Real other) {
     return new Real(this.value + other.value);
   }
 
@@ -46,7 +67,7 @@ public final class Real extends Complex {
    * @param other the real number to subtract from this one.
    * @return the difference of the given real number from this real number.
    */
-  public final Real minus(final Real other) {
+  public Real minus(final Real other) {
     return new Real(this.value - other.value);
   }
 
@@ -55,12 +76,12 @@ public final class Real extends Complex {
    * @param other the real number to multiply this one by.
    * @return this real number multiplied by the given real number.
    */
-  public final Real times(Real other) {
+  public Real times(Real other) {
     return new Real(this.value * other.value);
   }
 
   @Override
-  public final Real times(double other) {
+  public Real times(double other) {
     return new Real(this.value * other);
   }
 
@@ -68,7 +89,7 @@ public final class Real extends Complex {
    * Square this real number and return the result.
    * @return the square of this real number.
    */
-  public final Real squared() {
+  public Real squared() {
     return new Real(this.value * this.value);
   }
 
@@ -76,7 +97,7 @@ public final class Real extends Complex {
    * Cube this real number and return the result.
    * @return the cube of this real number.
    */
-  public final Real cubed() {
+  public Real cubed() {
     return new Real(this.value * this.value * this.value);
   }
 
@@ -85,7 +106,7 @@ public final class Real extends Complex {
    * @param other the real number to divide this one by.
    * @return this real number divided by the given real number.
    */
-  public final Real dividedBy(Real other) {
+  public Real dividedBy(Real other) {
     return new Real(this.value / other.value);
   }
 
@@ -93,11 +114,11 @@ public final class Real extends Complex {
    * Take the additive inverse, or negative, of this real number and return the result.
    * @return the additive inverse, or negative, of this real number.
    */
-  public final Real negative() {
+  public Real negative() {
     return new Real(-this.value);
   }
 
-  public final double value() {
+  public double value() {
     return this.value;
   }
 
@@ -125,12 +146,12 @@ public final class Real extends Complex {
     return Double.toString(this.value);
   }
 
-  public static class Interval {
+  public static final class Interval {
 
     private final Real lower;
     private final Real upper;
 
-    public Interval(final Real lower, final Real upper) {
+    Interval(final Real lower, final Real upper) {
       this.lower = lower;
       this.upper = upper;
     }
@@ -140,34 +161,34 @@ public final class Real extends Complex {
       this.upper = Real.from(upper);
     }
 
-    public final double lowerDbl() {
+    public double lowerDbl() {
       return this.lower.value();
     }
 
-    public final double upperDbl() {
+    public double upperDbl() {
       return this.upper.value();
     }
 
-    public final Real lower() {
+    public Real lower() {
       return this.lower;
     }
 
-    public final Real upper() {
+    public Real upper() {
       return this.upper;
     }
 
-    public final boolean endpointsEqual() {
+    public boolean endpointsEqual() {
       return Math.abs(this.lower.value - this.upper.value) < 1E-15;
     }
 
-    public final boolean contains(final double value) {
+    public boolean contains(final double value) {
       if (lower.value < upper.value) {
         return value >= lower.value && value <= upper.value;
       }
       return value <= lower.value && value >= upper.value;
     }
 
-    public final boolean doesntContain(final double value) {
+    public boolean doesntContain(final double value) {
       return !contains(value);
     }
 

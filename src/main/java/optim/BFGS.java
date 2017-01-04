@@ -1,6 +1,25 @@
 /*
  * Copyright (c) 2016 Jacob Rachiele
- * 
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
+ * do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Contributors:
+ *
+ * Jacob Rachiele
  */
 package optim;
 
@@ -8,8 +27,6 @@ import linear.doubles.Matrices;
 import linear.doubles.Matrix;
 import linear.doubles.Vector;
 import math.function.AbstractMultivariateFunction;
-
-import java.util.Arrays;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
@@ -22,23 +39,20 @@ import static java.lang.Math.max;
  */
 public final class BFGS {
 
-  private static final double c1 = 1E-4;
-  private static final double c2 = 0.9;
+  private static final double C1 = 1E-4;
+  private static final double STEP_REDUCTION_FACTOR = 0.2;
+  //private static final double c2 = 0.9;
 
-  private final AbstractMultivariateFunction f;
   private final Matrix identity;
-  private Vector iterate;
-  private Vector gradient;
-  private Vector searchDirection;
-  private double functionValue = 0.0;
-  private double rho = 0.0;
-  private Vector s;
-  private Vector y;
-  private Matrix H;
+  private Vector iterate; // The point at which to evaluate the target function.
+  private double functionValue; // The latest value of the target function.
+  private double rho; // Defined as 1 divided by the dot product of y and s.
+  private Vector s; // The difference between successive iterates.
+  private Vector y; // The difference between successive gradients.
+  private Matrix H; // The inverse Hessian approximation.
 
   /**
-   * Create a new BFGS object with the given information. The identity matrix will be used for
-   * initial inverse Hessian approximation.
+   * Create the BFGS object and run the algorithm with the supplied information.
    *
    * @param f                       the function to be minimized.
    * @param startingPoint           the initial guess of the minimum.
@@ -51,24 +65,23 @@ public final class BFGS {
   }
 
   /**
-   * Create a new BFGS object with the given information.
+   * Create the BFGS object and run the algorithm with the supplied information.
    *
-   * @param f                      the function to be minimized.
-   * @param startingPoint          the initial guess of the minimum.
-   * @param gradientNormTolerance      the tolerance for the norm of the gradient of the function.
+   * @param f                       the function to be minimized.
+   * @param startingPoint           the initial guess of the minimum.
+   * @param gradientNormTolerance   the tolerance for the norm of the gradient of the function.
    * @param relativeChangeTolerance the tolerance for the change in function value.
-   * @param initialHessian         The initial guess for the inverse Hessian approximation.
+   * @param initialHessian          The initial guess for the inverse Hessian approximation.
    */
   public BFGS(final AbstractMultivariateFunction f, final Vector startingPoint, final double gradientNormTolerance,
               final double relativeChangeTolerance, final Matrix initialHessian) {
-    this.f = f;
     this.identity = Matrices.identity(startingPoint.size());
     this.H = initialHessian;
     this.iterate = startingPoint;
     int k = 0;
     double priorFunctionValue;
     functionValue = f.at(startingPoint);
-    gradient = f.gradientAt(startingPoint, functionValue);
+    Vector gradient = f.gradientAt(startingPoint, functionValue);
     int maxIterations = 100;
     if (gradient.size() > 0) {
       double relativeChange;
@@ -78,7 +91,7 @@ public final class BFGS {
       double yDotS;
       Vector nextIterate;
       Vector nextGradient;
-      Vector scaledSearchDirection;
+      Vector searchDirection;
       boolean stop = false;
       int iterationsSinceIdentity = 0;
 
@@ -106,14 +119,14 @@ public final class BFGS {
         nextIterate = iterate.plus(s);
         priorFunctionValue = functionValue;
         functionValue = f.at(nextIterate);
-        while (!(Double.isFinite(functionValue) && functionValue < priorFunctionValue + c1 * stepSize * slopeAt0) &&
-            !stop) {
+        while (!(Double.isFinite(functionValue) && functionValue < priorFunctionValue + C1 * stepSize * slopeAt0) &&
+               !stop) {
           relativeChangeDenominator = max(abs(priorFunctionValue), abs(nextIterate.norm()));
           relativeChange = Math.abs((priorFunctionValue - functionValue) / relativeChangeDenominator);
           if (relativeChange <= relativeChangeTolerance) {
             stop = true;
           } else {
-            stepSize *= 0.2;
+            stepSize *= STEP_REDUCTION_FACTOR;
             s = searchDirection.scaledBy(stepSize);
             nextIterate = iterate.plus(s);
             functionValue = f.at(nextIterate);
@@ -159,7 +172,8 @@ public final class BFGS {
 //    double priorFunctionValue = functionValue;
 //    functionValue = f.at(nextIterate);
 //    int k = 1;
-//    while (!(Double.isFinite(functionValue) && functionValue < priorFunctionValue + c1 * stepSize * slope0) && k < maxAttempts) {
+//    while (!(Double.isFinite(functionValue) && functionValue < priorFunctionValue + C1 * stepSize * slope0) && k <
+// maxAttempts) {
 //      stepSize *= 0.2;
 //      nextIterate = iterate.plus(searchDirection.scaledBy(stepSize));
 //      s = nextIterate.minus(iterate);
@@ -168,7 +182,7 @@ public final class BFGS {
 //    }
 //    return stepSize;
 ////    final QuasiNewtonLineFunction lineFunction = new QuasiNewtonLineFunction(this.f, iterate, searchDirection);
-////    StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(lineFunction, functionValue, slope0).c1(c1)
+////    StrongWolfeLineSearch lineSearch = StrongWolfeLineSearch.newBuilder(lineFunction, functionValue, slope0).C1(C1)
 ////        .c2(c2).alphaMax(50).alpha0(1.0).build();
 ////    return lineSearch.search();
 //  }

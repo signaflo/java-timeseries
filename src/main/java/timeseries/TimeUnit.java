@@ -94,9 +94,10 @@ public enum TimeUnit {
    * @return the total amount of time in this time unit measured in seconds.
    */
   double totalDuration() {
-    
+    final double nanoSecondsPerSecond = 1E9;
     Duration thisDuration = this.temporalUnit.getDuration();
-    return thisDuration.getSeconds() * this.unitLength + ((thisDuration.getNano() * this.unitLength) / 1E9);
+    return thisDuration.getSeconds() * this.unitLength +
+           ((thisDuration.getNano() * this.unitLength) / nanoSecondsPerSecond);
 
   }
 }

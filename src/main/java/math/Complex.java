@@ -1,11 +1,37 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
+ * do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Contributors:
+ *
+ * Jacob Rachiele
+ */
 package math;
 
 /**
  * An immutable and thread-safe implementation of a complex number. Subclasses must maintain immutability.
+ *
  * @author Jacob Rachiele
  *
  */
 public class Complex implements FieldElement<Complex> {
+
+  private static final double EPSILON = Math.ulp(1.0);
   
   private final double real;
   private final double im;
@@ -19,6 +45,7 @@ public class Complex implements FieldElement<Complex> {
 
   /**
    * Construct a new complex number with zero imaginary part, i.e, a real number.
+   *
    * @param real the real part of the new complex number.
    */
   public Complex(final double real) {
@@ -27,6 +54,7 @@ public class Complex implements FieldElement<Complex> {
 
   /**
    * Construct a new complex number with the given real and imaginary parts.
+   *
    * @param real the real part of the new complex number.
    * @param im the imaginary part of the new complex number.
    */
@@ -42,6 +70,7 @@ public class Complex implements FieldElement<Complex> {
   
   /**
    * Add this element to the given double.
+   *
    * @param other the double to add to this element.
    * @return this element added to the given double.
    */
@@ -63,6 +92,7 @@ public class Complex implements FieldElement<Complex> {
   
   /**
    * Multiply this element by the given double.
+   *
    * @param other the double to multiply this element by.
    * @return this element multiplied by the given double.
    */
@@ -72,6 +102,7 @@ public class Complex implements FieldElement<Complex> {
   
   /**
    * Divide this element by the given double.
+   *
    * @param other the double to divide this element by.
    * @return this element divided by the given double.
    */
@@ -91,8 +122,7 @@ public class Complex implements FieldElement<Complex> {
   
   @Override
   public Complex sqrt() {
-    // TODO: Replace zero equality check with more sophisticated method.
-    if (this.real < 1E-15 && Math.abs(this.im) < 1E-15) {
+    if (this.real < 0.0 && Math.abs(this.im) < EPSILON) {
       return new Complex(0.0, Math.sqrt(abs()));
     }
     // The following algorithm fails only in the case where this complex number is
@@ -105,6 +135,7 @@ public class Complex implements FieldElement<Complex> {
   
   /**
    * The real part of this complex number.
+   *
    * @return the real part of this complex number.
    */
   public final double real() {
@@ -113,6 +144,7 @@ public class Complex implements FieldElement<Complex> {
   
   /**
    * The imaginary part of this complex number.
+   *
    * @return the imaginary part of this complex number.
    */
   public final double im() {
@@ -121,10 +153,11 @@ public class Complex implements FieldElement<Complex> {
 
   /**
    * Returns true if this complex number is also a real number and false otherwise.
+   *
    * @return true if this complex number is also a real number and false otherwise.
    */
   public final boolean isReal() {
-    return Math.abs(this.im) < 1E-15;
+    return Math.abs(this.im) < EPSILON;
   }
   
   

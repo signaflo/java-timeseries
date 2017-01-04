@@ -7,6 +7,7 @@ package optim;
 
 /**
  * A class for performing cubic polynomial interpolation of a function.
+ *
  * @author Jacob Rachiele
  *
  */

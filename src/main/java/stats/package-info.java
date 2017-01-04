@@ -4,7 +4,7 @@
  */
 
 /**
- * Basic statistics functionality.
+ * Compute basic statistics.
  * 
  */
 package stats;

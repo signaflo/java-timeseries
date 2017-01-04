@@ -1,8 +1,26 @@
 /*
  * Copyright (c) 2016 Jacob Rachiele
  *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
+ * do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Contributors:
+ *
+ * Jacob Rachiele
  */
-
 package math.polynomial.interpolation;
 
 import math.function.CubicFunction;
@@ -45,10 +63,11 @@ public final class NewtonPolynomial {
 
   /**
    * Get the ith coefficient of this Newton Polynomial.
+   *
    * @param i the index of the coefficient.
    * @return the ith coefficient of this Newton Polynomial.
    */
-  final double getCoefficient(final int i) {
+  double getCoefficient(final int i) {
     return this.coefficients[i];
   }
 
@@ -69,10 +88,11 @@ public final class NewtonPolynomial {
 
   /**
    * Evaluate this Newton Polynomial at the given point.
+   *
    * @param x the point at which to evaluate this Newton Polynomial.
    * @return the value of the polynomial at the given point.
    */
-  public final double evaluateAt(double x) {
+  public double evaluateAt(double x) {
     double product = 1.0;
     double result = coefficients[0];
     for (int i = 1; i < coefficients.length; i++) {
@@ -90,7 +110,7 @@ public final class NewtonPolynomial {
    * @return this Newton Polynomial converted to standard quadratic form.
    * @throws IllegalStateException if the degree of this NewtonPolynomial is lower than 2.
    */
-  public final QuadraticFunction toQuadratic() throws IllegalStateException {
+  public QuadraticFunction toQuadratic() throws IllegalStateException {
     if (coefficients.length < 3) {
       throw new IllegalStateException("The function is of degree " + (coefficients.length - 1) +
           " and thus not quadratic.");
@@ -104,10 +124,11 @@ public final class NewtonPolynomial {
   /**
    * Convert this NewtonPolynomial to a the standard form of a cubic function, <i>f(x)</i>
    * = a<i>x</i><sup>3</sup> + b<i>x</i><sup>2</sup> + c<i>x</i> + d.
+   *
    * @return this Newton Polynomial converted to standard cubic form.
    * @throws IllegalStateException if the degree of this NewtonPolynomial is lower than 3.
    */
-  public final CubicFunction toCubic() throws IllegalStateException {
+  public CubicFunction toCubic() throws IllegalStateException {
     if (coefficients.length < 4) {
       throw new IllegalStateException("The function is of degree " + (coefficients.length - 1) +
           " and thus not cubic.");
