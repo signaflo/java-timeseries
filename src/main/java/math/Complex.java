@@ -19,6 +19,7 @@ public class Complex implements FieldElement<Complex> {
 
   /**
    * Construct a new complex number with zero imaginary part, i.e, a real number.
+   * @param real the real part of the new complex number.
    */
   public Complex(final double real) {
     this(real, 0.0);

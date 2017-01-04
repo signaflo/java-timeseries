@@ -20,10 +20,11 @@ public final class CubicFunction {
   private final QuadraticFunction derivative;
 
   /**
-   * Create a new quadratic function using the given coefficients.
+   * Create a new cubic function using the given coefficients.
    * @param a the coefficient of the leading term of the polynomial.
-   * @param b the coefficient of the first degree term of the polynomial.
-   * @param c the constant term of the polynomial.
+   * @param b the coefficient of the second degree term of the polynomial.
+   * @param c the coefficient of the first degree term of the polynomial.
+   * @param d the constant term of the polynomial.
    */
   public CubicFunction(final Real a, final Real b, final Real c, final Real d) {
     if (a.value() == 0) {
@@ -37,10 +38,11 @@ public final class CubicFunction {
   }
 
   /**
-   * Create a new quadratic function using the given coefficients.
+   * Create a new cubic function using the given coefficients.
    * @param a the coefficient of the leading term of the polynomial.
-   * @param b the coefficient of the first degree term of the polynomial.
-   * @param c the constant term of the polynomial.
+   * @param b the coefficient of the second degree term of the polynomial.
+   * @param c the coefficient of the first degree term of the polynomial.
+   * @param d the constant term of the polynomial.
    */
   public CubicFunction(final double a, final double b, final double c, final double d) {
     if (a == 0) {

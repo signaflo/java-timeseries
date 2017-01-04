@@ -51,6 +51,7 @@ public final class DataFrame {
   /**
    * Create a new empty dataframe with the given initial column capacity. The column capacity will grow and shrink
    * as necessary.
+   * @param numColumns the initial column capacity.
    */
   public DataFrame(final int numColumns) {
     this.columnIdMap = new HashMap<>(numColumns);

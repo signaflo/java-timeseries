@@ -74,7 +74,7 @@ public final class TimeSeries extends DataSet {
   /**
    * Construct a new TimeSeries using the given time period, the time of first observation, and the observation data.
    * 
-   * @param timePeriod the period of time at which observations are made.
+   * @param timePeriod the period of time between observations.
    * @param startTime the time at which the first observation was made. The string must represent either a valid
    *        {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default UTC/Greenwich
    *        offset, i.e., an offset of 0, will be used.
@@ -111,7 +111,7 @@ public final class TimeSeries extends DataSet {
   /**
    * Construct a new TimeSeries using the given time period, the time of first observation, and the observation data.
    * 
-   * @param timePeriod the time period at which observations are made.
+   * @param timePeriod the period of time between observations.
    * @param startTime the time at which the first observation was made. Usually a rough approximation.
    * @param series the observation data.
    */
@@ -162,7 +162,7 @@ public final class TimeSeries extends DataSet {
   /**
    * Construct a new TimeSeries with the given time period, observation times, and observation data.
    * 
-   * @param timePeriod The time period at which observations are made.
+   * @param timePeriod the period of time between observations.
    * @param observationTimes the sequence of dates and times at which the observations are made.
    * @param series the observation data.
    */

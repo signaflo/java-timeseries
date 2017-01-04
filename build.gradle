@@ -5,6 +5,14 @@ apply plugin: 'maven'
 
 version = "0.1-SNAPSHOT"
 
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "file:///home/jrachiele/tmp/myRepo/")
+        }
+    }
+}
+
 compileJava {
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
 }
