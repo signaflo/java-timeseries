@@ -1,7 +1,27 @@
 /*
  * Copyright (c) 2016 Jacob Rachiele
- * 
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
+ * do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Contributors:
+ *
+ * Jacob Rachiele
  */
+
 package timeseries.models.arima;
 
 import data.DoubleFunctions;
@@ -139,6 +159,7 @@ public final class Arima implements Model {
         10 * differencedSeries.stdDeviation() / Math.sqrt(differencedSeries.n()) : 1.0;
     final Vector initParams;
     final Matrix initHessian;
+
     if (fittingStrategy == FittingStrategy.CSSML || fittingStrategy == FittingStrategy.USSML) {
       final FittingStrategy subStrategy = (fittingStrategy == FittingStrategy.CSSML)? FittingStrategy.CSS :
           FittingStrategy.USS;
@@ -149,6 +170,7 @@ public final class Arima implements Model {
       initParams = new Vector(getInitialParameters(meanParScale));
       initHessian = getInitialHessian(initParams.size());
     }
+
     final AbstractMultivariateFunction function = new OptimFunction(differencedSeries, order, fittingStrategy,
         seasonalFrequency, meanParScale);
     final BFGS optimizer = new BFGS(function, initParams, DEFAULT_TOLERANCE, DEFAULT_TOLERANCE, initHessian);
@@ -171,6 +193,7 @@ public final class Arima implements Model {
     this.mean = (order.constant == 1) ? meanParScale * optimizedParams.at(order.p + order.q + order.P + order.Q) : 0.0;
     this.modelCoefficients = new ModelCoefficients(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs, order.d, order.D,
         this.mean);
+
     if (fittingStrategy == FittingStrategy.CSS) {
       this.modelInfo = fitCSS(differencedSeries, arSarCoeffs, maSmaCoeffs, mean, order);
       final double[] residuals = modelInfo.residuals;
@@ -261,6 +284,7 @@ public final class Arima implements Model {
     this.maSmaCoeffs = expandMaCoefficients(coeffs.maCoeffs, coeffs.smaCoeffs, seasonalFrequency);
     this.mean = coeffs.mean;
     this.stdErrors = DoubleFunctions.fill(order.sumARMA() + order.constant, Double.POSITIVE_INFINITY);
+
     if (fittingStrategy == FittingStrategy.CSS) {
       this.modelInfo = fitCSS(differencedSeries, arSarCoeffs, maSmaCoeffs, mean, order);
       final double[] residuals = modelInfo.residuals;
@@ -291,11 +315,12 @@ public final class Arima implements Model {
   /**
    * Fit an ARIMA model using conditional sum-of-squares.
    *
-   * @param differencedSeries the time series of observation to model.
+   * @param differencedSeries the time series of observations to model.
    * @param arCoeffs          the autoregressive coefficients of the model.
    * @param maCoeffs          the moving-average coefficients of the model.
    * @param mean              the model mean.
    * @param order             the order of the model to be fit.
+   *
    * @return information about the fitted model.
    */
   private static ModelInformation fitCSS(final TimeSeries differencedSeries, final double[] arCoeffs,
@@ -328,8 +353,13 @@ public final class Arima implements Model {
    * first few observations. This method, compared to conditional sum-of-squares, often gives estimates much closer to
    * those obtained from maximum-likelihood fitting, especially for shorter series.
    *
-   * @param order the order of the model to be fit.
-   * @return information about the model fit.
+   * @param differencedSeries the time series of observations to model.
+   * @param arCoeffs          the autoregressive coefficients of the model.
+   * @param maCoeffs          the moving-average coefficients of the model.
+   * @param mean              the model mean.
+   * @param order             the order of the model to be fit.
+   *
+   * @return information about the fitted model.
    */
   private static ModelInformation fitUSS(final TimeSeries differencedSeries, final double[] arCoeffs,
                                          final double[] maCoeffs, final double mean, final ModelOrder order) {
@@ -505,6 +535,7 @@ public final class Arima implements Model {
    * Compute point forecasts for the given number of steps ahead and return the result in a primitive array.
    *
    * @param steps the number of time periods ahead to forecast.
+   *
    * @return point forecasts for the given number of steps ahead.
    */
   public final double[] fcst(final int steps) {
