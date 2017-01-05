@@ -1,7 +1,26 @@
 /*
  * Copyright (c) 2016 Jacob Rachiele
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
+ * do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Contributors:
+ *
+ * Jacob Rachiele
  */
-
 package timeseries.models;
 
 import java.awt.Color;
@@ -32,6 +51,7 @@ import timeseries.TimeSeries;
  * A model for a random walk process. Some important characteristics of the random walk are that the
  * process variance increases as a function of time (non-stationarity) and that the optimal forecast
  * at any point in the future is equal to the last observed value.
+ *
  * @author Jacob Rachiele
  *
  */
@@ -43,6 +63,7 @@ public final class RandomWalk implements Model {
 
   /**
    * Create a new random walk model from the given time series of observations.
+   *
    * @param observed the observed series.
    */
   public RandomWalk(final TimeSeries observed) {
@@ -109,7 +130,7 @@ public final class RandomWalk implements Model {
   }
 
   @Override
-  public final TimeSeries pointForecast(final int steps) {
+  public TimeSeries pointForecast(final int steps) {
     int n = timeSeries.n();
     TimePeriod timePeriod = timeSeries.timePeriod();
     final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
@@ -122,7 +143,7 @@ public final class RandomWalk implements Model {
   }
 
   @Override
-  public final Forecast forecast(final int steps, final double alpha) {
+  public Forecast forecast(final int steps, final double alpha) {
     return new RandomWalkForecast(this, steps, alpha);
   }
 
@@ -132,7 +153,7 @@ public final class RandomWalk implements Model {
    * @see timeseries.models.Model#timeSeries()
    */
   @Override
-  public final TimeSeries timeSeries() {
+  public TimeSeries timeSeries() {
     return this.timeSeries;
   }
 
@@ -142,17 +163,12 @@ public final class RandomWalk implements Model {
    * @see timeseries.models.Model#fittedSeries()
    */
   @Override
-  public final TimeSeries fittedSeries() {
+  public TimeSeries fittedSeries() {
     return this.fittedSeries;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see timeseries.models.Model#residuals()
-   */
   @Override
-  public final TimeSeries residuals() {
+  public TimeSeries residuals() {
     return this.residuals;
   }
 
@@ -168,7 +184,7 @@ public final class RandomWalk implements Model {
    * </p>
    */
   @Override
-  public final void plotFit() {
+  public void plotFit() {
 
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
@@ -198,13 +214,8 @@ public final class RandomWalk implements Model {
 
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see timeseries.models.Model#plotResiduals()
-   */
   @Override
-  public final void plotResiduals() {
+  public void plotResiduals() {
 
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());

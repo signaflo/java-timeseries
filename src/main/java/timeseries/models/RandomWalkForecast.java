@@ -1,3 +1,26 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
+ * do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Contributors:
+ *
+ * Jacob Rachiele
+ */
 package timeseries.models;
 
 import java.awt.Color;
@@ -24,7 +47,8 @@ import stats.distributions.Normal;
 import timeseries.TimeSeries;
 
 /**
- * A fcst for a random walk model.
+ * A forecast from a random walk model.
+ *
  * @author Jacob Rachiele
  *
  */
@@ -47,22 +71,22 @@ public final class RandomWalkForecast implements Forecast {
   }
   
   @Override
-  public final TimeSeries forecast() {
+  public TimeSeries forecast() {
     return this.forecast;
   }
 
   @Override
-  public final TimeSeries upperPredictionValues() {
+  public TimeSeries upperPredictionValues() {
     return this.upperValues;
   }
   
   @Override
-  public final TimeSeries lowerPredictionValues() {
+  public TimeSeries lowerPredictionValues() {
     return this.lowerValues;
   }
   
   @Override
-  public final TimeSeries computeUpperPredictionValues(final int steps, final double alpha) {
+  public TimeSeries computeUpperPredictionValues(final int steps, final double alpha) {
     double[] upperPredictionValues = new double[steps];
     double criticalValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
     for (int t = 0; t < steps; t++) {
@@ -72,11 +96,8 @@ public final class RandomWalkForecast implements Forecast {
         upperPredictionValues);
   }
 
-  /* (non-Javadoc)
-   * @see timeseries.models.Forecast#lowerPredictionInterval(int, double)
-   */
   @Override
-  public final TimeSeries computeLowerPredictionValues(final int steps, final double alpha) {
+  public TimeSeries computeLowerPredictionValues(final int steps, final double alpha) {
     double[] upperPredictionValues = new double[steps];
     double criticalValue = new Normal(0, model.residuals().stdDeviation()).quantile(1 - alpha / 2);
     for (int t = 0; t < steps; t++) {
@@ -95,7 +116,7 @@ public final class RandomWalkForecast implements Forecast {
   }
 
   @Override
-  public final void plot() {
+  public void plot() {
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().n());
@@ -135,7 +156,7 @@ public final class RandomWalkForecast implements Forecast {
   }
 
   @Override
-  public final void plotForecast() {
+  public void plotForecast() {
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       for (OffsetDateTime dateTime : forecast.observationTimes()) {

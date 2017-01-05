@@ -1,7 +1,26 @@
 /*
  * Copyright (c) 2016 Jacob Rachiele
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
+ * do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Contributors:
+ *
+ * Jacob Rachiele
  */
-
 package timeseries.models;
 
 import java.awt.Color;
@@ -46,17 +65,14 @@ public final class MeanModel implements Model {
     this.fittedSeries = new TimeSeries(observed.timePeriod(), observed.observationTimes().get(0),
          DoubleFunctions.fill(observed.n(), this.mean));
   }
-  
-  /* (non-Javadoc)
-   * @see timeseries.models.Model#newForecast(int, double)
-   */
+
   @Override
-  public final Forecast forecast(final int steps, final double alpha) {
+  public Forecast forecast(final int steps, final double alpha) {
     return new MeanForecast(this, steps, alpha);
   }
 
   @Override
-  public final TimeSeries pointForecast(final int steps) {
+  public TimeSeries pointForecast(final int steps) {
     int n = timeSeries.n();
     TimePeriod timePeriod = timeSeries.timePeriod();
 
@@ -67,22 +83,22 @@ public final class MeanModel implements Model {
   }
   
   @Override
-  public final TimeSeries timeSeries() {
+  public TimeSeries timeSeries() {
     return this.timeSeries;
   }
   
   @Override
-  public final TimeSeries fittedSeries() {
+  public TimeSeries fittedSeries() {
     return this.fittedSeries;
   }
 
   @Override
-  public final TimeSeries residuals() {
+  public TimeSeries residuals() {
     return this.timeSeries.minus(this.fittedSeries);
   }
 
   @Override
-  public final void plotResiduals() {
+  public void plotResiduals() {
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
       for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
@@ -104,12 +120,15 @@ public final class MeanModel implements Model {
     }).start();
   }
 
-  public final void plotFitted() {
+  /**
+   * Plot just the model fitted values.
+   */
+  public void plotFittedValues() {
     this.fittedSeries.plot("Mean Model Fitted Values");
   }
 
   @Override
-  public final void plotFit() {
+  public void plotFit() {
 
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());

@@ -122,7 +122,7 @@ public class Complex implements FieldElement<Complex> {
   
   @Override
   public Complex sqrt() {
-    if (this.real < 0.0 && Math.abs(this.im) < EPSILON) {
+    if (this.real < EPSILON && Math.abs(this.im) < EPSILON) {
       return new Complex(0.0, Math.sqrt(abs()));
     }
     // The following algorithm fails only in the case where this complex number is
@@ -180,7 +180,7 @@ public class Complex implements FieldElement<Complex> {
     if (obj == null) return false;
     if (getClass() != obj.getClass()) return false;
     Complex other = (Complex) obj;
-    return Math.abs(im - other.im) <= Math.ulp(1.0) && Math.abs(real - other.real) <= Math.ulp(1.0);
+    return Math.abs(im - other.im) <= EPSILON && Math.abs(real - other.real) <= EPSILON;
   }
 
   @Override

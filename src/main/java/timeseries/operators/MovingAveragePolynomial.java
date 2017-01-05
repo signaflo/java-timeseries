@@ -1,14 +1,36 @@
+/*
+ * Copyright (c) 2016 Jacob Rachiele
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
+ * do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Contributors:
+ *
+ * Jacob Rachiele
+ */
 package timeseries.operators;
 
 import timeseries.TimeSeries;
 
 /**
- * Represents a moving average polynomial in the lag operator. 
+ * Represents a moving average polynomial in the lag operator.
  * See <a target="_blank" href="https://goo.gl/1eLYnF"> Harvey's
  * Forecasting, structural time series models and the Kalman filter</a>, (1989, equation 2.1.3), or
  * <a target="_blank" href="https://en.wikipedia.org/wiki/Lag_operator#Lag_polynomials"> the wiki entry</a>. The
  * polynomial is taken in the lag operator, but is algebraically equivalent to a real or complex polynomial.
- * Copyright (c) 2016 Jacob Rachiele
  *
  */
 public final class MovingAveragePolynomial extends LagPolynomial {

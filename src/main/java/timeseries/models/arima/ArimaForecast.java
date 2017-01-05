@@ -1,6 +1,25 @@
 /*
  * Copyright (c) 2016 Jacob Rachiele
- * 
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
+ * do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Contributors:
+ *
+ * Jacob Rachiele
  */
 package timeseries.models.arima;
 
@@ -34,6 +53,7 @@ import timeseries.operators.LagPolynomial;
 
 /**
  * A forecast for an ARIMA model.
+ *
  * @author Jacob Rachiele
  *
  */
@@ -98,22 +118,22 @@ public final class ArimaForecast implements Forecast {
   }
   
   @Override
-  public final TimeSeries forecast() {
+  public TimeSeries forecast() {
     return this.forecast;
   }
 
   @Override
-  public final TimeSeries upperPredictionValues() {
+  public TimeSeries upperPredictionValues() {
     return this.upperValues;
   }
   
   @Override
-  public final TimeSeries lowerPredictionValues() {
+  public TimeSeries lowerPredictionValues() {
     return this.lowerValues;
   }
   
   @Override
-  public final TimeSeries computeUpperPredictionValues(final int steps, final double alpha) {
+  public TimeSeries computeUpperPredictionValues(final int steps, final double alpha) {
     final double criticalValue = new Normal().quantile(1 - alpha / 2);
     double[] upperPredictionValues = new double[steps];
     double[] errors = getStdErrors(criticalValue);
@@ -125,7 +145,7 @@ public final class ArimaForecast implements Forecast {
   }
 
   @Override
-  public final TimeSeries computeLowerPredictionValues(final int steps, final double alpha) {
+  public TimeSeries computeLowerPredictionValues(final int steps, final double alpha) {
     final double criticalValue = new Normal().quantile(alpha / 2);
     double[] lowerPredictionValues = new double[steps];
     double[] errors = getStdErrors(criticalValue);
@@ -175,7 +195,7 @@ public final class ArimaForecast implements Forecast {
   
   //********** Plots **********//
   @Override
-  public final void plot() {
+  public void plot() {
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().n());
@@ -217,7 +237,7 @@ public final class ArimaForecast implements Forecast {
   }
 
   @Override
-  public final void plotForecast() {   
+  public void plotForecast() {
     new Thread(() -> {
       final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
       for (OffsetDateTime dateTime : forecast.observationTimes()) {
