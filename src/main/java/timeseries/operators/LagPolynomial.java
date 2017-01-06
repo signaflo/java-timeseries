@@ -227,8 +227,8 @@ public class LagPolynomial {
   }
 
   /**
-   * Apply this lag polynomial at the given index then isolate the time series on the left hand side of
-   * the implied ARIMA equation.
+   * Use this lag polynomial to fit the implied ARIMA model at the given index by applying the polynomial, then
+   * solving for the time series value at that index.
    * 
    * @param timeSeries the time series containing the index to apply the lag polynomial to.
    * @param index the index of the series to apply the lag polynomial at.
