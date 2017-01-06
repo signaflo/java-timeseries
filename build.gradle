@@ -8,7 +8,10 @@ apply plugin: 'com.github.johnrengelman.shadow'
 group = "com.github.jrachiele"
 version = "0.1-SNAPSHOT"
 
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
 signing {
+    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
 }
 

@@ -7,24 +7,30 @@ import org.junit.Test;
 
 import data.TestData;
 import timeseries.TimeSeries;
-import timeseries.operators.LagPolynomial;
 
 public final class LagPolynomialSpec {
   
   @Test
-  public void whenLagPolyInverseAppliedResultCorrect() {
+  public void whenLagPolyAppliedIsolatedResultCorrect() {
     TimeSeries series = TestData.ausbeerSeries();
-    LagPolynomial poly = LagPolynomial.differences(1);
-    LagPolynomial seasPoly = LagPolynomial.firstSeasonalDifference(4);
-    System.out.println(seasPoly);
-    assertThat(poly.applyInverse(series, 2), is(equalTo(series.at(1))));
+    LagPolynomial poly = LagPolynomial.firstDifference();
+    assertThat(poly.fit(series, 2), is(equalTo(series.at(1))));
+    poly = LagPolynomial.movingAverage(0.5);
+    assertThat(poly.fit(series, 2), is(equalTo(series.at(1) * 0.5)));
+  }
+
+  @Test
+  public void whenLagPolyAppliedResultCorrect() {
+    TimeSeries series = TestData.ausbeerSeries();
+    LagPolynomial poly = LagPolynomial.firstDifference();
+    assertThat(poly.apply(series, 1), is(equalTo(series.at(1) - series.at(0))));
   }
   
   @Test
-  public void whenLagPolyTwoDiffInverseAppliedResultCorrect() {
+  public void whenLagPolyTwoDiffAppliedIsolatedResultCorrect() {
     TimeSeries series = TestData.ausbeerSeries();
     LagPolynomial poly = LagPolynomial.differences(2);
-    assertThat(poly.applyInverse(series, 2), is(equalTo(2 * series.at(1) - series.at(0))));
+    assertThat(poly.fit(series, 2), is(equalTo(2 * series.at(1) - series.at(0))));
   }
 
   @Test
