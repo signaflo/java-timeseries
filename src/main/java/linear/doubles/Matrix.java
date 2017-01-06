@@ -73,7 +73,7 @@ public final class Matrix {
    * @param ncol  the number of columns for the matrix.
    * @param value the data point to fill the matrix with.
    */
-  Matrix(final int nrow, final int ncol, final double value) {
+  public Matrix(final int nrow, final int ncol, final double value) {
     this.nrow = nrow;
     this.ncol = ncol;
     this.data = new double[nrow * ncol];

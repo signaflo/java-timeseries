@@ -92,7 +92,7 @@ public final class BFGS {
       Vector nextIterate;
       Vector nextGradient;
       Vector searchDirection;
-      boolean stop = false;
+      boolean stop = gradient.norm() < gradientNormTolerance || !Double.isFinite(gradient.norm());
       int iterationsSinceIdentity = 0;
 
       while (!stop) {

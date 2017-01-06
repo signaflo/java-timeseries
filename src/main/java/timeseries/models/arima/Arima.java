@@ -631,7 +631,7 @@ public final class Arima implements Model {
   private double[] getInitialParameters(final double meanParScale) {
     // Set initial constant to the mean and all other parameters to zero.
     double[] initParams = new double[order.sumARMA() + order.constant];
-    if (order.constant == 1) {
+    if (order.constant == 1 && Math.abs(meanParScale) > Math.ulp(1.0)) {
       initParams[initParams.length - 1] = differencedSeries.mean() / meanParScale;
     }
     return initParams;

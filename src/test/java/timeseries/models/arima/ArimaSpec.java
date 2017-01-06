@@ -18,6 +18,15 @@ import timeseries.models.arima.Arima.ModelOrder;
 import java.util.Arrays;
 
 public class ArimaSpec {
+
+  @Test
+  public void whenZerosThenFittedAreZero() {
+    TimeSeries timeSeries = new TimeSeries(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    double[] expected = new double[timeSeries.n()];
+    ModelOrder order = Arima.order(1, 0, 1, 0, 0, 0, true);
+    Arima arimaModel = Arima.model(timeSeries, order, FittingStrategy.USS);
+    assertThat(arimaModel.fittedSeries().series(), is(expected));
+  }
   
   @Test
   public void whenArimaModelFitThenParametersSimilarToROutput() throws Exception {
