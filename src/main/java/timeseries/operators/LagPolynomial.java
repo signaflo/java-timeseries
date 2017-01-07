@@ -193,13 +193,15 @@ public class LagPolynomial {
   }
 
   /**
-   * Apply the inverse of this lag polynomial to the given time series at the given index.
-   * 
-   * @param timeSeries the time series containing the index to apply the inverse of the lag polynomial to.
-   * @param index the index of the series to apply the inverse of the lag polynomial at.
-   * @return the result of applying the inverse of this lag polynomial to the given time series at the given index.
+   * Use this lag polynomial to fit the implied ARIMA model at the given index by applying the polynomial, then
+   * solving for the time series value at that index.
+   *
+   * @param timeSeries the time series containing the index to apply the lag polynomial to.
+   * @param index the index of the series to apply the lag polynomial at.
+   * @return the result of applying this lag polynomial to the time series at the given index, then solving
+   * for the value of the series at that index.
    */
-  public double applyInverse(final TimeSeries timeSeries, final int index) {
+  public double fit(final TimeSeries timeSeries, final int index) {
     double value = 0.0;
     for (int i = 0; i < parameters.length; i++) {
       value -= parameters[i] * LagOperator.apply(timeSeries, index, i + 1);
@@ -208,13 +210,15 @@ public class LagPolynomial {
   }
 
   /**
-   * Apply the inverse of this lag polynomial to a time series at the given date and time.
-   * 
-   * @param timeSeries the time series containing the index to apply the inverse of the lag polynomial to.
-   * @param dateTime the date and time of the series to apply the inverse of the lag polynomial at.
-   * @return the result of applying the inverse of this lag polynomial to the given time series at the given date and time.
+   * Use this lag polynomial to fit the implied ARIMA model at the given date and time by applying the polynomial, then
+   * solving for the value of the series at that date and time.
+   *
+   * @param timeSeries the time series containing the date and time to apply the lag polynomial to.
+   * @param dateTime the date and time of the series to apply the lag polynomial at.
+   * @return the result of applying this lag polynomial to the time series at the given date and time, then solving
+   * for the value of the series at that date and time.
    */
-  public double applyInverse(final TimeSeries timeSeries, OffsetDateTime dateTime) {
+  public double fit(final TimeSeries timeSeries, OffsetDateTime dateTime) {
     double value = 0.0;
     for (int i = 0; i < parameters.length; i++) {
       value -= parameters[i] * LagOperator.apply(timeSeries, dateTime, i + 1);
@@ -223,13 +227,15 @@ public class LagPolynomial {
   }
 
   /**
-   * Apply the inverse of this lag polynomial to the given time series at the given index.
+   * Use this lag polynomial to fit the implied ARIMA model at the given index by applying the polynomial, then
+   * solving for the time series value at that index.
    * 
-   * @param timeSeries the time series containing the index to apply the inverse of the lag polynomial to.
-   * @param index the index of the series to apply the inverse of the lag polynomial at.
-   * @return the result of applying the inverse of this lag polynomial to the given time series at the given index.
+   * @param timeSeries the time series containing the index to apply the lag polynomial to.
+   * @param index the index of the series to apply the lag polynomial at.
+   * @return the result of applying this lag polynomial to the time series at the given index, then solving
+   * for the value of the series at that index.
    */
-  public double applyInverse(final double[] timeSeries, final int index) {
+  public double fit(final double[] timeSeries, final int index) {
     double value = 0.0;
     for (int i = 0; i < parameters.length; i++) {
       value -= parameters[i] * LagOperator.apply(timeSeries, index, i + 1);
