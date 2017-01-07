@@ -77,6 +77,13 @@ public class CubicFunctionSpec {
   }
 
   @Test
+  public void whenEvaluatedAtThenResultCorrect() {
+    f = new CubicFunction(-4.0, 1.0, 5.0, 0.0);
+    assertThat(f.at(-5.0), is(500.0));
+    assertThat(f.slopeAt(-5.0), is(-305.0));
+  }
+
+  @Test
   public void whenLeadingCoefficientZeroThenException() {
     exception.expect(IllegalArgumentException.class);
     new CubicFunction(0.0, 1.0, 5.0, 0.0);

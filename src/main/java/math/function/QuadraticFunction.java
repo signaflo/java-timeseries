@@ -113,8 +113,14 @@ public class QuadraticFunction extends AbstractFunction {
     return new Real(this.at(point.value()));
   }
 
+  @Override
   public double at(final double x) {
     return x * x * a.value() + x * b.value() + c.value();
+  }
+
+  @Override
+  public double slopeAt(final double x) {
+    return 2 * x * a.value() + b.value();
   }
 
   /**

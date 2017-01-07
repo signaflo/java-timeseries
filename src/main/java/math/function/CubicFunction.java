@@ -119,6 +119,16 @@ public final class CubicFunction extends AbstractFunction {
     return new Real(this.at(point.value()));
   }
 
+  @Override
+  public double at(double x) {
+    return x * x * x * a.value() + x * x * b.value() + x * c.value() + d.value();
+  }
+
+  @Override
+  public double slopeAt(final double x) {
+    return 3 * x * x * a.value() + 2 * x * b.value() + c.value();
+  }
+
   /**
    * retrieve the coefficients of the polynomial.
    * @return the coefficients of the polynomial.
@@ -259,8 +269,4 @@ public final class CubicFunction extends AbstractFunction {
     return "f(x) = " + a.value() + "x^3 + " + b.value() + "x^2 + " + c.value() + "x + " + d.value();
   }
 
-  @Override
-  public double at(double x) {
-    return x * x * x * a.value() + x * x * b.value() + x * c.value() + d.value();
-  }
 }

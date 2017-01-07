@@ -68,6 +68,13 @@ public class QuadraticFunctionSpec {
   }
 
   @Test
+  public void whenEvaluatedAtThenResultCorrect() {
+    AbstractFunction f = new QuadraticFunction(-4.0, 1.0, 5.0);
+    assertThat(f.at(-5.0), is(-100.0));
+    assertThat(f.slopeAt(-5.0), is(41.0));
+  }
+
+  @Test
   public void givenQuadraticFunctionExtremaCorrect() {
     assertThat(function.extremePoint(), is(Real.from(5.0/2.0)));
     assertThat(function.extremePointDbl(), is(2.5));
