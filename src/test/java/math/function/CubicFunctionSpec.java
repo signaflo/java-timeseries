@@ -78,7 +78,12 @@ public class CubicFunctionSpec {
 
   @Test
   public void whenEvaluatedAtThenResultCorrect() {
+    Function cubic = (x) -> x * x * x * -4.0 + x * x + 5.0 * x;
+    Function slope = (x) -> -12.0 * x * x + 2.0 * x + 5.0;
     f = new CubicFunction(-4.0, 1.0, 5.0, 0.0);
+    GeneralFunction gf = new GeneralFunction(cubic, slope);
+    System.out.println(gf.at(-5.0));
+    System.out.println(gf.slopeAt(-5.0));
     assertThat(f.at(-5.0), is(500.0));
     assertThat(f.slopeAt(-5.0), is(-305.0));
   }
