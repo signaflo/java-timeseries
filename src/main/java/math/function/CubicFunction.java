@@ -32,7 +32,7 @@ import math.Real;
  *
  * @author Jacob Rachiele
  */
-public final class CubicFunction {
+public final class CubicFunction extends AbstractFunction {
 
   private final Real a;
   private final Real b;
@@ -116,8 +116,7 @@ public final class CubicFunction {
    * @return the value of this function at the given point.
    */
   public Real at(final Real point) {
-    double x = point.value();
-    return new Real(x*x*x*a.value() + x*x*b.value() + x*c.value() + d.value());
+    return new Real(this.at(point.value()));
   }
 
   /**
@@ -258,5 +257,10 @@ public final class CubicFunction {
   @Override
   public String toString() {
     return "f(x) = " + a.value() + "x^3 + " + b.value() + "x^2 + " + c.value() + "x + " + d.value();
+  }
+
+  @Override
+  public double at(double x) {
+    return x * x * x * a.value() + x * x * b.value() + x * c.value() + d.value();
   }
 }

@@ -31,7 +31,7 @@ import math.Real;
  *
  * @author Jacob Rachiele
  */
-public class QuadraticFunction {
+public class QuadraticFunction extends AbstractFunction {
 
   private final Real a;
   private final Real b;
@@ -110,8 +110,11 @@ public class QuadraticFunction {
   }
 
   public Real at(final Real point) {
-    double x = point.value();
-    return new Real(x * x * a.value() + x * b.value() + c.value());
+    return new Real(this.at(point.value()));
+  }
+
+  public double at(final double x) {
+    return x * x * a.value() + x * b.value() + c.value();
   }
 
   /**
