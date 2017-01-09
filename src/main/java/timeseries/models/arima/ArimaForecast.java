@@ -182,7 +182,7 @@ public final class ArimaForecast implements Forecast {
   private double[] getStdErrors(final double criticalValue) {
     double[] psiCoeffs = getPsiCoefficients();
     double[] stdErrors = new double[this.forecast.n()];
-    double sigma = sqrt(model.sigma2ML());
+    double sigma = sqrt(model.sigma2());
     double sd;
     double psiWeightSum = 0.0;
     for (int i = 0; i < stdErrors.length; i++) {

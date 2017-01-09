@@ -26,8 +26,7 @@ package timeseries.models;
 import timeseries.TimeSeries;
 
 /**
- * Represents a time series model, which attempts to capture the most important characteristics of the
- * underlying data generating process.
+ * A time series model. An attempt to capture the most important characteristics of the underlying process(es).
  *
  * @author Jacob Rachiele
  *

@@ -158,6 +158,24 @@ public final class TimePeriod {
   }
 
   /**
+   * Create and return a new TimePeriod representing one week.
+   *
+   * @return a new TimePeriod representing one week.
+   */
+  public static TimePeriod oneWeek() {
+    return new TimePeriod(TimeUnit.WEEK, 1);
+  }
+
+  /**
+   * Create and return a new TimePeriod representing one day.
+   *
+   * @return a new TimePeriod representing one day.
+   */
+  public static TimePeriod oneDay() {
+    return new TimePeriod(TimeUnit.DAY, 1);
+  }
+
+  /**
    * Create and return a new TimePeriod representing one half of a year.
    * 
    * @return a new TimePeriod representing one half of a year.
@@ -218,6 +236,10 @@ public final class TimePeriod {
    */
   public static TimePeriod triAnnual() {
     return new TimePeriod(TimeUnit.MONTH, 4);
+  }
+
+  public static TimePeriod oneSecond() {
+    return new TimePeriod(TimeUnit.SECOND, 1);
   }
   
   /**

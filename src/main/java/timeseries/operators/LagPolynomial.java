@@ -276,17 +276,20 @@ public class LagPolynomial {
     StringBuilder builder = new StringBuilder();
     builder.append("1");
     for (int i = 1; i < coefficients.length - 1; i++) {
+      if (Math.abs(coefficients[i]) > 1E-16) {
+
       if (coefficients[i] < 0) {
         builder.append(" - ");
       } else {
         builder.append(" + ");
       }
-      if (Math.abs(coefficients[i]) != 1.0) {
+      if (Math.abs(coefficients[i]) - 1.0 > 1E-16) {
         builder.append(Math.abs(coefficients[i]));
       }
-      builder.append("L");
-      if (i > 1) {
-        builder.append("^").append(i);
+        builder.append("L");
+        if (i > 1) {
+          builder.append("^").append(i);
+        }
       }
     }
     final int lastIndex = coefficients.length - 1;

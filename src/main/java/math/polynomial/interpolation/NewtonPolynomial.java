@@ -105,7 +105,7 @@ public final class NewtonPolynomial {
   /**
    *
 
-   * Convert this NewtonPolynomial to a the standard form of a quadratic function, <i>f(x)</i>
+   * Convert this NewtonPolynomial to the standard form of a quadratic function, <i>f(x)</i>
    * = a<i>x</i><sup>2</sup> + b<i>x</i> + c.
    * @return this Newton Polynomial converted to standard quadratic form.
    * @throws IllegalStateException if the degree of this NewtonPolynomial is lower than 2.
@@ -122,7 +122,7 @@ public final class NewtonPolynomial {
   }
 
   /**
-   * Convert this NewtonPolynomial to a the standard form of a cubic function, <i>f(x)</i>
+   * Convert this NewtonPolynomial to the standard form of a cubic function, <i>f(x)</i>
    * = a<i>x</i><sup>3</sup> + b<i>x</i><sup>2</sup> + c<i>x</i> + d.
    *
    * @return this Newton Polynomial converted to standard cubic form.

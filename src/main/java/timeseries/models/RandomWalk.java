@@ -81,7 +81,7 @@ public final class RandomWalk implements Model {
    */
   public static TimeSeries simulate(final Distribution dist, final int n) {
     if (n < 1) {
-      throw new RuntimeException("the number of simulated observations must be a positive integer.");
+      throw new IllegalArgumentException("the number of observations to simulate must be a positive integer.");
     }
     final double[] series = new double[n];
     series[0] = dist.rand();
