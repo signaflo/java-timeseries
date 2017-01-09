@@ -82,13 +82,13 @@ public class LagPolynomial {
   /**
    * Create and return a new lag polynomial representing an arbitrary number of seasonal differences.
    * 
-   * @param seasonalLag the period of seasoanlit, which is the lag to use for the operator.
+   * @param seasonalLag the period of seasonality; the lag to use for the operator.
    * @param D the number of seasonal differences.
    * @return a new lag polynomial representing an arbitrary number of seasonal differences.
    */
   public static LagPolynomial seasonalDifferences(final int seasonalLag, final int D) {
     if (D < 0) {
-      throw new RuntimeException("The degree of differencing must be greater than or equal to 0, but was " + D);
+      throw new IllegalArgumentException("The degree of differencing must be greater than or equal to 0, but was " + D);
     }
     if (D > 0) {
       LagPolynomial diff = LagPolynomial.firstSeasonalDifference(seasonalLag);
@@ -109,7 +109,7 @@ public class LagPolynomial {
    */
   public static LagPolynomial differences(final int d) {
     if (d < 0) {
-      throw new RuntimeException("The degree of differencing must be greater than or equal to 0, but was " + d);
+      throw new IllegalArgumentException("The degree of differencing must be greater than or equal to 0, but was " + d);
     }
     if (d > 0) {
       LagPolynomial diff = LagPolynomial.firstDifference();

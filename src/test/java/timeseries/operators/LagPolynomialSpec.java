@@ -3,12 +3,40 @@ package timeseries.operators;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import data.TestData;
+import org.junit.rules.ExpectedException;
+import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 
+import java.sql.Time;
+
 public final class LagPolynomialSpec {
+
+  @Rule
+  public ExpectedException exception = ExpectedException.none();
+
+  @Test
+  public void whenDifferencesLessThanZeroThenException() {
+    exception.expect(IllegalArgumentException.class);
+    LagPolynomial.differences(-1);
+  }
+
+  @Test
+  public void whenSeasDifferencesLessThanZeroThenException() {
+    exception.expect(IllegalArgumentException.class);
+    LagPolynomial.seasonalDifferences(12, -1);
+  }
+
+  @Test
+  public void whenSeasonalDifferenceThenRightDataReturned() {
+    TimeSeries series = TestData.ausbeerSeries();
+    LagPolynomial poly = LagPolynomial.seasonalDifferences(4, 1);
+    LagPolynomial expected = new LagPolynomial(0.0, 0.0, 0.0, -1.0);
+    assertThat(poly, is(expected));
+  }
   
   @Test
   public void whenLagPolyAppliedIsolatedResultCorrect() {

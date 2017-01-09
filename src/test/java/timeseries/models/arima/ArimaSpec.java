@@ -55,6 +55,15 @@ public class ArimaSpec {
   public void whenSimulateThenSeriesOfSizeNReturned() {
     TimeSeries series = Arima.Simulation.newBuilder().setN(50).build().sim();
     assertThat(series.n(), is(50));
+    ModelCoefficients coefficients = ModelCoefficients.newBuilder().setARCoeffs(0.4).setSeasonalARCoeffs(0.5).build();
+    ModelOrder order = Arima.order(1, 0, 0, 1, 0, 0, false);
+    series = Arima.Simulation.newBuilder().setN(120).setCoefficients(coefficients).sim();
+    Arima model = Arima.model(series, order, Arima.FittingStrategy.CSS);
+    System.out.println(model.coefficients());
+    model = Arima.model(series, order, Arima.FittingStrategy.USS);
+    System.out.println(model.coefficients());
+    model = Arima.model(series, order, Arima.FittingStrategy.ML);
+    System.out.println(model.coefficients());
   }
   
   @Test

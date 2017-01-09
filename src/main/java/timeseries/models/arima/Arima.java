@@ -404,7 +404,8 @@ public final class Arima implements Model {
       residuals[t] = extendedSeries[n - t - 1] - extendedFit[t];
     }
 
-    n = differencedSeries.n();
+    //n = differencedSeries.n();
+    n = residuals.length;
     final int npar = order.sumARMA() + order.constant;
     final double sigma2 = sumOfSquared(residuals) / (n - npar);
     final double logLikelihood = (-n / 2.0) * (Math.log(2 * Math.PI * sigma2) + 1);
