@@ -109,7 +109,7 @@ dependencies {
     compile 'org.ejml:all:0.29'
     compile 'org.slf4j:slf4j-simple:1.7.22'
 
-    testCompile 'junit:junit:4.+'
+    testCompile 'junit:junit:[4.12,)'
     testCompile 'org.hamcrest:hamcrest-library:1.3'
 }
 
