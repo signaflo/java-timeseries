@@ -4,7 +4,7 @@ Time series analysis in Java.
 
 Using
 ------
-### Maven
+#### Maven
 
 ```groovy
 <dependency>
@@ -14,7 +14,7 @@ Using
 </dependency>
 ```
 
-### Gradle
+#### Gradle
 ```groovy
 compile 'com.github.jrachiele:java-timeseries:[0.1,)'
 ```
