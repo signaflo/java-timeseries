@@ -2,6 +2,14 @@ Java Time Series
 ===============
 Time series analysis in Java.
 
+Features
+-------
+* Seasonal ARIMA models.
+* ARIMA forecasting and simulation.
+* Time series statistics, moving averages, and aggregation.
+* Simple, intuitive, and powerful time modeling.
+* Autocorrelation function and ACF plot.
+
 Using
 ------
 #### Maven
@@ -18,15 +26,6 @@ Using
 ```groovy
 compile 'com.github.jrachiele:java-timeseries:[0.1,)'
 ```
-
-Features
--------
-* Seasonal ARIMA models and forecasting.
-* Dedicated time series library.
-* Simple, intuitive, and powerful time modeling.
-* Autocorrelation function and ACF plot.
-* Random walk simulation and forecasting.
-* Box-Cox data transformations.
 
 Credits
 ------
