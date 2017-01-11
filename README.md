@@ -5,14 +5,19 @@ Time series analysis in Java.
 Using
 ------
 ### Maven
+
+```groovy
 <dependency>
     <groupId>com.github.jrachiele</groupId>
     <artifactId>java-timeseries</artifactId>
     <version>[0.1,)</version>
 </dependency>
+```
 
 ### Gradle
+```groovy
 compile 'com.github.jrachiele:java-timeseries:[0.1,)'
+```
 
 Features
 -------
