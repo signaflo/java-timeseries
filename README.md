@@ -2,7 +2,17 @@ Java Time Series
 ===============
 Time series analysis in Java.
 
-This project is still in the early stages of development, but is seeing great progress so far. Please check back regularly for updates.
+Using
+------
+### Maven
+<dependency>
+    <groupId>com.github.jrachiele</groupId>
+    <artifactId>java-timeseries</artifactId>
+    <version>[0.1,)</version>
+</dependency>
+
+### Gradle
+compile 'com.github.jrachiele:java-timeseries:[0.1,)'
 
 Features
 -------
