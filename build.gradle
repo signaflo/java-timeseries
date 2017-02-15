@@ -6,7 +6,7 @@ apply plugin: 'signing'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 group = "com.github.jrachiele"
-version = "0.1"
+version = "0.2-SNAPSHOT"
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
@@ -107,7 +107,7 @@ dependencies {
     compile 'com.google.guava:guava:20.0'
     compile 'org.knowm.xchart:xchart:3.2.0'
     compile 'org.ejml:all:0.29'
-    compile 'org.slf4j:slf4j-simple:1.7.22'
+    compile 'org.slf4j:slf4j-api:1.7.22'
 
     testCompile 'junit:junit:[4.12,)'
     testCompile 'org.hamcrest:hamcrest-library:1.3'
