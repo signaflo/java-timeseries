@@ -31,6 +31,8 @@ package math;
  */
 public final class Real extends Complex {
 
+  private static final double EPSILON = Math.ulp(1.0);
+  
   private final double value;
 
   /**
@@ -178,7 +180,7 @@ public final class Real extends Complex {
     }
 
     public boolean endpointsEqual() {
-      return Math.abs(this.lower.value - this.upper.value) < 1E-15;
+      return Math.abs(this.lower.value - this.upper.value) < EPSILON;
     }
 
     public boolean contains(final double value) {
