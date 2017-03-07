@@ -58,4 +58,20 @@ public class ArimaForecastSpec {
         assertArrayEquals(expectedLower, lower, 1E-1);
         assertArrayEquals(expectedUpper, upper, 1E-1);
     }
+
+    @Test
+    public void whenArimaForecastThenForecastValuesCorrect() {
+        TimeSeries timeSeries = TestData.debitcards();
+        Arima.FittingStrategy fittingStrategy = Arima.FittingStrategy.CSSML;
+        Arima.ModelCoefficients coefficients = Arima.ModelCoefficients.newBuilder().setMACoeffs(-0.6760904)
+                                                                      .setSeasonalMACoeffs(-0.5718134).setDifferences(1).setSeasonalDifferences(1).build();
+        Arima model = Arima.model(timeSeries, coefficients, fittingStrategy);
+        Forecast forecast = ArimaForecast.forecast(model, 24);
+        double[] expectedForecast = {19478.680824, 19400.979522, 20740.20164, 20600.788629, 23391.472355, 23436.878337,
+                24243.284113, 25650.998078, 22023.454336, 22384.946575, 21992.351548, 27806.551571, 20452.304145,
+                20374.602843, 21713.824961, 21574.411949, 24365.095675, 24410.501658, 25216.907434, 26624.621399,
+                22997.077656, 23358.569896, 22965.974868, 28780.174891};
+        double[] fcst = forecast.forecast().asArray();
+        assertArrayEquals(expectedForecast, fcst, 1E-1);
+    }
 }
