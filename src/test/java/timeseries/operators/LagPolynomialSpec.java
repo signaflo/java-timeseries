@@ -46,7 +46,7 @@ public final class LagPolynomialSpec {
         assertThat(poly.fit(series, thirdObservationPeriod), is(equalTo(series.at(1))));
         poly = LagPolynomial.movingAverage(0.5);
         assertThat(poly.fit(series, 2), is(equalTo(series.at(1) * 0.5)));
-        assertThat(poly.fit(series.series(), 2), is(equalTo(series.at(1) * 0.5)));
+        assertThat(poly.fit(series.asArray(), 2), is(equalTo(series.at(1) * 0.5)));
     }
 
     @Test

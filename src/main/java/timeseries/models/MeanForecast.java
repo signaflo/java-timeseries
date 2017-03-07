@@ -118,8 +118,8 @@ public final class MeanForecast implements Forecast {
         xAxis.add(Date.from(dateTime.toInstant()));
       }
       
-      List<Double> errorList = Doubles.asList(fcstErrors.series());
-      List<Double> forecastList = Doubles.asList(forecast.series());
+      List<Double> errorList = Doubles.asList(fcstErrors.asArray());
+      List<Double> forecastList = Doubles.asList(forecast.asArray());
       final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
           .title("Mean Forecast").build();
       
@@ -156,9 +156,9 @@ public final class MeanForecast implements Forecast {
         xAxis.add(Date.from(dateTime.toInstant()));
       }
 
-      List<Double> errorList = Doubles.asList(fcstErrors.series());
-      List<Double> seriesList = Doubles.asList(model.timeSeries().series());
-      List<Double> forecastList = Doubles.asList(forecast.series());
+      List<Double> errorList = Doubles.asList(fcstErrors.asArray());
+      List<Double> seriesList = Doubles.asList(model.timeSeries().asArray());
+      List<Double> forecastList = Doubles.asList(forecast.asArray());
       final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
           .title("Mean Forecast Past and Future").build();
 

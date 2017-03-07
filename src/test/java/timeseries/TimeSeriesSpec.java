@@ -33,7 +33,7 @@ public class TimeSeriesSpec {
     double[] data = new double[] { 3.0, 7.0, Math.E };
     double[] expected = new double[] { Math.log(3.0), Math.log(7.0), 1.0 };
     TimeSeries timeSeries = new TimeSeries(data);
-    assertArrayEquals(expected, timeSeries.transform(0).series(), 1E-4);
+    assertArrayEquals(expected, timeSeries.transform(0).asArray(), 1E-4);
   }
 
   @Test
@@ -41,7 +41,7 @@ public class TimeSeriesSpec {
     double[] data = new double[] { Math.log(3.0), Math.log(7.0), 1.0 };
     double[] expected = new double[] { 3.0, 7.0, Math.E };
     TimeSeries timeSeries = new TimeSeries(data);
-    assertArrayEquals(expected, timeSeries.backTransform(0).series(), 1E-4);
+    assertArrayEquals(expected, timeSeries.backTransform(0).asArray(), 1E-4);
   }
 
   @Test
@@ -90,7 +90,7 @@ public class TimeSeriesSpec {
     TimeSeries series = TestData.elecSales();
     double[] expected = new double[] { 2381.53, 2424.556, 2463.758, 2552.598, 2627.7, 2750.622, 2858.348, 3014.704,
         3077.3, 3144.52, 3188.7, 3202.32, 3216.94, 3307.296, 3398.754, 3485.434 };
-    double[] result = series.movingAverage(5).series();
+    double[] result = series.movingAverage(5).asArray();
     assertArrayEquals(expected, result, 1E-2);
   }
 
@@ -99,7 +99,7 @@ public class TimeSeriesSpec {
     TimeSeries series = TestData.elecSales();
     double[] expected = new double[] { 2380.39, 2388.3275, 2435.7675, 2500.0675, 2573.5, 2688.1025, 2795.91, 2929.005,
         3077.7, 3135.5, 3180.475, 3208.85, 3163.525, 3252.25, 3338.97, 3443.0425, 3562.7425 };
-    double[] result = series.movingAverage(4).series();
+    double[] result = series.movingAverage(4).asArray();
     assertArrayEquals(expected, result, 1E-2);
   }
 
@@ -108,7 +108,7 @@ public class TimeSeriesSpec {
     TimeSeries series = TestData.elecSales();
     double[] expected = new double[] { 2384.35875, 2412.0475, 2467.9175, 2536.78375, 2630.80125, 2742.00625, 2862.4575,
         3003.3525, 3106.6, 3157.9875, 3194.6625, 3186.1875, 3207.8875, 3295.61, 3391.00625, 3502.8925 };
-    double[] result = series.centeredMovingAverage(4).series();
+    double[] result = series.centeredMovingAverage(4).asArray();
     assertArrayEquals(expected, result, 1E-2);
   }
 
@@ -117,7 +117,7 @@ public class TimeSeriesSpec {
     TimeSeries series = TestData.elecSales();
     double[] expected = new double[] { 2381.53, 2424.556, 2463.758, 2552.598, 2627.7, 2750.622, 2858.348, 3014.704,
         3077.3, 3144.52, 3188.7, 3202.32, 3216.94, 3307.296, 3398.754, 3485.434 };
-    double[] result = series.centeredMovingAverage(5).series();
+    double[] result = series.centeredMovingAverage(5).asArray();
     assertArrayEquals(expected, result, 1E-2);
   }
 

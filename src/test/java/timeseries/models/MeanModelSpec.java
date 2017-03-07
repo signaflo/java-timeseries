@@ -24,7 +24,7 @@ public class MeanModelSpec {
 		MeanModel meanModel = new MeanModel(series);
 		TimeSeries pointForecast = meanModel.pointForecast(h);
 		double[] expected = DoubleFunctions.fill(h, series.mean());
-		assertArrayEquals(expected, pointForecast.series(), 1E-2);
+		assertArrayEquals(expected, pointForecast.asArray(), 1E-2);
 	}
 	
 	@Test

@@ -5,7 +5,7 @@ import static java.lang.Math.pow;
 import linear.doubles.Vector;
 import math.function.AbstractMultivariateFunction;
 
-final class RosenbrockFunction extends AbstractMultivariateFunction {
+public final class RosenbrockFunction extends AbstractMultivariateFunction {
 
   @Override
   public final double at(final Vector point) {

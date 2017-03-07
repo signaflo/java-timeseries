@@ -17,8 +17,6 @@ import timeseries.models.Forecast;
 import timeseries.models.arima.Arima.ModelCoefficients;
 import timeseries.models.arima.Arima.ModelOrder;
 
-import java.util.Arrays;
-
 public class ArimaSpec {
 
   @Rule
@@ -30,7 +28,7 @@ public class ArimaSpec {
     double[] expected = new double[timeSeries.n()];
     ModelOrder order = Arima.order(1, 0, 1, 0, 0, 0, true);
     Arima arimaModel = Arima.model(timeSeries, order, Arima.FittingStrategy.USS);
-    assertThat(arimaModel.fittedSeries().series(), is(expected));
+    assertThat(arimaModel.fittedSeries().asArray(), is(expected));
   }
 
   @Test
@@ -55,15 +53,6 @@ public class ArimaSpec {
   public void whenSimulateThenSeriesOfSizeNReturned() {
     TimeSeries series = Arima.Simulation.newBuilder().setN(50).build().sim();
     assertThat(series.n(), is(50));
-    ModelCoefficients coefficients = ModelCoefficients.newBuilder().setARCoeffs(0.4).setSeasonalARCoeffs(0.5).build();
-    ModelOrder order = Arima.order(1, 0, 0, 1, 0, 0, false);
-    series = Arima.Simulation.newBuilder().setN(120).setCoefficients(coefficients).sim();
-    Arima model = Arima.model(series, order, Arima.FittingStrategy.CSS);
-    System.out.println(model.coefficients());
-    model = Arima.model(series, order, Arima.FittingStrategy.USS);
-    System.out.println(model.coefficients());
-    model = Arima.model(series, order, Arima.FittingStrategy.ML);
-    System.out.println(model.coefficients());
   }
   
   @Test
@@ -110,8 +99,8 @@ public class ArimaSpec {
         385.602156, 383.635953, 381.820598};
     double[] expectedUpper = {488.660387, 495.046987, 497.203721, 500.06622, 502.040234, 504.278084, 506.24368,
         508.240341, 510.125104, 511.980016};
-    double[] actualLower = fcst.computeLowerPredictionValues(10, 0.05).series();
-    double[] actualUpper = fcst.computeUpperPredictionValues(10, 0.05).series();
+    double[] actualLower = fcst.computeLowerPredictionValues(10, 0.05).asArray();
+    double[] actualUpper = fcst.computeUpperPredictionValues(10, 0.05).asArray();
     assertArrayEquals(expectedLower, actualLower, 1E-4);
     assertArrayEquals(expectedUpper, actualUpper, 1E-4);
   }

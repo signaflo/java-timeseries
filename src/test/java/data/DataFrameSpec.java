@@ -59,8 +59,6 @@ public class DataFrameSpec {
     DataFrame df = new DataFrame();
     Double[] doubles = new Double[] {4.5, 3.0, 1.5};
     df.add("0", Double[].class, doubles);
-    System.out.println(df.getColumnClass("0"));
-    System.out.println(df.getColumnClassName("0"));
     List<Double> result = df.getList("0", Double[].class);
     assertThat(result, is(Arrays.asList(doubles)));
   }

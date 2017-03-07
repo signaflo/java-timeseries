@@ -23,7 +23,7 @@ public class TypesSpec {
   public void whenStringIsLocalDateTimeThenTrue() {
     String dt = "2016-12-31T02:22:35";
     //System.out.println(LocalDateTime.parse(dt));
-    System.out.println(Types.isLocalDateTime(dt));
+    assertThat(Types.isLocalDateTime(dt), is(true));
   }
 
   @Test

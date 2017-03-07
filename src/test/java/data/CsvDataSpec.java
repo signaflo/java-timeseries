@@ -81,9 +81,7 @@ public class CsvDataSpec {
     schema.add(DataType.STRING);
     schema.add(DataType.DOUBLE);
     DataFrame df = csvData.createDataFrame(new Schema(schema));
-    System.out.println(schema);
     df.replace("Month", Double[].class, (new Double[0]));
-    Double[] months = df.get("Month", Double[].class);
     assertThat(Double.parseDouble(column.get(0)), is(equalTo(76378.0)));
   }
 

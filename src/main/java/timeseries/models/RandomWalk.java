@@ -62,9 +62,9 @@ public final class RandomWalk implements Model {
   private final TimeSeries residuals;
 
   /**
-   * Create a new random walk model from the given time series of observations.
+   * Create a new random walk model from the given time asArray of observations.
    *
-   * @param observed the observed series.
+   * @param observed the observed asArray.
    */
   public RandomWalk(final TimeSeries observed) {
     this.timeSeries = observed;
@@ -77,7 +77,7 @@ public final class RandomWalk implements Model {
    * 
    * @param dist The probability distribution that observations are drawn from.
    * @param n The number of observations to simulate.
-   * @return the simulated series.
+   * @return the simulated asArray.
    */
   public static TimeSeries simulate(final Distribution dist, final int n) {
     if (n < 1) {
@@ -98,7 +98,7 @@ public final class RandomWalk implements Model {
    * @param mean the mean of the Normal distribution the observations are drawn from.
    * @param sigma the standard deviation of the Normal distribution the observations are drawn from.
    * @param n the number of observations to simulate.
-   * @return the simulated series.
+   * @return the simulated asArray.
    */
   public static TimeSeries simulate(final double mean, final double sigma, final int n) {
     final Distribution dist = new Normal(mean, sigma);
@@ -111,7 +111,7 @@ public final class RandomWalk implements Model {
    * 
    * @param sigma the standard deviation of the Normal distribution the observations are drawn from.
    * @param n the number of observations to simulate.
-   * @return the simulated series.
+   * @return the simulated asArray.
    */
   public static TimeSeries simulate(final double sigma, final int n) {
     final Distribution dist = new Normal(0, sigma);
@@ -122,7 +122,7 @@ public final class RandomWalk implements Model {
    * Simulate a random walk assuming errors follow a standard Normal (Gaussian) Distribution.
    * 
    * @param n the number of observations to simulate.
-   * @return the simulated series.
+   * @return the simulated asArray.
    */
   public static TimeSeries simulate(final int n) {
     final Distribution dist = new Normal(0, 1);
@@ -191,8 +191,8 @@ public final class RandomWalk implements Model {
       for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
         xAxis.add(Date.from(dateTime.toInstant()));
       }
-      List<Double> seriesList = com.google.common.primitives.Doubles.asList(timeSeries.series());
-      List<Double> fittedList = com.google.common.primitives.Doubles.asList(fittedSeries.series());
+      List<Double> seriesList = com.google.common.primitives.Doubles.asList(timeSeries.asArray());
+      List<Double> fittedList = com.google.common.primitives.Doubles.asList(fittedSeries.asArray());
       final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
           .title("Random Walk Fitted vs Actual").build();
       XYSeries fitSeries = chart.addSeries("Fitted Values", xAxis, fittedList);
@@ -222,7 +222,7 @@ public final class RandomWalk implements Model {
       for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
         xAxis.add(Date.from(dateTime.toInstant()));
       }
-      List<Double> seriesList = com.google.common.primitives.Doubles.asList(residuals.series());
+      List<Double> seriesList = com.google.common.primitives.Doubles.asList(residuals.asArray());
       final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
           .title("Random Walk Residuals").build();
       XYSeries residualSeries = chart.addSeries("Model Residuals", xAxis, seriesList);

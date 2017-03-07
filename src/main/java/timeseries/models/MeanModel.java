@@ -47,8 +47,8 @@ import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 
 /**
- * A time series model that assumes no trend or seasonal factors are present, and that puts as much weight
- * on early values of the series as it does on recent values.
+ * A time asArray model that assumes no trend or seasonal factors are present, and that puts as much weight
+ * on early values of the asArray as it does on recent values.
  * 
  * @author Jacob Rachiele
  *
@@ -104,7 +104,7 @@ public final class MeanModel implements Model {
       for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
         xAxis.add(Date.from(dateTime.toInstant()));
       }
-      List<Double> seriesList = com.google.common.primitives.Doubles.asList(residuals().series());
+      List<Double> seriesList = com.google.common.primitives.Doubles.asList(residuals().asArray());
       final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
           .title("Mean Model Residuals").build();
       XYSeries residualSeries = chart.addSeries("Model Residuals", xAxis, seriesList);
@@ -135,8 +135,8 @@ public final class MeanModel implements Model {
       for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
         xAxis.add(Date.from(dateTime.toInstant()));
       }
-      List<Double> seriesList = com.google.common.primitives.Doubles.asList(timeSeries.series());
-      List<Double> fittedList = com.google.common.primitives.Doubles.asList(fittedSeries.series());
+      List<Double> seriesList = com.google.common.primitives.Doubles.asList(timeSeries.asArray());
+      List<Double> fittedList = com.google.common.primitives.Doubles.asList(fittedSeries.asArray());
       final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
           .title("Mean Model Fitted vs Actual").build();
       XYSeries fitSeries = chart.addSeries("Fitted Values", xAxis, fittedList);

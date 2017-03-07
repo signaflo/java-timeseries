@@ -201,28 +201,28 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Aggregate the observations in this series to the yearly level.
+   * Aggregate the observations in this asArray to the yearly level.
    * 
-   * @return a new TimeSeries with the observations in this series aggregated to the yearly level.
+   * @return a new TimeSeries with the observations in this asArray aggregated to the yearly level.
    */
   public final TimeSeries aggregateToYears() {
     return aggregate(TimePeriod.oneYear());
   }
 
   /**
-   * Aggregate the observations in this series to the given time period.
+   * Aggregate the observations in this asArray to the given time period.
    * 
    * @param timeUnit The time period to aggregate up to.
-   * @return a new TimeSeries with the observations in this series aggregated to the given time period.
+   * @return a new TimeSeries with the observations in this asArray aggregated to the given time period.
    */
   public final TimeSeries aggregate(final TimeUnit timeUnit) {
     return aggregate(new TimePeriod(timeUnit, 1));
   }
 
   /**
-   * Aggregate the time series up to the given time period.
+   * Aggregate the time asArray up to the given time period.
    * 
-   * @param timePeriod the time series that the observations should be aggregated up to.
+   * @param timePeriod the time asArray that the observations should be aggregated up to.
    * @return A new TimeSeries aggregated up to the given time period.
    */
   public final TimeSeries aggregate(final TimePeriod timePeriod) {
@@ -230,7 +230,7 @@ public final class TimeSeries extends DataSet {
     if (period == 0) {
       throw new IllegalArgumentException(
           "The given time period was of a smaller magnitude than the original time period."
-              + " To aggregate a series, the time period argument must be of a larger magnitude than the original.");
+              + " To aggregate a asArray, the time period argument must be of a larger magnitude than the original.");
     }
     final List<OffsetDateTime> obsTimes = new ArrayList<>();
     double[] aggregated = new double[series.length / period];
@@ -247,30 +247,30 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Retrieve the value of the time series at the given index.
+   * Retrieve the value of the time asArray at the given index.
    * 
    * @param index the index of the value to return.
-   * @return the value of the time series at the given index.
+   * @return the value of the time asArray at the given index.
    */
   public final double at(final int index) {
     return this.series[index];
   }
 
   /**
-   * Retrieve the value of the time series at the given date and time.
+   * Retrieve the value of the time asArray at the given date and time.
    * 
    * @param dateTime the date and time of the value to return.
-   * @return the value of the time series at the given date and time.
+   * @return the value of the time asArray at the given date and time.
    */
   public final double at(final OffsetDateTime dateTime) {
     return this.series[dateTimeIndex.get(dateTime)];
   }
 
   /**
-   * The correlation of this series with itself at lag k.
+   * The correlation of this asArray with itself at lag k.
    * 
    * @param k the lag to compute the autocorrelation at.
-   * @return the correlation of this series with itself at lag k.
+   * @return the correlation of this asArray with itself at lag k.
    */
   public final double autoCorrelationAtLag(final int k) {
     final double variance = autoCovarianceAtLag(0);
@@ -278,10 +278,10 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Every correlation coefficient of this series with itself up to the given lag.
+   * Every correlation coefficient of this asArray with itself up to the given lag.
    * 
    * @param k the maximum lag to compute the autocorrelation at.
-   * @return every correlation coefficient of this series with itself up to the given lag.
+   * @return every correlation coefficient of this asArray with itself up to the given lag.
    */
   public final double[] autoCorrelationUpToLag(final int k) {
     final double[] autoCorrelation = new double[Math.min(k + 1, n)];
@@ -292,10 +292,10 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * The covariance of this series with itself at lag k.
+   * The covariance of this asArray with itself at lag k.
    * 
    * @param k the lag to compute the autocovariance at.
-   * @return the covariance of this series with itself at lag k.
+   * @return the covariance of this asArray with itself at lag k.
    */
   public final double autoCovarianceAtLag(final int k) {
     double sumOfProductOfDeviations = 0.0;
@@ -306,10 +306,10 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Every covariance measure of this series with itself up to the given lag.
+   * Every covariance measure of this asArray with itself up to the given lag.
    * 
    * @param k the maximum lag to compute the autocovariance at.
-   * @return every covariance measure of this series with itself up to the given lag.
+   * @return every covariance measure of this asArray with itself up to the given lag.
    */
   public final double[] autoCovarianceUpToLag(final int k) {
     final double[] acv = new double[Math.min(k + 1, n)];
@@ -320,7 +320,7 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Transform the series using a Box-Cox transformation with the given parameter value.
+   * Transform the asArray using a Box-Cox transformation with the given parameter value.
    * 
    * <p>
    * Setting boxCoxLambda equal to 0 corresponds to the natural logarithm while values other than 0 correspond to power
@@ -345,7 +345,7 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Perform the inverse of the Box-Cox transformation on this series and return the result in a new TimeSeries.
+   * Perform the inverse of the Box-Cox transformation on this asArray and return the result in a new TimeSeries.
    * 
    * @param boxCoxLambda the Box-Cox transformation parameter to use for the inversion.
    * @return a new TimeSeries with the inverse Box-Cox transformation applied.
@@ -398,9 +398,9 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Remove the mean from this series and return the result as a new time series.
+   * Remove the mean from this asArray and return the result as a new time asArray.
    * 
-   * @return a new time series representing this time series with its mean removed.
+   * @return a new time asArray representing this time asArray with its mean removed.
    */
   public final TimeSeries demean() {
     final double[] demeaned = new double[this.series.length];
@@ -411,10 +411,10 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Difference this series the given number of times at the given lag.
+   * Difference this asArray the given number of times at the given lag.
    * 
    * @param lag the lag at which to take differences.
-   * @param times the number of times to difference the series at the given lag.
+   * @param times the number of times to difference the asArray at the given lag.
    * @return a new TimeSeries differenced the given number of times at the given lag.
    */
   public final TimeSeries difference(final int lag, final int times) {
@@ -429,7 +429,7 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Difference this time series at the given lag and return the result in a new TimeSeries.
+   * Difference this time asArray at the given lag and return the result in a new TimeSeries.
    * 
    * @param lag the lag at which to take differences.
    * @return a new TimeSeries differenced at the given lag.
@@ -441,7 +441,7 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Difference this time series once at lag 1 and return the result in a new TimeSeries.
+   * Difference this time asArray once at lag 1 and return the result in a new TimeSeries.
    * 
    * @return a new TimeSeries differenced once at lag.
    */
@@ -458,11 +458,11 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Subtract the given series from this time series and return the result in a new time series. This is a vectorized
+   * Subtract the given asArray from this time asArray and return the result in a new time asArray. This is a vectorized
    * operation.
    * 
-   * @param otherSeries the series to subtract from this one.
-   * @return The difference between this series and the given series.
+   * @param otherSeries the asArray to subtract from this one.
+   * @return The difference between this asArray and the given asArray.
    */
   public final TimeSeries minus(final TimeSeries otherSeries) {
     final double[] subtracted = new double[this.series.length];
@@ -473,11 +473,11 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Subtract the given series from this time series and return the result in a new time series. This is a vectorized
+   * Subtract the given asArray from this time asArray and return the result in a new time asArray. This is a vectorized
    * operation.
    * 
-   * @param otherSeries the series to subtract from this one.
-   * @return The difference between this series and the given series.
+   * @param otherSeries the asArray to subtract from this one.
+   * @return The difference between this asArray and the given asArray.
    */
   public final TimeSeries minus(final double[] otherSeries) {
     final double[] subtracted = new double[this.series.length];
@@ -488,11 +488,11 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Return a slice of this time series from start (inclusive) to end (inclusive).
+   * Return a slice of this time asArray from start (inclusive) to end (inclusive).
    * 
    * @param start the beginning index of the slice. The value at the index is included in the returned TimeSeries.
    * @param end the ending index of the slice. The value at the index is included in the returned TimeSeries.
-   * @return a slice of this time series from start (inclusive) to end (inclusive).
+   * @return a slice of this time asArray from start (inclusive) to end (inclusive).
    */
   public final TimeSeries from(final int start, final int end) {
     final double[] sliced = new double[end - start + 1];
@@ -502,13 +502,13 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Return a slice of this time series from start (inclusive) to end (inclusive).
+   * Return a slice of this time asArray from start (inclusive) to end (inclusive).
    * 
    * @param start the beginning date and time of the slice. The value at the given date-time is included in the returned
    *        TimeSeries.
    * @param end the ending date and time of the slice. The value at the given date-time is included in the returned
    *        TimeSeries.
-   * @return a slice of this time series from start (inclusive) to end (inclusive).
+   * @return a slice of this time asArray from start (inclusive) to end (inclusive).
    */
   public final TimeSeries from(final OffsetDateTime start, final OffsetDateTime end) {
     final int startIdx = this.dateTimeIndex.get(start);
@@ -520,12 +520,12 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Return a slice of this time series using R/Julia style indexing.
+   * Return a slice of this time asArray using R/Julia style indexing.
    * 
    * @param start the beginning time index of the slice. The value at the time index is included in the returned
    *        TimeSeries.
    * @param end the ending time index of the slice. The value at the time index is included in the returned TimeSeries.
-   * @return a slice of this time series from start (inclusive) to end (inclusive) using R/Julia style indexing.
+   * @return a slice of this time asArray from start (inclusive) to end (inclusive) using R/Julia style indexing.
    */
   public final TimeSeries timeSlice(final int start, final int end) {
     final double[] sliced = new double[end - start + 1];
@@ -540,25 +540,25 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Print a descriptive summary of this time series.
+   * Print a descriptive summary of this time asArray.
    */
   public final void print() {
     System.out.println(this.toString());
   }
 
   /**
-   * Retrieve the time series of observations.
+   * Retrieve the time asArray of observations.
    * 
-   * @return the time series of observations.
+   * @return the time asArray of observations.
    */
-  public final double[] series() {
+  public final double[] asArray() {
     return this.series.clone();
   }
 
   /**
-   * Retrieve the time period at which observations are made for this series.
+   * Retrieve the time period at which observations are made for this asArray.
    * 
-   * @return the time period at which observations are made for this series.
+   * @return the time period at which observations are made for this asArray.
    */
   public final TimePeriod timePeriod() {
     return this.timePeriod;
@@ -574,18 +574,18 @@ public final class TimeSeries extends DataSet {
   }
 
   /**
-   * Retrieve the list of observation times for this series.
+   * Retrieve the list of observation times for this asArray.
    * 
-   * @return the list of observation times for this series.
+   * @return the list of observation times for this asArray.
    */
   public final List<OffsetDateTime> observationTimes() {
     return this.observationTimes;
   }
 
   /**
-   * Retrieve the mapping of observation times to array indices for this series.
+   * Retrieve the mapping of observation times to array indices for this asArray.
    * 
-   * @return the mapping of observation times to array indices for this series.
+   * @return the mapping of observation times to array indices for this asArray.
    */
   public final Map<OffsetDateTime, Integer> dateTimeIndex() {
     return this.dateTimeIndex;
@@ -737,7 +737,7 @@ public final class TimeSeries extends DataSet {
   public String toString() {
     NumberFormat numFormatter = new DecimalFormat("#0.0000");
     StringBuilder builder = new StringBuilder();
-    builder.append("n: ").append(n).append("\nmean: ").append(numFormatter.format(mean)).append("\nseries: ");
+    builder.append("n: ").append(n).append("\nmean: ").append(numFormatter.format(mean)).append("\nasArray: ");
     if (series.length > 6) {
       for (double d : DoubleFunctions.slice(series, 0, 3)) {
         builder.append(numFormatter.format(d)).append(", ");

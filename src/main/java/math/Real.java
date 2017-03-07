@@ -32,7 +32,7 @@ package math;
 public final class Real extends Complex {
 
   private static final double EPSILON = Math.ulp(1.0);
-  
+
   private final double value;
 
   /**
