@@ -26,7 +26,7 @@ package timeseries.models;
 import timeseries.TimeSeries;
 
 /**
- * A forecast produced by a time asArray {@link Model}.
+ * A forecast produced by a time series {@link Model}.
  *
  * @author Jacob Rachiele
  */

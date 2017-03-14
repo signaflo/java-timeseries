@@ -23,24 +23,27 @@
  */
 package stats.distributions;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import smile.stat.distribution.TDistribution;
 
+@EqualsAndHashCode @ToString
 public final class StudentsT implements Distribution {
-  
-  private final TDistribution dist;
-  
-  public StudentsT(final int df) {
-    this.dist = new TDistribution(df);
-  }
 
-  @Override
-  public double rand() {
-    return this.dist.rand();
-  }
-  
-  @Override
-  public double quantile(final double prob) {
-    return this.dist.quantile(prob);
-  }
+    private final TDistribution dist;
+
+    public StudentsT(final int df) {
+        this.dist = new TDistribution(df);
+    }
+
+    @Override
+    public double rand() {
+        return this.dist.rand();
+    }
+
+    @Override
+    public double quantile(final double prob) {
+        return this.dist.quantile(prob);
+    }
 
 }

@@ -2,7 +2,6 @@ package timeseries.models.arima;
 
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.data.RowD1Matrix64F;
-import timeseries.models.arima.StateSpaceARMA;
 
 import static org.ejml.ops.CommonOps.*;
 
@@ -429,15 +428,15 @@ final class ArmaKalmanFilter {
 
     private final double ssq;
     private final double sumlog;
-    private final double sigma2ML;
+    private final double sigma2;
     private final double logLikelihood;
     private final double[] residuals;
 
     KalmanOutput(final int n, final double ssq, final double sumlog, final double[] residuals) {
       this.ssq = ssq;
       this.sumlog = sumlog;
-      this.sigma2ML = ssq / n;
-      this.logLikelihood = -0.5 * (n * (Math.log(sigma2ML) + Math.log(2 * Math.PI) + 1.0) + sumlog);
+      this.sigma2 = ssq / n;
+      this.logLikelihood = -0.5 * (n * (Math.log(sigma2) + Math.log(2 * Math.PI) + 1.0) + sumlog);
       this.residuals = residuals.clone();
     }
 
@@ -450,7 +449,7 @@ final class ArmaKalmanFilter {
     }
 
     double sigma2() {
-      return this.sigma2ML;
+      return this.sigma2;
     }
 
     double logLikelihood() {

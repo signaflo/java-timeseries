@@ -52,7 +52,7 @@ import timeseries.models.Forecast;
 import timeseries.operators.LagPolynomial;
 
 /**
- * A forecast for an ARIMA model.
+ * A forecast for an ARIMA model. This class is immutable and thread-safe.
  *
  * @author Jacob Rachiele
  *
@@ -101,10 +101,6 @@ public final class ArimaForecast implements Forecast {
    */
   public static ArimaForecast forecast(final Arima model) {
     return new ArimaForecast(model, 12, 0.05);
-  }
-
-  private ArimaForecast(final Arima model, final int steps) {
-    this(model, steps, 0.05);
   }
 
   private ArimaForecast(final Arima model, final int steps, final double alpha) {

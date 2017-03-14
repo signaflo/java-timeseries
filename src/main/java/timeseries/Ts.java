@@ -29,7 +29,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 /**
- * Static factory constructors for time asArray objects.
+ * Static factory constructors for time series objects.
  * @author Jacob Rachiele
  *
  */
@@ -42,8 +42,8 @@ public final class Ts {
 	/**
 	 * Construct a new TimeSeries object with observations made annually starting at the given year.
 	 * @param startYear the year of the first observation.
-	 * @param series the sequence of observations constituting this time asArray.
-	 * @return a new TimeSeries object with the given asArray data and start year.
+	 * @param series the sequence of observations constituting this time series.
+	 * @return a new TimeSeries object with the given series data and start year.
 	 */
 	public static TimeSeries newAnnualSeries(final int startYear, final double... series) {
 	  final LocalDateTime localDateTime = LocalDateTime.of(startYear, Month.JANUARY, 1, 0, 0);
@@ -57,8 +57,8 @@ public final class Ts {
 	 * @param startYear the year of the first observation.
 	 * @param startMonth the month of the first observation - an integer between
 	 *  1 and 12 corresponding to the months January through December.
-	 * @param series the sequence of observations constituting this time asArray.
-	 * @return a new TimeSeries object with the given asArray data, start year, and start month.
+	 * @param series the sequence of observations constituting this time series.
+	 * @return a new TimeSeries object with the given series data, start year, and start month.
 	 */
 	public static TimeSeries newMonthlySeries(final int startYear, final int startMonth,
                                             final double... series) {
@@ -76,8 +76,8 @@ public final class Ts {
 	 * @param startMonth The month of the first observation - an integer between
 	 *  1 and 12 corresponding to the months January through December.
 	 * @param startDay The day of the first observation - an integer between 1 and 31.
-	 * @param series The sequence of observations constituting this time asArray.
-	 * @return A new TimeSeries object with the given year, month, and asArray data.
+	 * @param series The sequence of observations constituting this time series.
+	 * @return A new TimeSeries object with the given year, month, and series data.
 	 */
 	public static TimeSeries newMonthlySeries(final int startYear, final int startMonth,
                                             final int startDay, final double... series) {
@@ -94,8 +94,8 @@ public final class Ts {
 	 * @param startYear The year of the first observation.
 	 * @param startQuarter The quarter of the first observation - an integer between
 	 *  1 and 4 corresponding to the four quarters of a year.
-	 * @param series The sequence of observations constituting this time asArray.
-	 * @return A new TimeSeries object with the given year, quarter, and asArray data.
+	 * @param series The sequence of observations constituting this time series.
+	 * @return A new TimeSeries object with the given year, quarter, and series data.
 	 */
 	public static TimeSeries newQuarterlySeries(final int startYear, final int startQuarter,
                                               final double... series) {

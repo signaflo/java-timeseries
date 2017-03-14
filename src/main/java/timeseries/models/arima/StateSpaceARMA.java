@@ -56,26 +56,6 @@ final class StateSpaceARMA {
     return maParams.clone();
   }
   
-  private double[] R() {
-    double[] R = new double[r];
-    System.arraycopy(arParams, 0, R, 0, arParams.length);
-    for (int j = 0; j < maParams.length; j++) {
-      R[j] += maParams[j];
-    }
-    return R;
-  }
-  
-  final double[][] V() {
-    double[] R = R();
-    double[][] V = new double[r][r];
-    for (int i = 0; i < r; i++) {
-      for (int j = 0; j < r; j++) {
-        V[i][j] = R[i] * R[j];
-      }
-    }
-    return V;
-  }
-  
   final double[][] transitionMatrix() {
     return this.transitionMatrix.clone();
   }

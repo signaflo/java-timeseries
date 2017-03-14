@@ -1,8 +1,9 @@
 package timeseries.models.arima;
 
-import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertArrayEquals;
 
 import data.TestData;
 import timeseries.operators.LagPolynomial;
@@ -10,8 +11,7 @@ import timeseries.operators.LagPolynomial;
 public class KalmanFilterSpec {
 
   @Test
-  @Ignore
-  public void testKalmanFilter() throws Exception {
+  public void whenStateSpaceArmaInitializedThenDataSetProperly() throws Exception {
     LagPolynomial arPoly = LagPolynomial.autoRegressive(0.3114114);
     LagPolynomial diffPoly = LagPolynomial.firstDifference();
     LagPolynomial arDiff = arPoly.times(diffPoly);
@@ -19,15 +19,7 @@ public class KalmanFilterSpec {
     double[] ma = {-0.8373430,  0.0,  0.0, 0.3854193, -0.3227282};
     double[] y = TestData.ukcars().asArray();
     StateSpaceARMA ss = new StateSpaceARMA(y, ar, ma);
-    new ArmaKalmanFilter(ss);
-    new ArmaKalmanFilter(ss);
-    new ArmaKalmanFilter(ss);
-    long start = System.currentTimeMillis();
-    for (int i = 0; i < 2; i++) {
-      new ArmaKalmanFilter(ss);
-    }
-    long end = System.currentTimeMillis();
-    System.out.println("Time taken: " + (end - start) + " millis.");
+    assertThat(ss.stateEffectsVector(), is(new double[] {1.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
   }
 
   /*
