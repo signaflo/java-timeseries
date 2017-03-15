@@ -6,6 +6,7 @@ Features
 -------
 * Seasonal ARIMA models.
 * ARIMA forecasting and simulation.
+* Random walk simulation and modeling.
 * Time series statistics, moving averages, and aggregation.
 * Simple, intuitive, and powerful time modeling.
 * Autocorrelation function and ACF plot.
