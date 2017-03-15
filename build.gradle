@@ -1,9 +1,9 @@
 apply plugin: 'java'
-//apply plugin: 'eclipse'
 apply plugin: 'jacoco'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'net.ltgt.apt'
 
 group = "com.github.jrachiele"
 version = "0.2-SNAPSHOT"
@@ -13,6 +13,79 @@ ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 signing {
     required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
+}
+
+compileJava {
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
+
+repositories {
+    mavenCentral()
+}
+
+buildscript {
+  repositories {
+      jcenter()
+      maven {
+          url "https://plugins.gradle.org/m2/"
+      }
+  }
+  dependencies {
+    classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3',
+            'net.ltgt.gradle:gradle-apt-plugin:0.9'
+  }
+}
+
+sourceSets {
+    apt {
+        java {
+            srcDir 'build/generated/source/apt/main'
+        }
+    }
+}
+
+task generateJavadoc(type: Javadoc) {
+  source = sourceSets.main.allJava + sourceSets.apt.allJava
+  classpath = sourceSets.main.compileClasspath + sourceSets.apt.compileClasspath
+  options.memberLevel = JavadocMemberLevel.PUBLIC
+  options {
+    links "https://docs.oracle.com/javase/8/docs/api/"
+  }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: generateJavadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+dependencies {
+
+    apt 'org.immutables:value:2.4.4'
+    compileOnly 'org.immutables:value:2.4.4:annotations'
+    compileOnly 'org.projectlombok:lombok:1.16.14'
+
+    compile 'org.apache.commons:commons-csv:1.4'
+    compile 'com.github.haifengl:smile-core:1.2.0'
+    compile 'com.google.guava:guava:20.0'
+    compile 'org.knowm.xchart:xchart:3.2.0'
+    compile 'org.ejml:all:0.30'
+    compile 'org.slf4j:slf4j-api:1.7.24'
+
+    runtime 'org.slf4j:slf4j-simple:1.7.24'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
+    //testRuntime 'org.slf4j:slf4j-nop:1.7.24'
 }
 
 uploadArchives {
@@ -57,63 +130,6 @@ uploadArchives {
             }
         }
     }
-}
-
-compileJava {
-    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-}
-
-repositories {
-    mavenCentral()
-}
-
-buildscript {
-  repositories {
-    jcenter()
-  }
-  dependencies {
-    classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
-  }
-}
-
-task generateJavadoc(type: Javadoc) {
-  source = sourceSets.main.allJava
-  classpath = sourceSets.main.compileClasspath
-  options.memberLevel = JavadocMemberLevel.PUBLIC
-  options {
-    links "https://docs.oracle.com/javase/8/docs/api/"
-  }
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: generateJavadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
-dependencies {
-
-    compile 'org.apache.commons:commons-csv:1.4'
-    compile 'com.github.haifengl:smile-core:1.2.0'
-    compile 'com.google.guava:guava:20.0'
-    compile 'org.knowm.xchart:xchart:3.2.0'
-    compile 'org.ejml:all:0.30'
-    compile 'org.slf4j:slf4j-api:1.7.24'
-    runtime 'org.slf4j:slf4j-simple:1.7.24'
-    compileOnly 'org.projectlombok:lombok:1.16.14'
-
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.hamcrest:hamcrest-library:1.3'
-    //testRuntime 'org.slf4j:slf4j-nop:1.7.24'
 }
 
 

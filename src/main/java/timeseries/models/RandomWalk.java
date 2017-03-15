@@ -176,7 +176,6 @@ public final class RandomWalk implements Model {
     /**
      * {@inheritDoc}
      * <p>
-     * <p>
      * <b>Implementation Note:</b>
      * </p>
      * <p>
