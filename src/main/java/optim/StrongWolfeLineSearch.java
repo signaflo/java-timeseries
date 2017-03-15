@@ -44,11 +44,9 @@ final class StrongWolfeLineSearch {
   private final double c2;
   private final double f0; // The value of phi at alpha = 0.
   private final double slope0; // The slope of phi at alpha = 0.
-  private final double alphaMin;
   private final double alphaMax;
   private final Function psi;
   private final SlopeFunction dPsi;
-  int m = 0; // A count of the highest level iteration.
   private double alphaLower;
   private double psiAlphaLower;
   private double dPsiAlphaLower;
@@ -71,7 +69,6 @@ final class StrongWolfeLineSearch {
     this.c2 = builder.c2;
     this.f0 = builder.f0;
     this.slope0 = builder.slope0;
-    this.alphaMin = 1E-4;
     this.alphaMax = builder.alphaMax;
     this.alphaT = builder.alpha0;
     this.psi = (alpha) -> phi.at(alpha) - f0 - c1 * slope0 * alpha;
@@ -106,7 +103,6 @@ final class StrongWolfeLineSearch {
       return alphaT;
     }
     Real.Interval initialInterval = getInitialInterval();
-    m++;
     if (initialInterval.endpointsEqual()) {
       return initialInterval.lowerDbl();
     }
@@ -153,7 +149,6 @@ final class StrongWolfeLineSearch {
       if (alphaLower == alphaUpper) {
         return alphaLower;
       }
-      m++;
       k++;
     }
     return alphaT;

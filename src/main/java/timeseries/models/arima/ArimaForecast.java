@@ -109,8 +109,8 @@ public final class ArimaForecast implements Forecast {
     this.alpha = alpha;
     this.criticalValue = new Normal().quantile(1 - alpha / 2);
     this.fcstErrors = getFcstErrors(this.criticalValue);
-    this.upperValues = computeUpperPredictionValues(steps, alpha);
-    this.lowerValues = computeLowerPredictionValues(steps, alpha);
+    this.upperValues = computeUpperPredictionBounds(steps, alpha);
+    this.lowerValues = computeLowerPredictionBounds(steps, alpha);
   }
   
   @Override
@@ -129,7 +129,7 @@ public final class ArimaForecast implements Forecast {
   }
   
   @Override
-  public TimeSeries computeUpperPredictionValues(final int steps, final double alpha) {
+  public TimeSeries computeUpperPredictionBounds(final int steps, final double alpha) {
     final double criticalValue = new Normal().quantile(1 - alpha / 2);
     double[] upperPredictionValues = new double[steps];
     double[] errors = getStdErrors(criticalValue);
@@ -141,7 +141,7 @@ public final class ArimaForecast implements Forecast {
   }
 
   @Override
-  public TimeSeries computeLowerPredictionValues(final int steps, final double alpha) {
+  public TimeSeries computeLowerPredictionBounds(final int steps, final double alpha) {
     final double criticalValue = new Normal().quantile(alpha / 2);
     double[] lowerPredictionValues = new double[steps];
     double[] errors = getStdErrors(criticalValue);

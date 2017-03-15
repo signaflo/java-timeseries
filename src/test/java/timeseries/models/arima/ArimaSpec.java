@@ -99,8 +99,8 @@ public class ArimaSpec {
         385.602156, 383.635953, 381.820598};
     double[] expectedUpper = {488.660387, 495.046987, 497.203721, 500.06622, 502.040234, 504.278084, 506.24368,
         508.240341, 510.125104, 511.980016};
-    double[] actualLower = fcst.computeLowerPredictionValues(10, 0.05).asArray();
-    double[] actualUpper = fcst.computeUpperPredictionValues(10, 0.05).asArray();
+    double[] actualLower = fcst.computeLowerPredictionBounds(10, 0.05).asArray();
+    double[] actualUpper = fcst.computeUpperPredictionBounds(10, 0.05).asArray();
     assertArrayEquals(expectedLower, actualLower, 1E-4);
     assertArrayEquals(expectedUpper, actualUpper, 1E-4);
   }
