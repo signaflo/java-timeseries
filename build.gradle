@@ -49,7 +49,8 @@ task generateJavadoc(type: Javadoc) {
   classpath = sourceSets.main.compileClasspath + sourceSets.apt.compileClasspath
   options.memberLevel = JavadocMemberLevel.PUBLIC
   options {
-    links "https://docs.oracle.com/javase/8/docs/api/"
+    links "https://docs.oracle.com/javase/8/docs/api/",
+            "https://google.github.io/guava/releases/21.0/api/docs"
   }
 }
 
