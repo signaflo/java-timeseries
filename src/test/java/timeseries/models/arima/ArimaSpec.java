@@ -4,8 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 
-import static data.DoubleFunctions.newArray;
-
+import data.DoubleFunctions;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -143,11 +142,11 @@ public class ArimaSpec {
   @Test
   public void testModelInfoEqualsAndHashCode() {
     Arima.ModelInformation info1 = new Arima.ModelInformation(2, 50.0, -100.0,
-        newArray(), newArray());
+                                                              DoubleFunctions.arrayFrom(), DoubleFunctions.arrayFrom());
     Arima.ModelInformation info2 = new Arima.ModelInformation(2, 45.0, -90.0,
-        newArray(), newArray());
+                                                              DoubleFunctions.arrayFrom(), DoubleFunctions.arrayFrom());
     Arima.ModelInformation info3 = new Arima.ModelInformation(2, 50.0, -100.0,
-        newArray(), newArray());
+                                                              DoubleFunctions.arrayFrom(), DoubleFunctions.arrayFrom());
     assertThat(info1, is(info1));
     assertThat(info1.hashCode(), is(info3.hashCode()));
     assertThat(info1, is(info3));

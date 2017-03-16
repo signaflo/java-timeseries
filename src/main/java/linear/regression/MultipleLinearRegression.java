@@ -103,33 +103,38 @@ public final class MultipleLinearRegression implements LinearRegression {
 
     private class MatrixFormulation {
 
+        private final DenseMatrix64F A;
         private final DenseMatrix64F AtA;
         private final DenseMatrix64F AtAInv;
 
         MatrixFormulation() {
             int numRows = response.size();
             int numCols = predictors.size() + ((hasIntercept)? 1 : 0);
-            this.AtA = createAtAMatrix(numRows, numCols);
+            this.A = createMatrixA(numRows, numCols);
+            this.AtA = createMatrixAtA(numCols);
             LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.qr(numRows, numCols);
             solver.setA(AtA);
             this.AtAInv = new DenseMatrix64F(numCols, numCols);
             solver.invert(AtAInv);
         }
 
-        private DenseMatrix64F createAtAMatrix(final int numRows, final int numCols) {
+        private DenseMatrix64F createMatrixAtA(final int numCols) {
+            DenseMatrix64F AtA = new DenseMatrix64F(numCols, numCols);
+            CommonOps.multInner(A, AtA);
+            return AtA;
+        }
+
+        private DenseMatrix64F createMatrixA(final int numRows, final int numCols) {
             double[] data;
             if (hasIntercept) {
                 data = fill(numRows, 1.0);
             } else {
-                data = newArray();
+                data = arrayFrom();
             }
             for (List<Double> predictor : predictors) {
-                data = combine(data, newArray(predictor));
+                data = combine(data, arrayFrom(predictor));
             }
-            DenseMatrix64F A = new DenseMatrix64F(numRows, numCols, false, data);
-            DenseMatrix64F AtA = new DenseMatrix64F(numCols, numCols);
-            CommonOps.multInner(A, AtA);
-            return AtA;
+            return new DenseMatrix64F(numRows, numCols, false, data);
         }
     }
 }

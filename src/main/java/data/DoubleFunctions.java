@@ -46,7 +46,7 @@ public final class DoubleFunctions {
    * @param data the data to create a new array from.
    * @return a new array from the given data.
    */
-  public static double[] newArray(double... data) {
+  public static double[] arrayFrom(double... data) {
     return data.clone();
   }
 
@@ -90,7 +90,7 @@ public final class DoubleFunctions {
    * @param data the data to use in the new array.
    * @return a new array from the given list of data.
    */
-  public static double[] newArray(List<Double> data) {
+  public static double[] arrayFrom(List<Double> data) {
     final int size = data.size();
     final double[] doubles = new double[size];
     for (int i = 0; i < size; i++) {
@@ -105,7 +105,7 @@ public final class DoubleFunctions {
    * @param data the data to use in the new array.
    * @return a new array from the given boxed Double array.
    */
-  public static double[] newArray(Double[] data) {
+  public static double[] arrayFrom(Double[] data) {
     final int size = data.length;
     final double[] doubles = new double[size];
     for (int i = 0; i < size; i++) {

@@ -18,8 +18,8 @@ public final class DoubleRange {
 
     private final double[] range;
 
-    private DoubleRange(final int from, final int to, final int by) {
-        range = new double[to - from];
+    private DoubleRange(final int from, final int to, final double by) {
+        range = new double[Math.abs(to - from)];
         for (int i = 0; i < range.length; i++) {
             range[i] = from + i * by;
         }
@@ -30,7 +30,7 @@ public final class DoubleRange {
      *
      * @param from the starting value of the range.
      * @param to   the ending value of the range, not included in the result.
-     * @return a new of doubles excluding the given <i>to</i> value.
+     * @return a new range of doubles excluding the given <i>to</i> value.
      */
     public static DoubleRange exclusiveRange(final int from, final int to) {
         return new DoubleRange(from, to, 1);
@@ -41,7 +41,7 @@ public final class DoubleRange {
      *
      * @param from the starting value of the range.
      * @param to   the ending value of the range, included in the result.
-     * @return a new of doubles including the given <i>to</i> value.
+     * @return a new range of doubles including the given <i>to</i> value.
      */
     public static DoubleRange inclusiveRange(final int from, final int to) {
         return new DoubleRange(from, to + 1, 1);
