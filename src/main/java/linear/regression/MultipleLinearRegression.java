@@ -26,6 +26,8 @@ package linear.regression;
 import static data.DoubleFunctions.*;
 
 import com.google.common.collect.ImmutableList;
+import org.ejml.alg.dense.mult.MatrixVectorMult;
+import org.ejml.data.D1Matrix64F;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.factory.LinearSolverFactory;
 import org.ejml.interfaces.linsol.LinearSolver;
@@ -37,7 +39,7 @@ public final class MultipleLinearRegression implements LinearRegression {
 
     private final List<List<Double>> predictors;
     private final List<Double> response;
-    private List<Double> beta;
+    private final List<Double> beta;
     private final boolean hasIntercept;
 
     private MultipleLinearRegression(Builder builder) {
@@ -45,10 +47,7 @@ public final class MultipleLinearRegression implements LinearRegression {
         this.response = builder.response;
         this.hasIntercept = builder.hasIntercept;
         MatrixFormulation matrixFormulation = new MatrixFormulation();
-    }
-
-    public static Builder builder() {
-        return new Builder();
+        this.beta = matrixFormulation.getBAsList();
     }
 
     @Override
@@ -71,6 +70,10 @@ public final class MultipleLinearRegression implements LinearRegression {
         return this.hasIntercept;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+    
     public static final class Builder {
         private List<List<Double>> predictors;
         private List<Double> response;
@@ -104,27 +107,46 @@ public final class MultipleLinearRegression implements LinearRegression {
     private class MatrixFormulation {
 
         private final DenseMatrix64F A;
+        private final DenseMatrix64F At;
         private final DenseMatrix64F AtA;
         private final DenseMatrix64F AtAInv;
+        private final D1Matrix64F b;
+        private final D1Matrix64F y;
 
         MatrixFormulation() {
             int numRows = response.size();
             int numCols = predictors.size() + ((hasIntercept)? 1 : 0);
             this.A = createMatrixA(numRows, numCols);
+            this.At = new DenseMatrix64F(numCols, numRows);
+            CommonOps.transpose(A, At);
             this.AtA = createMatrixAtA(numCols);
+            this.AtAInv = new DenseMatrix64F(numCols, numCols);
+            this.b = new DenseMatrix64F(numCols, 1);
+            this.y = new DenseMatrix64F(numRows, 1);
+            solveAtA(numRows, numCols);
+            solveForB(numRows, numCols);
+        }
+
+        private void solveForB(int numRows, int numCols) {
+            DenseMatrix64F AtAInvAt = new DenseMatrix64F(numCols, numRows);
+            CommonOps.mult(AtAInv, At, AtAInvAt);
+            y.setData(arrayFrom(response));
+            MatrixVectorMult.mult(AtAInvAt, y, b);
+        }
+
+        private void solveAtA(int numRows, int numCols) {
             LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.qr(numRows, numCols);
             solver.setA(AtA);
-            this.AtAInv = new DenseMatrix64F(numCols, numCols);
             solver.invert(AtAInv);
         }
 
-        private DenseMatrix64F createMatrixAtA(final int numCols) {
+        private DenseMatrix64F createMatrixAtA(int numCols) {
             DenseMatrix64F AtA = new DenseMatrix64F(numCols, numCols);
-            CommonOps.multInner(A, AtA);
+            CommonOps.mult(At, A, AtA);
             return AtA;
         }
 
-        private DenseMatrix64F createMatrixA(final int numRows, final int numCols) {
+        private DenseMatrix64F createMatrixA(int numRows, int numCols) {
             double[] data;
             if (hasIntercept) {
                 data = fill(numRows, 1.0);
@@ -135,6 +157,10 @@ public final class MultipleLinearRegression implements LinearRegression {
                 data = combine(data, arrayFrom(predictor));
             }
             return new DenseMatrix64F(numRows, numCols, false, data);
+        }
+
+        private List<Double> getBAsList() {
+            return toList(b.getData());
         }
     }
 }

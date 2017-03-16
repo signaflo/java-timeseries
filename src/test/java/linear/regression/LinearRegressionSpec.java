@@ -29,8 +29,10 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static data.DoubleFunctions.arrayFrom;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertArrayEquals;
 
 public class LinearRegressionSpec {
 
@@ -48,5 +50,11 @@ public class LinearRegressionSpec {
         assertThat(regression.response(), is(response));
         assertThat(regression.predictors().get(0), is(time));
         assertThat(regression.beta(), is(not(nullValue())));
+    }
+
+    @Test
+    public void whenSimpleRegressionThenBetaEstimatedCorrectly() {
+        double[] expected = {217.818827, 4.883391};
+        assertArrayEquals(expected, arrayFrom(regression.beta()), 1E-4);
     }
 }
