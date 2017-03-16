@@ -23,6 +23,7 @@
  */
 package data;
 
+import com.google.common.primitives.Doubles;
 import stats.Statistics;
 
 import java.util.List;
@@ -126,6 +127,10 @@ public final class DoubleFunctions {
       filled[i] = value;
     }
     return filled;
+  }
+
+  public static List<Double> toList(final double[] data) {
+      return Doubles.asList(data.clone());
   }
 
   /**

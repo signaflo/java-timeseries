@@ -552,6 +552,10 @@ public final class TimeSeries extends DataSet {
         return this.series.clone();
     }
 
+    public final List<Double> asList() {
+        return DoubleFunctions.toList(this.series.clone());
+    }
+
     /**
      * Retrieve the time period at which observations are made for this series.
      *

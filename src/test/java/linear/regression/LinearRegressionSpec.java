@@ -21,14 +21,31 @@
  *
  * Jacob Rachiele
  */
-
 package linear.regression;
+
+import data.DoubleRange;
+import data.TestData;
+import org.junit.Test;
 
 import java.util.List;
 
-public interface LinearRegression {
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
-    List<List<Double>> predictors();
-    List<Double> response();
-    boolean hasIntercept();
+public class LinearRegressionSpec {
+
+    private List<Double> time = DoubleRange.inclusiveRange(1, 100).asList();
+    private List<Double> response = TestData.livestock().asList();
+    private boolean hasIntercept = true;
+    private LinearRegression regression = MultipleLinearRegression.builder()
+                                                          .predictor(time)
+                                                          .response(response)
+                                                          .build();
+
+    @Test
+    public void whenBuiltThenDataProperlySet() {
+        assertThat(regression.hasIntercept(), is(hasIntercept));
+        assertThat(regression.response(), is(response));
+        assertThat(regression.predictors().get(0), is(time));
+    }
 }

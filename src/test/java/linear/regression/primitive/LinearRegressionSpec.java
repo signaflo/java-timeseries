@@ -22,13 +22,7 @@
  * Jacob Rachiele
  */
 
-package linear.regression;
+package linear.regression.primitive;
 
-import java.util.List;
-
-public interface LinearRegression {
-
-    List<List<Double>> predictors();
-    List<Double> response();
-    boolean hasIntercept();
+public class LinearRegressionSpec {
 }

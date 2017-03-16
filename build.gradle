@@ -3,7 +3,6 @@ apply plugin: 'jacoco'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'net.ltgt.apt'
 
 group = "com.github.jrachiele"
 version = "0.2-SNAPSHOT"
@@ -26,31 +25,31 @@ repositories {
 buildscript {
   repositories {
       jcenter()
-      maven {
-          url "https://plugins.gradle.org/m2/"
-      }
+//      maven {
+//          url "https://plugins.gradle.org/m2/"
+//      }
   }
   dependencies {
-    classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3',
-            'net.ltgt.gradle:gradle-apt-plugin:0.9'
+    classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+            //'net.ltgt.gradle:gradle-apt-plugin:0.9'
   }
 }
 
-sourceSets {
-    apt {
-        java {
-            srcDir 'build/generated/source/apt/main'
-        }
-    }
-}
+//sourceSets {
+//    apt {
+//        java {
+//            srcDir 'build/generated/source/apt/main'
+//        }
+//    }
+//}
 
 task generateJavadoc(type: Javadoc) {
-  source = sourceSets.main.allJava + sourceSets.apt.allJava
-  classpath = sourceSets.main.compileClasspath + sourceSets.apt.compileClasspath
+  source = sourceSets.main.allJava // + sourceSets.apt.allJava
+  classpath = sourceSets.main.compileClasspath // + sourceSets.apt.compileClasspath
   options.memberLevel = JavadocMemberLevel.PUBLIC
   options {
-    links "https://docs.oracle.com/javase/8/docs/api/",
-            "https://google.github.io/guava/releases/21.0/api/docs"
+    links "https://docs.oracle.com/javase/8/docs/api/"
+            //"https://google.github.io/guava/releases/21.0/api/docs"
   }
 }
 
@@ -71,8 +70,8 @@ artifacts {
 
 dependencies {
 
-    apt 'org.immutables:value:2.4.4'
-    compileOnly 'org.immutables:value:2.4.4:annotations'
+    //apt 'org.immutables:value:2.4.4'
+    //compileOnly 'org.immutables:value:2.4.4:annotations'
     compileOnly 'org.projectlombok:lombok:1.16.14'
 
     compile 'org.apache.commons:commons-csv:1.4'

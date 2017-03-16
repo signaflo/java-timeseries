@@ -21,16 +21,11 @@
  *
  * Jacob Rachiele
  */
-
 package linear.regression.primitive;
 
-import org.immutables.value.Value;
-
-@Value.Immutable
 public abstract class LinearRegression {
 
     public abstract double[][] predictor();
     public abstract double[] response();
-    public abstract double[] beta();
     public abstract boolean hasIntercept();
 }
