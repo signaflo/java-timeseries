@@ -21,10 +21,15 @@
  *
  * Jacob Rachiele
  */
-
 package linear.regression;
 
+import static data.DoubleFunctions.*;
+
 import com.google.common.collect.ImmutableList;
+import org.ejml.data.DenseMatrix64F;
+import org.ejml.factory.LinearSolverFactory;
+import org.ejml.interfaces.linsol.LinearSolver;
+import org.ejml.ops.CommonOps;
 
 import java.util.List;
 
@@ -32,12 +37,14 @@ public final class MultipleLinearRegression implements LinearRegression {
 
     private final List<List<Double>> predictors;
     private final List<Double> response;
+    private List<Double> beta;
     private final boolean hasIntercept;
 
     private MultipleLinearRegression(Builder builder) {
         this.predictors = builder.predictors;
         this.response = builder.response;
         this.hasIntercept = builder.hasIntercept;
+        MatrixFormulation matrixFormulation = new MatrixFormulation();
     }
 
     public static Builder builder() {
@@ -47,6 +54,11 @@ public final class MultipleLinearRegression implements LinearRegression {
     @Override
     public List<List<Double>> predictors() {
         return ImmutableList.copyOf(this.predictors);
+    }
+
+    @Override
+    public List<Double> beta() {
+        return beta;
     }
 
     @Override
@@ -86,6 +98,38 @@ public final class MultipleLinearRegression implements LinearRegression {
 
         LinearRegression build() {
             return new MultipleLinearRegression(this);
+        }
+    }
+
+    private class MatrixFormulation {
+
+        private final DenseMatrix64F AtA;
+        private final DenseMatrix64F AtAInv;
+
+        MatrixFormulation() {
+            int numRows = response.size();
+            int numCols = predictors.size() + ((hasIntercept)? 1 : 0);
+            this.AtA = createAtAMatrix(numRows, numCols);
+            LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.qr(numRows, numCols);
+            solver.setA(AtA);
+            this.AtAInv = new DenseMatrix64F(numCols, numCols);
+            solver.invert(AtAInv);
+        }
+
+        private DenseMatrix64F createAtAMatrix(final int numRows, final int numCols) {
+            double[] data;
+            if (hasIntercept) {
+                data = fill(numRows, 1.0);
+            } else {
+                data = newArray();
+            }
+            for (List<Double> predictor : predictors) {
+                data = combine(data, newArray(predictor));
+            }
+            DenseMatrix64F A = new DenseMatrix64F(numRows, numCols, false, data);
+            DenseMatrix64F AtA = new DenseMatrix64F(numCols, numCols);
+            CommonOps.multInner(A, AtA);
+            return AtA;
         }
     }
 }

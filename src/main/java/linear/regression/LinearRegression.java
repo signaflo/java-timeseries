@@ -30,5 +30,6 @@ public interface LinearRegression {
 
     List<List<Double>> predictors();
     List<Double> response();
+    List<Double> beta();
     boolean hasIntercept();
 }

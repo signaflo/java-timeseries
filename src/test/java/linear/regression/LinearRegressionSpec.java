@@ -34,7 +34,7 @@ import static org.hamcrest.Matchers.*;
 
 public class LinearRegressionSpec {
 
-    private List<Double> time = DoubleRange.inclusiveRange(1, 100).asList();
+    private List<Double> time = DoubleRange.inclusiveRange(1, 47).asList();
     private List<Double> response = TestData.livestock().asList();
     private boolean hasIntercept = true;
     private LinearRegression regression = MultipleLinearRegression.builder()
@@ -47,5 +47,6 @@ public class LinearRegressionSpec {
         assertThat(regression.hasIntercept(), is(hasIntercept));
         assertThat(regression.response(), is(response));
         assertThat(regression.predictors().get(0), is(time));
+        assertThat(regression.beta(), is(not(nullValue())));
     }
 }
