@@ -148,21 +148,11 @@ public final class RandomWalk implements Model {
         return new RandomWalkForecast(this, steps, alpha);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see timeseries.models.Model#timeSeries()
-     */
     @Override
     public TimeSeries timeSeries() {
         return this.timeSeries;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see timeseries.models.Model#fittedSeries()
-     */
     @Override
     public TimeSeries fittedSeries() {
         return this.fittedSeries;
@@ -172,17 +162,7 @@ public final class RandomWalk implements Model {
     public TimeSeries residuals() {
         return this.residuals;
     }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <b>Implementation Note:</b>
-     * </p>
-     * <p>
-     * In the case of the random walk the plot of the fitted values is a one-period
-     * horizontal shift of the observations plot.
-     * </p>
-     */
+    
     @Override
     public void plotFit() {
 

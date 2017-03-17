@@ -55,7 +55,7 @@ public interface Forecast {
    * @return the upper end points of a prediction interval with the given number of forecast steps and the provided
    * &alpha; significance level.
    */
-  TimeSeries computeUpperPredictionValues(int steps, double alpha);
+  TimeSeries computeUpperPredictionBounds(int steps, double alpha);
 
   /**
    * Compute the lower end points of a prediction interval with the given number of forecast steps and the provided
@@ -66,7 +66,7 @@ public interface Forecast {
    * @return the lower end points of a prediction interval with the given number of forecast steps and the provided
    * &alpha; significance level.
    */
-  TimeSeries computeLowerPredictionValues(int steps, double alpha);
+  TimeSeries computeLowerPredictionBounds(int steps, double alpha);
 
   /**
    * Get the point forecasts.

@@ -95,8 +95,8 @@ public final class Arima implements Model {
         this.seasonalFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
         this.differencedSeries = observations.difference(1, order.d).difference(seasonalFrequency, order.D);
 
-        final double meanParScale = (order.constant == 1) ? 10 * differencedSeries.stdDeviation() / Math
-                .sqrt(differencedSeries.n()) : 1.0;
+        final double meanParScale = (order.constant == 1) ? 10 * differencedSeries.stdDeviation() /
+                                                            Math.sqrt(differencedSeries.n()) : 1.0;
         final Vector initParams;
         final Matrix initHessian;
 
@@ -117,8 +117,7 @@ public final class Arima implements Model {
         final BFGS optimizer = new BFGS(function, initParams, DEFAULT_TOLERANCE, DEFAULT_TOLERANCE, initHessian);
         final Vector optimizedParams = optimizer.parameters();
         final Matrix inverseHessian = optimizer.inverseHessian();
-//    System.out.println(function.functionEvaluations());
-//    System.out.println(function.gradientEvaluations());
+
         this.stdErrors = DoubleFunctions.sqrt(Operators.scale(inverseHessian.diagonal(), 1.0 / differencedSeries.n()));
         if (order.constant == 1) {
             this.stdErrors[this.stdErrors.length - 1] *= meanParScale;
@@ -580,10 +579,11 @@ public final class Arima implements Model {
         final int n = observations.n();
         double[] fcst = fcst(steps);
         TimePeriod timePeriod = observations.timePeriod();
-        final OffsetDateTime startTime = observations.observationTimes().get(n - 1)
-                                                     .plus(timePeriod.periodLength() * timePeriod.timeUnit()
-                                                                                                 .unitLength(),
-                                                           timePeriod.timeUnit().temporalUnit());
+        final OffsetDateTime startTime = observations.observationTimes().get(n - 1).plus(timePeriod.periodLength() *
+                                                                                         timePeriod.timeUnit()
+                                                                                                   .unitLength(),
+                                                                                         timePeriod.timeUnit()
+                                                                                                   .temporalUnit());
         return new TimeSeries(timePeriod, startTime, fcst);
     }
 
@@ -1355,8 +1355,8 @@ public final class Arima implements Model {
             final double[] maCoeffs = Arima.expandMaCoefficients(maParams, smaParams, seasonalFrequency);
             final double mean = (order.constant == 1) ? meanScale * params[params.length - 1] : 0.0;
 
-            if (fittingStrategy == FittingStrategy.ML || fittingStrategy == FittingStrategy.CSSML || fittingStrategy
-                    == FittingStrategy.USSML) {
+            if (fittingStrategy == FittingStrategy.ML || fittingStrategy == FittingStrategy.CSSML ||
+                fittingStrategy == FittingStrategy.USSML) {
                 final int n = differencedSeries.n();
                 ArmaKalmanFilter.KalmanOutput output = Arima.kalmanFit(differencedSeries, arCoeffs, maCoeffs, mean);
                 return 0.5 * (Math.log(output.sigma2()) + output.sumLog() / n);
@@ -1389,9 +1389,9 @@ public final class Arima implements Model {
         @Override
         public String toString() {
             return "differencedSeries: " + differencedSeries + "\norder: " + order + "\nfittingStrategy: " +
-                    fittingStrategy + "\nseasonalFrequency: " + seasonalFrequency + "\narParams: " + Arrays
-                    .toString(arParams) + "\nmaParams: " + Arrays.toString(maParams) + "\nsarParams: " + Arrays
-                    .toString(sarParams) + "\nsmaParams:" + " " + Arrays.toString(smaParams);
+                   fittingStrategy + "\nseasonalFrequency: " + seasonalFrequency + "\narParams: " +
+                   Arrays.toString(arParams) + "\nmaParams: " + Arrays.toString(maParams) + "\nsarParams: " +
+                   Arrays.toString(sarParams) + "\nsmaParams:" + " " + Arrays.toString(smaParams);
         }
 
         @Override
@@ -1433,7 +1433,8 @@ public final class Arima implements Model {
     /**
      * An ARIMA model simulation.
      */
-    @EqualsAndHashCode @ToString
+    @EqualsAndHashCode
+    @ToString
     public static class Simulation {
 
         private final ModelCoefficients coefficients;

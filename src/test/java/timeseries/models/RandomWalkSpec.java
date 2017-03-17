@@ -1,10 +1,12 @@
 package timeseries.models;
 
+import data.TestData;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import timeseries.TimeSeries;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
@@ -37,4 +39,29 @@ public class RandomWalkSpec {
         assertThat(simulated.n(), is(10));
     }
 
+    @Test
+    public void whenForecastThenNotNullReturned() {
+        TimeSeries series = TestData.sydneyAir();
+        RandomWalk model = new RandomWalk(series);
+        assertThat(model.forecast(1), is(not(nullValue())));
+    }
+
+    @Test
+    public void whenPointForecastThenEqualToLastObserved() {
+        TimeSeries series = TestData.sydneyAir();
+        RandomWalk model = new RandomWalk(series);
+        assertThat(model.pointForecast(1).asArray()[0], is(series.at(series.n() - 1)));
+    }
+
+    @Test
+    public void whenForecastThenPredictionIntervalCorrect() {
+        TimeSeries series = TestData.sydneyAir();
+        RandomWalkForecast forecast = new RandomWalkForecast(series, 7, 0.05);
+        double[] lowerValues = {0.955726, 0.735251, 0.566075, 0.423453, 0.2978, 0.184201, 0.079736};
+        double[] upperValues = {2.020274, 2.240749, 2.409925, 2.552547, 2.6782, 2.791799, 2.896264};
+        assertArrayEquals(lowerValues, forecast.lowerPredictionValues().asArray(), 1E-4);
+        assertArrayEquals(upperValues, forecast.upperPredictionValues().asArray(), 1E-4);
+        assertThat(forecast.lowerPredictionValues(), is(forecast.computeLowerPredictionBounds(7, 0.05)));
+        assertThat(forecast.upperPredictionValues(), is(forecast.computeUpperPredictionBounds(7, 0.05)));
+    }
 }
