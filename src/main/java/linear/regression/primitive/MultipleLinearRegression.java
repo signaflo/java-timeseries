@@ -23,10 +23,13 @@
  */
 package linear.regression.primitive;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.ejml.alg.dense.mult.MatrixVectorMult;
 import org.ejml.data.D1Matrix64F;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.factory.LinearSolverFactory;
+import org.ejml.interfaces.decomposition.QRDecomposition;
 import org.ejml.interfaces.linsol.LinearSolver;
 import org.ejml.ops.CommonOps;
 import stats.Statistics;
@@ -36,6 +39,7 @@ import static data.DoubleFunctions.*;
 /**
  * Linear regression with multiple predictors and using primitive data types. This class is immutable and thread-safe.
  */
+@EqualsAndHashCode @ToString
 public final class MultipleLinearRegression implements LinearRegression {
 
     private final double[][] predictors;
@@ -159,10 +163,9 @@ public final class MultipleLinearRegression implements LinearRegression {
 
         private final DenseMatrix64F A;
         private final DenseMatrix64F At;
-        private final DenseMatrix64F AtA;
         private final DenseMatrix64F AtAInv;
-        private final D1Matrix64F b;
-        private final D1Matrix64F y;
+        private final DenseMatrix64F b;
+        private final DenseMatrix64F y;
         private final double[] fitted;
         private final double[] residuals;
         private final double sigma2;
@@ -174,11 +177,10 @@ public final class MultipleLinearRegression implements LinearRegression {
             this.A = createMatrixA(numRows, numCols);
             this.At = new DenseMatrix64F(numCols, numRows);
             CommonOps.transpose(A, At);
-            this.AtA = createMatrixAtA(numCols);
             this.AtAInv = new DenseMatrix64F(numCols, numCols);
             this.b = new DenseMatrix64F(numCols, 1);
             this.y = new DenseMatrix64F(numRows, 1);
-            solveAtA(numCols);
+            solveAtA(numRows, numCols);
             solveForB(numRows, numCols);
             this.fitted = computeFittedValues();
             this.residuals = computeResiduals();
@@ -194,10 +196,18 @@ public final class MultipleLinearRegression implements LinearRegression {
             MatrixVectorMult.mult(AtAInvAt, y, b);
         }
 
-        private void solveAtA(int numCols) {
-            LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.symmPosDef(numCols);
-            solver.setA(AtA);
-            solver.invert(AtAInv);
+        private void solveAtA(int numRows, int numCols) {
+            LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.qr(numRows, numCols);
+            QRDecomposition<DenseMatrix64F> decomposition = solver.getDecomposition();
+            solver.setA(A);
+            y.setData(response);
+            solver.solve(this.y, this.b);
+            DenseMatrix64F R = decomposition.getR(null, true);
+            solver = LinearSolverFactory.linear(numCols);
+            solver.setA(R);
+            DenseMatrix64F Rinv = new DenseMatrix64F(numCols, numCols);
+            solver.invert(Rinv);
+            CommonOps.multOuter(Rinv, this.AtAInv);
         }
 
         private DenseMatrix64F createMatrixAtA(int numCols) {

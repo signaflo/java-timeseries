@@ -26,6 +26,8 @@ package linear.regression;
 import static data.DoubleFunctions.*;
 
 import com.google.common.collect.ImmutableList;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.ejml.alg.dense.mult.MatrixVectorMult;
 import org.ejml.data.D1Matrix64F;
 import org.ejml.data.DenseMatrix64F;
@@ -41,6 +43,7 @@ import java.util.List;
 /**
  * Linear regression with multiple predictors. This class is immutable and thread-safe.
  */
+@EqualsAndHashCode @ToString
 public final class MultipleLinearRegression implements LinearRegression {
 
     private final List<List<Double>> predictors;
@@ -264,6 +267,5 @@ public final class MultipleLinearRegression implements LinearRegression {
         private double getSigma2() {
             return this.sigma2;
         }
-
     }
 }
