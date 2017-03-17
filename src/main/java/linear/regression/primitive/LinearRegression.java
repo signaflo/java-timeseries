@@ -50,6 +50,13 @@ public interface LinearRegression {
     double[] beta();
 
     /**
+     * Get the standard errors of the estimated coefficients.
+     *
+     * @return the standard errors of the estimated coefficients.
+     */
+    double[] standardErrors();
+
+    /**
      * Get the model fitted values.
      *
      * @return the model fitted values.
@@ -62,6 +69,13 @@ public interface LinearRegression {
      * @return the model residuals.
      */
     double[] residuals();
+
+    /**
+     * Get the model error variance estimate.
+     *
+     * @return the model error variance estimate.
+     */
+    double sigma2();
 
     /**
      * Get whether or not the model includes an intercept.

@@ -61,6 +61,12 @@ public class LinearRegressionSpec {
     }
 
     @Test
+    public void whenSimpleLinearRegressionThenStandardErrorsAccurate() {
+        double[] expected = new double[] {4.8168057, 0.1747239};
+        assertArrayEquals(expected, arrayFrom(regression.standardErrors()), 1E-4);
+    }
+
+    @Test
     public void whenSimpleRegressionThenFittedValuesCorrect() {
         double[] fitted = arrayFrom(getFittedValues());
         assertArrayEquals(fitted, arrayFrom(regression.fitted()), 1E-4);

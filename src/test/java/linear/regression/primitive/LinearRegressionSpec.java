@@ -30,9 +30,7 @@ import data.TestData;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 
 public class LinearRegressionSpec {
@@ -60,6 +58,12 @@ public class LinearRegressionSpec {
     }
 
     @Test
+    public void whenSimpleLinearRegressionThenStandardErrorsAccurate() {
+        double[] expected = new double[] {4.8168057, 0.1747239};
+        assertArrayEquals(expected, regression.standardErrors(), 1E-4);
+    }
+
+    @Test
     public void whenSimpleRegressionThenFittedValuesCorrect() {
         double[] fitted = getFittedValues();
         assertArrayEquals(fitted, regression.fitted(), 1E-4);
@@ -75,6 +79,11 @@ public class LinearRegressionSpec {
                                                               .build();
         double[] expected = {11.76188};
         assertArrayEquals(expected, regression.beta(), 1E-4);
+    }
+
+    @Test
+    public void whenSimpleLinearRegressionThenSigma2Accurate() {
+        assertThat(regression.sigma2(), is(closeTo(264.01, 1E-2)));
     }
 
     private double[] getFittedValues() {

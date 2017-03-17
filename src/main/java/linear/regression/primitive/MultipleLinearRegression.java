@@ -23,13 +23,13 @@
  */
 package linear.regression.primitive;
 
-import data.Operators;
 import org.ejml.alg.dense.mult.MatrixVectorMult;
 import org.ejml.data.D1Matrix64F;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.factory.LinearSolverFactory;
 import org.ejml.interfaces.linsol.LinearSolver;
 import org.ejml.ops.CommonOps;
+import stats.Statistics;
 
 import static data.DoubleFunctions.*;
 
@@ -41,9 +41,11 @@ public final class MultipleLinearRegression implements LinearRegression {
     private final double[][] predictors;
     private final double[] response;
     private final double[] beta;
+    private final double[] standardErrors;
     private final double[] residuals;
     private final double[] fitted;
     private final boolean hasIntercept;
+    private final double sigma2;
 
     private MultipleLinearRegression(Builder builder) {
         this.predictors = builder.predictors;
@@ -51,8 +53,10 @@ public final class MultipleLinearRegression implements LinearRegression {
         this.hasIntercept = builder.hasIntercept;
         MatrixFormulation matrixFormulation = new MatrixFormulation();
         this.beta = matrixFormulation.getBetaEstimates();
+        this.standardErrors = matrixFormulation.getBetaStandardErrors(this.beta.length);
         this.fitted = matrixFormulation.computeFittedValues();
-        this.residuals = Operators.differenceOf(response, fitted);
+        this.residuals = matrixFormulation.getResiduals();
+        this.sigma2 = matrixFormulation.getSigma2();
     }
 
     @Override
@@ -63,6 +67,16 @@ public final class MultipleLinearRegression implements LinearRegression {
     @Override
     public double[] beta() {
         return beta;
+    }
+
+    @Override
+    public double[] standardErrors() {
+        return this.standardErrors.clone();
+    }
+
+    @Override
+    public double sigma2() {
+        return this.sigma2;
     }
 
     @Override
@@ -149,6 +163,10 @@ public final class MultipleLinearRegression implements LinearRegression {
         private final DenseMatrix64F AtAInv;
         private final D1Matrix64F b;
         private final D1Matrix64F y;
+        private final double[] fitted;
+        private final double[] residuals;
+        private final double sigma2;
+        private final DenseMatrix64F covarianceMatrix;
 
         MatrixFormulation() {
             int numRows = response.length;
@@ -162,6 +180,11 @@ public final class MultipleLinearRegression implements LinearRegression {
             this.y = new DenseMatrix64F(numRows, 1);
             solveAtA(numCols);
             solveForB(numRows, numCols);
+            this.fitted = computeFittedValues();
+            this.residuals = computeResiduals();
+            this.sigma2 = estimateSigma2(numCols);
+            this.covarianceMatrix = new DenseMatrix64F(numCols, numCols);
+            CommonOps.scale(sigma2, AtAInv, covarianceMatrix);
         }
 
         private void solveForB(int numRows, int numCols) {
@@ -202,8 +225,35 @@ public final class MultipleLinearRegression implements LinearRegression {
             return fitted.getData();
         }
 
+        private double[] computeResiduals() {
+            double[] resid = new double[fitted.length];
+            for (int i = 0; i < resid.length; i++) {
+                resid[i] = (response[i] - fitted[i]);
+            }
+            return resid;
+        }
+
+        private double[] getResiduals() {
+            return this.residuals.clone();
+        }
+
+        private double estimateSigma2(int df) {
+            double ssq = Statistics.sumOfSquared(arrayFrom(this.residuals));
+            return ssq / (this.residuals.length - df);
+        }
+
+        private double[] getBetaStandardErrors(int numCols) {
+            DenseMatrix64F diag = new DenseMatrix64F(numCols, 1);
+            CommonOps.extractDiag(this.covarianceMatrix, diag);
+            return sqrt(diag.getData());
+        }
+
         private double[] getBetaEstimates() {
             return b.getData().clone();
+        }
+
+        private double getSigma2() {
+            return this.sigma2;
         }
     }
 }

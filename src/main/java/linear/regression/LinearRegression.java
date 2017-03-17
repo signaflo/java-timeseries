@@ -50,6 +50,13 @@ public interface LinearRegression {
     List<Double> beta();
 
     /**
+     * Get the standard errors of the estimated coefficients.
+     *
+     * @return the standard errors of the estimated coefficients.
+     */
+    List<Double> standardErrors();
+
+    /**
      * Get the model fitted values.
      *
      * @return the model fitted values.
@@ -63,6 +70,11 @@ public interface LinearRegression {
      */
     List<Double> residuals();
 
+    /**
+     * Get the model error variance estimate.
+     *
+     * @return the model error variance estimate.
+     */
     double sigma2();
 
     /**

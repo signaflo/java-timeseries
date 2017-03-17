@@ -30,7 +30,7 @@ import org.ejml.alg.dense.mult.MatrixVectorMult;
 import org.ejml.data.D1Matrix64F;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.factory.LinearSolverFactory;
-import org.ejml.interfaces.decomposition.DecompositionInterface;
+import org.ejml.interfaces.decomposition.QRDecomposition;
 import org.ejml.interfaces.linsol.LinearSolver;
 import org.ejml.ops.CommonOps;
 import stats.Statistics;
@@ -46,6 +46,7 @@ public final class MultipleLinearRegression implements LinearRegression {
     private final List<List<Double>> predictors;
     private final List<Double> response;
     private final List<Double> beta;
+    private final List<Double> standardErrors;
     private final List<Double> fitted;
     private final List<Double> residuals;
     private final double sigma2;
@@ -60,6 +61,7 @@ public final class MultipleLinearRegression implements LinearRegression {
         this.fitted = matrixFormulation.getFittedvalues();
         this.residuals = matrixFormulation.getResiduals();
         this.sigma2 = matrixFormulation.getSigma2();
+        this.standardErrors = matrixFormulation.getBetaStandardErrors(beta.size());
     }
 
     @Override
@@ -70,6 +72,11 @@ public final class MultipleLinearRegression implements LinearRegression {
     @Override
     public List<Double> beta() {
         return beta;
+    }
+
+    @Override
+    public List<Double> standardErrors() {
+        return ImmutableList.copyOf(this.standardErrors);
     }
 
     @Override
@@ -156,13 +163,13 @@ public final class MultipleLinearRegression implements LinearRegression {
 
         private final DenseMatrix64F A;
         private final DenseMatrix64F At;
-        private final DenseMatrix64F AtA;
         private final DenseMatrix64F AtAInv;
         private final DenseMatrix64F b;
         private final DenseMatrix64F y;
         private final D1Matrix64F fitted;
         private final List<Double> residuals;
         private final double sigma2;
+        private final DenseMatrix64F covarianceMatrix;
 
         MatrixFormulation() {
             int numRows = response.size();
@@ -170,7 +177,6 @@ public final class MultipleLinearRegression implements LinearRegression {
             this.A = createMatrixA(numRows, numCols);
             this.At = new DenseMatrix64F(numCols, numRows);
             CommonOps.transpose(A, At);
-            this.AtA = createMatrixAtA(numCols);
             this.AtAInv = new DenseMatrix64F(numCols, numCols);
             this.b = new DenseMatrix64F(numCols, 1);
             this.y = new DenseMatrix64F(numRows, 1);
@@ -179,6 +185,8 @@ public final class MultipleLinearRegression implements LinearRegression {
             this.fitted = computeFittedValues();
             this.residuals = computeResiduals();
             this.sigma2 = estimateSigma2(numCols);
+            this.covarianceMatrix = new DenseMatrix64F(numCols, numCols);
+            CommonOps.scale(sigma2, AtAInv, covarianceMatrix);
         }
 
         private void solveForB(int numRows, int numCols) {
@@ -189,17 +197,17 @@ public final class MultipleLinearRegression implements LinearRegression {
         }
 
         private void solveAtA(int numRows, int numCols) {
-            LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.leastSquares(numRows, numCols);
+            LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.qr(numRows, numCols);
+            QRDecomposition<DenseMatrix64F> decomposition = solver.getDecomposition();
             solver.setA(A);
             y.setData(arrayFrom(response));
             solver.solve(this.y, this.b);
-            DecompositionInterface di = solver.getDecomposition();
-        }
-
-        private DenseMatrix64F createMatrixAtA(int numCols) {
-            DenseMatrix64F AtA = new DenseMatrix64F(numCols, numCols);
-            CommonOps.mult(At, A, AtA);
-            return AtA;
+            DenseMatrix64F R = decomposition.getR(null, true);
+            solver = LinearSolverFactory.linear(numCols);
+            solver.setA(R);
+            DenseMatrix64F Rinv = new DenseMatrix64F(numCols, numCols);
+            solver.invert(Rinv);
+            CommonOps.multOuter(Rinv, this.AtAInv);
         }
 
         private DenseMatrix64F createMatrixA(int numRows, int numCols) {
@@ -245,6 +253,12 @@ public final class MultipleLinearRegression implements LinearRegression {
 
         private List<Double> getBetaEstimates() {
             return listFrom(b.getData());
+        }
+
+        private List<Double> getBetaStandardErrors(int numCols) {
+            DenseMatrix64F diag = new DenseMatrix64F(numCols, 1);
+            CommonOps.extractDiag(this.covarianceMatrix, diag);
+            return listFrom(sqrt(diag.getData()));
         }
 
         private double getSigma2() {
