@@ -28,8 +28,47 @@ import java.util.List;
 
 public interface LinearRegression {
 
+    /**
+     * Get the prediction variables.
+     *
+     * @return the prediction variables.
+     */
     List<List<Double>> predictors();
+
+    /**
+     * Get the response variable.
+     *
+     * @return the response variable.
+     */
     List<Double> response();
+
+    /**
+     * Get the estimated coefficients.
+     *
+     * @return the estimated coefficients.
+     */
     List<Double> beta();
+
+    /**
+     * Get the model fitted values.
+     *
+     * @return the model fitted values.
+     */
+    List<Double> fitted();
+
+    /**
+     * Get the model residuals.
+     *
+     * @return the model residuals.
+     */
+    List<Double> residuals();
+
+    double sigma2();
+
+    /**
+     * Get whether or not the model includes an intercept.
+     *
+     * @return whether or not the model includes an intercept.
+     */
     boolean hasIntercept();
 }

@@ -24,9 +24,11 @@
 package linear.regression;
 
 import data.DoubleRange;
+import data.Operators;
 import data.TestData;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static data.DoubleFunctions.arrayFrom;
@@ -56,5 +58,37 @@ public class LinearRegressionSpec {
     public void whenSimpleRegressionThenBetaEstimatedCorrectly() {
         double[] expected = {217.818827, 4.883391};
         assertArrayEquals(expected, arrayFrom(regression.beta()), 1E-4);
+    }
+
+    @Test
+    public void whenSimpleRegressionThenFittedValuesCorrect() {
+        double[] fitted = arrayFrom(getFittedValues());
+        assertArrayEquals(fitted, arrayFrom(regression.fitted()), 1E-4);
+        double[] residuals = Operators.differenceOf(arrayFrom(response), fitted);
+        assertArrayEquals(residuals, arrayFrom(regression.residuals()), 1E-4);
+    }
+
+    @Test
+    public void whenSimpleRegressionNoInterceptThenBetaEstimatedCorrectly() {
+        LinearRegression regression = MultipleLinearRegression.builder()
+                                                              .from(this.regression)
+                                                              .hasIntercept(false)
+                                                              .build();
+        double[] expected = {11.76188};
+        assertArrayEquals(expected, arrayFrom(regression.beta()), 1E-4);
+    }
+
+    @Test
+    public void whenSimpleLinearRegressionThenSigma2Accurate() {
+        assertThat(regression.sigma2(), is(closeTo(264.01, 1E-2)));
+    }
+
+    private List<Double> getFittedValues() {
+        return Arrays.asList(222.702218, 227.58561, 232.469001, 237.352393, 242.235784, 247.119176, 252.002567,
+                             256.885959, 261.76935, 266.652742, 271.536133, 276.419525, 281.302916, 286.186308, 291.069699,
+                             295.953091, 300.836482, 305.719874, 310.603265, 315.486657, 320.370048, 325.25344, 330.136831,
+                             335.020223, 339.903614, 344.787006, 349.670397, 354.553788, 359.43718, 364.320571, 369.203963,
+                             374.087354, 378.970746, 383.854137, 388.737529, 393.62092, 398.504312, 403.387703, 408.271095,
+                             413.154486, 418.037878, 422.921269, 427.804661, 432.688052, 437.571444, 442.454835, 447.338227);
     }
 }

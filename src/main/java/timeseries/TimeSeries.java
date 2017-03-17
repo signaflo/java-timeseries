@@ -553,7 +553,7 @@ public final class TimeSeries extends DataSet {
     }
 
     public final List<Double> asList() {
-        return DoubleFunctions.toList(this.series.clone());
+        return DoubleFunctions.listFrom(this.series.clone());
     }
 
     /**

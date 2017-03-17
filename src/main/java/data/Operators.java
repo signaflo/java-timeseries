@@ -23,6 +23,9 @@
  */
 package data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Static methods for performing vector operations on arrays.
  * 
@@ -85,6 +88,17 @@ public final class Operators {
       difference[i] = left[i] - right[i];
     }
     return difference;
+  }
+
+  public static List<Double> differenceOf(final List<Double> left, final List<Double> right) {
+      if (left.size() != right.size()) {
+          throw new IllegalArgumentException("The lists must have the same length.");
+      }
+      final List<Double> difference = new ArrayList<>(left.size());
+      for (int i = 0; i < left.size(); i++) {
+          difference.add(left.get(i) - right.get(i));
+      }
+      return difference;
   }
 
   /**

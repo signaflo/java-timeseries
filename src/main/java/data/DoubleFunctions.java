@@ -129,7 +129,7 @@ public final class DoubleFunctions {
     return filled;
   }
 
-  public static List<Double> toList(final double[] data) {
+  public static List<Double> listFrom(final double[] data) {
       return Doubles.asList(data.clone());
   }
 

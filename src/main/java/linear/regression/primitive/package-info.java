@@ -21,52 +21,8 @@
  *
  * Jacob Rachiele
  */
-package linear.regression.primitive;
 
 /**
- * Represents a linear regression model.
+ * Regression models that use primitive data types.
  */
-public interface LinearRegression {
-
-    /**
-     * Get the prediction variables.
-     *
-     * @return the prediction variables.
-     */
-    double[][] predictors();
-
-    /**
-     * Get the response variable.
-     *
-     * @return the response variable.
-     */
-    double[] response();
-
-    /**
-     * Get the estimated coefficients.
-     *
-     * @return the estimated coefficients.
-     */
-    double[] beta();
-
-    /**
-     * Get the model fitted values.
-     *
-     * @return the model fitted values.
-     */
-    double[] fitted();
-
-    /**
-     * Get the model residuals.
-     *
-     * @return the model residuals.
-     */
-    double[] residuals();
-
-    /**
-     * Get whether or not the model includes an intercept.
-     *
-     * @return whether or not the model includes an intercept.
-     */
-    boolean hasIntercept();
-}
+package linear.regression.primitive;
