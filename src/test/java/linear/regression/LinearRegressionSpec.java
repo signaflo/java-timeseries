@@ -23,6 +23,7 @@
  */
 package linear.regression;
 
+import com.google.common.testing.EqualsTester;
 import data.DoubleRange;
 import data.Operators;
 import data.TestData;
@@ -41,7 +42,7 @@ public class LinearRegressionSpec {
     private List<Double> time = DoubleRange.inclusiveRange(1, 47).asList();
     private List<Double> response = TestData.livestock().asList();
     private boolean hasIntercept = true;
-    private LinearRegression regression = MultipleLinearRegression.builder()
+    private MultipleLinearRegression regression = MultipleLinearRegression.builder()
                                                           .predictor(time)
                                                           .response(response)
                                                           .build();
@@ -87,6 +88,17 @@ public class LinearRegressionSpec {
     @Test
     public void whenSimpleLinearRegressionThenSigma2Accurate() {
         assertThat(regression.sigma2(), is(closeTo(264.01, 1E-2)));
+    }
+
+    @Test
+    public void equalsContract() {
+        MultipleLinearRegression other = this.regression.withHasIntercept(!hasIntercept);
+        MultipleLinearRegression other2 = this.regression.withResponse(DoubleRange.inclusiveRange(1961, 2007).asList());
+        new EqualsTester()
+                .addEqualityGroup(this.regression, MultipleLinearRegression.builder().from(this.regression).build())
+                .addEqualityGroup(other, MultipleLinearRegression.builder().from(other).build())
+                .addEqualityGroup(other2, MultipleLinearRegression.builder().from(other2).build())
+                .testEquals();
     }
 
     private List<Double> getFittedValues() {

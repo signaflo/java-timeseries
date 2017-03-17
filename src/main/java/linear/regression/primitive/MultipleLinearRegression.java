@@ -37,9 +37,11 @@ import stats.Statistics;
 import static data.DoubleFunctions.*;
 
 /**
- * Linear regression with multiple predictors and using primitive data types. This class is immutable and thread-safe.
+ * Linear regression with multiple predictors and using primitive data types. This implementation
+ * is immutable and thread-safe.
  */
-@EqualsAndHashCode @ToString
+@EqualsAndHashCode
+@ToString
 public final class MultipleLinearRegression implements LinearRegression {
 
     private final double[][] predictors;
@@ -103,6 +105,14 @@ public final class MultipleLinearRegression implements LinearRegression {
         return this.hasIntercept;
     }
 
+    public MultipleLinearRegression withHasIntercept(boolean hasIntercept) {
+        return new Builder().from(this).hasIntercept(hasIntercept).build();
+    }
+
+    public MultipleLinearRegression withResponse(double[] response) {
+        return new Builder().from(this).response(response).build();
+    }
+
     /**
      * Create and return a new builder for this class.
      *
@@ -134,13 +144,11 @@ public final class MultipleLinearRegression implements LinearRegression {
             return this;
         }
 
-        public Builder predictors(double[][] predictors) {
-            this.predictors = predictors.clone();
-            return this;
-        }
-
-        public Builder predictor(double[] predictor) {
-            this.predictors = new double[][] {predictor.clone()};
+        public Builder predictors(double[]... predictors) {
+            this.predictors = new double[predictors.length][];
+            for (int i = 0; i < predictors.length; i++) {
+                this.predictors[i] = predictors[i].clone();
+            }
             return this;
         }
 
@@ -154,18 +162,18 @@ public final class MultipleLinearRegression implements LinearRegression {
             return this;
         }
 
-        public LinearRegression build() {
+        public MultipleLinearRegression build() {
             return new MultipleLinearRegression(this);
         }
     }
 
     private class MatrixFormulation {
 
-        private final DenseMatrix64F A;
-        private final DenseMatrix64F At;
-        private final DenseMatrix64F AtAInv;
-        private final DenseMatrix64F b;
-        private final DenseMatrix64F y;
+        private final DenseMatrix64F A; // The design matrix.
+        private final DenseMatrix64F At; // The transpose of A.
+        private final DenseMatrix64F AtAInv; // The inverse of At times A.
+        private final DenseMatrix64F b; // The parameter estimate vector.
+        private final DenseMatrix64F y; // The response vector.
         private final double[] fitted;
         private final double[] residuals;
         private final double sigma2;
@@ -173,15 +181,14 @@ public final class MultipleLinearRegression implements LinearRegression {
 
         MatrixFormulation() {
             int numRows = response.length;
-            int numCols = predictors.length + ((hasIntercept)? 1 : 0);
+            int numCols = predictors.length + ((hasIntercept) ? 1 : 0);
             this.A = createMatrixA(numRows, numCols);
             this.At = new DenseMatrix64F(numCols, numRows);
             CommonOps.transpose(A, At);
             this.AtAInv = new DenseMatrix64F(numCols, numCols);
             this.b = new DenseMatrix64F(numCols, 1);
             this.y = new DenseMatrix64F(numRows, 1);
-            solveAtA(numRows, numCols);
-            solveForB(numRows, numCols);
+            solveSystem(numRows, numCols);
             this.fitted = computeFittedValues();
             this.residuals = computeResiduals();
             this.sigma2 = estimateSigma2(numCols);
@@ -189,31 +196,18 @@ public final class MultipleLinearRegression implements LinearRegression {
             CommonOps.scale(sigma2, AtAInv, covarianceMatrix);
         }
 
-        private void solveForB(int numRows, int numCols) {
-            DenseMatrix64F AtAInvAt = new DenseMatrix64F(numCols, numRows);
-            CommonOps.mult(AtAInv, At, AtAInvAt);
-            y.setData(arrayFrom(response));
-            MatrixVectorMult.mult(AtAInvAt, y, b);
-        }
-
-        private void solveAtA(int numRows, int numCols) {
-            LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.qr(numRows, numCols);
-            QRDecomposition<DenseMatrix64F> decomposition = solver.getDecomposition();
-            solver.setA(A);
+        private void solveSystem(int numRows, int numCols) {
+            LinearSolver<DenseMatrix64F> qrSolver = LinearSolverFactory.qr(numRows, numCols);
+            QRDecomposition<DenseMatrix64F> decomposition = qrSolver.getDecomposition();
+            qrSolver.setA(A);
             y.setData(response);
-            solver.solve(this.y, this.b);
+            qrSolver.solve(this.y, this.b);
             DenseMatrix64F R = decomposition.getR(null, true);
-            solver = LinearSolverFactory.linear(numCols);
-            solver.setA(R);
-            DenseMatrix64F Rinv = new DenseMatrix64F(numCols, numCols);
-            solver.invert(Rinv);
-            CommonOps.multOuter(Rinv, this.AtAInv);
-        }
-
-        private DenseMatrix64F createMatrixAtA(int numCols) {
-            DenseMatrix64F AtA = new DenseMatrix64F(numCols, numCols);
-            CommonOps.mult(At, A, AtA);
-            return AtA;
+            LinearSolver<DenseMatrix64F> linearSolver = LinearSolverFactory.linear(numCols);
+            linearSolver.setA(R);
+            DenseMatrix64F Rinverse = new DenseMatrix64F(numCols, numCols);
+            linearSolver.invert(Rinverse); // stores solver's solution inside of Rinverse.
+            CommonOps.multOuter(Rinverse, this.AtAInv);
         }
 
         private DenseMatrix64F createMatrixA(int numRows, int numCols) {
@@ -226,7 +220,8 @@ public final class MultipleLinearRegression implements LinearRegression {
             for (double[] predictor : predictors) {
                 data = combine(data, arrayFrom(predictor));
             }
-            return new DenseMatrix64F(numRows, numCols, false, data);
+            boolean isRowMajor = false;
+            return new DenseMatrix64F(numRows, numCols, isRowMajor, data);
         }
 
         private double[] computeFittedValues() {

@@ -24,6 +24,7 @@
 
 package linear.regression.primitive;
 
+import com.google.common.testing.EqualsTester;
 import data.DoubleRange;
 import data.Operators;
 import data.TestData;
@@ -38,11 +39,12 @@ public class LinearRegressionSpec {
     private double[] time = DoubleRange.inclusiveRange(1, 47).asArray();
     private double[] response = TestData.livestock().asArray();
     private boolean hasIntercept = true;
-    private LinearRegression regression = MultipleLinearRegression.builder()
-                                                                  .predictor(time)
-                                                                  .response(response)
-                                                                  .hasIntercept(hasIntercept)
-                                                                  .build();
+    private MultipleLinearRegression regression = MultipleLinearRegression.builder()
+                                                                          .predictors(time)
+                                                                          .response(response)
+                                                                          .hasIntercept(hasIntercept)
+                                                                          .build();
+
     @Test
     public void whenBuiltThenDataProperlySet() {
         assertThat(regression.hasIntercept(), is(hasIntercept));
@@ -59,7 +61,7 @@ public class LinearRegressionSpec {
 
     @Test
     public void whenSimpleLinearRegressionThenStandardErrorsAccurate() {
-        double[] expected = new double[] {4.8168057, 0.1747239};
+        double[] expected = new double[]{4.8168057, 0.1747239};
         assertArrayEquals(expected, regression.standardErrors(), 1E-4);
     }
 
@@ -73,9 +75,7 @@ public class LinearRegressionSpec {
 
     @Test
     public void whenSimpleRegressionNoInterceptThenBetaEstimatedCorrectly() {
-        LinearRegression regression = MultipleLinearRegression.builder()
-                                                              .from(this.regression)
-                                                              .hasIntercept(false)
+        LinearRegression regression = MultipleLinearRegression.builder().from(this.regression).hasIntercept(false)
                                                               .build();
         double[] expected = {11.76188};
         assertArrayEquals(expected, regression.beta(), 1E-4);
@@ -86,8 +86,19 @@ public class LinearRegressionSpec {
         assertThat(regression.sigma2(), is(closeTo(264.01, 1E-2)));
     }
 
+    @Test
+    public void equalsContract() {
+        MultipleLinearRegression other = this.regression.withHasIntercept(!hasIntercept);
+        MultipleLinearRegression other2 = this.regression
+                .withResponse(DoubleRange.inclusiveRange(1961, 2007).asArray());
+        new EqualsTester()
+                .addEqualityGroup(this.regression, MultipleLinearRegression.builder().from(this.regression).build())
+                .addEqualityGroup(other, MultipleLinearRegression.builder().from(other).build())
+                .addEqualityGroup(other2, MultipleLinearRegression.builder().from(other2).build()).testEquals();
+    }
+
     private double[] getFittedValues() {
-        return new double[] {222.702218, 227.58561, 232.469001, 237.352393, 242.235784, 247.119176, 252.002567,
+        return new double[]{222.702218, 227.58561, 232.469001, 237.352393, 242.235784, 247.119176, 252.002567,
                 256.885959, 261.76935, 266.652742, 271.536133, 276.419525, 281.302916, 286.186308, 291.069699,
                 295.953091, 300.836482, 305.719874, 310.603265, 315.486657, 320.370048, 325.25344, 330.136831,
                 335.020223, 339.903614, 344.787006, 349.670397, 354.553788, 359.43718, 364.320571, 369.203963,

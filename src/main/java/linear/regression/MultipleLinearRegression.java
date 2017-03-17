@@ -23,8 +23,6 @@
  */
 package linear.regression;
 
-import static data.DoubleFunctions.*;
-
 import com.google.common.collect.ImmutableList;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -40,10 +38,13 @@ import stats.Statistics;
 import java.util.ArrayList;
 import java.util.List;
 
+import static data.DoubleFunctions.*;
+
 /**
- * Linear regression with multiple predictors. This class is immutable and thread-safe.
+ * Linear regression with multiple predictors. This implementation is immutable and thread-safe.
  */
-@EqualsAndHashCode @ToString
+@EqualsAndHashCode
+@ToString
 public final class MultipleLinearRegression implements LinearRegression {
 
     private final List<List<Double>> predictors;
@@ -56,7 +57,7 @@ public final class MultipleLinearRegression implements LinearRegression {
     private final boolean hasIntercept;
 
     private MultipleLinearRegression(Builder builder) {
-        this.predictors = builder.predictors;
+        this.predictors = builder.listBuilder.build();
         this.response = builder.response;
         this.hasIntercept = builder.hasIntercept;
         MatrixFormulation matrixFormulation = new MatrixFormulation();
@@ -107,6 +108,14 @@ public final class MultipleLinearRegression implements LinearRegression {
         return this.hasIntercept;
     }
 
+    public MultipleLinearRegression withHasIntercept(boolean hasIntercept) {
+        return new Builder().from(this).hasIntercept(hasIntercept).build();
+    }
+
+    public MultipleLinearRegression withResponse(List<Double> response) {
+        return new Builder().from(this).response(response).build();
+    }
+
     /**
      * Create and return a new builder for this class.
      *
@@ -120,7 +129,7 @@ public final class MultipleLinearRegression implements LinearRegression {
      * A builder for a multiple linear regression model.
      */
     public static final class Builder {
-        private List<List<Double>> predictors;
+        private ImmutableList.Builder<List<Double>> listBuilder;
         private List<Double> response;
         private boolean hasIntercept = true;
 
@@ -130,20 +139,31 @@ public final class MultipleLinearRegression implements LinearRegression {
          * @param regression the object to copy the attributes from.
          * @return this builder.
          */
-        public final Builder from(LinearRegression regression) {
-            this.predictors = ImmutableList.copyOf(regression.predictors());
+        public Builder from(LinearRegression regression) {
+            this.listBuilder = ImmutableList.builder();
+            for (List<Double> predictor : regression.predictors()) {
+                this.listBuilder.add(ImmutableList.copyOf(predictor));
+            }
             this.response = ImmutableList.copyOf(regression.response());
             this.hasIntercept = regression.hasIntercept();
             return this;
         }
 
         Builder predictors(List<List<Double>> predictors) {
-            this.predictors = ImmutableList.copyOf(predictors);
+            if (this.listBuilder == null) {
+                this.listBuilder = ImmutableList.builder();
+            }
+            for (List<Double> predictor : predictors) {
+                this.listBuilder.add(ImmutableList.copyOf(predictor));
+            }
             return this;
         }
 
         public Builder predictor(List<Double> predictor) {
-            this.predictors = ImmutableList.of(predictor);
+            if (this.listBuilder == null) {
+                this.listBuilder = ImmutableList.builder();
+            }
+            this.listBuilder.add(ImmutableList.copyOf(predictor));
             return this;
         }
 
@@ -157,34 +177,33 @@ public final class MultipleLinearRegression implements LinearRegression {
             return this;
         }
 
-        public LinearRegression build() {
+        public MultipleLinearRegression build() {
             return new MultipleLinearRegression(this);
         }
     }
 
     private class MatrixFormulation {
 
-        private final DenseMatrix64F A;
-        private final DenseMatrix64F At;
-        private final DenseMatrix64F AtAInv;
-        private final DenseMatrix64F b;
-        private final DenseMatrix64F y;
+        private final DenseMatrix64F A; // The design matrix.
+        private final DenseMatrix64F At; // The transpose of A.
+        private final DenseMatrix64F AtAInv; // The inverse of At times A.
+        private final DenseMatrix64F b; // The parameter estimate vector.
+        private final DenseMatrix64F y; // The response vector.
         private final D1Matrix64F fitted;
         private final List<Double> residuals;
         private final double sigma2;
         private final DenseMatrix64F covarianceMatrix;
 
-        MatrixFormulation() {
+        private MatrixFormulation() {
             int numRows = response.size();
-            int numCols = predictors.size() + ((hasIntercept)? 1 : 0);
+            int numCols = predictors.size() + ((hasIntercept()) ? 1 : 0);
             this.A = createMatrixA(numRows, numCols);
             this.At = new DenseMatrix64F(numCols, numRows);
             CommonOps.transpose(A, At);
             this.AtAInv = new DenseMatrix64F(numCols, numCols);
             this.b = new DenseMatrix64F(numCols, 1);
             this.y = new DenseMatrix64F(numRows, 1);
-            solveAtA(numRows, numCols);
-            solveForB(numRows, numCols);
+            solveSystem(numRows, numCols);
             this.fitted = computeFittedValues();
             this.residuals = computeResiduals();
             this.sigma2 = estimateSigma2(numCols);
@@ -192,38 +211,27 @@ public final class MultipleLinearRegression implements LinearRegression {
             CommonOps.scale(sigma2, AtAInv, covarianceMatrix);
         }
 
-        private void solveForB(int numRows, int numCols) {
-            DenseMatrix64F AtAInvAt = new DenseMatrix64F(numCols, numRows);
-            CommonOps.mult(AtAInv, At, AtAInvAt);
+        private void solveSystem(int numRows, int numCols) {
+            LinearSolver<DenseMatrix64F> qrSolver = LinearSolverFactory.qr(numRows, numCols);
+            QRDecomposition<DenseMatrix64F> decomposition = qrSolver.getDecomposition();
+            qrSolver.setA(A);
             y.setData(arrayFrom(response));
-            MatrixVectorMult.mult(AtAInvAt, y, b);
-        }
-
-        private void solveAtA(int numRows, int numCols) {
-            LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.qr(numRows, numCols);
-            QRDecomposition<DenseMatrix64F> decomposition = solver.getDecomposition();
-            solver.setA(A);
-            y.setData(arrayFrom(response));
-            solver.solve(this.y, this.b);
+            qrSolver.solve(this.y, this.b);
             DenseMatrix64F R = decomposition.getR(null, true);
-            solver = LinearSolverFactory.linear(numCols);
-            solver.setA(R);
+            LinearSolver<DenseMatrix64F> linearSolver = LinearSolverFactory.linear(numCols);
+            linearSolver.setA(R);
             DenseMatrix64F Rinv = new DenseMatrix64F(numCols, numCols);
-            solver.invert(Rinv);
+            linearSolver.invert(Rinv);
             CommonOps.multOuter(Rinv, this.AtAInv);
         }
 
         private DenseMatrix64F createMatrixA(int numRows, int numCols) {
-            double[] data;
-            if (hasIntercept) {
-                data = fill(numRows, 1.0);
-            } else {
-                data = arrayFrom();
-            }
+            double[] data = hasIntercept ? fill(numRows, 1.0) : arrayFrom();
             for (List<Double> predictor : predictors) {
                 data = combine(data, arrayFrom(predictor));
             }
-            return new DenseMatrix64F(numRows, numCols, false, data);
+            boolean isRowMajor = false;
+            return new DenseMatrix64F(numRows, numCols, isRowMajor, data);
         }
 
         private D1Matrix64F computeFittedValues() {
@@ -234,11 +242,11 @@ public final class MultipleLinearRegression implements LinearRegression {
 
         private List<Double> computeResiduals() {
             List<Double> fitted = getFittedvalues();
-            List<Double> resid = new ArrayList<>(fitted.size());
+            List<Double> residuals = new ArrayList<>(fitted.size());
             for (int i = 0; i < fitted.size(); i++) {
-                resid.add(response.get(i) - fitted.get(i));
+                residuals.add(response.get(i) - fitted.get(i));
             }
-            return resid;
+            return residuals;
         }
 
         private double estimateSigma2(int df) {

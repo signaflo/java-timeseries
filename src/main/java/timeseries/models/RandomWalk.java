@@ -162,7 +162,7 @@ public final class RandomWalk implements Model {
     public TimeSeries residuals() {
         return this.residuals;
     }
-    
+
     @Override
     public void plotFit() {
 
