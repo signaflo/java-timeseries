@@ -24,15 +24,18 @@
 package linear.regression;
 
 import com.google.common.testing.EqualsTester;
+import data.DoubleFunctions;
 import data.DoubleRange;
 import data.Operators;
 import data.TestData;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static data.DoubleFunctions.arrayFrom;
+import static data.DoubleFunctions.listFrom;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
@@ -83,6 +86,25 @@ public class LinearRegressionSpec {
                                                               .build();
         double[] expected = {11.76188};
         assertArrayEquals(expected, arrayFrom(regression.beta()), 1E-4);
+    }
+
+    @Test
+    public void whenInterceptDirectlyGivenThenResultsEquivalent() {
+        List<Double> ones = listFrom(DoubleFunctions.fill(47, 1.0));
+        List<List<Double>> predictors = Arrays.asList(ones, time);
+        LinearRegression multipleRegression = MultipleLinearRegression.builder()
+                                                                      .from(this.regression)
+                                                                      .hasIntercept(false)
+                                                                      .predictors(predictors)
+                                                                      .build();
+        assertThat(multipleRegression.beta(), is(this.regression.beta()));
+        multipleRegression = MultipleLinearRegression.builder()
+                                                     .from(this.regression)
+                                                     .hasIntercept(false)
+                                                     .predictor(ones)
+                                                     .build();
+        Collections.sort(multipleRegression.beta());
+        //assertThat(multipleRegression.beta(), is(arrayContainingInAnyOrder(this.regression.beta().toArray())));
     }
 
     @Test

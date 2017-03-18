@@ -154,9 +154,7 @@ public final class MultipleLinearRegression implements LinearRegression {
         }
 
         Builder predictors(List<List<Double>> predictors) {
-            if (this.listBuilder == null) {
-                this.listBuilder = ImmutableList.builder();
-            }
+            this.listBuilder = ImmutableList.builder();
             for (List<Double> predictor : predictors) {
                 this.listBuilder.add(ImmutableList.copyOf(predictor));
             }
@@ -224,9 +222,9 @@ public final class MultipleLinearRegression implements LinearRegression {
             DenseMatrix64F R = decomposition.getR(null, true);
             LinearSolver<DenseMatrix64F> linearSolver = LinearSolverFactory.linear(numCols);
             linearSolver.setA(R);
-            DenseMatrix64F Rinv = new DenseMatrix64F(numCols, numCols);
-            linearSolver.invert(Rinv);
-            CommonOps.multOuter(Rinv, this.AtAInv);
+            DenseMatrix64F Rinverse = new DenseMatrix64F(numCols, numCols);
+            linearSolver.invert(Rinverse); // stores solver's solution inside of Rinverse.
+            CommonOps.multOuter(Rinverse, this.AtAInv);
         }
 
         private DenseMatrix64F createMatrixA(int numRows, int numCols) {

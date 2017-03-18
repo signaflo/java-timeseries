@@ -25,6 +25,7 @@
 package linear.regression.primitive;
 
 import com.google.common.testing.EqualsTester;
+import data.DoubleFunctions;
 import data.DoubleRange;
 import data.Operators;
 import data.TestData;
@@ -84,6 +85,17 @@ public class LinearRegressionSpec {
     @Test
     public void whenSimpleLinearRegressionThenSigma2Accurate() {
         assertThat(regression.sigma2(), is(closeTo(264.01, 1E-2)));
+    }
+
+    @Test
+    public void whenInterceptDirectlyGivenThenResultsEquivalent() {
+        double[] ones = DoubleFunctions.fill(47, 1.0);
+        LinearRegression multipleRegression = MultipleLinearRegression.builder()
+                                                                      .from(this.regression)
+                                                                      .hasIntercept(false)
+                                                                      .predictors(ones, time)
+                                                                      .build();
+        assertThat(multipleRegression.beta(), is(this.regression.beta()));
     }
 
     @Test
