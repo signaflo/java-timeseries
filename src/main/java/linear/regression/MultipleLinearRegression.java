@@ -41,10 +41,10 @@ import java.util.List;
 import static data.DoubleFunctions.*;
 
 /**
- * Linear regression with multiple predictors. This implementation is immutable and thread-safe.
+ * Linear regression with support for both single and multiple prediction variables.
+ * This implementation is immutable and thread-safe.
  */
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode @ToString
 public final class MultipleLinearRegression implements LinearRegression {
 
     private final List<List<Double>> predictors;
@@ -114,6 +114,10 @@ public final class MultipleLinearRegression implements LinearRegression {
 
     public MultipleLinearRegression withResponse(List<Double> response) {
         return new Builder().from(this).response(response).build();
+    }
+
+    public MultipleLinearRegression withPredictor(List<Double> predictor) {
+        return new Builder().from(this).predictor(predictor).build();
     }
 
     /**

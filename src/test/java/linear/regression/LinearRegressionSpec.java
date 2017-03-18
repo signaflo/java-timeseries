@@ -93,11 +93,14 @@ public class LinearRegressionSpec {
     @Test
     public void equalsContract() {
         MultipleLinearRegression other = this.regression.withHasIntercept(!hasIntercept);
-        MultipleLinearRegression other2 = this.regression.withResponse(DoubleRange.inclusiveRange(1961, 2007).asList());
+        MultipleLinearRegression other2 = this.regression
+                .withPredictor(DoubleRange.inclusiveRange(1961, 2007).asList());
+        MultipleLinearRegression other3 = this.regression.withResponse(TestData.livestock().demean().asList());
         new EqualsTester()
                 .addEqualityGroup(this.regression, MultipleLinearRegression.builder().from(this.regression).build())
                 .addEqualityGroup(other, MultipleLinearRegression.builder().from(other).build())
                 .addEqualityGroup(other2, MultipleLinearRegression.builder().from(other2).build())
+                .addEqualityGroup(other3, MultipleLinearRegression.builder().from(other3).build())
                 .testEquals();
     }
 

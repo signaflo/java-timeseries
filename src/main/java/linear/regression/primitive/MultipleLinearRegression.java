@@ -37,11 +37,10 @@ import stats.Statistics;
 import static data.DoubleFunctions.*;
 
 /**
- * Linear regression with multiple predictors and using primitive data types. This implementation
- * is immutable and thread-safe.
+ * Linear regression using primitive data types, with support for both single and multiple prediction variables.
+ * This implementation is immutable and thread-safe.
  */
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode @ToString
 public final class MultipleLinearRegression implements LinearRegression {
 
     private final double[][] predictors;
@@ -111,6 +110,10 @@ public final class MultipleLinearRegression implements LinearRegression {
 
     public MultipleLinearRegression withResponse(double[] response) {
         return new Builder().from(this).response(response).build();
+    }
+
+    public MultipleLinearRegression withPredictors(double... predictors) {
+        return new Builder().from(this).predictors(predictors).build();
     }
 
     /**
