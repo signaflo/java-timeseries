@@ -23,6 +23,6 @@
  */
 
 /**
- * Regression models.
+ * Linear regression models.
  */
 package linear.regression;

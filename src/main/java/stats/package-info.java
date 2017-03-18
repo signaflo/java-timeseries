@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2016 Jacob Rachiele
+ * Copyright (c) 2016-2017 Jacob Rachiele
  * 
  */
 
 /**
- * Compute basic statistics.
+ * Statistical computations and functions.
  * 
  */
 package stats;

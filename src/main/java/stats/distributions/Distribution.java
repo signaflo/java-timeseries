@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jacob Rachiele
+ * Copyright (c) 2016-2017 Jacob Rachiele
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction
@@ -24,24 +24,26 @@
 package stats.distributions;
 
 /**
- * Represents a probability distribution.
- * @author Jacob Rachiele
+ * A probability distribution.
  *
+ * @author Jacob Rachiele
  */
 public interface Distribution {
-	
-  /**
-   * Generate a random value from the distribution.
-   * @return a random value from the distribution.
-   */
-	double rand();
-	
-	/**
-	 * Gives the value of the quantile function at the given probability. See <a target="_blank"
-	 * href="https://en.wikipedia.org/wiki/Quantile_function">quantile function</a>.
-	 * @param prob the probability that the random variable X &le; q, where q is the quantile value.
-	 * @return the value of the quantile function at the given probability.
-	 */
-	double quantile(double prob);
+
+    /**
+     * Generate a random value from the distribution.
+     *
+     * @return a random value from the distribution.
+     */
+    double rand();
+
+    /**
+     * Gives the value of the quantile function at the given probability. See <a target="_blank"
+     * href="https://en.wikipedia.org/wiki/Quantile_function">quantile function</a>.
+     *
+     * @param prob the probability that the random variable X &le; q, where q is the quantile value.
+     * @return the value of the quantile function at the given probability.
+     */
+    double quantile(double prob);
 
 }

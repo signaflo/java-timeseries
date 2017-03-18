@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jacob Rachiele
+ * Copyright (c) 2016-2017 Jacob Rachiele
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction
@@ -34,8 +34,7 @@ import static data.Operators.productOf;
  */
 public final class Statistics {
 
-    private Statistics() {
-    }
+    private Statistics() {}
 
     public static double sumOf(final double[] data) {
         double sum = 0.0;

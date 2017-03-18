@@ -41,7 +41,7 @@ import java.util.List;
 import static data.DoubleFunctions.*;
 
 /**
- * Linear regression with support for both single and multiple prediction variables.
+ * A linear regression model with support for both single and multiple prediction variables.
  * This implementation is immutable and thread-safe.
  */
 @EqualsAndHashCode @ToString

@@ -37,7 +37,7 @@ import stats.Statistics;
 import static data.DoubleFunctions.*;
 
 /**
- * Linear regression using primitive data types, with support for both single and multiple prediction variables.
+ * A linear regression model using primitive data types, with support for both single and multiple prediction variables.
  * This implementation is immutable and thread-safe.
  */
 @EqualsAndHashCode @ToString

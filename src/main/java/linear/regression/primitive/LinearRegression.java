@@ -24,7 +24,7 @@
 package linear.regression.primitive;
 
 /**
- * Represents a linear regression model.
+ * A linear regression model.
  */
 public interface LinearRegression {
 

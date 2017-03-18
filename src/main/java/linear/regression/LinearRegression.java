@@ -26,6 +26,9 @@ package linear.regression;
 
 import java.util.List;
 
+/**
+ * A linear regression model.
+ */
 public interface LinearRegression {
 
     /**

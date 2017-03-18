@@ -23,6 +23,6 @@
  */
 
 /**
- * Regression models that use primitive data types.
+ * Linear regression models that use primitive data types.
  */
 package linear.regression.primitive;
