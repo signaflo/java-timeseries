@@ -27,11 +27,19 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import smile.stat.distribution.TDistribution;
 
+/**
+ * A Student's t probability distribution.
+ */
 @EqualsAndHashCode @ToString
 public final class StudentsT implements Distribution {
 
     private final TDistribution dist;
 
+    /**
+     * Create a new Student's t distribution with the given degrees of freedom.
+     *
+     * @param df the degrees of freedom for this distribution.
+     */
     public StudentsT(final int df) {
         this.dist = new TDistribution(df);
     }

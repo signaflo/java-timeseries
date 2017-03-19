@@ -61,7 +61,7 @@ public final class TimeSeries extends DataSet {
     private final Map<OffsetDateTime, Integer> dateTimeIndex;
 
     /**
-     * Construct a new TimeSeries from the given data without regard to when the observations were made. Use this
+     * Create a new time series from the given data without regard to when the observations were made. Use this
      * constructor if the dates and times associated with the observations do not matter.
      *
      * @param series the observation data.
@@ -71,7 +71,7 @@ public final class TimeSeries extends DataSet {
     }
 
     /**
-     * Construct a new TimeSeries using the given unit of time, the time of first observation, and the observation data.
+     * Create a new time series using the given unit of time, the time of first observation, and the observation data.
      *
      * @param timeUnit  the unit of time in which observations are made.
      * @param startTime the time at which the first observation was made. May be an approximation.
@@ -82,7 +82,7 @@ public final class TimeSeries extends DataSet {
     }
 
     /**
-     * Construct a new TimeSeries using the given time period, the time of first observation, and the observation data.
+     * Create a new time series using the given time period, the time of first observation, and the observation data.
      *
      * @param timePeriod the period of time between observations.
      * @param startTime  the time at which the first observation was made. The string must represent either a valid
@@ -120,7 +120,7 @@ public final class TimeSeries extends DataSet {
     }
 
     /**
-     * Construct a new TimeSeries using the given time period, the time of first observation, and the observation data.
+     * Create a new time series using the given time period, the time of first observation, and the observation data.
      *
      * @param timePeriod the period of time between observations.
      * @param startTime  the time at which the first observation was made. Usually a rough approximation.
@@ -148,7 +148,7 @@ public final class TimeSeries extends DataSet {
     }
 
     /**
-     * Construct a new TimeSeries using the given unit of time, the time of first observation, and the observation data.
+     * Create a new time series using the given unit of time, the time of first observation, and the observation data.
      *
      * @param timeUnit  the unit of time in which observations are made.
      * @param startTime the time at which the first observation was made. The string must represent either a valid
@@ -162,7 +162,7 @@ public final class TimeSeries extends DataSet {
     }
 
     /**
-     * Construct a new TimeSeries from the given data with the supplied start time.
+     * Create a new time series from the given data with the supplied start time.
      *
      * @param startTime the time of the first observation.
      * @param series    the observation data.
@@ -172,7 +172,7 @@ public final class TimeSeries extends DataSet {
     }
 
     /**
-     * Construct a new TimeSeries with the given time period, observation times, and observation data.
+     * Create a new time series with the given time period, observation times, and observation data.
      *
      * @param timePeriod       the period of time between observations.
      * @param observationTimes the sequence of dates and times at which the observations are made.
@@ -197,17 +197,17 @@ public final class TimeSeries extends DataSet {
     /**
      * Aggregate the observations in this series to the yearly level.
      *
-     * @return a new TimeSeries with the observations in this series aggregated to the yearly level.
+     * @return a new time series with the observations in this series aggregated to the yearly level.
      */
     public final TimeSeries aggregateToYears() {
         return aggregate(TimePeriod.oneYear());
     }
 
     /**
-     * Aggregate the observations in this series to the given time period.
+     * Aggregate the observations in this series to the given time unit.
      *
-     * @param timeUnit The time period to aggregate up to.
-     * @return a new TimeSeries with the observations in this series aggregated to the given time period.
+     * @param timeUnit The time unit to aggregate up to.
+     * @return a new time series aggregated up to the given time unit.
      */
     public final TimeSeries aggregate(final TimeUnit timeUnit) {
         return aggregate(new TimePeriod(timeUnit, 1));
@@ -216,8 +216,8 @@ public final class TimeSeries extends DataSet {
     /**
      * Aggregate the time series up to the given time period.
      *
-     * @param timePeriod the time series that the observations should be aggregated up to.
-     * @return A new TimeSeries aggregated up to the given time period.
+     * @param timePeriod the time period to aggregate up to.
+     * @return A new time series aggregated up to the given time period.
      */
     public final TimeSeries aggregate(final TimePeriod timePeriod) {
         final int period = (int) (this.timePeriod.frequencyPer(timePeriod));
@@ -326,7 +326,7 @@ public final class TimeSeries extends DataSet {
      * </p>
      *
      * @param boxCoxLambda the parameter to use for the transformation.
-     * @return a new TimeSeries transformed using the given Box-Cox parameter.
+     * @return a new time series transformed using the given Box-Cox parameter.
      * @throws IllegalArgumentException if boxCoxLambda is not strictly between -1 and 2.
      */
     public final TimeSeries transform(final double boxCoxLambda) {
@@ -340,10 +340,10 @@ public final class TimeSeries extends DataSet {
     }
 
     /**
-     * Perform the inverse of the Box-Cox transformation on this series and return the result in a new TimeSeries.
+     * Perform the inverse of the Box-Cox transformation on this series and return the result in a new time series.
      *
      * @param boxCoxLambda the Box-Cox transformation parameter to use for the inversion.
-     * @return a new TimeSeries with the inverse Box-Cox transformation applied.
+     * @return a new time series with the inverse Box-Cox transformation applied.
      */
     public final TimeSeries backTransform(final double boxCoxLambda) {
         if (boxCoxLambda > 2 || boxCoxLambda < -1) {
@@ -359,7 +359,7 @@ public final class TimeSeries extends DataSet {
      * Compute a moving average of order m.
      *
      * @param m the order of the moving average.
-     * @return a new TimeSeries with the smoothed observations.
+     * @return a new time series with the smoothed observations.
      */
     public final TimeSeries movingAverage(final int m) {
         final int c = m % 2;
@@ -410,7 +410,7 @@ public final class TimeSeries extends DataSet {
      *
      * @param lag   the lag at which to take differences.
      * @param times the number of times to difference the series at the given lag.
-     * @return a new TimeSeries differenced the given number of times at the given lag.
+     * @return a new time series differenced the given number of times at the given lag.
      */
     public final TimeSeries difference(final int lag, final int times) {
         if (times > 0) {
@@ -424,10 +424,10 @@ public final class TimeSeries extends DataSet {
     }
 
     /**
-     * Difference this time series at the given lag and return the result in a new TimeSeries.
+     * Difference this time series at the given lag and return the result as a new time series.
      *
      * @param lag the lag at which to take differences.
-     * @return a new TimeSeries differenced at the given lag.
+     * @return a new time series differenced at the given lag.
      */
     public final TimeSeries difference(final int lag) {
         double[] diffed = differenceArray(lag);
@@ -436,9 +436,9 @@ public final class TimeSeries extends DataSet {
     }
 
     /**
-     * Difference this time series once at lag 1 and return the result in a new TimeSeries.
+     * Difference this time series once at lag 1 and return the result as a new time series.
      *
-     * @return a new TimeSeries differenced once at lag.
+     * @return a new time series differenced once at lag 1.
      */
     public final TimeSeries difference() {
         return difference(1);
@@ -453,7 +453,7 @@ public final class TimeSeries extends DataSet {
     }
 
     /**
-     * Subtract the given series from this time series and return the result in a new time series. This is a vectorized
+     * Subtract the given series from this time series and return the result as a new time series. This is a vectorized
      * operation.
      *
      * @param otherSeries the series to subtract from this one.
@@ -468,7 +468,7 @@ public final class TimeSeries extends DataSet {
     }
 
     /**
-     * Subtract the given series from this time series and return the result in a new time series. This is a vectorized
+     * Subtract the given series from this time series and return the result as a new time series. This is a vectorized
      * operation.
      *
      * @param otherSeries the series to subtract from this one.
@@ -500,10 +500,9 @@ public final class TimeSeries extends DataSet {
      * Return a slice of this time series from start (inclusive) to end (inclusive).
      *
      * @param start the beginning date and time of the slice. The value at the given date-time is included in the
-     *              returned
-     *              TimeSeries.
+     *              returned time series.
      * @param end   the ending date and time of the slice. The value at the given date-time is included in the returned
-     *              TimeSeries.
+     *              time series.
      * @return a slice of this time series from start (inclusive) to end (inclusive).
      */
     public final TimeSeries from(final OffsetDateTime start, final OffsetDateTime end) {
@@ -519,9 +518,9 @@ public final class TimeSeries extends DataSet {
      * Return a slice of this time series using R/Julia style indexing.
      *
      * @param start the beginning time index of the slice. The value at the time index is included in the returned
-     *              TimeSeries.
+     *              time series.
      * @param end   the ending time index of the slice. The value at the time index is included in the returned
-     *              TimeSeries.
+     *              time series.
      * @return a slice of this time series from start (inclusive) to end (inclusive) using R/Julia style indexing.
      */
     public final TimeSeries timeSlice(final int start, final int end) {

@@ -30,81 +30,81 @@ import java.time.ZoneOffset;
 
 /**
  * Static factory constructors for time series objects.
- * @author Jacob Rachiele
  *
+ * @author Jacob Rachiele
  */
 public final class Ts {
-	
-	private static final int ZONE_OFFSET = 0;
-	
-	private Ts(){}
-	
-	/**
-	 * Construct a new TimeSeries object with observations made annually starting at the given year.
-	 * @param startYear the year of the first observation.
-	 * @param series the sequence of observations constituting this time series.
-	 * @return a new TimeSeries object with the given series data and start year.
-	 */
-	public static TimeSeries newAnnualSeries(final int startYear, final double... series) {
-	  final LocalDateTime localDateTime = LocalDateTime.of(startYear, Month.JANUARY, 1, 0, 0);
-	  final OffsetDateTime startingInstant = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
-	  return new TimeSeries(TimePeriod.oneYear(), startingInstant, series);
-	}
-	
-	/**
-	 * Construct a new TimeSeries object with observations made monthly in a yearly cycle,
-	 * starting at the given year and month.
-	 * @param startYear the year of the first observation.
-	 * @param startMonth the month of the first observation - an integer between
-	 *  1 and 12 corresponding to the months January through December.
-	 * @param series the sequence of observations constituting this time series.
-	 * @return a new TimeSeries object with the given series data, start year, and start month.
-	 */
-	public static TimeSeries newMonthlySeries(final int startYear, final int startMonth,
-                                            final double... series) {
-	  final LocalDateTime localDateTime = LocalDateTime.of(startYear, startMonth, 1, 0, 0);
-		final OffsetDateTime startingInstant = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
-		final TimeUnit timeUnit = TimeUnit.MONTH;
-		final int periodLength = 1;
-		return new TimeSeries(new TimePeriod(timeUnit, periodLength), startingInstant, series);
-	}
-	
-	/**
-	 * Construct a new TimeSeries object with a cycle length of one year and monthly observations,
-	 * starting at the given year, month, and day.
-	 * @param startYear The year of the first observation.
-	 * @param startMonth The month of the first observation - an integer between
-	 *  1 and 12 corresponding to the months January through December.
-	 * @param startDay The day of the first observation - an integer between 1 and 31.
-	 * @param series The sequence of observations constituting this time series.
-	 * @return A new TimeSeries object with the given year, month, and series data.
-	 */
-	public static TimeSeries newMonthlySeries(final int startYear, final int startMonth,
-                                            final int startDay, final double... series) {
-		final OffsetDateTime startingInstant = OffsetDateTime.of(startYear, startMonth, startDay, 0, 0, 0, 0,
-				ZoneOffset.ofHours(ZONE_OFFSET));
-		final TimeUnit timeUnit = TimeUnit.MONTH;
-		final int periodLength = 1;
-		return new TimeSeries(new TimePeriod(timeUnit, periodLength), startingInstant, series);
-	}
-	
-	/**
-	 * Construct a new TimeSeries object with a cycle length of one year and quarterly observations,
-	 * starting at the given year and quarter.
-	 * @param startYear The year of the first observation.
-	 * @param startQuarter The quarter of the first observation - an integer between
-	 *  1 and 4 corresponding to the four quarters of a year.
-	 * @param series The sequence of observations constituting this time series.
-	 * @return A new TimeSeries object with the given year, quarter, and series data.
-	 */
-	public static TimeSeries newQuarterlySeries(final int startYear, final int startQuarter,
+
+    private static final int ZONE_OFFSET = 0;
+
+    private Ts() {
+    }
+
+    /**
+     * Construct a new time series with observations made annually starting at the given year.
+     *
+     * @param startYear the year of the first observation.
+     * @param series    the sequence of observations constituting this time series.
+     * @return a new time series with the given series data and start year.
+     */
+    public static TimeSeries newAnnualSeries(final int startYear, final double... series) {
+        final LocalDateTime localDateTime = LocalDateTime.of(startYear, Month.JANUARY, 1, 0, 0);
+        final OffsetDateTime startingInstant = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
+        return new TimeSeries(TimePeriod.oneYear(), startingInstant, series);
+    }
+
+    /**
+     * Construct a new time series with monthly observations starting at the given year and month.
+     *
+     * @param startYear  the year of the first observation.
+     * @param startMonth the month of the first observation - an integer between
+     *                   1 and 12 corresponding to the months January through December.
+     * @param series     the sequence of observations constituting this time series.
+     * @return a new time series with the given series data, start year, and start month.
+     */
+    public static TimeSeries newMonthlySeries(final int startYear, final int startMonth, final double... series) {
+        final LocalDateTime localDateTime = LocalDateTime.of(startYear, startMonth, 1, 0, 0);
+        final OffsetDateTime startingInstant = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
+        final TimeUnit timeUnit = TimeUnit.MONTH;
+        final int periodLength = 1;
+        return new TimeSeries(new TimePeriod(timeUnit, periodLength), startingInstant, series);
+    }
+
+    /**
+     * Construct a new time series with monthly observations starting at the given year, month, and day.
+     *
+     * @param startYear  The year of the first observation.
+     * @param startMonth The month of the first observation - an integer between
+     *                   1 and 12 corresponding to the months January through December.
+     * @param startDay   The day of the first observation - an integer between 1 and 31.
+     * @param series     The sequence of observations constituting this time series.
+     * @return A new time series with the given year, month, day, and series data.
+     */
+    public static TimeSeries newMonthlySeries(final int startYear, final int startMonth, final int startDay,
                                               final double... series) {
-		final int startMonth  = 3*startQuarter - 2;
-		final OffsetDateTime startingInstant = OffsetDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0,
-				ZoneOffset.ofHours(0));
-		final TimeUnit timeUnit = TimeUnit.QUARTER;
-		final int periodLength = 1;
-		return new TimeSeries(new TimePeriod(timeUnit, periodLength), startingInstant, series);
-	}
+        final OffsetDateTime startingInstant = OffsetDateTime
+                .of(startYear, startMonth, startDay, 0, 0, 0, 0, ZoneOffset.ofHours(ZONE_OFFSET));
+        final TimeUnit timeUnit = TimeUnit.MONTH;
+        final int periodLength = 1;
+        return new TimeSeries(new TimePeriod(timeUnit, periodLength), startingInstant, series);
+    }
+
+    /**
+     * Construct a new time series with quarterly observations starting at the given year and quarter.
+     *
+     * @param startYear    The year of the first observation.
+     * @param startQuarter The quarter of the first observation - an integer between
+     *                     1 and 4 corresponding to the four quarters of a year.
+     * @param series       The sequence of observations constituting this time series.
+     * @return A new time series with the given year, quarter, and series data.
+     */
+    public static TimeSeries newQuarterlySeries(final int startYear, final int startQuarter, final double... series) {
+        final int startMonth = 3 * startQuarter - 2;
+        final OffsetDateTime startingInstant = OffsetDateTime
+                .of(startYear, startMonth, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0));
+        final TimeUnit timeUnit = TimeUnit.QUARTER;
+        final int periodLength = 1;
+        return new TimeSeries(new TimePeriod(timeUnit, periodLength), startingInstant, series);
+    }
 
 }

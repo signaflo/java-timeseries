@@ -35,10 +35,19 @@ public final class Normal implements Distribution {
 
     private final smile.stat.distribution.Distribution dist;
 
+    /**
+     * Create a new Normal distribution with the given mean and standard deviation.
+     *
+     * @param mean the mean of the distribution.
+     * @param stdev the standard deviation of the distribution.
+     */
     public Normal(final double mean, final double stdev) {
         this.dist = new GaussianDistribution(mean, stdev);
     }
 
+    /**
+     * Create a new standard normal distribution with mean 0 and standard deviation 1.
+     */
     public Normal() {
         this(0, 1);
     }
