@@ -28,7 +28,7 @@ import lombok.ToString;
 import smile.stat.distribution.GaussianDistribution;
 
 /**
- * Represents a Normal, or Gaussian, probability distribution.
+ * A Normal, or Gaussian, probability distribution.
  */
 @EqualsAndHashCode @ToString
 public final class Normal implements Distribution {

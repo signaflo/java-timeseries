@@ -33,7 +33,7 @@ import static java.lang.Math.max;
 
 /**
  * An implementation of the Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm for unconstrained
- * nonlinear optimization.
+ * nonlinear optimization. This class is immutable and thread-safe.
  *
  * @author Jacob Rachiele
  */
@@ -199,7 +199,7 @@ public final class BFGS {
    *
    * @return the final value of the target function.
    */
-  public final double functionValue() {
+  public double functionValue() {
     return this.functionValue;
   }
 
@@ -208,7 +208,7 @@ public final class BFGS {
    *
    * @return the final, optimized input parameters.
    */
-  public final Vector parameters() {
+  public Vector parameters() {
     return this.iterate;
   }
 
@@ -217,7 +217,7 @@ public final class BFGS {
    *
    * @return the final approximation to the inverse Hessian.
    */
-  public final Matrix inverseHessian() {
+  public Matrix inverseHessian() {
     return this.H;
   }
 

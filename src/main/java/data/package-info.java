@@ -23,7 +23,7 @@
  */
 
 /**
- * Create and manipulate collections of data.
+ * Types for creating and manipulating collections of data.
  *
  * @author Jacob Rachiele
  *

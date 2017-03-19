@@ -38,7 +38,7 @@ public interface Distribution {
     double rand();
 
     /**
-     * Gives the value of the quantile function at the given probability. See <a target="_blank"
+     * Compute the value of the quantile function at the given probability. See <a target="_blank"
      * href="https://en.wikipedia.org/wiki/Quantile_function">quantile function</a>.
      *
      * @param prob the probability that the random variable X &le; q, where q is the quantile value.

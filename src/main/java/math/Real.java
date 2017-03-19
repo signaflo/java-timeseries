@@ -25,7 +25,7 @@ package math;
 
 /**
  * A numerical approximation of a <a target="_blank" href=https://en.wikipedia.org/wiki/Real_number>
- * real number</a>.
+ * real number</a>. This class is immutable and thread-safe.
  *
  * @author Jacob Rachiele
  */

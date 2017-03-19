@@ -21,7 +21,7 @@ public class MeanModelSpec {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private final TimeSeries series = TestData.ausbeerSeries();
+    private final TimeSeries series = TestData.ausbeer();
     private final MeanModel meanModel = new MeanModel(series);
 
     @Test

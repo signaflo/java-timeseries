@@ -10,7 +10,7 @@ import stats.Statistics;
 import java.util.List;
 
 /**
- * Represents a range of doubles.
+ * A range of doubles.
  *
  * @author Jacob Rachiele
  */

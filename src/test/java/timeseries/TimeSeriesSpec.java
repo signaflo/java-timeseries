@@ -24,7 +24,7 @@ public class TimeSeriesSpec {
   @Test
   public void whenBoxCoxTransformationWithOutOfRangeLambdaExceptionThrown() {
     exception.expect(IllegalArgumentException.class);
-    TimeSeries series = TestData.ausbeerSeries();
+    TimeSeries series = TestData.ausbeer();
     series.transform(2.5);
   }
 
@@ -123,7 +123,7 @@ public class TimeSeriesSpec {
 
   @Test
   public void whenTimeSeriesAggregatedDatesCorrect() {
-    TimeSeries series = TestData.ausbeerSeries();
+    TimeSeries series = TestData.ausbeer();
     TimeSeries aggregated = series.aggregate(TimeUnit.DECADE);
     OffsetDateTime expectedStart = OffsetDateTime.of(LocalDateTime.of(1956, 1, 1, 0, 0), ZoneOffset.ofHours(0));
     OffsetDateTime expectedEnd = OffsetDateTime.of(LocalDateTime.of(1996, 1, 1, 0, 0), ZoneOffset.ofHours(0));

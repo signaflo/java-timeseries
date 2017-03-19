@@ -31,7 +31,6 @@ import data.TestData;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static data.DoubleFunctions.arrayFrom;
@@ -103,8 +102,11 @@ public class LinearRegressionSpec {
                                                      .hasIntercept(false)
                                                      .predictor(ones)
                                                      .build();
-        Collections.sort(multipleRegression.beta());
-        //assertThat(multipleRegression.beta(), is(arrayContainingInAnyOrder(this.regression.beta().toArray())));
+        double[] actual = arrayFrom(multipleRegression.beta());
+        double[] expected = arrayFrom(this.regression.beta());
+        Arrays.sort(actual);
+        Arrays.sort(expected);
+        assertArrayEquals(expected, actual, 1E-8);
     }
 
     @Test
