@@ -23,10 +23,11 @@
  */
 package timeseries.models;
 
+import data.Plots;
 import timeseries.TimeSeries;
 
 /**
- * A representation of a time series model, an attempt to capture the most important characteristics of the
+ * A representation of a time series model, an attempt to capture the essential characteristics of the
  * underlying process(es).
  *
  * @author Jacob Rachiele
@@ -93,11 +94,15 @@ public interface Model {
     /**
      * Plot the model fit, which often displays the model fitted values and the observations in the same plot area.
      */
-    void plotFit();
+    default void plotFit() {
+        Plots.plot(fittedSeries(), "Model Fitted Values", "fitted values");
+    }
 
     /**
      * Plot the model residuals.
      */
-    void plotResiduals();
+    default void plotResiduals() {
+        Plots.plot(residuals(), "Model Residuals", "residuals");
+    }
 
 }

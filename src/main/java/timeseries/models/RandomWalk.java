@@ -163,62 +163,6 @@ public final class RandomWalk implements Model {
         return this.residuals;
     }
 
-    @Override
-    public void plotFit() {
-
-        new Thread(() -> {
-            final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
-            for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
-                xAxis.add(Date.from(dateTime.toInstant()));
-            }
-            List<Double> seriesList = com.google.common.primitives.Doubles.asList(timeSeries.asArray());
-            List<Double> fittedList = com.google.common.primitives.Doubles.asList(fittedSeries.asArray());
-            final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
-                                                      .title("Random Walk Fitted vs Actual").build();
-            XYSeries fitSeries = chart.addSeries("Fitted Values", xAxis, fittedList);
-            XYSeries observedSeries = chart.addSeries("Actual Values", xAxis, seriesList);
-            XYStyler styler = chart.getStyler();
-            styler.setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line);
-            observedSeries.setLineWidth(0.75f);
-            observedSeries.setMarker(new None()).setLineColor(Color.RED);
-            fitSeries.setLineWidth(0.75f);
-            fitSeries.setMarker(new None()).setLineColor(Color.BLUE);
-
-            JPanel panel = new XChartPanel<>(chart);
-            JFrame frame = new JFrame("Random Walk Fit");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(panel);
-            frame.pack();
-            frame.setVisible(true);
-        }).start();
-
-    }
-
-    @Override
-    public void plotResiduals() {
-
-        new Thread(() -> {
-            final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
-            for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
-                xAxis.add(Date.from(dateTime.toInstant()));
-            }
-            List<Double> seriesList = com.google.common.primitives.Doubles.asList(residuals.asArray());
-            final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
-                                                      .title("Random Walk Residuals").build();
-            XYSeries residualSeries = chart.addSeries("Model Residuals", xAxis, seriesList);
-            residualSeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
-            residualSeries.setMarker(new Circle()).setMarkerColor(Color.RED);
-
-            JPanel panel = new XChartPanel<>(chart);
-            JFrame frame = new JFrame("Random Walk Residuals");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(panel);
-            frame.pack();
-            frame.setVisible(true);
-        }).start();
-
-    }
-
     private TimeSeries fitSeries() {
         final double[] fitted = new double[timeSeries.n()];
         fitted[0] = timeSeries.at(0);

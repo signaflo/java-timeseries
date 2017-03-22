@@ -769,60 +769,6 @@ public final class Arima implements Model {
         return this.maSmaCoeffs.clone();
     }
 
-    // ********** Plots **********//
-    @Override
-    public final void plotFit() {
-        new Thread(() -> {
-            final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
-            for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
-                xAxis.add(Date.from(dateTime.toInstant()));
-            }
-            List<Double> seriesList = com.google.common.primitives.Doubles.asList(observations.asArray());
-            List<Double> fittedList = com.google.common.primitives.Doubles.asList(fittedSeries.asArray());
-            final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
-                                                      .title("ARIMA Fitted vs Actual").build();
-            XYSeries fitSeries = chart.addSeries("Fitted Values", xAxis, fittedList);
-            XYSeries observedSeries = chart.addSeries("Actual Values", xAxis, seriesList);
-            XYStyler styler = chart.getStyler();
-            styler.setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line);
-            observedSeries.setLineWidth(0.75f);
-            observedSeries.setMarker(new None()).setLineColor(Color.RED);
-            fitSeries.setLineWidth(0.75f);
-            fitSeries.setMarker(new None()).setLineColor(Color.BLUE);
-
-            JPanel panel = new XChartPanel<>(chart);
-            JFrame frame = new JFrame("ARIMA Fit");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(panel);
-            frame.pack();
-            frame.setVisible(true);
-        }).start();
-    }
-
-    @Override
-    public final void plotResiduals() {
-        new Thread(() -> {
-            final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
-            for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
-                xAxis.add(Date.from(dateTime.toInstant()));
-            }
-            List<Double> seriesList = com.google.common.primitives.Doubles.asList(residuals.asArray());
-            final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
-                                                      .title("ARIMA Residuals").build();
-            XYSeries residualSeries = chart.addSeries("Residuals", xAxis, seriesList);
-            residualSeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
-            residualSeries.setMarker(new Circle()).setMarkerColor(Color.RED);
-
-            JPanel panel = new XChartPanel<>(chart);
-            JFrame frame = new JFrame("ARIMA Residuals");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(panel);
-            frame.pack();
-            frame.setVisible(true);
-        }).start();
-    }
-    // ********** Plots **********//
-
     @Override
     public String toString() {
         return "\norder: " + order + "\nmodelInfo: " + modelInfo + "\nmodelCoefficients: " + modelCoefficients;

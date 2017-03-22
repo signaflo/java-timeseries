@@ -65,7 +65,7 @@ public final class BFGS {
     }
 
     /**
-     * Create the BFGS object and run the algorithm with the supplied information.
+     * Create a new BFGS object and run the algorithm with the supplied information.
      *
      * @param f                       the function to be minimized.
      * @param startingPoint           the initial guess of the minimum.

@@ -24,6 +24,7 @@
 package timeseries.models;
 
 import data.DoubleFunctions;
+import data.Plots;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -91,67 +92,6 @@ public final class MeanModel implements Model {
     @Override
     public TimeSeries residuals() {
         return this.timeSeries.minus(this.fittedSeries);
-    }
-
-    @Override
-    public void plotResiduals() {
-        new Thread(() -> {
-            final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
-            for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
-                xAxis.add(Date.from(dateTime.toInstant()));
-            }
-            List<Double> seriesList = com.google.common.primitives.Doubles.asList(residuals().asArray());
-            final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
-                                                      .title("Mean Model Residuals").build();
-            XYSeries residualSeries = chart.addSeries("Model Residuals", xAxis, seriesList);
-            residualSeries.setXYSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
-            residualSeries.setMarker(new Circle()).setMarkerColor(Color.RED);
-
-            JPanel panel = new XChartPanel<>(chart);
-            JFrame frame = new JFrame("Mean Model Residuals");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(panel);
-            frame.pack();
-            frame.setVisible(true);
-        }).start();
-    }
-
-    /**
-     * Plot just the model fitted values.
-     */
-    public void plotFittedValues() {
-        this.fittedSeries.plot("Mean Model Fitted Values");
-    }
-
-    @Override
-    public void plotFit() {
-
-        new Thread(() -> {
-            final List<Date> xAxis = new ArrayList<>(fittedSeries.observationTimes().size());
-            for (OffsetDateTime dateTime : fittedSeries.observationTimes()) {
-                xAxis.add(Date.from(dateTime.toInstant()));
-            }
-            List<Double> seriesList = com.google.common.primitives.Doubles.asList(timeSeries.asArray());
-            List<Double> fittedList = com.google.common.primitives.Doubles.asList(fittedSeries.asArray());
-            final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
-                                                      .title("Mean Model Fitted vs Actual").build();
-            XYSeries fitSeries = chart.addSeries("Fitted Values", xAxis, fittedList);
-            XYSeries observedSeries = chart.addSeries("Actual Values", xAxis, seriesList);
-
-            chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line);
-
-            observedSeries.setLineWidth(0.75f);
-            observedSeries.setMarker(new None()).setLineColor(Color.RED);
-            fitSeries.setLineWidth(0.75f);
-            fitSeries.setMarker(new None()).setLineColor(Color.BLUE);
-
-            JPanel panel = new XChartPanel<>(chart);
-            JFrame frame = new JFrame("Mean Model Fit");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(panel);
-            frame.pack();
-            frame.setVisible(true);
-        }).start();
     }
 
     @Override

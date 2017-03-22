@@ -25,6 +25,7 @@ package timeseries;
 
 import data.DataSet;
 import data.DoubleFunctions;
+import data.Plots;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -598,59 +599,7 @@ public final class TimeSeries extends DataSet {
      */
     @Override
     public final void plot() {
-        new Thread(() -> {
-            final List<Date> xAxis = new ArrayList<>(this.observationTimes.size());
-            for (OffsetDateTime dateTime : this.observationTimes) {
-                xAxis.add(Date.from(dateTime.toInstant()));
-            }
-            final List<Double> seriesList = com.google.common.primitives.Doubles.asList(this.series);
-            for (int t = 0; t < seriesList.size(); t++) {
-                if (seriesList.get(t).isInfinite()) {
-                    seriesList.set(t, Double.NaN);
-                }
-            }
-            final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(960).title("Series")
-                                                      .xAxisTitle("Time").yAxisTitle("Values").build();
-            chart.getStyler().setChartFontColor(Color.DARK_GRAY);
-            final XYSeries xySeries = chart.addSeries("Series Values", xAxis, seriesList)
-                                           .setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
-            xySeries.setLineWidth(1f);
-            xySeries.setMarker(new Circle()).setMarkerColor(Color.BLUE).setLineColor(Color.BLUE);
-            final JPanel panel = new XChartPanel<>(chart);
-            final JFrame frame = new JFrame("");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(panel);
-            frame.pack();
-            frame.setVisible(true);
-        }).start();
-    }
-
-    public final void plot(final String plotName) {
-        new Thread(() -> {
-            final List<Date> xAxis = new ArrayList<>(this.observationTimes.size());
-            for (OffsetDateTime dateTime : this.observationTimes) {
-                xAxis.add(Date.from(dateTime.toInstant()));
-            }
-            final List<Double> seriesList = com.google.common.primitives.Doubles.asList(this.series);
-            for (int t = 0; t < seriesList.size(); t++) {
-                if (seriesList.get(t).isInfinite()) {
-                    seriesList.set(t, Double.NaN);
-                }
-            }
-            final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(960).title(plotName)
-                                                      .xAxisTitle("Time").yAxisTitle("Values").build();
-            chart.getStyler().setChartFontColor(Color.DARK_GRAY);
-            final XYSeries xySeries = chart.addSeries("Series Values", xAxis, seriesList)
-                                           .setXYSeriesRenderStyle(XYSeriesRenderStyle.Line);
-            xySeries.setLineWidth(1f);
-            xySeries.setMarker(new Circle()).setMarkerColor(Color.BLUE).setLineColor(Color.BLUE);
-            final JPanel panel = new XChartPanel<>(chart);
-            final JFrame frame = new JFrame(plotName);
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(panel);
-            frame.pack();
-            frame.setVisible(true);
-        }).start();
+        Plots.plot(this, "Time Series Values", "series");
     }
 
     /**
