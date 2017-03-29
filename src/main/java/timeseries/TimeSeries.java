@@ -24,8 +24,10 @@
 package timeseries;
 
 import data.DataSet;
+import data.DoubleDataSet;
 import data.DoubleFunctions;
 import data.Plots;
+import lombok.EqualsAndHashCode;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -33,7 +35,6 @@ import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
 import org.knowm.xchart.style.Styler.ChartTheme;
 import org.knowm.xchart.style.lines.SeriesLines;
-import org.knowm.xchart.style.markers.Circle;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import javax.swing.*;
@@ -52,7 +53,7 @@ import java.util.List;
  *
  * @author Jacob Rachiele
  */
-public final class TimeSeries extends DataSet {
+public final class TimeSeries implements DataSet {
 
     private final TimePeriod timePeriod;
     private final int n;
@@ -60,6 +61,7 @@ public final class TimeSeries extends DataSet {
     private final double[] series;
     private final List<OffsetDateTime> observationTimes;
     private final Map<OffsetDateTime, Integer> dateTimeIndex;
+    private final DoubleDataSet dataSet;
 
     /**
      * Create a new time series from the given data without regard to when the observations were made. Use this
@@ -68,7 +70,8 @@ public final class TimeSeries extends DataSet {
      * @param series the observation data.
      */
     public TimeSeries(final double... series) {
-        this(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);
+        this(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0,
+                               ZoneOffset.ofHours(0)), series);
     }
 
     /**
@@ -88,15 +91,14 @@ public final class TimeSeries extends DataSet {
      * @param timePeriod the period of time between observations.
      * @param startTime  the time at which the first observation was made. The string must represent either a valid
      *                   {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
-     *                   UTC/Greenwich
-     *                   offset, i.e., an offset of 0, will be used.
+     *                   UTC/Greenwich offset, i.e., an offset of 0, will be used.
      * @param series     the observation data.
      */
     public TimeSeries(final TimePeriod timePeriod, final String startTime, final double... series) {
-        super(series);
+        this.dataSet = new DoubleDataSet(series);
         this.series = series.clone();
         this.n = series.length;
-        this.mean = super.mean();
+        this.mean = this.dataSet.mean();
         this.timePeriod = timePeriod;
         Map<OffsetDateTime, Integer> dateTimeIndex = new HashMap<>(series.length);
         List<OffsetDateTime> dateTimes = new ArrayList<>(series.length);
@@ -128,10 +130,10 @@ public final class TimeSeries extends DataSet {
      * @param series     the observation data.
      */
     public TimeSeries(final TimePeriod timePeriod, final OffsetDateTime startTime, final double... series) {
-        super(series);
+        this.dataSet = new DoubleDataSet(series);
         this.series = series.clone();
         this.n = series.length;
-        this.mean = super.mean();
+        this.mean = this.dataSet.mean();
         this.timePeriod = timePeriod;
         List<OffsetDateTime> dateTimes = new ArrayList<>(series.length);
         Map<OffsetDateTime, Integer> dateTimeIndex = new HashMap<>(series.length);
@@ -154,8 +156,7 @@ public final class TimeSeries extends DataSet {
      * @param timeUnit  the unit of time in which observations are made.
      * @param startTime the time at which the first observation was made. The string must represent either a valid
      *                  {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
-     *                  UTC/Greenwich
-     *                  offset, i.e., an offset of 0, will be used.
+     *                  UTC/Greenwich offset, i.e., an offset of 0, will be used.
      * @param series    the observation data.
      */
     public TimeSeries(final TimeUnit timeUnit, final String startTime, final double... series) {
@@ -181,10 +182,10 @@ public final class TimeSeries extends DataSet {
      */
     public TimeSeries(final TimePeriod timePeriod, final List<OffsetDateTime> observationTimes,
                       final double... series) {
-        super(series);
+        this.dataSet = new DoubleDataSet(series);
         this.series = series.clone();
         this.n = series.length;
-        this.mean = super.mean();
+        this.mean = this.dataSet.mean();
         this.timePeriod = timePeriod;
         this.observationTimes = Collections.unmodifiableList(observationTimes);
         Map<OffsetDateTime, Integer> dateTimeIndex = new HashMap<>(series.length);
@@ -328,6 +329,7 @@ public final class TimeSeries extends DataSet {
      *
      * @param boxCoxLambda the parameter to use for the transformation.
      * @return a new time series transformed using the given Box-Cox parameter.
+     *
      * @throws IllegalArgumentException if boxCoxLambda is not strictly between -1 and 2.
      */
     public final TimeSeries transform(final double boxCoxLambda) {
@@ -594,12 +596,77 @@ public final class TimeSeries extends DataSet {
 
     // ********** Plots ********** //
 
+    @Override
+    public double sum() {
+        return this.dataSet.sum();
+    }
+
+    @Override
+    public double sumOfSquares() {
+        return this.dataSet.sumOfSquares();
+    }
+
+    @Override
+    public double mean() {
+        return this.dataSet.mean();
+    }
+
+    @Override
+    public double median() {
+        return this.dataSet.median();
+    }
+
+    @Override
+    public int n() {
+        return this.dataSet.n();
+    }
+
+    @Override
+    public DataSet times(DataSet otherData) {
+        return this.dataSet.times(otherData);
+    }
+
+    @Override
+    public DataSet plus(DataSet otherData) {
+        return this.dataSet.plus(otherData);
+    }
+
+    @Override
+    public double variance() {
+        return this.dataSet.variance();
+    }
+
+    @Override
+    public double stdDeviation() {
+        return this.dataSet.stdDeviation();
+    }
+
+    @Override
+    public double covariance(DataSet otherData) {
+        return this.dataSet.covariance(otherData);
+    }
+
+    @Override
+    public double correlation(DataSet otherData) {
+        return this.dataSet.correlation(otherData);
+    }
+
+    @Override
+    public double[] data() {
+        return this.series.clone();
+    }
+
     /**
      * Display a line plot connecting the observation times to the measurements.
      */
     @Override
     public final void plot() {
         Plots.plot(this, "Time Series Values", "series");
+    }
+
+    @Override
+    public void plotAgainst(DataSet otherData) {
+        this.dataSet.plotAgainst(otherData);
     }
 
     /**
@@ -650,35 +717,26 @@ public final class TimeSeries extends DataSet {
 
     // ********** Boiler Plate ********** //
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
 
-        TimeSeries series1 = (TimeSeries) o;
+        TimeSeries that = (TimeSeries) o;
 
-        if (n != series1.n) return false;
-        if (Double.compare(series1.mean, mean) != 0) return false;
-        if (timePeriod != null ? !timePeriod.equals(series1.timePeriod) : series1.timePeriod != null) return false;
-        if (!Arrays.equals(series, series1.series)) return false;
-        if (observationTimes != null
-            ? !observationTimes.equals(series1.observationTimes)
-            : series1.observationTimes != null) return false;
-        return dateTimeIndex != null ? dateTimeIndex.equals(series1.dateTimeIndex) : series1.dateTimeIndex == null;
+        if (n != that.n) return false;
+        if (timePeriod != null ? !timePeriod.equals(that.timePeriod) : that.timePeriod != null) return false;
+        if (!Arrays.equals(series, that.series)) return false;
+        return observationTimes.equals(that.observationTimes);
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        long temp;
-        result = 31 * result + (timePeriod != null ? timePeriod.hashCode() : 0);
+        int result = timePeriod != null ? timePeriod.hashCode() : 0;
         result = 31 * result + n;
-        temp = Double.doubleToLongBits(mean);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + Arrays.hashCode(series);
-        result = 31 * result + (observationTimes != null ? observationTimes.hashCode() : 0);
-        result = 31 * result + (dateTimeIndex != null ? dateTimeIndex.hashCode() : 0);
+        result = 31 * result + observationTimes.hashCode();
         return result;
     }
 
