@@ -23,7 +23,7 @@
  */
 package timeseries;
 
-import data.DataSet;
+import data.DoubleDataSet;
 import data.DoubleFunctions;
 import data.Plots;
 import org.knowm.xchart.XChartPanel;
@@ -33,7 +33,6 @@ import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
 import org.knowm.xchart.style.Styler.ChartTheme;
 import org.knowm.xchart.style.lines.SeriesLines;
-import org.knowm.xchart.style.markers.Circle;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import javax.swing.*;
@@ -52,7 +51,7 @@ import java.util.List;
  *
  * @author Jacob Rachiele
  */
-public final class TimeSeries extends DataSet {
+public final class TimeSeries extends DoubleDataSet {
 
     private final TimePeriod timePeriod;
     private final int n;
