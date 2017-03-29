@@ -82,4 +82,53 @@ public class TimePeriodSpec {
         TimePeriod oneDecade = TimePeriod.oneDecade();
         assertThat(twoYears.frequencyPer(oneDecade), is(5.0));
     }
+
+    @Test
+    public void whenHalfCenturyThenTwoInOneCentury() {
+        TimePeriod halfCentury = TimePeriod.halfCentury();
+        TimePeriod oneCentury = TimePeriod.oneCentury();
+        assertThat(halfCentury.frequencyPer(oneCentury), is(2.0));
+    }
+
+    @Test
+    public void whenOneDayThenSevenInOneWeek() {
+        TimePeriod oneDay = TimePeriod.oneDay();
+        TimePeriod oneWeek = TimePeriod.oneWeek();
+        assertThat(oneDay.frequencyPer(oneWeek), is(7.0));
+    }
+
+    @Test
+    public void whenOneTenthSecondThenTenInOneSecond() {
+        TimePeriod oneTenthSecond = TimePeriod.oneTenthSecond();
+        TimePeriod oneSecond = TimePeriod.oneSecond();
+        assertThat(oneTenthSecond.frequencyPer(oneSecond), is(10.0));
+    }
+
+    @Test
+    public void WhenHalfSecondThenTwoInOneSecond() {
+        TimePeriod halfSecond = TimePeriod.halfSecond();
+        TimePeriod oneSecond = TimePeriod.oneSecond();
+        assertThat(halfSecond.frequencyPer(oneSecond), is(2.0));
+    }
+
+    @Test
+    public void whenOneQuarterThenFourInOneYear() {
+        TimePeriod oneQuarter = TimePeriod.oneQuarter();
+        TimePeriod oneYear = TimePeriod.oneYear();
+        assertThat(oneQuarter.frequencyPer(oneYear), is(4.0));
+    }
+
+    @Test
+    public void whenHalfDecadeThenTwoInOneDecade() {
+        TimePeriod halfDecade = TimePeriod.halfDecade();
+        TimePeriod oneDecade = TimePeriod.oneDecade();
+        assertThat(halfDecade.frequencyPer(oneDecade), is(2.0));
+    }
+
+    @Test
+    public void whenTriAnnualThenThreeInOneYear() {
+        TimePeriod triAnnual = TimePeriod.triAnnual();
+        TimePeriod oneYear = TimePeriod.oneYear();
+        assertThat(triAnnual.frequencyPer(oneYear), is(3.0));
+    }
 }

@@ -38,11 +38,11 @@ import stats.Statistics;
 import javax.swing.*;
 
 /**
- * A collection of numerical observations. This class is immutable and all subclasses must be immutable.
+ * A collection of numerical observations. This class is immutable and thread-safe.
  *
  * @author Jacob Rachiele
  */
-public class DoubleDataSet implements DataSet {
+public final class DoubleDataSet implements DataSet {
 
   private final double[] data;
 
@@ -53,7 +53,7 @@ public class DoubleDataSet implements DataSet {
    */
   public DoubleDataSet(final double... data) {
     if (data == null) {
-      throw new IllegalArgumentException("Null array passed to constructor.");
+      throw new NullPointerException("Null array passed to DoubleDataSet constructor.");
     }
     this.data = data.clone();
   }

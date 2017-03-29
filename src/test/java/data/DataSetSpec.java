@@ -22,7 +22,7 @@ public class DataSetSpec {
   @SuppressWarnings({"unused", "ConstantConditions"})
   public void whenDataSetCreatedWithNullArrayThenExceptionThrown() {
     double[] data = null;
-    exception.expect(IllegalArgumentException.class);
+    exception.expect(NullPointerException.class);
     new DoubleDataSet(data);
   }
 
