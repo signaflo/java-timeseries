@@ -88,8 +88,7 @@ public final class TimeSeries extends DataSet {
      * @param timePeriod the period of time between observations.
      * @param startTime  the time at which the first observation was made. The string must represent either a valid
      *                   {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
-     *                   UTC/Greenwich
-     *                   offset, i.e., an offset of 0, will be used.
+     *                   UTC/Greenwich offset, i.e., an offset of 0, will be used.
      * @param series     the observation data.
      */
     public TimeSeries(final TimePeriod timePeriod, final String startTime, final double... series) {
@@ -154,8 +153,7 @@ public final class TimeSeries extends DataSet {
      * @param timeUnit  the unit of time in which observations are made.
      * @param startTime the time at which the first observation was made. The string must represent either a valid
      *                  {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
-     *                  UTC/Greenwich
-     *                  offset, i.e., an offset of 0, will be used.
+     *                  UTC/Greenwich offset, i.e., an offset of 0, will be used.
      * @param series    the observation data.
      */
     public TimeSeries(final TimeUnit timeUnit, final String startTime, final double... series) {
@@ -328,6 +326,7 @@ public final class TimeSeries extends DataSet {
      *
      * @param boxCoxLambda the parameter to use for the transformation.
      * @return a new time series transformed using the given Box-Cox parameter.
+     *
      * @throws IllegalArgumentException if boxCoxLambda is not strictly between -1 and 2.
      */
     public final TimeSeries transform(final double boxCoxLambda) {

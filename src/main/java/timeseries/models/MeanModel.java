@@ -24,24 +24,9 @@
 package timeseries.models;
 
 import data.DoubleFunctions;
-import data.Plots;
-import org.knowm.xchart.XChartPanel;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.XYSeries;
-import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
-import org.knowm.xchart.style.Styler.ChartTheme;
-import org.knowm.xchart.style.markers.Circle;
-import org.knowm.xchart.style.markers.None;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
-
-import javax.swing.*;
-import java.awt.*;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * A time series model that assumes no trend or seasonal factors are present, and that puts as much weight

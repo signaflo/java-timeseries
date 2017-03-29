@@ -94,7 +94,7 @@ final class StrongWolfeLineSearch {
   }
 
   /**
-   * Perform the line search , returning an element satisfying the strong Wolfe conditions.
+   * Perform the line search, returning an element satisfying the strong Wolfe conditions.
    *
    * @return an element satisfying the strong Wolfe conditions.
    */

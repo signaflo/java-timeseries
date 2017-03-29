@@ -29,7 +29,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 /**
- * Static factory constructors for time series objects.
+ * Static factory constructors for {@link TimeSeries} objects.
  *
  * @author Jacob Rachiele
  */

@@ -24,26 +24,12 @@
 package timeseries.models;
 
 import lombok.NonNull;
-import org.knowm.xchart.XChartPanel;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.XYSeries;
-import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
-import org.knowm.xchart.style.Styler.ChartTheme;
-import org.knowm.xchart.style.XYStyler;
-import org.knowm.xchart.style.markers.Circle;
-import org.knowm.xchart.style.markers.None;
 import stats.distributions.Distribution;
 import stats.distributions.Normal;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 
-import javax.swing.*;
-import java.awt.*;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * A model for a random walk process. Some important characteristics of the random walk are that the
