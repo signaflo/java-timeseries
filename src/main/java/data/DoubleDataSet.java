@@ -38,7 +38,7 @@ import stats.Statistics;
 import javax.swing.*;
 
 /**
- * A collection of numerical observations. This class is immutable and thread-safe.
+ * A collection of numerical observations represented as primitive doubles. This class is immutable and thread-safe.
  *
  * @author Jacob Rachiele
  */
