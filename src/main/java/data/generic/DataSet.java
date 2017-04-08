@@ -35,28 +35,28 @@ public interface DataSet<T extends FieldElement<T>> {
      *
      * @return the sum of the observations.
      */
-    T sum();
+    FieldElement<T> sum();
 
     /**
      * The sum of the squared observations.
      *
      * @return the sum of the squared observations.
      */
-    T sumOfSquares();
+    FieldElement<T> sumOfSquares();
 
     /**
      * The mean of the observations.
      *
      * @return the mean of the observations.
      */
-    T mean();
+    FieldElement<T> mean();
 
     /**
      * The median value of the observations.
      *
      * @return the median value of the observations.
      */
-    T median();
+    FieldElement<T> median();
 
     /**
      * The size of the data set.
@@ -72,7 +72,7 @@ public interface DataSet<T extends FieldElement<T>> {
      * @return A new data set containing every element of this data set multiplied by
      * the corresponding element of the given data set.
      */
-    DataSet times(DataSet otherData);
+    DataSet<T> times(DataSet<T> otherData);
 
     /**
      * Add every element of this data set to the corresponding element of the given data set.
@@ -81,21 +81,21 @@ public interface DataSet<T extends FieldElement<T>> {
      * @return A new data set containing every element of this data set added to
      * the corresponding element of the given data set.
      */
-    DataSet plus(DataSet otherData);
+    DataSet<T> plus(DataSet<T> otherData);
 
     /**
      * The unbiased sample variance of the observations.
      *
      * @return the unbiased sample variance of the observations.
      */
-    T variance();
+    FieldElement<T> variance();
 
     /**
      * The unbiased sample standard deviation of the observations.
      *
      * @return the unbiased sample standard deviation of the observations.
      */
-    T stdDeviation();
+    FieldElement<T> stdDeviation();
 
     /**
      * The unbiased sample covariance of these observations with the observations
@@ -105,7 +105,7 @@ public interface DataSet<T extends FieldElement<T>> {
      * @return the unbiased sample covariance of these observations with the observations
      * contained in the given data set.
      */
-    T covariance(DataSet otherData);
+    FieldElement<T> covariance(DataSet<T> otherData);
 
     /**
      * The unbiased sample correlation of these observations with the observations
@@ -115,7 +115,7 @@ public interface DataSet<T extends FieldElement<T>> {
      * @return the unbiased sample correlation of these observations with the observations
      * contained in the given data set.
      */
-    T correlation(DataSet otherData);
+    FieldElement<T> correlation(DataSet<T> otherData);
 
     /**
      * The observations.

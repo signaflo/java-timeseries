@@ -31,190 +31,199 @@ package math;
  */
 public final class Real extends Complex {
 
-  private static final double EPSILON = Math.ulp(1.0);
+    private static final double EPSILON = Math.ulp(1.0);
 
-  private final double value;
+    private final double value;
 
-  /**
-   * Create a new real number using the given double.
-   *
-   * @param value the primitive double approximating the real number.
-   */
-  public Real(final double value) {
-    super(value);
-    this.value = value;
-  }
-
-  /**
-   * Create a new real number using the given double.
-   *
-   * @param value the primitive double approximating the real number.
-   * @return a new real number from the given double.
-   */
-  public static Real from(final double value) {
-    return new Real(value);
-  }
-
-  /**
-   * Add this real number to the given real number and return the result.
-   * @param other the real number to add to this one.
-   * @return the sum of this real number and the given real number.
-   */
-  public Real plus(final Real other) {
-    return new Real(this.value + other.value);
-  }
-
-  /**
-   * Subtract the given real number from this real number and return the result.
-   * @param other the real number to subtract from this one.
-   * @return the difference of the given real number from this real number.
-   */
-  public Real minus(final Real other) {
-    return new Real(this.value - other.value);
-  }
-
-  /**
-   * Multiply this real number by the given real number and return the result.
-   * @param other the real number to multiply this one by.
-   * @return this real number multiplied by the given real number.
-   */
-  public Real times(Real other) {
-    return new Real(this.value * other.value);
-  }
-
-  @Override
-  public Real times(double other) {
-    return new Real(this.value * other);
-  }
-
-  /**
-   * Square this real number and return the result.
-   * @return the square of this real number.
-   */
-  public Real squared() {
-    return new Real(this.value * this.value);
-  }
-
-  /**
-   * Cube this real number and return the result.
-   * @return the cube of this real number.
-   */
-  public Real cubed() {
-    return new Real(this.value * this.value * this.value);
-  }
-
-  /**
-   * Divide this real number by the given real number and return the result.
-   * @param other the real number to divide this one by.
-   * @return this real number divided by the given real number.
-   */
-  public Real dividedBy(Real other) {
-    return new Real(this.value / other.value);
-  }
-
-  /**
-   * Take the additive inverse, or negative, of this real number and return the result.
-   * @return the additive inverse, or negative, of this real number.
-   */
-  public Real negative() {
-    return new Real(-this.value);
-  }
-
-  public double value() {
-    return this.value;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-
-    Real real = (Real) o;
-    return Double.compare(real.value, value) == 0;
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode();
-    long temp;
-    temp = Double.doubleToLongBits(value);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    return Double.toString(this.value);
-  }
-
-  public static final class Interval {
-
-    private final Real lower;
-    private final Real upper;
-
-    Interval(final Real lower, final Real upper) {
-      this.lower = lower;
-      this.upper = upper;
+    /**
+     * Create a new real number using the given double.
+     *
+     * @param value the primitive double approximating the real number.
+     */
+    public Real(final double value) {
+        super(value);
+        this.value = value;
     }
 
-    public Interval(final double lower, final double upper) {
-      this.lower = Real.from(lower);
-      this.upper = Real.from(upper);
+    /**
+     * Create a new real number using the given double.
+     *
+     * @param value the primitive double approximating the real number.
+     * @return a new real number from the given double.
+     */
+    public static Real from(final double value) {
+        return new Real(value);
     }
 
-    public double lowerDbl() {
-      return this.lower.value();
+    public static Real zero() {
+        return new Real(0.0);
     }
 
-    public double upperDbl() {
-      return this.upper.value();
+    /**
+     * Add this real number to the given real number and return the result.
+     * @param other the real number to add to this one.
+     * @return the sum of this real number and the given real number.
+     */ public Real plus(final Real other) {
+        return new Real(this.value + other.value);
     }
 
-    public Real lower() {
-      return this.lower;
+    /**
+     * Subtract the given real number from this real number and return the result.
+     *
+     * @param other the real number to subtract from this one.
+     * @return the difference of the given real number from this real number.
+     */
+    public Real minus(final Real other) {
+        return new Real(this.value - other.value);
     }
 
-    public Real upper() {
-      return this.upper;
+    /**
+     * Multiply this real number by the given real number and return the result.
+     *
+     * @param other the real number to multiply this one by.
+     * @return this real number multiplied by the given real number.
+     */
+    public Real times(Real other) {
+        return new Real(this.value * other.value);
     }
 
-    public boolean endpointsEqual() {
-      return Math.abs(this.lower.value - this.upper.value) < EPSILON;
+    @Override
+    public Real times(double other) {
+        return new Real(this.value * other);
     }
 
-    public boolean contains(final double value) {
-      if (lower.value < upper.value) {
-        return value >= lower.value && value <= upper.value;
-      }
-      return value <= lower.value && value >= upper.value;
+    /**
+     * Square this real number and return the result.
+     *
+     * @return the square of this real number.
+     */
+    public Real squared() {
+        return new Real(this.value * this.value);
     }
 
-    public boolean doesntContain(final double value) {
-      return !contains(value);
+    /**
+     * Cube this real number and return the result.
+     *
+     * @return the cube of this real number.
+     */
+    public Real cubed() {
+        return new Real(this.value * this.value * this.value);
+    }
+
+    /**
+     * Divide this real number by the given real number and return the result.
+     *
+     * @param other the real number to divide this one by.
+     * @return this real number divided by the given real number.
+     */
+    public Real dividedBy(Real other) {
+        return new Real(this.value / other.value);
+    }
+
+    /**
+     * Take the additive inverse, or negative, of this real number and return the result.
+     *
+     * @return the additive inverse, or negative, of this real number.
+     */
+    public Real negative() {
+        return new Real(-this.value);
+    }
+
+    public double value() {
+        return this.value;
     }
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
-      Interval interval = (Interval) o;
-
-      if (!lower.equals(interval.lower)) return false;
-      return upper.equals(interval.upper);
+        Real real = (Real) o;
+        return Double.compare(real.value, value) == 0;
     }
 
     @Override
     public int hashCode() {
-      int result = lower.hashCode();
-      result = 31 * result + upper.hashCode();
-      return result;
+        int result = super.hashCode();
+        long temp;
+        temp = Double.doubleToLongBits(value);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
     }
 
     @Override
     public String toString() {
-      return "(" + this.lower.value() + ", " + this.upper.value() + ")";
+        return Double.toString(this.value);
     }
-  }
+
+    public static final class Interval {
+
+        private final Real lower;
+        private final Real upper;
+
+        Interval(final Real lower, final Real upper) {
+            this.lower = lower;
+            this.upper = upper;
+        }
+
+        public Interval(final double lower, final double upper) {
+            this.lower = Real.from(lower);
+            this.upper = Real.from(upper);
+        }
+
+        public double lowerDbl() {
+            return this.lower.value();
+        }
+
+        public double upperDbl() {
+            return this.upper.value();
+        }
+
+        public Real lower() {
+            return this.lower;
+        }
+
+        public Real upper() {
+            return this.upper;
+        }
+
+        public boolean endpointsEqual() {
+            return Math.abs(this.lower.value - this.upper.value) < EPSILON;
+        }
+
+        public boolean contains(final double value) {
+            if (lower.value < upper.value) {
+                return value >= lower.value && value <= upper.value;
+            }
+            return value <= lower.value && value >= upper.value;
+        }
+
+        public boolean doesntContain(final double value) {
+            return !contains(value);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Interval interval = (Interval) o;
+
+            if (!lower.equals(interval.lower)) return false;
+            return upper.equals(interval.upper);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = lower.hashCode();
+            result = 31 * result + upper.hashCode();
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "(" + this.lower.value() + ", " + this.upper.value() + ")";
+        }
+    }
 }

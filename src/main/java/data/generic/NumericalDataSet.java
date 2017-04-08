@@ -30,7 +30,7 @@ import math.FieldElement;
 import java.util.Collections;
 import java.util.List;
 
-public class NumericalDataSet<T extends FieldElement<T>> implements DataSet<T> {
+public class NumericalDataSet<T extends Complex> implements DataSet<Complex> {
 
     private final List<T> data;
 
@@ -39,8 +39,12 @@ public class NumericalDataSet<T extends FieldElement<T>> implements DataSet<T> {
     }
 
     @Override
-    public T sum() {
-        return null;
+    public FieldElement<Complex> sum() {
+        Complex sum = Complex.zero();
+        for (Complex complex : data) {
+            sum = sum.plus(complex);
+        }
+        return sum;
     }
 
     @Override
@@ -64,12 +68,12 @@ public class NumericalDataSet<T extends FieldElement<T>> implements DataSet<T> {
     }
 
     @Override
-    public DataSet times(DataSet otherData) {
+    public DataSet<Complex> times(DataSet<Complex> otherData) {
         return null;
     }
 
     @Override
-    public DataSet plus(DataSet otherData) {
+    public DataSet<Complex> plus(DataSet<Complex> otherData) {
         return null;
     }
 
@@ -94,7 +98,7 @@ public class NumericalDataSet<T extends FieldElement<T>> implements DataSet<T> {
     }
 
     @Override
-    public List<T> data() {
-        return null;
+    public List<Complex> data() {
+        return Collections.unmodifiableList(this.data);
     }
 }
