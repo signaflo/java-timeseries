@@ -192,8 +192,7 @@ public final class Arima implements Model {
 
     /**
      * Create a new ARIMA model from the given observations and model order. This constructor sets the
-     * model {@link FittingStrategy} to unconditional sum-of-squares and the seasonal cycle to
-     * one year.
+     * model {@link FittingStrategy} to unconditional sum-of-squares and the seasonal cycle to one year.
      *
      * @param observations the time series of observations.
      * @param order        the order of the ARIMA model.
@@ -565,11 +564,11 @@ public final class Arima implements Model {
         final int n = observations.n();
         double[] fcst = fcst(steps);
         TimePeriod timePeriod = observations.timePeriod();
-        final OffsetDateTime startTime = observations.observationTimes().get(n - 1).plus(timePeriod.periodLength() *
-                                                                                         timePeriod.timeUnit()
-                                                                                                   .unitLength(),
-                                                                                         timePeriod.timeUnit()
-                                                                                                   .temporalUnit());
+        final OffsetDateTime startTime = observations.observationTimes()
+                                                     .get(n - 1)
+                                                     .plus(timePeriod.periodLength() *
+                                                           timePeriod.timeUnit().unitLength(),
+                                                           timePeriod.timeUnit().temporalUnit());
         return new TimeSeries(timePeriod, startTime, fcst);
     }
 
@@ -838,8 +837,7 @@ public final class Arima implements Model {
     /**
      * The order of an ARIMA model, consisting of the number of autoregressive and moving average parameters, along with
      * the degree of differencing and a flag indicating whether or not the model includes a constant, or intercept,
-     * term.
-     * This class is immutable and thread-safe.
+     * term. This class is immutable and thread-safe.
      *
      * @author Jacob Rachiele
      */
@@ -1040,9 +1038,8 @@ public final class Arima implements Model {
 
         /**
          * Get the model intercept term. Note that this is <i>not</i> the model mean, as in R, but the actual
-         * intercept. The
-         * intercept is equal to &mu; &times; (1 - sum(AR)), where &mu; is the model mean and AR is a vector containing
-         * the non-seasonal and seasonal autoregressive coefficients.
+         * intercept. The intercept is equal to &mu; &times; (1 - sum(AR)), where &mu; is the model mean and AR
+         * is a vector containing the non-seasonal and seasonal autoregressive coefficients.
          *
          * @return the model intercept term.
          */
@@ -1430,8 +1427,9 @@ public final class Arima implements Model {
                 }
             }
 
-            LagPolynomial poly = LagPolynomial.differences(coefficients.d).times(LagPolynomial.seasonalDifferences(
-                    seasonalFrequency, coefficients.D));
+            LagPolynomial poly = LagPolynomial.differences(coefficients.d)
+                                              .times(LagPolynomial.seasonalDifferences(seasonalFrequency,
+                                                                                       coefficients.D));
             end = n + burnin;
             for (int t = diffOffset; t < end; t++) {
                 series[t] += poly.fit(series, t);

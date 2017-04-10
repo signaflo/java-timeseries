@@ -1,14 +1,14 @@
 package data.generic;
 
 import math.Complex;
-import math.Real;
+import math.Rational;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public class NumericalDataSetSpec {
 
@@ -49,6 +49,17 @@ public class NumericalDataSetSpec {
     }
 
     @Test
+    public void whenCovarianceThenComputedCorrectly() {
+        assertThat(dataSet.covariance(getDataSetTwo()),
+                   is(new Complex(-13.233333333333333, 5.466666666666667)));
+    }
+    @Test
+    public void whenCorrelationThenComputedCorrectly() {
+        assertThat(dataSet.correlation(getDataSetTwo()),
+                   is(new Complex(-0.8438942452156876, 0.34861122472386086)));
+    }
+
+    @Test
     public void whenMedianWithEvenSizeSetThenCorrectValue() {
         List<Complex> data = Arrays.asList(
                 new Complex(5.0, 3.0),
@@ -56,6 +67,7 @@ public class NumericalDataSetSpec {
                 new Complex(2.0, 0.0),
                 new Complex(-3.5, 7.5));
         DataSet<Complex> dataSet = new NumericalDataSet<>(data);
+        System.out.println(dataSet.toString());
         assertThat(dataSet.median(), is(new Complex(0.75, 5.25)));
     }
 
@@ -85,6 +97,14 @@ public class NumericalDataSetSpec {
 //        Real r2 = new Real(3.0);
 //        Real r3 = new Real(5.5);
 //        List<Real> values = Arrays.asList(r1, r2, r3);
+//        return new NumericalDataSet<>(values);
+//    }
+//
+//    private DataSet<Complex> getDataSetFour() {
+//        Rational r1 = new Rational(3, 4);
+//        Rational r2 = new Rational(7, 9);
+//        Rational r3 = new Rational(4);
+//        List<Rational> values = Arrays.asList(r1, r2, r3);
 //        return new NumericalDataSet<>(values);
 //    }
 

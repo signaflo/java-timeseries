@@ -130,11 +130,6 @@ public class Real extends Complex {
         return new Real(-this.value);
     }
 
-    @Override
-    public Real getAdditiveIdentity() {
-        return new Real(0.0);
-    }
-
     public double value() {
         return this.value;
     }

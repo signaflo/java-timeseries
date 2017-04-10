@@ -92,11 +92,4 @@ public interface FieldElement<T> extends Comparable<FieldElement<T>> {
      */
     double abs();
 
-    /**
-     * Return the element of this field that represents the additive identity, otherwise known as <i>zero</i>.
-     *
-     * @return the element of this field that represents the additive identity, otherwise known as <i>zero</i>.
-     */
-    T getAdditiveIdentity();
-
 }

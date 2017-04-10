@@ -24,9 +24,6 @@
 
 package math;
 
-import lombok.EqualsAndHashCode;
-
-@EqualsAndHashCode
 public class Rational extends Real {
 
     private final int p;
@@ -34,13 +31,64 @@ public class Rational extends Real {
 
     public Rational(final int p, final int q) {
         super((double)p / q);
+        if (q == 0) {
+            throw new IllegalArgumentException("The denominator cannot be zero.");
+        }
         this.p = p;
         this.q = q;
     }
 
+    public Rational(final int p) {
+        this(p, 1);
+    }
+
+    @Override
+    public Rational additiveInverse() {
+        return new Rational(-p, q);
+    }
+
     @Override
     public String toString() {
+        if (this.p == 0) {
+            return "0";
+        }
+        if (this.q == 1) {
+            return Integer.toString(this.p);
+        }
+        if ((double)this.p / this.q == 1.0) {
+            return "1";
+        }
+        if (this.p < 0) {
+            if (this.q < 0) {
+                return -this.p + "/" + -this.q;
+            }
+            return this.p + "/" + this.q;
+        }
+
+        if (this.q < 0) {
+            return -this.p + "/" + -this.q;
+        }
         return this.p + "/" + this.q;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Rational rational = (Rational) o;
+
+        if (p != rational.p) return false;
+        return q == rational.q;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + p;
+        result = 31 * result + q;
+        return result;
     }
 
 //    Rational(String rational) {

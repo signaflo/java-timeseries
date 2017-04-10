@@ -141,10 +141,6 @@ public class Complex implements FieldElement<Complex> {
         return zr.dividedBy(zr.abs()).times(Math.sqrt(r));
     }
 
-    @Override
-    public Complex getAdditiveIdentity() {
-        return new Complex();
-    }
     /**
      * The real part of this complex number.
      *

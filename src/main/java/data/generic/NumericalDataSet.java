@@ -34,6 +34,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A data set consisting of any type that extends the complex numbers. This class is immutable and thread-safe.
+ *
+ * @param <T> any type that extends the complex numbers.
+ */
 @ToString @EqualsAndHashCode
 public class NumericalDataSet<T extends Complex> implements DataSet<Complex> {
 
@@ -127,12 +132,28 @@ public class NumericalDataSet<T extends Complex> implements DataSet<Complex> {
 
     @Override
     public Complex covariance(@NonNull DataSet<Complex> otherData) {
-        return null;
+        validateSize(otherData);
+        Complex thisMean = this.mean();
+        Complex otherMean = otherData.mean();
+        Complex thisDifference, otherDifference;
+        Complex product;
+        Complex sum = new Complex();
+
+        Complex c, d;
+        for (int i = 0; i < this.size(); i++) {
+            c = this.data().get(i);
+            d = otherData.data().get(i);
+            thisDifference = c.minus(thisMean);
+            otherDifference = d.minus(otherMean);
+            product = thisDifference.conjugate().times(otherDifference);
+            sum = sum.plus(product);
+        }
+        return sum.dividedBy(this.size() - 1);
     }
 
     @Override
     public Complex correlation(@NonNull DataSet<Complex> otherData) {
-        return null;
+        return this.covariance(otherData).dividedBy(this.stdDeviation().real() * otherData.stdDeviation().real());
     }
 
     @Override
