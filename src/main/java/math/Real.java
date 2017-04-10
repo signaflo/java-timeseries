@@ -29,7 +29,7 @@ package math;
  *
  * @author Jacob Rachiele
  */
-public final class Real extends Complex {
+public class Real extends Complex {
 
     private static final double EPSILON = Math.ulp(1.0);
 
