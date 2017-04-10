@@ -23,6 +23,8 @@
  */
 package math;
 
+import lombok.NonNull;
+
 /**
  * Represents an element of a mathematical <a target="_blank"
  * href="https://en.wikipedia.org/wiki/Field_(mathematics)">field</a>.
@@ -30,7 +32,18 @@ package math;
  * @param <T> The type of field element.
  * @author Jacob Rachiele
  */
-public interface FieldElement<T> {
+public interface FieldElement<T> extends Comparable<FieldElement<T>> {
+
+    @Override
+    default int compareTo(@NonNull FieldElement<T> element) {
+        if (abs() < element.abs()) {
+            return -1;
+        }
+        if (abs() == element.abs()) {
+            return 0;
+        }
+        return 1;
+    }
 
     /**
      * Add this element to the given element.
@@ -70,11 +83,20 @@ public interface FieldElement<T> {
      */
     T conjugate();
 
+    T additiveInverse();
+
     /**
      * Compute and return the absolute value of this element.
      *
      * @return the absolute value of this element.
      */
     double abs();
+
+    /**
+     * Return the element of this field that represents the additive identity, otherwise known as <i>zero</i>.
+     *
+     * @return the element of this field that represents the additive identity, otherwise known as <i>zero</i>.
+     */
+    T getAdditiveIdentity();
 
 }

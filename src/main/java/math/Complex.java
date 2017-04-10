@@ -124,6 +124,11 @@ public class Complex implements FieldElement<Complex> {
     }
 
     @Override
+    public Complex additiveInverse() {
+        return new Complex(-this.real, -this.im);
+    }
+
+    @Override
     public Complex sqrt() {
         if (this.real < EPSILON && Math.abs(this.im) < EPSILON) {
             return new Complex(0.0, Math.sqrt(abs()));
@@ -136,6 +141,10 @@ public class Complex implements FieldElement<Complex> {
         return zr.dividedBy(zr.abs()).times(Math.sqrt(r));
     }
 
+    @Override
+    public Complex getAdditiveIdentity() {
+        return new Complex();
+    }
     /**
      * The real part of this complex number.
      *

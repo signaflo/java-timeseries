@@ -77,8 +77,8 @@ public class QuadraticFunction extends AbstractFunction {
     public Complex[] zeros() {
         final Real fourAC = a.times(c).times(4.0);
         final Real bSquared = b.times(b);
-        final Complex root1 = b.negative().plus(bSquared.minus(fourAC).sqrt()).dividedBy(a.times(2).value());
-        final Complex root2 = b.negative().minus(bSquared.minus(fourAC).sqrt()).dividedBy(a.times(2).value());
+        final Complex root1 = b.additiveInverse().plus(bSquared.minus(fourAC).sqrt()).dividedBy(a.times(2).value());
+        final Complex root2 = b.additiveInverse().minus(bSquared.minus(fourAC).sqrt()).dividedBy(a.times(2).value());
         return new Complex[]{root1, root2};
     }
 

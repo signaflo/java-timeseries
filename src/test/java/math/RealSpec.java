@@ -44,7 +44,7 @@ public class RealSpec {
 
   @Test
   public void whenAdditiveInverseThenRightNumberReturned() {
-    assertThat(a.negative(), is(Real.from(-3.0)));
+    assertThat(a.additiveInverse(), is(Real.from(-3.0)));
   }
 
   @Test

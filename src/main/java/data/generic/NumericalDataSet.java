@@ -24,81 +24,125 @@
 
 package data.generic;
 
+import com.google.common.collect.ImmutableList;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.ToString;
 import math.Complex;
-import math.FieldElement;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@ToString @EqualsAndHashCode
 public class NumericalDataSet<T extends Complex> implements DataSet<Complex> {
 
     private final List<T> data;
 
     NumericalDataSet(List<T> data) {
-        this.data = Collections.unmodifiableList(data);
+        this.data = ImmutableList.copyOf(data);
     }
 
+
     @Override
-    public FieldElement<Complex> sum() {
-        Complex sum = Complex.zero();
-        for (Complex complex : data) {
-            sum = sum.plus(complex);
+    public Complex sum() {
+        Complex sum = new Complex();
+        for (T t : data) {
+            sum = sum.plus(t);
         }
         return sum;
     }
 
     @Override
-    public T sumOfSquares() {
-        return null;
+    public Complex sumOfSquares() {
+        Complex sum = new Complex();
+        for (T t : data) {
+            sum = sum.plus(t.times(t));
+        }
+        return sum;
     }
 
     @Override
-    public T mean() {
-        return null;
+    public Complex mean() {
+        return sum().dividedBy(this.size());
     }
 
     @Override
-    public T median() {
-        return null;
+    public Complex median() {
+        List<T> sorted = new ArrayList<>(data);
+        Collections.sort(sorted);
+        if (sorted.size() % 2 == 0) {
+            return (sorted.get(data.size() / 2 - 1).plus(sorted.get(data.size() / 2)).dividedBy(2.0));
+        }
+        return sorted.get((data.size() - 1) / 2);
     }
 
     @Override
     public int size() {
-        return 0;
+        return this.data.size();
     }
 
     @Override
-    public DataSet<Complex> times(DataSet<Complex> otherData) {
+    public DataSet<Complex> times(@NonNull DataSet<Complex> otherData) {
+        validateSize(otherData);
+        List<Complex> thisDataSet = this.data();
+        List<Complex> otherDataSet = otherData.data();
+        ImmutableList.Builder<Complex> newDataSet = ImmutableList.builder();
+        for (int i = 0; i < this.size(); i++) {
+            newDataSet.add(thisDataSet.get(i).times(otherDataSet.get(i)));
+        }
+        return new NumericalDataSet<>(newDataSet.build());
+    }
+
+    @Override
+    public DataSet<Complex> plus(@NonNull DataSet<Complex> otherData) {
+        validateSize(otherData);
+        List<Complex> thisDataSet = this.data();
+        List<Complex> otherDataSet = otherData.data();
+        ImmutableList.Builder<Complex> newDataSet = ImmutableList.builder();
+        for (int i = 0; i < this.size(); i++) {
+            newDataSet.add(thisDataSet.get(i).plus(otherDataSet.get(i)));
+        }
+        return new NumericalDataSet<>(newDataSet.build());
+    }
+
+    @Override
+    public Complex variance() {
+        Complex mean = this.mean();
+        Complex difference;
+        Complex squaredDifference;
+        Complex sumOfSquaredDifferences = new Complex();
+        for (Complex c : this.data) {
+            difference = c.minus(mean);
+            squaredDifference = difference.times(difference.conjugate());
+            sumOfSquaredDifferences = sumOfSquaredDifferences.plus(squaredDifference);
+        }
+        return sumOfSquaredDifferences.dividedBy(this.size() - 1);
+    }
+
+    @Override
+    public Complex stdDeviation() {
+        return this.variance().sqrt();
+    }
+
+    @Override
+    public Complex covariance(@NonNull DataSet<Complex> otherData) {
         return null;
     }
 
     @Override
-    public DataSet<Complex> plus(DataSet<Complex> otherData) {
-        return null;
-    }
-
-    @Override
-    public T variance() {
-        return null;
-    }
-
-    @Override
-    public T stdDeviation() {
-        return null;
-    }
-
-    @Override
-    public T covariance(DataSet otherData) {
-        return null;
-    }
-
-    @Override
-    public T correlation(DataSet otherData) {
+    public Complex correlation(@NonNull DataSet<Complex> otherData) {
         return null;
     }
 
     @Override
     public List<Complex> data() {
-        return Collections.unmodifiableList(this.data);
+        return ImmutableList.copyOf(this.data);
+    }
+
+    private void validateSize(DataSet<Complex> otherData) {
+        if (this.size() != otherData.size()) {
+            throw new IllegalArgumentException("The two data sets must have the same length.");
+        }
     }
 }

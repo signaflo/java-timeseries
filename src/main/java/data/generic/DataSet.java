@@ -21,42 +21,39 @@
  *
  * Jacob Rachiele
  */
-
 package data.generic;
-
-import math.FieldElement;
 
 import java.util.List;
 
-public interface DataSet<T extends FieldElement<T>> {
+public interface DataSet<T> {
 
     /**
      * The sum of the observations.
      *
      * @return the sum of the observations.
      */
-    FieldElement<T> sum();
+    T sum();
 
     /**
      * The sum of the squared observations.
      *
      * @return the sum of the squared observations.
      */
-    FieldElement<T> sumOfSquares();
+    T sumOfSquares();
 
     /**
      * The mean of the observations.
      *
      * @return the mean of the observations.
      */
-    FieldElement<T> mean();
+    T mean();
 
     /**
      * The median value of the observations.
      *
      * @return the median value of the observations.
      */
-    FieldElement<T> median();
+    T median();
 
     /**
      * The size of the data set.
@@ -88,14 +85,14 @@ public interface DataSet<T extends FieldElement<T>> {
      *
      * @return the unbiased sample variance of the observations.
      */
-    FieldElement<T> variance();
+    T variance();
 
     /**
      * The unbiased sample standard deviation of the observations.
      *
      * @return the unbiased sample standard deviation of the observations.
      */
-    FieldElement<T> stdDeviation();
+    T stdDeviation();
 
     /**
      * The unbiased sample covariance of these observations with the observations
@@ -105,7 +102,7 @@ public interface DataSet<T extends FieldElement<T>> {
      * @return the unbiased sample covariance of these observations with the observations
      * contained in the given data set.
      */
-    FieldElement<T> covariance(DataSet<T> otherData);
+    T covariance(DataSet<T> otherData);
 
     /**
      * The unbiased sample correlation of these observations with the observations
@@ -115,7 +112,7 @@ public interface DataSet<T extends FieldElement<T>> {
      * @return the unbiased sample correlation of these observations with the observations
      * contained in the given data set.
      */
-    FieldElement<T> correlation(DataSet<T> otherData);
+    T correlation(DataSet<T> otherData);
 
     /**
      * The observations.
@@ -123,9 +120,4 @@ public interface DataSet<T extends FieldElement<T>> {
      * @return the observations.
      */
     List<T> data();
-
-    /**
-     * Plot this data set. This method will produce a scatter plot of the data values against the integers
-     * from 0 to n - 1, where n is the size of the data set.
-     */
 }

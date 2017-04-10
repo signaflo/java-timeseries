@@ -125,8 +125,14 @@ public final class Real extends Complex {
      *
      * @return the additive inverse, or negative, of this real number.
      */
-    public Real negative() {
+    @Override
+    public Real additiveInverse() {
         return new Real(-this.value);
+    }
+
+    @Override
+    public Real getAdditiveIdentity() {
+        return new Real(0.0);
     }
 
     public double value() {
