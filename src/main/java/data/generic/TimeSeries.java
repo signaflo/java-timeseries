@@ -24,6 +24,7 @@
 
 package data.generic;
 
+import lombok.NonNull;
 import math.FieldElement;
 
 import java.util.List;
@@ -31,9 +32,19 @@ import java.util.List;
 public final class TimeSeries<T extends FieldElement<T>> implements DataSet<T> {
 
     private final DataSet<T> dataSet;
+    private final List<T> list;
 
-    TimeSeries(DataSet<T> dataSet) {
+    TimeSeries(@NonNull DataSet<T> dataSet) {
         this.dataSet = dataSet;
+        this.list = this.dataSet.data();
+    }
+
+    T at(int index) {
+        return this.list.get(index);
+    }
+
+    T autoCovarianceAtLag(int k) {
+        return null;
     }
 
     @Override

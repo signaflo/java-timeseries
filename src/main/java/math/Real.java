@@ -29,7 +29,7 @@ package math;
  *
  * @author Jacob Rachiele
  */
-public class Real extends Complex {
+public class Real implements FieldElement<Real> {
 
     private static final double EPSILON = Math.ulp(1.0);
 
@@ -41,7 +41,6 @@ public class Real extends Complex {
      * @param value the primitive double approximating the real number.
      */
     public Real(final double value) {
-        super(value);
         this.value = value;
     }
 
@@ -53,6 +52,10 @@ public class Real extends Complex {
      */
     public static Real from(final double value) {
         return new Real(value);
+    }
+
+    public static Real from(final Rational value) {
+        return new Real((double)value.p() / value.q());
     }
 
     public static Real zero() {
@@ -88,6 +91,18 @@ public class Real extends Complex {
     }
 
     @Override
+    public Real sqrt() {
+        if (this.value < 0.0) {
+            throw new IllegalStateException("Attempt to take the square root of a negative number on a Real type.");
+        }
+        return Real.from(Math.sqrt(this.value));
+    }
+
+    @Override
+    public Real conjugate() {
+        return null;
+    }
+
     public Real times(double other) {
         return new Real(this.value * other);
     }
@@ -128,6 +143,16 @@ public class Real extends Complex {
     @Override
     public Real additiveInverse() {
         return new Real(-this.value);
+    }
+
+    @Override
+    public double abs() {
+        return 0;
+    }
+
+    @Override
+    public Real dividedBy(double value) {
+        return null;
     }
 
     public double value() {

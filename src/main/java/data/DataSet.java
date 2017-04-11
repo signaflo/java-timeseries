@@ -99,7 +99,7 @@ public interface DataSet {
      *
      * @return the observations.
      */
-    double[] data();
+    double[] asArray();
 
     /**
      * Plot this data set. This method will produce a scatter plot of the data values against the integers

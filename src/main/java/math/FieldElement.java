@@ -70,6 +70,7 @@ public interface FieldElement<T> extends Comparable<FieldElement<T>> {
     T times(T other);
 
     /**
+     *
      * The square root operation applied to this element.
      *
      * @return the square root of this element.
@@ -92,4 +93,5 @@ public interface FieldElement<T> extends Comparable<FieldElement<T>> {
      */
     double abs();
 
+    T dividedBy(double value);
 }

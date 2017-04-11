@@ -118,7 +118,7 @@ public class DataSetSpec {
     DataSet dataSet1 = new DoubleDataSet(data1);
     DoubleDataSet dataSet2 = new DoubleDataSet(data2);
     double[] expected = new double[] { 15.0, 75.0 };
-    assertThat(dataSet1.times(dataSet2).data(), is(equalTo(expected)));
+    assertThat(dataSet1.times(dataSet2).asArray(), is(equalTo(expected)));
   }
 
   @Test
@@ -126,7 +126,7 @@ public class DataSetSpec {
     DataSet dataSet1 = new DoubleDataSet(5.0, 7.5);
     DoubleDataSet dataSet2 = new DoubleDataSet(3.0, 10.0);
     double[] expected = new double[] { 8.0, 17.5 };
-    assertThat(dataSet1.plus(dataSet2).data(), is(equalTo(expected)));
+    assertThat(dataSet1.plus(dataSet2).asArray(), is(equalTo(expected)));
   }
 
   @Test

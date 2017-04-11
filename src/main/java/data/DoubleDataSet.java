@@ -85,12 +85,12 @@ public final class DoubleDataSet implements DataSet {
 
   @Override
   public final DataSet times(final DataSet otherData) {
-    return new DoubleDataSet(Operators.productOf(this.data, otherData.data()));
+    return new DoubleDataSet(Operators.productOf(this.data, otherData.asArray()));
   }
 
   @Override
   public final DataSet plus(final DataSet otherData) {
-    return new DoubleDataSet(Operators.sumOf(this.data, otherData.data()));
+    return new DoubleDataSet(Operators.sumOf(this.data, otherData.asArray()));
   }
 
   @Override
@@ -105,16 +105,16 @@ public final class DoubleDataSet implements DataSet {
 
   @Override
   public final double covariance(final DataSet otherData) {
-    return Statistics.covarianceOf(this.data, otherData.data());
+    return Statistics.covarianceOf(this.data, otherData.asArray());
   }
 
   @Override
   public final double correlation(DataSet otherData) {
-    return Statistics.correlationOf(this.data, otherData.data());
+    return Statistics.correlationOf(this.data, otherData.asArray());
   }
 
   @Override
-  public final double[] data() {
+  public final double[] asArray() {
     return this.data.clone();
   }
 
@@ -146,7 +146,7 @@ public final class DoubleDataSet implements DataSet {
           .title("Scatter Plot").xAxisTitle("X").yAxisTitle("Y").build();
       chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter).
           setChartFontColor(Color.DARK_GRAY).setSeriesColors(new Color[]{Color.BLUE});
-      chart.addSeries("Y against X", otherData.data(), this.data);
+      chart.addSeries("Y against X", otherData.asArray(), this.data);
       JPanel panel = new XChartPanel<>(chart);
       JFrame frame = new JFrame("Scatter Plot");
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

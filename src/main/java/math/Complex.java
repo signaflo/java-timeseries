@@ -106,11 +106,11 @@ public class Complex implements FieldElement<Complex> {
     /**
      * Divide this element by the given double.
      *
-     * @param other the double to divide this element by.
+     * @param value the double to divide this element by.
      * @return this element divided by the given double.
      */
-    public final Complex dividedBy(final double other) {
-        return new Complex(this.real / other, this.im / other);
+    public final Complex dividedBy(final double value) {
+        return new Complex(this.real / value, this.im / value);
     }
 
     @Override

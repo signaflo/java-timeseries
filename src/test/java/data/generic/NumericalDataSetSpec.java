@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.is;
 public class NumericalDataSetSpec {
 
     private DataSet<Complex> dataSet = getDataSetOne();
+    private Zero<Complex> zero = Zero.instance(Complex.zero());
 
     @Test
     public void whenSumThenComputedCorrectly() {
@@ -41,7 +42,7 @@ public class NumericalDataSetSpec {
                 new Complex(-11.100000000000001, 7.199999999999999),
                 new Complex(-9.35, 13.75)
                                              );
-        DataSet<Complex> productDataSet = new NumericalDataSet<>(product);
+        DataSet<Complex> productDataSet = new NumericalDataSet<>(product, zero);
         assertThat(dataSet.times(getDataSetTwo()), is(productDataSet));
     }
 
@@ -68,9 +69,9 @@ public class NumericalDataSetSpec {
                 new Complex(10.0, 5.0),
                 new Complex(2.0, 0.0),
                 new Complex(-3.5, 7.5));
-        DataSet<Complex> dataSet = new NumericalDataSet<>(data);
+        DataSet<Complex> dataSet = new NumericalDataSet<>(data, zero);
+        DataSet<Real> realDataSet = getDataSetThree();
         TimeSeries<Complex> timeSeries = new TimeSeries<>(dataSet);
-        System.out.println(timeSeries.median());
         assertThat(dataSet.median(), is(new Complex(0.75, 5.25)));
     }
 
@@ -84,7 +85,7 @@ public class NumericalDataSetSpec {
         Complex c2 = new Complex(2.4, 3.7);
         Complex c3 = new Complex(-1.7, 2.5);
         List<Complex> values = Arrays.asList(c1, c2, c3);
-        return new NumericalDataSet<>(values);
+        return new NumericalDataSet<>(values, zero);
     }
 
     private DataSet<Complex> getDataSetTwo() {
@@ -92,22 +93,22 @@ public class NumericalDataSetSpec {
         Complex c2 = new Complex(0.0, 3.0);
         Complex c3 = new Complex(5.5);
         List<Complex> values = Arrays.asList(c1, c2, c3);
-        return new NumericalDataSet<>(values);
+        return new NumericalDataSet<>(values, zero);
     }
 
-    private DataSet<Complex> getDataSetThree() {
+    private DataSet<Real> getDataSetThree() {
         Real r1 = new Real(-4.0);
         Real r2 = new Real(3.0);
         Real r3 = new Real(5.5);
         List<Real> values = Arrays.asList(r1, r2, r3);
-        return new NumericalDataSet<>(values);
+        return new NumericalDataSet<>(values, new Zero<>(new Real(0.0)));
     }
 
-    private DataSet<Complex> getDataSetFour() {
+    private DataSet<Rational> getDataSetFour() {
         Rational r1 = new Rational(3, 4);
         Rational r2 = new Rational(7, 9);
         Rational r3 = new Rational(4);
         List<Rational> values = Arrays.asList(r1, r2, r3);
-        return new NumericalDataSet<>(values);
+        return new NumericalDataSet<>(values, new Zero<>(new Rational(0)));
     }
 }

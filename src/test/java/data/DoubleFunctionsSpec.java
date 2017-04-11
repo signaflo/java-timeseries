@@ -73,13 +73,13 @@ public class DoubleFunctionsSpec {
   
   @Test
   public void whenDataMeanRemovedThenResultMeanZero() {
-    double[] data = TestData.internetTraffic().data();
+    double[] data = TestData.internetTraffic().asArray();
     assertThat(Statistics.meanOf(demean(data)), is(closeTo(0.0, 1E-10)));
   }
   
   @Test
   public void whenBoxCoxThenTransformationApplied() {
-    double[] data = TestData.debitcards().data();
+    double[] data = TestData.debitcards().asArray();
     double[] transformed = boxCox(data, 0.5);
     assertThat(Statistics.meanOf(transformed), is(closeTo(244.1229, 1E-4)));
     assertThat(Statistics.stdDeviationOf(transformed), is(closeTo(38.60176, 1E-4)));
@@ -87,7 +87,7 @@ public class DoubleFunctionsSpec {
   
   @Test
   public void whenInvBoxCoxThenTransformationUnapplied() {
-    double[] transformed = boxCox(TestData.debitcards().data(), 0.5);
+    double[] transformed = boxCox(TestData.debitcards().asArray(), 0.5);
     double[] original = inverseBoxCox(transformed, 0.5);
     assertThat(Statistics.meanOf(original), is(closeTo(15514.25641, 1E-4)));
     assertThat(Statistics.stdDeviationOf(original), is(closeTo(4688.38717, 1E-4)));
@@ -95,7 +95,7 @@ public class DoubleFunctionsSpec {
   
   @Test
   public void whenNegativeOfThenNegativeTaken() {
-    double[] data = TestData.debitcards().data();
+    double[] data = TestData.debitcards().asArray();
     double[] neg = negativeOf(data);
     assertThat(Statistics.meanOf(neg), is(closeTo(-15514.25641, 1E-4)));
     assertThat(Statistics.stdDeviationOf(neg), is(closeTo(4688.38717, 1E-4)));

@@ -545,15 +545,6 @@ public final class TimeSeries implements DataSet {
         System.out.println(this.toString());
     }
 
-    /**
-     * Retrieve the time series of observations.
-     *
-     * @return the time series of observations.
-     */
-    public final double[] asArray() {
-        return this.series.clone();
-    }
-
     public final List<Double> asList() {
         return DoubleFunctions.listFrom(this.series.clone());
     }
@@ -595,6 +586,16 @@ public final class TimeSeries implements DataSet {
     }
 
     // ********** Plots ********** //
+
+    /**
+     * Retrieve the time series of observations.
+     *
+     * @return the time series of observations.
+     */
+    @Override
+    public final double[] asArray() {
+        return this.series.clone();
+    }
 
     @Override
     public double sum() {
@@ -649,11 +650,6 @@ public final class TimeSeries implements DataSet {
     @Override
     public double correlation(DataSet otherData) {
         return this.dataSet.correlation(otherData);
-    }
-
-    @Override
-    public double[] data() {
-        return this.series.clone();
     }
 
     /**
