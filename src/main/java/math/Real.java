@@ -23,21 +23,17 @@
  */
 package math;
 
-import lombok.EqualsAndHashCode;
-
 /**
  * A numerical approximation of a <a target="_blank" href=https://en.wikipedia.org/wiki/Real_number>
  * real number</a>. This class is immutable and thread-safe.
  *
  * @author Jacob Rachiele
  */
-@EqualsAndHashCode
-public class Real implements FieldElement<Real> {
+public class Real extends Complex {
 
     private static final double EPSILON = Math.ulp(1.0);
 
     private final double value;
-    private final Complex complex;
 
     /**
      * Create a new real number using the given double.
@@ -45,7 +41,7 @@ public class Real implements FieldElement<Real> {
      * @param value the primitive double approximating the real number.
      */
     public Real(final double value) {
-        this.complex = new Complex(value);
+        super(value);
         this.value = value;
     }
 
@@ -92,19 +88,6 @@ public class Real implements FieldElement<Real> {
     }
 
     @Override
-    public Real sqrt() {
-        return new Real(Math.sqrt(this.value));
-    }
-
-    public Complex complexSqrt() {
-        return this.complex.sqrt();
-    }
-
-    @Override
-    public Real conjugate() {
-        return this;
-    }
-
     public Real times(double other) {
         return new Real(this.value * other);
     }
@@ -147,13 +130,27 @@ public class Real implements FieldElement<Real> {
         return new Real(-this.value);
     }
 
-    @Override
-    public double abs() {
-        return Math.abs(this.value);
-    }
-
     public double value() {
         return this.value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Real real = (Real) o;
+        return Double.compare(real.value, value) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        long temp;
+        temp = Double.doubleToLongBits(value);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
     }
 
     @Override

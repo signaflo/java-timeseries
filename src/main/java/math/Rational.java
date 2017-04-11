@@ -24,14 +24,13 @@
 
 package math;
 
-public class Rational implements FieldElement<Rational> {
+public class Rational extends Real {
 
     private final int p;
     private final int q;
-    private final Real r;
 
     public Rational(final int p, final int q) {
-        this.r = new Real((double)p / q);
+        super((double)p / q);
         if (q == 0) {
             throw new IllegalArgumentException("The denominator cannot be zero.");
         }
@@ -44,38 +43,8 @@ public class Rational implements FieldElement<Rational> {
     }
 
     @Override
-    public Rational plus(Rational other) {
-        return null;
-    }
-
-    @Override
-    public Rational minus(Rational other) {
-        return null;
-    }
-
-    @Override
-    public Rational times(Rational other) {
-        return null;
-    }
-
-    @Override
-    public Rational sqrt() {
-        return null;
-    }
-
-    @Override
-    public Rational conjugate() {
-        return null;
-    }
-
-    @Override
     public Rational additiveInverse() {
         return new Rational(-p, q);
-    }
-
-    @Override
-    public double abs() {
-        return 0;
     }
 
     @Override
