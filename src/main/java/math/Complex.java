@@ -168,7 +168,6 @@ public class Complex implements FieldElement<Complex> {
         return Math.abs(this.im) < EPSILON;
     }
 
-
     @Override
     public int hashCode() {
         final int prime = 31;

@@ -2,6 +2,8 @@ package data.generic;
 
 import math.Complex;
 
+import math.Rational;
+import math.Real;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -67,6 +69,8 @@ public class NumericalDataSetSpec {
                 new Complex(2.0, 0.0),
                 new Complex(-3.5, 7.5));
         DataSet<Complex> dataSet = new NumericalDataSet<>(data);
+        TimeSeries<Complex> timeSeries = new TimeSeries<>(dataSet);
+        System.out.println(timeSeries.median());
         assertThat(dataSet.median(), is(new Complex(0.75, 5.25)));
     }
 
@@ -91,21 +95,19 @@ public class NumericalDataSetSpec {
         return new NumericalDataSet<>(values);
     }
 
-//    private DataSet<Complex> getDataSetThree() {
-//        Real r1 = new Real(-4.0);
-//        Real r2 = new Real(3.0);
-//        Real r3 = new Real(5.5);
-//        List<Real> values = Arrays.asList(r1, r2, r3);
-//        return new NumericalDataSet<>(values);
-//    }
-//
-//    private DataSet<Complex> getDataSetFour() {
-//        Rational r1 = new Rational(3, 4);
-//        Rational r2 = new Rational(7, 9);
-//        Rational r3 = new Rational(4);
-//        List<Rational> values = Arrays.asList(r1, r2, r3);
-//        return new NumericalDataSet<>(values);
-//    }
+    private DataSet<Complex> getDataSetThree() {
+        Real r1 = new Real(-4.0);
+        Real r2 = new Real(3.0);
+        Real r3 = new Real(5.5);
+        List<Real> values = Arrays.asList(r1, r2, r3);
+        return new NumericalDataSet<>(values);
+    }
 
-
+    private DataSet<Complex> getDataSetFour() {
+        Rational r1 = new Rational(3, 4);
+        Rational r2 = new Rational(7, 9);
+        Rational r3 = new Rational(4);
+        List<Rational> values = Arrays.asList(r1, r2, r3);
+        return new NumericalDataSet<>(values);
+    }
 }
