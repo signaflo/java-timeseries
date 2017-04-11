@@ -71,6 +71,10 @@ public class Real implements FieldElement<Real> {
         return new Real(this.value + other.value);
     }
 
+    public Complex plus(final Complex other) {
+         return this.complex.plus(other);
+    }
+
     /**
      * Subtract the given real number from this real number and return the result.
      *
@@ -79,6 +83,10 @@ public class Real implements FieldElement<Real> {
      */
     public Real minus(final Real other) {
         return new Real(this.value - other.value);
+    }
+
+    public Complex minus(final Complex other) {
+        return this.complex.minus(other);
     }
 
     /**

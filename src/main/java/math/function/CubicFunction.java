@@ -199,7 +199,7 @@ public final class CubicFunction extends AbstractFunction {
      * @return the points at which the local extrema of this function occurs.
      */
     public Real[] localExtremePoints() {
-        Real[] points = toReal(criticalPoints());
+        Real[] points = criticalPoints();
         if (points.length < 2) {
             return new Real[]{};
         }
