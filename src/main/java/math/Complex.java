@@ -192,6 +192,25 @@ public class Complex implements FieldElement<Complex> {
 
     @Override
     public String toString() {
-        return "(real: " + real + " im: " + im + ")";
+        StringBuilder sb;
+        if (Math.abs(this.real) > 0.0) {
+            sb = new StringBuilder(Double.toString(this.real));
+        } else {
+            if (Math.abs(this.im) > 0.0) {
+                return im + "i";
+            }
+            return "0.0";
+        }
+
+        if (im < 0.0) {
+            sb.append(" - ")
+              .append(Math.abs(im))
+              .append("i");
+        } else if (im > 0.0) {
+            sb.append(" + ")
+              .append(im)
+              .append("i");
+        }
+        return sb.toString();
     }
 }

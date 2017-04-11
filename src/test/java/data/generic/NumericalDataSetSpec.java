@@ -1,7 +1,7 @@
 package data.generic;
 
 import math.Complex;
-import math.Rational;
+
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -67,7 +67,6 @@ public class NumericalDataSetSpec {
                 new Complex(2.0, 0.0),
                 new Complex(-3.5, 7.5));
         DataSet<Complex> dataSet = new NumericalDataSet<>(data);
-        System.out.println(dataSet.toString());
         assertThat(dataSet.median(), is(new Complex(0.75, 5.25)));
     }
 

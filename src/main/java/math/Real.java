@@ -224,7 +224,8 @@ public class Real extends Complex {
 
         @Override
         public String toString() {
-            return "(" + this.lower.value() + ", " + this.upper.value() + ")";
+            return "(" + Double.toString(this.lower.value()) + ", " +
+                   Double.toString(this.upper.value()) + ")";
         }
     }
 }
