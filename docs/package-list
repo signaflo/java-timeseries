@@ -1,5 +1,7 @@
 data
 linear.doubles
+linear.regression
+linear.regression.primitive
 math
 math.function
 math.polynomial.interpolation
