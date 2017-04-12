@@ -26,12 +26,12 @@ package math;
 import lombok.EqualsAndHashCode;
 
 /**
- * An immutable and thread-safe implementation of a complex number. Subclasses must maintain immutability.
+ * An immutable and thread-safe implementation of a complex number.
  *
  * @author Jacob Rachiele
  */
 @EqualsAndHashCode
-public class Complex implements FieldElement<Complex> {
+public final class Complex implements FieldElement<Complex> {
 
     private static final double EPSILON = Math.ulp(1.0);
 

@@ -32,7 +32,7 @@ import lombok.EqualsAndHashCode;
  * @author Jacob Rachiele
  */
 @EqualsAndHashCode
-public class Real implements FieldElement<Real> {
+public final class Real implements FieldElement<Real> {
 
     private static final double EPSILON = Math.ulp(1.0);
 

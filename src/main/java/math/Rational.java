@@ -23,7 +23,7 @@
  */
 package math;
 
-public class Rational implements FieldElement<Rational> {
+public final class Rational implements FieldElement<Rational> {
 
     private final int p;
     private final int q;
@@ -51,7 +51,7 @@ public class Rational implements FieldElement<Rational> {
 
     @Override
     public Rational minus(Rational other) {
-        return null;
+        return new Rational(this.p * other.q - other.p * this.q, this.q * other.q);
     }
 
     @Override
@@ -62,12 +62,20 @@ public class Rational implements FieldElement<Rational> {
 
     @Override
     public Rational sqrt() {
-        return null;
+        double top = Math.sqrt(this.p);
+        if (Math.abs(top - (int)top) > Math.ulp(1.0) || !Double.isFinite(top)) {
+            throw new IllegalStateException("The square root of the rational number is not rational.");
+        }
+        double bottom = Math.sqrt(this.q);
+        if (Math.abs(bottom - (int)bottom) > Math.ulp(1.0) || !Double.isFinite(bottom)) {
+            throw new IllegalStateException("The square root of the rational number is not rational.");
+        }
+        return new Rational((int)top, (int)bottom);
     }
 
     @Override
     public Rational conjugate() {
-        return null;
+        return this;
     }
 
     @Override
@@ -138,7 +146,8 @@ public class Rational implements FieldElement<Rational> {
     @Override
     public int hashCode() {
         Real real = Real.from((double)this.p / this.q);
-        return real.hashCode();
+        int result = real.hashCode();
+        return result * 31;
     }
 
 //    Rational(String rational) {
