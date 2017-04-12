@@ -1,21 +1,21 @@
 package data.generic;
 
 import math.Complex;
-
 import math.Rational;
 import math.Real;
+
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class NumericalDataSetSpec {
 
-    private DataSet<Complex> dataSet = getDataSetOne();
     private Zero<Complex> zero = Zero.instance(Complex.zero());
+    private DataSet<Complex> dataSet = getDataSetOne();
 
     @Test
     public void whenSumThenComputedCorrectly() {
@@ -58,8 +58,9 @@ public class NumericalDataSetSpec {
     }
     @Test
     public void whenCorrelationThenComputedCorrectly() {
-        assertThat(dataSet.correlation(getDataSetTwo()),
-                   is(new Complex(-0.8438942452156876, 0.34861122472386086)));
+        Complex expected = new Complex(-0.8438942452156876, 0.34861122472386086);
+        assertThat(dataSet.correlation(getDataSetTwo()).abs() - expected.abs(),
+                   is(lessThan(Math.ulp(1.0))));
     }
 
     @Test
@@ -70,8 +71,6 @@ public class NumericalDataSetSpec {
                 new Complex(2.0, 0.0),
                 new Complex(-3.5, 7.5));
         DataSet<Complex> dataSet = new NumericalDataSet<>(data, zero);
-        DataSet<Real> realDataSet = getDataSetThree();
-        TimeSeries<Complex> timeSeries = new TimeSeries<>(dataSet);
         assertThat(dataSet.median(), is(new Complex(0.75, 5.25)));
     }
 
@@ -97,18 +96,18 @@ public class NumericalDataSetSpec {
     }
 
     private DataSet<Real> getDataSetThree() {
-        Real r1 = new Real(-4.0);
-        Real r2 = new Real(3.0);
-        Real r3 = new Real(5.5);
+        Real r1 = Real.from(-4.0);
+        Real r2 = Real.from(3.0);
+        Real r3 = Real.from(5.5);
         List<Real> values = Arrays.asList(r1, r2, r3);
-        return new NumericalDataSet<>(values, new Zero<>(new Real(0.0)));
+        return new NumericalDataSet<>(values, new Zero<>(Real.from(0.0)));
     }
 
     private DataSet<Rational> getDataSetFour() {
-        Rational r1 = new Rational(3, 4);
-        Rational r2 = new Rational(7, 9);
-        Rational r3 = new Rational(4);
+        Rational r1 = Rational.from(3, 4);
+        Rational r2 = Rational.from(7, 9);
+        Rational r3 = Rational.from(4);
         List<Rational> values = Arrays.asList(r1, r2, r3);
-        return new NumericalDataSet<>(values, new Zero<>(new Rational(0)));
+        return new NumericalDataSet<>(values, new Zero<>(Rational.from(0)));
     }
 }

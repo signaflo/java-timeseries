@@ -120,7 +120,7 @@ public final class CubicFunction extends AbstractFunction {
      * @return the value of this function at the given point.
      */
     public Real at(final Real point) {
-        return new Real(this.at(point.value()));
+        return Real.from(this.at(point.value()));
     }
 
     @Override
@@ -153,8 +153,8 @@ public final class CubicFunction extends AbstractFunction {
 
     final Real[] criticalPoints() {
         Complex[] zeros = this.derivative.zeros();
-        if (zeros[0].equals(zeros[1])) {
-            return new Real[]{Real.from(zeros[0].real())};
+        if (zeros[0].minus(zeros[1]).abs() < Math.ulp(1.0)) {
+            return new Real[]{Real.from(zeros[0].doubleValue())};
         } else if (allReal(zeros)) {
             return toReal(zeros);
         } else {
@@ -199,7 +199,7 @@ public final class CubicFunction extends AbstractFunction {
      * @return the points at which the local extrema of this function occurs.
      */
     public Real[] localExtremePoints() {
-        Real[] points = toReal(criticalPoints());
+        Real[] points = criticalPoints();
         if (points.length < 2) {
             return new Real[]{};
         }
@@ -249,7 +249,7 @@ public final class CubicFunction extends AbstractFunction {
     private Real[] toReal(final Complex[] numbers) {
         Real[] reals = new Real[numbers.length];
         for (int i = 0; i < numbers.length; i++) {
-            reals[i] = Real.from(numbers[i].real());
+            reals[i] = Real.from(numbers[i].doubleValue());
         }
         return reals;
     }

@@ -22,64 +22,21 @@
  * Jacob Rachiele
  */
 
-package data.generic;
+package math;
 
-import math.FieldElement;
+import org.junit.Test;
 
-class Zero<T extends FieldElement<T>> {
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
-    private final T value;
+public class RationalSpec {
 
-    static <T extends FieldElement<T>> Zero<T> instance(T value) {
-        return new Zero<>(value);
+    Rational r1 = Rational.from(3, 4);
+    Rational r2 = Rational.from(7, 9);
+    Rational r3 = Rational.from(4);
+
+    @Test
+    public void whenAdditiveInverseThenSumIsZero() {
+        assertThat(r1.plus(r1.additiveInverse()), is(Rational.from(0)));
     }
-
-    Zero(T value) {
-        this.value = value;
-    }
-
-    T getValue() {
-        return value;
-    }
-
-
-//    @Override
-//    public T plus(T other) {
-//        return other;
-//    }
-//
-//    @Override
-//    public T minus(T other) {
-//        return other.additiveInverse();
-//    }
-//
-//    @Override
-//    public T times(T other) {
-//        return this.getValue();
-//    }
-//
-//    @Override
-//    public T sqrt() {
-//        return this.getValue();
-//    }
-//
-//    @Override
-//    public T conjugate() {
-//        return this.getValue();
-//    }
-//
-//    @Override
-//    public T additiveInverse() {
-//        return this.getValue();
-//    }
-//
-//    @Override
-//    public double abs() {
-//        return 0.0;
-//    }
-//
-//    @Override
-//    public T dividedBy(double value) {
-//        return this.getValue();
-//    }
 }

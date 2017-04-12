@@ -2,7 +2,6 @@
  * Copyright (c) 2016 Jacob Rachiele
  *
  */
-
 package math;
 
 import org.junit.Before;
@@ -35,9 +34,9 @@ public class RealSpec {
 
   @Test
   public void whenRealSqrtThenRightComplexReturned() {
-    assertThat(a.sqrt(), is(new Complex(Math.sqrt(3.0))));
+    assertThat(a.sqrt(), is(Real.from(Math.sqrt(3.0))));
     a = Real.from(-3.0);
-    assertThat(a.sqrt(), is(new Complex(0.0, Math.sqrt(3.0))));
+    assertThat(a.complexSqrt(), is(new Complex(0.0, Math.sqrt(3.0))));
   }
 
   @Test
@@ -93,7 +92,7 @@ public class RealSpec {
 
   @Test
   public void testEqualsAndHashCode() {
-    Real c = new Real(3.0);
+    Real c = Real.from(3.0);
     //noinspection ObjectEqualsNull
     assertThat(a.equals(null), is(false));
     assertThat(a, is(not((b))));

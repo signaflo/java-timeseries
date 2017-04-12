@@ -23,11 +23,14 @@
  */
 package math;
 
+import lombok.EqualsAndHashCode;
+
 /**
  * An immutable and thread-safe implementation of a complex number. Subclasses must maintain immutability.
  *
  * @author Jacob Rachiele
  */
+@EqualsAndHashCode
 public class Complex implements FieldElement<Complex> {
 
     private static final double EPSILON = Math.ulp(1.0);
@@ -60,6 +63,10 @@ public class Complex implements FieldElement<Complex> {
     public Complex(final double real, final double im) {
         this.real = real;
         this.im = im;
+    }
+
+    public static Complex from(Real real) {
+        return new Complex(real.value());
     }
 
     public static Complex zero() {
@@ -110,7 +117,23 @@ public class Complex implements FieldElement<Complex> {
      * @return this element divided by the given double.
      */
     public final Complex dividedBy(final double value) {
+        if (value == 0) {
+            throw new IllegalArgumentException("Attempt to divide a complex number by zero.");
+        }
         return new Complex(this.real / value, this.im / value);
+    }
+
+    @Override
+    public final Complex dividedBy(final Complex value) {
+        Complex top = new Complex(this.real * value.real + this.im * value.im,
+                                  this.real * -value.im + value.real * this.im);
+        double bottom = value.real * value.real + value.im * value.im;
+        return top.dividedBy(bottom);
+    }
+
+    @Override
+    public final Complex dividedBy(final int value) {
+        return this.dividedBy((double)value);
     }
 
     @Override
@@ -146,7 +169,7 @@ public class Complex implements FieldElement<Complex> {
      *
      * @return the real part of this complex number.
      */
-    public final double real() {
+    public final double doubleValue() {
         return this.real;
     }
 
@@ -169,36 +192,15 @@ public class Complex implements FieldElement<Complex> {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        long temp;
-        temp = Double.doubleToLongBits(im);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(real);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        Complex other = (Complex) obj;
-        return Math.abs(im - other.im) <= EPSILON && Math.abs(real - other.real) <= EPSILON;
-    }
-
-    @Override
     public String toString() {
-        StringBuilder sb;
+        StringBuilder sb = new StringBuilder("Complex: ");
         if (Math.abs(this.real) > 0.0) {
-            sb = new StringBuilder(Double.toString(this.real));
+            sb.append(Double.toString(this.real));
         } else {
             if (Math.abs(this.im) > 0.0) {
-                return im + "i";
+                return sb.append(im).append("i").toString();
             }
-            return "0.0";
+            return sb.append("0.0").toString();
         }
 
         if (im < 0.0) {

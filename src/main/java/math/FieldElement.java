@@ -93,5 +93,7 @@ public interface FieldElement<T> extends Comparable<FieldElement<T>> {
      */
     double abs();
 
-    T dividedBy(double value);
+    T dividedBy(T other);
+
+    T dividedBy(int other);
 }

@@ -23,26 +23,20 @@
  */
 package math;
 
+import lombok.EqualsAndHashCode;
+
 /**
  * A numerical approximation of a <a target="_blank" href=https://en.wikipedia.org/wiki/Real_number>
  * real number</a>. This class is immutable and thread-safe.
  *
  * @author Jacob Rachiele
  */
+@EqualsAndHashCode
 public class Real implements FieldElement<Real> {
 
     private static final double EPSILON = Math.ulp(1.0);
 
     private final double value;
-
-    /**
-     * Create a new real number using the given double.
-     *
-     * @param value the primitive double approximating the real number.
-     */
-    public Real(final double value) {
-        this.value = value;
-    }
 
     /**
      * Create a new real number using the given double.
@@ -54,20 +48,32 @@ public class Real implements FieldElement<Real> {
         return new Real(value);
     }
 
-    public static Real from(final Rational value) {
-        return new Real((double)value.p() / value.q());
+    public static Real zero() {
+        return Real.from(0.0);
     }
 
-    public static Real zero() {
-        return new Real(0.0);
+    /**
+     * Create a new real number using the given double.
+     *
+     * @param value the primitive double approximating the real number.
+     */
+    private Real(final double value) {
+        this.value = value;
     }
 
     /**
      * Add this real number to the given real number and return the result.
+     *
      * @param other the real number to add to this one.
      * @return the sum of this real number and the given real number.
-     */ public Real plus(final Real other) {
-        return new Real(this.value + other.value);
+     */
+    @Override
+    public Real plus(final Real other) {
+        return Real.from(this.value + other.value);
+    }
+
+    public Complex plus(final Complex complex) {
+        return Complex.from(this).plus(complex);
     }
 
     /**
@@ -76,8 +82,13 @@ public class Real implements FieldElement<Real> {
      * @param other the real number to subtract from this one.
      * @return the difference of the given real number from this real number.
      */
+    @Override
     public Real minus(final Real other) {
-        return new Real(this.value - other.value);
+        return Real.from(this.value - other.value);
+    }
+
+    public Complex minus(final Complex complex) {
+        return Complex.from(this).minus(complex);
     }
 
     /**
@@ -87,9 +98,17 @@ public class Real implements FieldElement<Real> {
      * @return this real number multiplied by the given real number.
      */
     public Real times(Real other) {
-        return new Real(this.value * other.value);
+        return Real.from(this.value * other.value);
     }
 
+    /**
+     * Computes and returns the square root of this number if the number is non-negative, and throws
+     * and IllegalStateException otherwise. If there is potential for this real number to be negative, then
+     * {@link #complexSqrt()} should be called instead.
+     *
+     * @return the square root of this number if the number is non-negative, otherwise throws an IllegalStateException.
+     * @throws IllegalStateException if this real number is less than zero.
+     */
     @Override
     public Real sqrt() {
         if (this.value < 0.0) {
@@ -98,13 +117,21 @@ public class Real implements FieldElement<Real> {
         return Real.from(Math.sqrt(this.value));
     }
 
+    public Complex complexSqrt() {
+        if (this.value < 0.0) {
+            Complex c = new Complex(this.value);
+            return c.sqrt();
+        }
+        return new Complex(Math.sqrt(this.value));
+    }
+
     @Override
     public Real conjugate() {
-        return null;
+        return this;
     }
 
     public Real times(double other) {
-        return new Real(this.value * other);
+        return Real.from(this.value * other);
     }
 
     /**
@@ -113,7 +140,7 @@ public class Real implements FieldElement<Real> {
      * @return the square of this real number.
      */
     public Real squared() {
-        return new Real(this.value * this.value);
+        return Real.from(this.value * this.value);
     }
 
     /**
@@ -122,7 +149,7 @@ public class Real implements FieldElement<Real> {
      * @return the cube of this real number.
      */
     public Real cubed() {
-        return new Real(this.value * this.value * this.value);
+        return Real.from(this.value * this.value * this.value);
     }
 
     /**
@@ -131,8 +158,17 @@ public class Real implements FieldElement<Real> {
      * @param other the real number to divide this one by.
      * @return this real number divided by the given real number.
      */
+    @Override
     public Real dividedBy(Real other) {
-        return new Real(this.value / other.value);
+        return Real.from(this.value / other.value);
+    }
+
+    @Override
+    public Real dividedBy(int value) {
+        if (value == 0) {
+            throw new ArithmeticException("Attempt to divide a real number by zero.");
+        }
+        return new Real(this.value / value);
     }
 
     /**
@@ -142,17 +178,12 @@ public class Real implements FieldElement<Real> {
      */
     @Override
     public Real additiveInverse() {
-        return new Real(-this.value);
+        return Real.from(-this.value);
     }
 
     @Override
     public double abs() {
-        return 0;
-    }
-
-    @Override
-    public Real dividedBy(double value) {
-        return null;
+        return Math.abs(this.value);
     }
 
     public double value() {
@@ -160,27 +191,8 @@ public class Real implements FieldElement<Real> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-
-        Real real = (Real) o;
-        return Double.compare(real.value, value) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        long temp;
-        temp = Double.doubleToLongBits(value);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        return result;
-    }
-
-    @Override
     public String toString() {
-        return Double.toString(this.value);
+        return "Real: " + Double.toString(this.value);
     }
 
     public static final class Interval {
@@ -249,8 +261,7 @@ public class Real implements FieldElement<Real> {
 
         @Override
         public String toString() {
-            return "(" + Double.toString(this.lower.value()) + ", " +
-                   Double.toString(this.upper.value()) + ")";
+            return "(" + Double.toString(this.lower.value()) + ", " + Double.toString(this.upper.value()) + ")";
         }
     }
 }

@@ -80,7 +80,7 @@ public class FieldVectorSpec {
     FieldVector<Complex> diff = vec1.minus(vec2);
     
     List<Complex> expectedL = new ArrayList<>(2);
-    expectedL.add(new Complex(0.6, 1.0));
+    expectedL.add(new Complex(0.6000000000000001, 1.0));
     expectedL.add(new Complex(-3.5, 2.5));
     FieldVector<Complex> expected = new FieldVector<>(expectedL);
     assertThat(diff, is(equalTo(expected)));

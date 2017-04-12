@@ -21,7 +21,6 @@
  *
  * Jacob Rachiele
  */
-
 package math;
 
 public class Rational implements FieldElement<Rational> {
@@ -29,7 +28,33 @@ public class Rational implements FieldElement<Rational> {
     private final int p;
     private final int q;
 
-    public Rational(final int p, final int q) {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Rational rational = (Rational) o;
+
+        Real real = Real.from((double)this.p / this.q);
+        Real otherReal = Real.from((double)rational.p / rational.q);
+        return real.equals(otherReal);
+    }
+
+    @Override
+    public int hashCode() {
+        Real real = Real.from((double)this.p / this.q);
+        return real.hashCode();
+    }
+
+    public static Rational from(int p, int q) {
+        return new Rational(p, q);
+    }
+
+    public static Rational from(int p) {
+        return new Rational(p, 1);
+    }
+
+    private Rational(int p, int q) {
         if (q == 0) {
             throw new IllegalArgumentException("The denominator cannot be zero.");
         }
@@ -37,13 +62,9 @@ public class Rational implements FieldElement<Rational> {
         this.q = q;
     }
 
-    public Rational(final int p) {
-        this(p, 1);
-    }
-
     @Override
     public Rational plus(Rational other) {
-        return null;
+        return new Rational(this.p * other.q + other.p * this.q, this.q * other.q);
     }
 
     @Override
@@ -73,64 +94,48 @@ public class Rational implements FieldElement<Rational> {
 
     @Override
     public double abs() {
-        return 0;
+        return Math.abs((double)p / q);
     }
 
     @Override
-    public Rational dividedBy(double value) {
-        return null;
+    public Rational dividedBy(Rational value) {
+        if (value.p == 0) {
+            throw new ArithmeticException("Attempt to divide a rational number by zero.");
+        }
+        return new Rational(this.p * value.q, this.q * value.p);
     }
 
-    int p() {
-        return this.p;
-    }
-
-    int q() {
-        return this.q;
+    @Override
+    public Rational dividedBy(int value) {
+        if (value == 0) {
+            throw new ArithmeticException("Attempt to divide a rational number by zero.");
+        }
+        return new Rational(this.p, this.q * value);
     }
 
     @Override
     public String toString() {
+        StringBuilder sb = new StringBuilder("Rational: ");
         if (this.p == 0) {
-            return "0";
+            return sb.append("0").toString();
         }
         if (this.q == 1) {
-            return Integer.toString(this.p);
+            return sb.append(Integer.toString(this.p)).toString();
         }
         if ((double)this.p / this.q == 1.0) {
-            return "1";
+            return sb.append("1").toString();
         }
         if (this.p < 0) {
             if (this.q < 0) {
-                return -this.p + "/" + -this.q;
+                return sb.append(-this.p).append("/").append(-this.q).toString();
             }
-            return this.p + "/" + this.q;
+            return sb.append(this.p).append("/").append(this.q).toString();
         }
 
         if (this.q < 0) {
-            return -this.p + "/" + -this.q;
+            return sb.append(-this.p).append("/").append(-this.q).toString();
         }
-        return this.p + "/" + this.q;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-
-        Rational rational = (Rational) o;
-
-        if (p != rational.p) return false;
-        return q == rational.q;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + p;
-        result = 31 * result + q;
-        return result;
+        return sb.append(this.p).append("/").append(this.q).toString();
     }
 
 //    Rational(String rational) {

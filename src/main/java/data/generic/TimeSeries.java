@@ -33,18 +33,21 @@ public final class TimeSeries<T extends FieldElement<T>> implements DataSet<T> {
 
     private final DataSet<T> dataSet;
     private final List<T> list;
+    private final Zero<T> zero;
 
-    TimeSeries(@NonNull DataSet<T> dataSet) {
-        this.dataSet = dataSet;
+    TimeSeries(Builder<T> builder) {
+        this.dataSet = builder.dataSet();
+        this.zero = builder.zero();
         this.list = this.dataSet.data();
     }
 
-    T at(int index) {
+    public T at(int index) {
         return this.list.get(index);
     }
 
-    T autoCovarianceAtLag(int k) {
-        return null;
+    public T autoCovarianceAtLag(int k) {
+        T sum = zero.getValue();
+        return sum;
     }
 
     @Override
@@ -73,12 +76,12 @@ public final class TimeSeries<T extends FieldElement<T>> implements DataSet<T> {
     }
 
     @Override
-    public DataSet<T> times(DataSet<T> otherData) {
+    public DataSet<T> times(@NonNull DataSet<T> otherData) {
         return dataSet.times(otherData);
     }
 
     @Override
-    public DataSet<T> plus(DataSet<T> otherData) {
+    public DataSet<T> plus(@NonNull DataSet<T> otherData) {
         return dataSet.plus(otherData);
     }
 
@@ -93,17 +96,64 @@ public final class TimeSeries<T extends FieldElement<T>> implements DataSet<T> {
     }
 
     @Override
-    public T covariance(DataSet<T> otherData) {
+    public T covariance(@NonNull DataSet<T> otherData) {
         return dataSet.covariance(otherData);
     }
 
     @Override
-    public T correlation(DataSet<T> otherData) {
+    public T correlation(@NonNull DataSet<T> otherData) {
         return dataSet.correlation(otherData);
     }
 
     @Override
     public List<T> data() {
         return dataSet.data();
+    }
+
+    public static class Builder<T extends FieldElement<T>> {
+
+        private DataSet<T> dataSet;
+        private final Zero<T> zero;
+
+        Builder(@NonNull Zero<T> zero) {
+            this.zero = zero;
+        }
+
+        Builder(@NonNull DataSet<T> dataSet, @NonNull Zero<T> zero) {
+            this.dataSet = dataSet;
+            this.zero = zero;
+        }
+
+        Builder(@NonNull List<T> data, @NonNull Zero<T> zero) {
+            this.dataSet = new NumericalDataSet<T>(data, zero);
+            this.zero = zero;
+        }
+
+        Builder<T> dataSet(@NonNull DataSet<T> dataSet) {
+            this.dataSet = dataSet;
+            return this;
+        }
+
+        Builder<T> dataSet(@NonNull List<T> data) {
+            this.dataSet = new NumericalDataSet<T>(data, zero);
+            return this;
+        }
+
+        private DataSet<T> dataSet() {
+            return this.dataSet;
+        }
+
+        private Zero<T> zero() {
+            return this.zero;
+        }
+
+        TimeSeries<T> build() {
+            if (this.dataSet == null) {
+                throw new IllegalStateException(
+                        "The data underlying the series must be set before its construction."
+                );
+            }
+            return new TimeSeries<>(this);
+        }
     }
 }

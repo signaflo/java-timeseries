@@ -32,8 +32,33 @@ public final class DataSets {
 
     private DataSets(){}
 
-    public static DataSet<Complex> from(List<Complex> data) {
+    public static DataSet<Complex> dataSetFrom(List<Complex> data) {
         Zero<Complex> zero = Zero.instance(Complex.zero());
         return new NumericalDataSet<>(data, zero);
+    }
+
+    public static TimeSeries<Complex> timeSeriesFrom(List<Complex> data) {
+        Zero<Complex> zero = Zero.instance(Complex.zero());
+        return new TimeSeries.Builder<>(data, zero).build();
+    }
+
+    public static TimeSeries<Complex> timeSeriesFrom(DataSet<Complex> dataSet) {
+        Zero<Complex> zero = Zero.instance(Complex.zero());
+        return new TimeSeries.Builder<>(dataSet, zero).build();
+    }
+
+    public static TimeSeries.Builder<Complex> timeSeriesBuilder() {
+        Zero<Complex> zero = Zero.instance(Complex.zero());
+        return new TimeSeries.Builder<>(zero);
+    }
+
+    public static TimeSeries.Builder<Complex> timeSeriesBuilder(List<Complex> data) {
+        Zero<Complex> zero = Zero.instance(Complex.zero());
+        return new TimeSeries.Builder<>(data, zero);
+    }
+
+    public static TimeSeries.Builder<Complex> timeSeriesBuilder(DataSet<Complex> dataSet) {
+        Zero<Complex> zero = Zero.instance(Complex.zero());
+        return new TimeSeries.Builder<>(dataSet, zero);
     }
 }
