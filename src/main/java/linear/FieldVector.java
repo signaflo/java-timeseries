@@ -23,11 +23,11 @@
  */
 package linear;
 
+import com.google.common.collect.ImmutableList;
 import math.FieldElement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -45,7 +45,7 @@ final class FieldVector<T extends FieldElement<T>> {
    * @param elements a list of elements constituting the elements of the new vector.
    */
   FieldVector(List<T> elements) {
-    this.elements = Collections.unmodifiableList(elements);
+    this.elements = ImmutableList.copyOf(elements);
   }
 
   /**
@@ -55,7 +55,7 @@ final class FieldVector<T extends FieldElement<T>> {
    */
   @SafeVarargs
   FieldVector(T... elements) {
-    this.elements = Collections.unmodifiableList(Arrays.asList(elements));
+    this.elements = ImmutableList.copyOf(Arrays.asList(elements.clone()));
   }
 
   /**
