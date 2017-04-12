@@ -24,8 +24,11 @@
 
 package data.generic;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import math.FieldElement;
 
+@EqualsAndHashCode @ToString
 class Zero<T extends FieldElement<T>> {
 
     private final T value;

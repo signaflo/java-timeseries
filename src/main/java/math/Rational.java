@@ -28,24 +28,6 @@ public class Rational implements FieldElement<Rational> {
     private final int p;
     private final int q;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Rational rational = (Rational) o;
-
-        Real real = Real.from((double)this.p / this.q);
-        Real otherReal = Real.from((double)rational.p / rational.q);
-        return real.equals(otherReal);
-    }
-
-    @Override
-    public int hashCode() {
-        Real real = Real.from((double)this.p / this.q);
-        return real.hashCode();
-    }
-
     public static Rational from(int p, int q) {
         return new Rational(p, q);
     }
@@ -74,7 +56,8 @@ public class Rational implements FieldElement<Rational> {
 
     @Override
     public Rational times(Rational other) {
-        return null;
+        checkNonZero(other.q);
+        return new Rational(this.p * other.p, this.q * other.q);
     }
 
     @Override
@@ -99,18 +82,20 @@ public class Rational implements FieldElement<Rational> {
 
     @Override
     public Rational dividedBy(Rational value) {
-        if (value.p == 0) {
-            throw new ArithmeticException("Attempt to divide a rational number by zero.");
-        }
+        checkNonZero(value.p);
         return new Rational(this.p * value.q, this.q * value.p);
     }
 
     @Override
     public Rational dividedBy(int value) {
+        checkNonZero(value);
+        return new Rational(this.p, this.q * value);
+    }
+
+    private void checkNonZero(int value) {
         if (value == 0) {
             throw new ArithmeticException("Attempt to divide a rational number by zero.");
         }
-        return new Rational(this.p, this.q * value);
     }
 
     @Override
@@ -136,6 +121,24 @@ public class Rational implements FieldElement<Rational> {
             return sb.append(-this.p).append("/").append(-this.q).toString();
         }
         return sb.append(this.p).append("/").append(this.q).toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Rational rational = (Rational) o;
+
+        Real real = Real.from((double)this.p / this.q);
+        Real otherReal = Real.from((double)rational.p / rational.q);
+        return real.equals(otherReal);
+    }
+
+    @Override
+    public int hashCode() {
+        Real real = Real.from((double)this.p / this.q);
+        return real.hashCode();
     }
 
 //    Rational(String rational) {

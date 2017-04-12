@@ -25,7 +25,10 @@
 package data.generic;
 
 import math.Complex;
+import math.Real;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public final class DataSets {
@@ -37,9 +40,23 @@ public final class DataSets {
         return new NumericalDataSet<>(data, zero);
     }
 
-    public static TimeSeries<Complex> timeSeriesFrom(List<Complex> data) {
+    public static TimeSeries<Complex> complexSeriesFrom(List<Complex> data) {
         Zero<Complex> zero = Zero.instance(Complex.zero());
         return new TimeSeries.Builder<>(data, zero).build();
+    }
+
+    public static TimeSeries<Real> realSeriesFrom(List<Real> data) {
+        Zero<Real> zero = Zero.instance(Real.zero());
+        return new TimeSeries.Builder<>(data, zero).build();
+    }
+
+    public static TimeSeries<Real> realSeriesFrom(double... data) {
+        Zero<Real> zero = Zero.instance(Real.zero());
+        List<Real> reals = new ArrayList<>(data.length);
+        for (double d : data) {
+            reals.add(Real.from(d));
+        }
+        return new TimeSeries.Builder<>(reals, zero).build();
     }
 
     public static TimeSeries<Complex> timeSeriesFrom(DataSet<Complex> dataSet) {

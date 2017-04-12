@@ -34,11 +34,19 @@ public final class TimeSeries<T extends FieldElement<T>> implements DataSet<T> {
     private final DataSet<T> dataSet;
     private final List<T> list;
     private final Zero<T> zero;
+    private final Cache cache;
 
     TimeSeries(Builder<T> builder) {
         this.dataSet = builder.dataSet();
         this.zero = builder.zero();
         this.list = this.dataSet.data();
+        this.cache = initializeCache();
+    }
+
+    private Cache initializeCache() {
+        Cache cache = new Cache();
+        cache.mean = this.dataSet.mean();
+        return cache;
     }
 
     public T at(int index) {
@@ -46,8 +54,20 @@ public final class TimeSeries<T extends FieldElement<T>> implements DataSet<T> {
     }
 
     public T autoCovarianceAtLag(int k) {
-        T sum = zero.getValue();
-        return sum;
+        if (k < 0) {
+            throw new IllegalArgumentException("The lag, k, must be non-negative, but was " + k);
+        }
+        final int n = this.size();
+        final T mean = this.cache.mean();
+        T sumOfProductDeviations = zero.getValue();
+        T leftFactor;
+        T rightFactor;
+        for (int t = 0; t < n - k; t++) {
+            leftFactor = list.get(t).minus(mean);
+            rightFactor = list.get(t + k).minus(mean);
+            sumOfProductDeviations = sumOfProductDeviations.plus(leftFactor.times(rightFactor));
+        }
+        return sumOfProductDeviations.dividedBy(n);
     }
 
     @Override
@@ -62,7 +82,7 @@ public final class TimeSeries<T extends FieldElement<T>> implements DataSet<T> {
 
     @Override
     public T mean() {
-        return dataSet.mean();
+        return this.cache.mean();
     }
 
     @Override
@@ -108,6 +128,13 @@ public final class TimeSeries<T extends FieldElement<T>> implements DataSet<T> {
     @Override
     public List<T> data() {
         return dataSet.data();
+    }
+
+    private class Cache {
+        private T mean;
+        T mean() {
+            return this.mean;
+        }
     }
 
     public static class Builder<T extends FieldElement<T>> {

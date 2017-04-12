@@ -295,6 +295,9 @@ public final class TimeSeries implements DataSet {
      * @return the covariance of this series with itself at lag k.
      */
     public final double autoCovarianceAtLag(final int k) {
+        if (k < 0) {
+            throw new IllegalArgumentException("The lag, k, must be non-negative, but was " + k);
+        }
         double sumOfProductOfDeviations = 0.0;
         for (int t = 0; t < n - k; t++) {
             sumOfProductOfDeviations += (series[t] - mean) * (series[t + k] - mean);
