@@ -28,7 +28,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 
 /**
- * A set of constants representing standard time units, raging from nanoseconds to centuries. This class
+ * A set of constants representing standard time units, ranging from nanoseconds to centuries. This class
  * wraps a {@link ChronoUnit} together with a length of time to create a broader set of time units than
  * those provided by ChronoUnit and to allow additional functionality. For even more fine-tuned time modeling
  * use the {@link TimePeriod} class.
