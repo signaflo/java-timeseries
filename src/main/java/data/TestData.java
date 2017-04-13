@@ -1,6 +1,5 @@
 package data;
 
-import math.Real;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.TimeUnit;
@@ -21,7 +20,17 @@ public final class TestData {
     private TestData() {
     }
 
-    @SuppressWarnings("MagicNumber")
+    /**
+     * <a target="_blank" href="_https://datamarket.com/data/set/22xx/monthly-sales-of-tasty-cola#!ds=22xx&display=line"
+     * >monthly sales of tasty cola</a> (Bowerman and O’Connell (1993)), made available by Rob J Hyndman at DataMarket.
+     *
+     * @return the monthly sales of tasty cola data set.
+     */
+    public static double[] sodaSalesArray() {
+        return new double[] {189, 229, 249, 289, 260, 431, 660, 777, 915, 613, 485, 277, 244, 296, 319, 370, 313, 556,
+                831, 960, 1152, 759, 607, 371, 298, 378, 373, 443, 374, 660, 1004, 1153, 1388, 904, 715, 441};
+    }
+
     public static double[] ausbeerArray() {
         return new double[]{284, 213, 227, 308, 262, 228, 236, 320, 272, 233, 237, 313, 261, 227, 250, 314, 286, 227,
                 260, 311, 295, 233, 257, 339, 279, 250, 270, 346, 294, 255, 278, 363, 313, 273, 300, 370, 331, 288,
@@ -36,8 +45,6 @@ public final class TestData {
                 408, 482, 438, 386, 405, 491, 427, 383, 394, 473, 420, 390, 410};
     }
 
-    @SuppressWarnings("MagicNumber")
-
     public static TimeSeries odyssey() {
         return Ts.newMonthlySeries(2012, 9, 1.036706349206349, 8.90625, 8.519021739130435, 2.1770833333333335,
                                    4.732789855072463, 0.0, 1.036706349206349, 9.465579710144926, 3.1101190476190474,
@@ -51,7 +58,6 @@ public final class TestData {
                                    3.1101190476190474, 6.625905797101449);
     }
 
-    @SuppressWarnings("MagicNumber")
     public static TimeSeries ausbeer() {
         return Ts.newQuarterlySeries(1956, 1, 284, 213, 227, 308, 262, 228, 236, 320, 272, 233, 237, 313, 261, 227, 250,
                                      314, 286, 227, 260, 311, 295, 233, 257, 339, 279, 250, 270, 346, 294, 255, 278,
@@ -69,7 +75,6 @@ public final class TestData {
                                      473, 420, 390, 410);
     }
 
-    @SuppressWarnings("MagicNumber")
     public static TimeSeries livestock() {
         return Ts.newAnnualSeries(1961, 232.288994, 229.536258, 233.145936, 243.763684, 252.602916, 259.677371,
                                   260.766892, 269.784084, 266.414974, 263.917747, 268.307222, 260.662556, 266.639419,
@@ -80,14 +85,12 @@ public final class TestData {
                                   403.460832, 413.824928, 428.104959, 445.338742, 452.994173, 455.74017);
     }
 
-    @SuppressWarnings("MagicNumber")
     public static TimeSeries elecSales() {
         return Ts.newAnnualSeries(1989, 2354.34, 2379.71, 2318.52, 2468.99, 2386.09, 2569.47, 2575.72, 2762.72, 2844.5,
                                   3000.7, 3108.1, 3357.5, 3075.7, 3180.6, 3221.6, 3176.2, 3430.6, 3527.48, 3637.89,
                                   3655);
     }
 
-    @SuppressWarnings("MagicNumber")
     public static TimeSeries debitcards() {
         return Ts.newMonthlySeries(2000, 1,
                                    new double[]{7204, 7335, 7812, 7413, 9136, 8725, 8751, 9609, 8601, 8930, 8835,
@@ -108,7 +111,6 @@ public final class TestData {
                                            26675});
     }
 
-    @SuppressWarnings("MagicNumber")
     public static TimeSeries hardProblem() {
         return Ts.newMonthlySeries(2015, 1, 5.173611, -3.284118, 1.214674, -0.141098, -1.073575, 5.715716, -7.605208,
                                    5.926136, -4.938447, 3.151199, 2.474336, 4.76872, -6.443497, -2.104208, 4.770969,
@@ -117,7 +119,6 @@ public final class TestData {
                                    3.46407, -3.292298, 0, 1.222854);
     }
 
-    @SuppressWarnings("MagicNumber")
     public static TimeSeries ukcars() {
         return Ts.newQuarterlySeries(1977, 1, 330.371, 371.051, 270.67, 343.88, 358.491, 362.822, 261.281, 240.355,
                                      325.382, 316.7, 171.153, 257.217, 298.127, 251.464, 181.555, 192.598, 245.652,
@@ -134,7 +135,6 @@ public final class TestData {
                                      408.74, 445.458, 428.202, 379.048, 394.042, 432.796);
     }
 
-    @SuppressWarnings("MagicNumber")
     public static TimeSeries sydneyAir() {
         double[] syd = new double[]{1.912, 1.848, 1.856, 2.142, 2.118, 2.048, 2.111, 2.199, 2.231, 2.081, 2.213,
                 2.131, 2.147226, 2.131, 2.034, 2.19, 2.262, 2.579, 2.367, 2.432, 2.64, 2.614, 2.569, 2.523, 2.26,
@@ -160,7 +160,6 @@ public final class TestData {
                               OffsetDateTime.of(LocalDateTime.of(1987, 6, 22, 0, 0), ZoneOffset.ofHours(0)), syd);
     }
 
-    @SuppressWarnings("MagicNumber")
     public static TimeSeries internetTraffic() {
         double[] traffic = new double[]{4838.665, 4845.177, 5157.996, 5637.876, 5520.69, 5626.337, 5350.546,
                 5356.983, 5385.814, 5403.906, 5666.348, 5764.142, 5902.474, 6012.859, 5829.679, 5852.245, 6185.16,
