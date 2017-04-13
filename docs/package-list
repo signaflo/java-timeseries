@@ -1,4 +1,5 @@
 data
+data.generic
 linear.doubles
 linear.regression
 linear.regression.primitive
