@@ -2,18 +2,15 @@
  * Copyright (c) 2016 Jacob Rachiele
  *
  */
-
 package math;
-
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * @author Jacob Rachiele
- */
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+
 public class RealSpec {
 
   private Real a;
@@ -37,14 +34,14 @@ public class RealSpec {
 
   @Test
   public void whenRealSqrtThenRightComplexReturned() {
-    assertThat(a.sqrt(), is(new Complex(Math.sqrt(3.0))));
+    assertThat(a.sqrt(), is(Real.from(Math.sqrt(3.0))));
     a = Real.from(-3.0);
-    assertThat(a.sqrt(), is(new Complex(0.0, Math.sqrt(3.0))));
+    assertThat(a.complexSqrt(), is(new Complex(0.0, Math.sqrt(3.0))));
   }
 
   @Test
   public void whenAdditiveInverseThenRightNumberReturned() {
-    assertThat(a.negative(), is(Real.from(-3.0)));
+    assertThat(a.additiveInverse(), is(Real.from(-3.0)));
   }
 
   @Test
@@ -95,7 +92,7 @@ public class RealSpec {
 
   @Test
   public void testEqualsAndHashCode() {
-    Real c = new Real(3.0);
+    Real c = Real.from(3.0);
     //noinspection ObjectEqualsNull
     assertThat(a.equals(null), is(false));
     assertThat(a, is(not((b))));

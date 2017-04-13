@@ -77,8 +77,12 @@ public class QuadraticFunction extends AbstractFunction {
     public Complex[] zeros() {
         final Real fourAC = a.times(c).times(4.0);
         final Real bSquared = b.times(b);
-        final Complex root1 = b.negative().plus(bSquared.minus(fourAC).sqrt()).dividedBy(a.times(2).value());
-        final Complex root2 = b.negative().minus(bSquared.minus(fourAC).sqrt()).dividedBy(a.times(2).value());
+        final Complex root1 = b.additiveInverse()
+                               .plus(bSquared.minus(fourAC).complexSqrt())
+                               .dividedBy(a.times(2).value());
+        final Complex root2 = b.additiveInverse()
+                               .minus(bSquared.minus(fourAC).complexSqrt())
+                               .dividedBy(a.times(2).value());
         return new Complex[]{root1, root2};
     }
 
@@ -110,7 +114,7 @@ public class QuadraticFunction extends AbstractFunction {
     }
 
     public Real at(final Real point) {
-        return new Real(this.at(point.value()));
+        return Real.from(this.at(point.value()));
     }
 
     @Override
@@ -156,7 +160,7 @@ public class QuadraticFunction extends AbstractFunction {
      * @return the point at which the localExtrema of this function occurs.
      */
     public Real extremePoint() {
-        return new Real(-b.value() / (2 * a.value()));
+        return Real.from(-b.value() / (2 * a.value()));
     }
 
     /**
@@ -176,7 +180,7 @@ public class QuadraticFunction extends AbstractFunction {
      */
     public Real extremum() {
         double x = extremePoint().value();
-        return new Real(a.value() * x * x + b.value() * x + c.value());
+        return Real.from(a.value() * x * x + b.value() * x + c.value());
     }
 
     /**

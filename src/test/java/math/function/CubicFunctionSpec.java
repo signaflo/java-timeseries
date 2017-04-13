@@ -2,7 +2,6 @@
  * Copyright (c) 2016 Jacob Rachiele
  *
  */
-
 package math.function;
 
 import math.Complex;
@@ -15,9 +14,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
 
-/**
- * @author Jacob Rachiele
- */
 public class CubicFunctionSpec {
 
     @Rule
@@ -42,9 +38,9 @@ public class CubicFunctionSpec {
     public void whenCriticalPointsThenCorrectValues() {
         f = new CubicFunction(-4.0, 1.0, 5.0, 0.0);
         Complex[] expected = new Complex[]{new Complex(-0.567520806326), new Complex(0.734187472992)};
-        Complex[] criticalPoints = f.criticalPoints();
+        Real[] criticalPoints = f.criticalPoints();
         for (int i = 0; i < 2; i++) {
-            assertThat(criticalPoints[i].real(), is(closeTo(expected[i].real(), 1E-8)));
+            assertThat(criticalPoints[i].value(), is(closeTo(expected[i].doubleValue(), 1E-8)));
         }
     }
 
@@ -65,10 +61,10 @@ public class CubicFunctionSpec {
     @Test
     public void whenGettersThenValuesReturned() {
         f = new CubicFunction(-4.0, 1.0, 5.0, 0.0);
-        Real a = new Real(-4.0);
-        Real b = new Real(1.0);
-        Real c = new Real(5.0);
-        Real d = new Real(0.0);
+        Real a = Real.from(-4.0);
+        Real b = Real.from(1.0);
+        Real c = Real.from(5.0);
+        Real d = Real.from(0.0);
         assertThat(f.a(), is(a));
         assertThat(f.b(), is(b));
         assertThat(f.c(), is(c));

@@ -1,46 +1,66 @@
-package data;
-
-/**
- * A collection of numerical observations.
+/*
+ * Copyright (c) 2017 Jacob Rachiele
  *
- * @author Jacob Rachiele
- *         Mar. 29, 2017
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
+ * do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Contributors:
+ *
+ * Jacob Rachiele
  */
-public interface DataSet {
+package data.generic;
+
+import java.util.List;
+
+public interface DataSet<T> {
+
     /**
      * The sum of the observations.
      *
      * @return the sum of the observations.
      */
-    double sum();
+    T sum();
 
     /**
      * The sum of the squared observations.
      *
      * @return the sum of the squared observations.
      */
-    double sumOfSquares();
+    T sumOfSquares();
 
     /**
      * The mean of the observations.
      *
      * @return the mean of the observations.
      */
-    double mean();
+    T mean();
 
     /**
      * The median value of the observations.
      *
      * @return the median value of the observations.
      */
-    double median();
+    T median();
 
     /**
      * The size of the data set.
      *
      * @return the size of the data set.
      */
-    int n();
+    int size();
 
     /**
      * Multiply every element of this data set with the corresponding element of the given data set.
@@ -49,7 +69,7 @@ public interface DataSet {
      * @return A new data set containing every element of this data set multiplied by
      * the corresponding element of the given data set.
      */
-    DataSet times(DataSet otherData);
+    DataSet<T> times(DataSet<T> otherData);
 
     /**
      * Add every element of this data set to the corresponding element of the given data set.
@@ -58,21 +78,21 @@ public interface DataSet {
      * @return A new data set containing every element of this data set added to
      * the corresponding element of the given data set.
      */
-    DataSet plus(DataSet otherData);
+    DataSet<T> plus(DataSet<T> otherData);
 
     /**
      * The unbiased sample variance of the observations.
      *
      * @return the unbiased sample variance of the observations.
      */
-    double variance();
+    T variance();
 
     /**
      * The unbiased sample standard deviation of the observations.
      *
      * @return the unbiased sample standard deviation of the observations.
      */
-    double stdDeviation();
+    T stdDeviation();
 
     /**
      * The unbiased sample covariance of these observations with the observations
@@ -82,7 +102,7 @@ public interface DataSet {
      * @return the unbiased sample covariance of these observations with the observations
      * contained in the given data set.
      */
-    double covariance(DataSet otherData);
+    T covariance(DataSet<T> otherData);
 
     /**
      * The unbiased sample correlation of these observations with the observations
@@ -92,26 +112,12 @@ public interface DataSet {
      * @return the unbiased sample correlation of these observations with the observations
      * contained in the given data set.
      */
-    double correlation(DataSet otherData);
+    T correlation(DataSet<T> otherData);
 
     /**
      * The observations.
      *
      * @return the observations.
      */
-    double[] asArray();
-
-    /**
-     * Plot this data set. This method will produce a scatter plot of the data values against the integers
-     * from 0 to n - 1, where n is the size of the data set.
-     */
-    void plot();
-
-    /**
-     * Plot this data set against the given data set. The given data set will be plotted on the x-axis, while
-     * this data set will be plotted on the y-axis.
-     *
-     * @param otherData the data set to plot this data set against.
-     */
-    void plotAgainst(DataSet otherData);
+    List<T> data();
 }

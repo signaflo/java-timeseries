@@ -265,17 +265,28 @@ public final class ArimaForecast implements Forecast {
 
     @Override
     public String toString() {
-        NumberFormat numFormatter = new DecimalFormat("#0.0000");
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("%-20s", "| Date ")).append(String.format("%-12s", "| Forecast "))
-               .append(String.format("%-12s", " | Lower " + String.format("%.1f", (1 - alpha) * 100) + "%"))
-               .append(String.format("%-12s", "  | Upper " + String.format("%.1f", (1 - alpha) * 100) + "%  |\n"));
-        builder.append("| ------------------------------------------------------------ |\n");
+        builder.append(String.format("%-18.18s", "| Date "))
+               .append("  ")
+               .append(String.format("%-13.13s", "| Forecast "))
+               .append("  ")
+               .append(String.format("%-13.13s", "| Lower " + String.format("%.1f", (1 - alpha) * 100) + "%"))
+               .append("  ")
+               .append(String.format("%-13.13s", "| Upper " + String.format("%.1f", (1 - alpha) * 100) + "%"))
+               .append(" |")
+               .append("\n")
+               .append(String.format("%-70.70s", " -------------------------------------------------------------- "))
+               .append("\n");
         for (int i = 0; i < this.forecast.n(); i++) {
-            builder.append("| ").append(forecast.observationTimes().get(i).toLocalDateTime()).append("  | ")
-                   .append(numFormatter.format(forecast.at(i))).append("  | ")
-                   .append(numFormatter.format(this.lowerValues.at(i))).append("    | ")
-                   .append(numFormatter.format(this.upperValues.at(i))).append("    |\n");
+            builder.append(String.format("%-18.18s", "| " + forecast.observationTimes().get(i).toLocalDateTime()))
+                   .append("  ")
+                   .append(String.format("%-13.13s", "| " +  Double.toString(forecast.at(i))))
+                   .append("  ")
+                   .append(String.format("%-13.13s", "| " + Double.toString(this.lowerValues.at(i))))
+                   .append("  ")
+                   .append(String.format("%-13.13s", "| " + Double.toString(this.upperValues.at(i))))
+                   .append(" |")
+                   .append("\n");
         }
         return builder.toString();
     }

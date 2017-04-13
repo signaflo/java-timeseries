@@ -295,6 +295,9 @@ public final class TimeSeries implements DataSet {
      * @return the covariance of this series with itself at lag k.
      */
     public final double autoCovarianceAtLag(final int k) {
+        if (k < 0) {
+            throw new IllegalArgumentException("The lag, k, must be non-negative, but was " + k);
+        }
         double sumOfProductOfDeviations = 0.0;
         for (int t = 0; t < n - k; t++) {
             sumOfProductOfDeviations += (series[t] - mean) * (series[t + k] - mean);
@@ -545,15 +548,6 @@ public final class TimeSeries implements DataSet {
         System.out.println(this.toString());
     }
 
-    /**
-     * Retrieve the time series of observations.
-     *
-     * @return the time series of observations.
-     */
-    public final double[] asArray() {
-        return this.series.clone();
-    }
-
     public final List<Double> asList() {
         return DoubleFunctions.listFrom(this.series.clone());
     }
@@ -595,6 +589,16 @@ public final class TimeSeries implements DataSet {
     }
 
     // ********** Plots ********** //
+
+    /**
+     * Retrieve the time series of observations.
+     *
+     * @return the time series of observations.
+     */
+    @Override
+    public final double[] asArray() {
+        return this.series.clone();
+    }
 
     @Override
     public double sum() {
@@ -649,11 +653,6 @@ public final class TimeSeries implements DataSet {
     @Override
     public double correlation(DataSet otherData) {
         return this.dataSet.correlation(otherData);
-    }
-
-    @Override
-    public double[] data() {
-        return this.series.clone();
     }
 
     /**
