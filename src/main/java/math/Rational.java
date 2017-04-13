@@ -23,6 +23,9 @@
  */
 package math;
 
+/**
+ * A representation of a rational number. This class is immutable and thread-safe.
+ */
 public final class Rational implements FieldElement<Rational> {
 
     private final int p;

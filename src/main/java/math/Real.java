@@ -195,6 +195,9 @@ public final class Real implements FieldElement<Real> {
         return "Real: " + Double.toString(this.value);
     }
 
+    /**
+     * An interval on the real line.
+     */
     public static final class Interval {
 
         private final Real lower;

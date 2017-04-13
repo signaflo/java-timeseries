@@ -26,7 +26,7 @@ package math;
 import lombok.EqualsAndHashCode;
 
 /**
- * An immutable and thread-safe implementation of a complex number.
+ * A representation of a complex number. This class is immutable and thread-safe.
  *
  * @author Jacob Rachiele
  */

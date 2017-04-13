@@ -19,7 +19,7 @@ import java.util.List;
 import static data.DoubleFunctions.round;
 
 /**
- * [Insert class description]
+ * Static methods for producing plots.
  *
  * @author Jacob Rachiele
  *         Mar. 19, 2017
