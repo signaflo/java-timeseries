@@ -129,7 +129,7 @@ public final class DoubleFunctions {
         return filled;
     }
 
-    public static List<Double> listFrom(final double[] data) {
+    public static List<Double> listFrom(final double... data) {
         return Doubles.asList(data.clone());
     }
 
@@ -138,7 +138,7 @@ public final class DoubleFunctions {
      *
      * @param data the data to slice.
      * @param from the starting index.
-     * @param to   the ending index. The data at this index is excluded from the result.
+     * @param to   the ending index. The value at this index is excluded from the result.
      * @return a slice of the data between the given indices.
      */
     public static double[] slice(final double[] data, final int from, final int to) {
@@ -196,7 +196,7 @@ public final class DoubleFunctions {
      * @param data the data to take the square root of.
      * @return a new array containing the square root of each element.
      */
-    public static double[] sqrt(final double[] data) {
+    public static double[] sqrt(final double... data) {
         final double[] sqrtData = new double[data.length];
         for (int i = 0; i < sqrtData.length; i++) {
             sqrtData[i] = Math.sqrt(data[i]);
