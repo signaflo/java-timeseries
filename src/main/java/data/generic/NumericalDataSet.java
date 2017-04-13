@@ -39,7 +39,7 @@ import java.util.List;
  * @param <T> the type of field element.
  */
 @ToString @EqualsAndHashCode
-public class NumericalDataSet<T extends FieldElement<T>> implements DataSet<T> {
+class NumericalDataSet<T extends FieldElement<T>> implements DataSet<T> {
 
     private final List<T> data;
     private final Zero<T> zero;
@@ -78,7 +78,8 @@ public class NumericalDataSet<T extends FieldElement<T>> implements DataSet<T> {
         List<T> sorted = new ArrayList<>(data);
         Collections.sort(sorted);
         if (sorted.size() % 2 == 0) {
-            return (sorted.get(data.size() / 2 - 1).plus(sorted.get(data.size() / 2)).dividedBy(2));
+            return (sorted.get(data.size() / 2 - 1)
+                          .plus(sorted.get(data.size() / 2)).dividedBy(2));
         }
         return sorted.get((data.size() - 1) / 2);
     }

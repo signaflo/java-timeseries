@@ -5,9 +5,9 @@ import math.Real;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestData {
+class TestData {
 
-    public static TimeSeries<Real> ausbeerSeries() {
+    static TimeSeries<Real> ausbeerSeries() {
         double[] ausbeerArray = data.TestData.ausbeerArray();
         List<Real> ausbeerList = new ArrayList<>(ausbeerArray.length);
         for (double d : ausbeerArray) {
