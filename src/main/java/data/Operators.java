@@ -90,16 +90,16 @@ public final class Operators {
     return difference;
   }
 
-  public static List<Double> differenceOf(final List<Double> left, final List<Double> right) {
-      if (left.size() != right.size()) {
-          throw new IllegalArgumentException("The lists must have the same length.");
-      }
-      final List<Double> difference = new ArrayList<>(left.size());
-      for (int i = 0; i < left.size(); i++) {
-          difference.add(left.get(i) - right.get(i));
-      }
-      return difference;
-  }
+//  static List<Double> differenceOf(final List<Double> left, final List<Double> right) {
+//      if (left.size() != right.size()) {
+//          throw new IllegalArgumentException("The lists must have the same length.");
+//      }
+//      final List<Double> difference = new ArrayList<>(left.size());
+//      for (int i = 0; i < left.size(); i++) {
+//          difference.add(left.get(i) - right.get(i));
+//      }
+//      return difference;
+//  }
 
   /**
    * Take the element-by-element quotient of the two arrays and return the result in a new array.

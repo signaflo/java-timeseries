@@ -29,7 +29,7 @@ import math.FieldElement;
 
 import java.util.List;
 
-public final class TimeSeries<T extends FieldElement<T>> implements DataSet<T> {
+final class TimeSeries<T extends FieldElement<T>> implements DataSet<T> {
 
     private final DataSet<T> dataSet;
     private final List<T> list;

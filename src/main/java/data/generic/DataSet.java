@@ -25,7 +25,7 @@ package data.generic;
 
 import java.util.List;
 
-public interface DataSet<T> {
+interface DataSet<T> {
 
     /**
      * The sum of the observations.

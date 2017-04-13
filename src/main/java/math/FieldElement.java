@@ -84,6 +84,11 @@ public interface FieldElement<T> extends Comparable<FieldElement<T>> {
      */
     T conjugate();
 
+    /**
+     * Return the element of this field that, when added to this element, produces the additive identity.
+     *
+     * @return the element of this field that, when added to this element, produces the additive identity.
+     */
     T additiveInverse();
 
     /**
@@ -93,7 +98,23 @@ public interface FieldElement<T> extends Comparable<FieldElement<T>> {
      */
     double abs();
 
+    /**
+     *
+     * Divide this element by the given element and return the result.
+     *
+     * @param other the divisor.
+     *
+     * @return this element divided by the given element.
+     */
     T dividedBy(T other);
 
+    /**
+     *
+     * Divide this element by the given integer and return the result.
+     *
+     * @param other the divisor.
+     *
+     * @return this element divided by the given integer.
+     */
     T dividedBy(int other);
 }
