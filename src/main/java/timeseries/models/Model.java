@@ -27,8 +27,8 @@ import data.Plots;
 import timeseries.TimeSeries;
 
 /**
- * A representation of a time series model, an attempt to capture the essential characteristics of the
- * underlying process(es).
+ * A representation of a time series model. A time series model is an attempt to capture the essential
+ * characteristics of the process or processes underlying the time series.
  *
  * @author Jacob Rachiele
  */

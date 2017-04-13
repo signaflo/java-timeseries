@@ -836,8 +836,8 @@ public final class Arima implements Model {
 
     /**
      * The order of an ARIMA model, consisting of the number of autoregressive and moving average parameters, along with
-     * the degree of differencing and a flag indicating whether or not the model includes a constant, or intercept,
-     * term. This class is immutable and thread-safe.
+     * the degree of differencing and a flag indicating whether or not the model includes a constant.
+     * This class is immutable and thread-safe.
      *
      * @author Jacob Rachiele
      */
@@ -1362,8 +1362,7 @@ public final class Arima implements Model {
     /**
      * An ARIMA model simulation.
      */
-    @EqualsAndHashCode
-    @ToString
+    @EqualsAndHashCode @ToString
     public static class Simulation {
 
         private final ModelCoefficients coefficients;
@@ -1438,6 +1437,9 @@ public final class Arima implements Model {
             return new TimeSeries(period, OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);
         }
 
+        /**
+         * An ARIMA simulation builder.
+         */
         public static class Builder {
 
             private ModelCoefficients coefficients = ModelCoefficients.newBuilder().build();
