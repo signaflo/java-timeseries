@@ -5,7 +5,7 @@ apply plugin: 'signing'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 group = "com.github.jrachiele"
-version = "0.2-SNAPSHOT"
+version = "0.3-SNAPSHOT"
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
