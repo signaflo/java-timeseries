@@ -25,7 +25,7 @@ package linear.regression;
 
 import com.google.common.testing.EqualsTester;
 import data.DoubleFunctions;
-import data.DoubleRange;
+import data.Range;
 import data.Operators;
 import data.TestData;
 import org.junit.Test;
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 public class LinearRegressionSpec {
 
-    private List<Double> time = DoubleRange.inclusiveRange(1, 47).asList();
+    private List<Double> time = Range.inclusiveRange(1, 47).asList();
     private List<Double> response = TestData.livestock().asList();
     private boolean hasIntercept = true;
     private MultipleLinearRegression regression = MultipleLinearRegression.builder()
@@ -118,7 +118,7 @@ public class LinearRegressionSpec {
     public void equalsContract() {
         MultipleLinearRegression other = this.regression.withHasIntercept(!hasIntercept);
         MultipleLinearRegression other2 = this.regression
-                .withPredictor(DoubleRange.inclusiveRange(1961, 2007).asList());
+                .withPredictor(Range.inclusiveRange(1961, 2007).asList());
         MultipleLinearRegression other3 = this.regression.withResponse(TestData.livestock().demean().asList());
         new EqualsTester()
                 .addEqualityGroup(this.regression, MultipleLinearRegression.builder().from(this.regression).build())
