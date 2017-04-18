@@ -37,8 +37,7 @@ public final class DoubleFunctions {
 
     private static final double EPSILON = Math.ulp(1.0);
 
-    private DoubleFunctions() {
-    }
+    private DoubleFunctions() {}
 
     /**
      * Create and return a new array from the given data.

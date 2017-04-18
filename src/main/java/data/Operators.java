@@ -23,72 +23,70 @@
  */
 package data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Static methods for performing vector operations on arrays.
- * 
- * @author Jacob Rachiele
  *
+ * @author Jacob Rachiele
  */
 public final class Operators {
 
-  private Operators() {}
+    private Operators() {
+    }
 
-  /**
-   * Take the element-by-element product of the two arrays and return the result in a new array.
-   * 
-   * @param left the first array to take the product with.
-   * @param right the second array to take the product with.
-   * @return the element-by-element product of the two arrays.
-   */
-  public static double[] productOf(final double[] left, final double[] right) {
-    if (left.length != right.length) {
-      throw new IllegalArgumentException("The data arrays must have the same length.");
+    /**
+     * Take the element-by-element product of the two arrays and return the result in a new array.
+     *
+     * @param left  the first array to take the product with.
+     * @param right the second array to take the product with.
+     *
+     * @return the element-by-element product of the two arrays.
+     */
+    public static double[] productOf(final double[] left, final double[] right) {
+        if (left.length != right.length) {
+            throw new IllegalArgumentException("The data arrays must have the same length.");
+        }
+        final double[] product = new double[left.length];
+        for (int i = 0; i < left.length; i++) {
+            product[i] = left[i] * right[i];
+        }
+        return product;
     }
-    final double[] product = new double[left.length];
-    for (int i = 0; i < left.length; i++) {
-      product[i] = left[i] * right[i];
-    }
-    return product;
-  }
 
-  /**
-   * Take the element-by-element sum of the two arrays and return the result in a new array.
-   *
-   * @param left the first array to take the sum with.
-   * @param right the second array to take the sum with.
-   * @return the element-by-element sum of the two arrays.
-   */
-  public static double[] sumOf(final double[] left, final double[] right) {
-    if (left.length != right.length) {
-      throw new IllegalArgumentException("The data arrays must have the same length.");
+    /**
+     * Take the element-by-element sum of the two arrays and return the result in a new array.
+     *
+     * @param left  the first array to take the sum with.
+     * @param right the second array to take the sum with.
+     * @return the element-by-element sum of the two arrays.
+     */
+    public static double[] sumOf(final double[] left, final double[] right) {
+        if (left.length != right.length) {
+            throw new IllegalArgumentException("The data arrays must have the same length.");
+        }
+        final double[] sum = new double[left.length];
+        for (int i = 0; i < left.length; i++) {
+            sum[i] = left[i] + right[i];
+        }
+        return sum;
     }
-    final double[] sum = new double[left.length];
-    for (int i = 0; i < left.length; i++) {
-      sum[i] = left[i] + right[i];
-    }
-    return sum;
-  }
 
-  /**
-   * Take the element-by-element difference of the two arrays and return the result in a new array.
-   *
-   * @param left the first array to take the difference with.
-   * @param right the second array to take the difference with.
-   * @return the element-by-element difference of the two arrays.
-   */
-  public static double[] differenceOf(final double[] left, final double[] right) {
-    if (left.length != right.length) {
-      throw new IllegalArgumentException("The data arrays must have the same length.");
+    /**
+     * Take the element-by-element difference of the two arrays and return the result in a new array.
+     *
+     * @param left  the first array to take the difference with.
+     * @param right the second array to take the difference with.
+     * @return the element-by-element difference of the two arrays.
+     */
+    public static double[] differenceOf(final double[] left, final double[] right) {
+        if (left.length != right.length) {
+            throw new IllegalArgumentException("The data arrays must have the same length.");
+        }
+        final double[] difference = new double[left.length];
+        for (int i = 0; i < left.length; i++) {
+            difference[i] = left[i] - right[i];
+        }
+        return difference;
     }
-    final double[] difference = new double[left.length];
-    for (int i = 0; i < left.length; i++) {
-      difference[i] = left[i] - right[i];
-    }
-    return difference;
-  }
 
 //  static List<Double> differenceOf(final List<Double> left, final List<Double> right) {
 //      if (left.size() != right.size()) {
@@ -101,52 +99,53 @@ public final class Operators {
 //      return difference;
 //  }
 
-  /**
-   * Take the element-by-element quotient of the two arrays and return the result in a new array.
-   *
-   * @param numerator the array of numerators.
-   * @param denominator the array of denominators.
-   * @return the element-by-element quotient of the two arrays.
-   */
-  public static double[] quotientOf(final double[] numerator, final double[] denominator) {
-    if (numerator.length != denominator.length) {
-      throw new IllegalArgumentException("The data arrays must have the same length.");
+    /**
+     * Take the element-by-element quotient of the two arrays and return the result in a new array.
+     *
+     * @param numerator   the array of numerators.
+     * @param denominator the array of denominators.
+     * @return the element-by-element quotient of the two arrays.
+     */
+    public static double[] quotientOf(final double[] numerator, final double[] denominator) {
+        if (numerator.length != denominator.length) {
+            throw new IllegalArgumentException("The data arrays must have the same length.");
+        }
+        final double[] quotient = new double[numerator.length];
+        for (int i = 0; i < numerator.length; i++) {
+            quotient[i] = numerator[i] / denominator[i];
+        }
+        return quotient;
     }
-    final double[] quotient = new double[numerator.length];
-    for (int i = 0; i < numerator.length; i++) {
-      quotient[i] = numerator[i] / denominator[i];
-    }
-    return quotient;
-  }
 
-  /**
-   * Scale the original data by alpha and return the result in a new array.
-   * @param original the data to be scaled.
-   * @param alpha the scaling factor.
-   * @return the original data scaled by alpha.
-   */
-  public static double[] scale(final double[] original, final double alpha) {
-    final double[] scaled = new double[original.length];
-    for (int i = 0; i < original.length; i++) {
-      scaled[i] = original[i] * alpha;
+    /**
+     * Scale the original data by alpha and return the result in a new array.
+     *
+     * @param original the data to be scaled.
+     * @param alpha    the scaling factor.
+     * @return the original data scaled by alpha.
+     */
+    public static double[] scale(final double[] original, final double alpha) {
+        final double[] scaled = new double[original.length];
+        for (int i = 0; i < original.length; i++) {
+            scaled[i] = original[i] * alpha;
+        }
+        return scaled;
     }
-    return scaled;
-  }
 
-  /**
-   * Subtract the given value from each element of the supplied data and return the result in a new array.
-   *
-   * @param data the data to subtract the value from.
-   * @param value the value to be subtracted.
-   * @return a new array with each element of the supplied data subtracted by the given value.
-   */
-  public static double[] subtract(final double[] data, final double value) {
-    final double[] diff = new double[data.length];
-    for (int i = 0; i < diff.length; i++) {
-      diff[i] = data[i] - value;
+    /**
+     * Subtract the given value from each element of the supplied data and return the result in a new array.
+     *
+     * @param data  the data to subtract the value from.
+     * @param value the value to be subtracted.
+     * @return a new array with each element of the supplied data subtracted by the given value.
+     */
+    public static double[] subtract(final double[] data, final double value) {
+        final double[] diff = new double[data.length];
+        for (int i = 0; i < diff.length; i++) {
+            diff[i] = data[i] - value;
+        }
+        return diff;
     }
-    return diff;
-  }
 
 //  private static void subtractBang(final double[] data, final double value) {
 //    for (int i = 0; i < data.length; i++) {
