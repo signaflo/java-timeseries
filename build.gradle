@@ -35,6 +35,10 @@ buildscript {
   }
 }
 
+shadowJar {
+    configurations = [project.configurations.getByName("runtimeClasspath")]
+}
+
 //sourceSets {
 //    apt {
 //        java {
