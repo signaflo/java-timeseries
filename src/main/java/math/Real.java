@@ -195,6 +195,11 @@ public final class Real implements FieldElement<Real> {
         return "Real: " + Double.toString(this.value);
     }
 
+    @Override
+    public int compareTo(Real other) {
+        return Double.compare(this.value, other.value);
+    }
+
     /**
      * An interval on the real line.
      */
