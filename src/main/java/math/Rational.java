@@ -23,6 +23,8 @@
  */
 package math;
 
+import lombok.NonNull;
+
 /**
  * A representation of a rational number. This class is immutable and thread-safe.
  */
@@ -151,6 +153,13 @@ public final class Rational implements FieldElement<Rational> {
         Real real = Real.from((double)this.p / this.q);
         int result = real.hashCode();
         return result * 31;
+    }
+
+    @Override
+    public int compareTo(@NonNull Rational other) {
+        double thisVal = Real.from((double)this.p / this.q).value();
+        double otherVal = Real.from((double)other.p / other.q).value();
+        return Double.compare(thisVal, otherVal);
     }
 
 //    Rational(String rational) {
