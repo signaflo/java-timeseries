@@ -22,41 +22,31 @@
  * Jacob Rachiele
  */
 
-package math.probability;
+package math;
 
-import lombok.NonNull;
-import math.Real;
+public interface Interval<T extends FieldElement<T>> {
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Function;
+    T lower();
 
-public final class RandomVariable<T> implements Function<Outcome<T>, Real> {
+    T upper();
 
-    private final Function<Outcome<T>, Real> function;
-    private final SampleSpace<T> sampleSpace;
-    private final Set<Real> range;
-
-    RandomVariable(Function<Outcome<T>, Real> function, SampleSpace<T> sampleSpace) {
-        this.function = function;
-        this.sampleSpace = sampleSpace;
-        this.range = getRange();
+    default boolean endpointsEqual() {
+        return lower().compareTo(upper()) == 0;
     }
 
-    @Override
-    public Real apply(@NonNull Outcome<T> t) {
-        return this.function.apply(t);
+    default boolean contains(T value) {
+        return value.compareTo(lower()) >= 0 && value.compareTo(upper()) <= 0;
     }
 
-    private Set<Real> getRange() {
-        Set<Real> range = new HashSet<>(sampleSpace.samplePoints().size());
-        for (Outcome<T> outcome : sampleSpace.samplePoints()) {
-            range.add(this.function.apply(outcome));
-        }
-        return range;
+    default boolean doesntContain(T value) {
+        return !contains(value);
     }
 
-    Set<Real> range() {
-        return this.range;
+    default boolean contains(double value) {
+        return value >= lower().abs() && value <= upper().abs();
+    }
+
+    default boolean doesntContain(double value) {
+        return !contains(value);
     }
 }

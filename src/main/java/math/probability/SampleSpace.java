@@ -24,8 +24,11 @@
 
 package math.probability;
 
+import math.Real;
+
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiPredicate;
 
 public class SampleSpace<E> {
 
@@ -33,9 +36,35 @@ public class SampleSpace<E> {
 
     public SampleSpace(Set<Outcome<E>> samplePoints) {
         this.samplePoints = samplePoints;
+
     }
 
     public Set<Outcome<E>> samplePoints() {
         return new HashSet<>(this.samplePoints);
+    }
+
+    Event<E> defineEvent(RandomVariable<E> randomVariable, BiPredicate<Real, Real> predicate, Real x) {
+        Set<Outcome<E>> subset = new HashSet<>();
+        Set<Outcome<E>> samplePoints  = this.samplePoints();
+        for (Outcome<E> outcome : samplePoints) {
+            Real output = randomVariable.apply(outcome);
+            if (predicate.test(x, output)) {
+                subset.add(outcome);
+            }
+        }
+        return new Event<>(subset);
+    }
+
+    Event<E> defineEvent(RandomVariable<E> randomVariable, BiPredicate<Real, Real> first,
+            BiPredicate<Real, Real> second, Real a, Real b) {
+        Set<Outcome<E>> subset = new HashSet<>();
+        Set<Outcome<E>> samplePoints  = this.samplePoints();
+        for (Outcome<E> outcome : samplePoints) {
+            Real output = randomVariable.apply(outcome);
+            if (first.test(a, output) && second.test(b, output)) {
+                subset.add(outcome);
+            }
+        }
+        return new Event<>(subset);
     }
 }

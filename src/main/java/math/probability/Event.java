@@ -33,7 +33,7 @@ public class Event<E> {
 
     private final Set<Outcome<E>> elementaryOutcomes;
 
-    public Event(Set<Outcome<E>> elementaryOutcomes) {
+    Event(Set<Outcome<E>> elementaryOutcomes) {
         this.elementaryOutcomes = elementaryOutcomes;
     }
 
@@ -45,8 +45,14 @@ public class Event<E> {
         return this.elementaryOutcomes.toString() + "with total probability " + this.probability();
     }
 
-    public Event<E> intersection(Event<E> otherEvent) {
+    private Event<E> intersection(Event<E> otherEvent) {
         return new Event<>(Sets.intersection(this.elementaryOutcomes, otherEvent.elementaryOutcomes));
+    }
+
+    public Real probabilityGiven(Event<E> givenEvent) {
+        Event<E> intersection = this.intersection(givenEvent);
+        Real givenEventProbability = givenEvent.probability();
+        return intersection.probability().dividedBy(givenEventProbability);
     }
 
     private Real addElementaryProbabilities(Set<Outcome<E>> elementaryOutcomes) {

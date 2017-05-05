@@ -24,41 +24,6 @@
 
 package math.probability;
 
-import math.Real;
+public class ContinuousSampleSpace {
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Function;
-import org.junit.Test;
-
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-
-public class RandomVariableSpec {
-
-    enum Coin {
-        HEAD(1),
-        TAIL(0);
-
-        int value;
-        Coin(int value) {
-            this.value = value;
-        }
-    }
-
-    @Test
-    public void whenRandomVariableCreatedThenRangeCorrect() {
-        Outcome<Coin> heads = new Outcome<>(Coin.HEAD, Real.from(0.5));
-        Outcome<Coin> tails = new Outcome<>(Coin.TAIL, Real.from(0.5));
-        Set<Outcome<Coin>> outcomes = new HashSet<>(2);
-        outcomes.add(heads);
-        outcomes.add(tails);
-        SampleSpace<Coin> sampleSpace = new SampleSpace<>(outcomes);
-        Function<Outcome<Coin>, Real> function = (Outcome<Coin> outcome) -> Real.from(outcome.samplePoint().value);
-        RandomVariable<Coin> X = new RandomVariable<>(function, sampleSpace);
-        Set<Real> expectedRange = new HashSet<>(2);
-        expectedRange.add(X.apply(heads));
-        expectedRange.add(X.apply(tails));
-        assertThat(X.range(), is(expectedRange));
-    }
 }

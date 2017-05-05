@@ -23,7 +23,7 @@
  */
 package optim;
 
-import math.Real;
+import math.RealInterval;
 import math.function.AbstractFunction;
 import math.function.Function;
 import math.function.SlopeFunction;
@@ -102,7 +102,7 @@ final class StrongWolfeLineSearch {
     if (psiAlphaT <= tolerance  && ((abs(dPsiAlphaT + c1 *slope0) - c2 * abs(slope0)) < tolerance)) {
       return alphaT;
     }
-    Real.Interval initialInterval = getInitialInterval();
+    RealInterval initialInterval = getInitialInterval();
     if (initialInterval.endpointsEqual()) {
       return initialInterval.lowerDbl();
     }
@@ -163,12 +163,12 @@ final class StrongWolfeLineSearch {
       this.alphaUpper = alphaK;
       this.psiAlphaUpper = psiAlphaK;
       this.dPsiAlphaUpper = dPsiAlphaK;
-      //return new Real.Interval(alphaLower, alphaK);
+      //return new Real.RealInterval(alphaLower, alphaK);
     } else if (dPsiAlphaK * (alphaLower - alphaK) > 0) {
       this.alphaLower = alphaK;
       this.psiAlphaLower = psiAlphaK;
       this.dPsiAlphaLower = dPsiAlphaK;
-      //return new Real.Interval(alphaK, alphaUpper);
+      //return new Real.RealInterval(alphaK, alphaUpper);
     } else if (dPsiAlphaK * (alphaLower - alphaK) < 0) {
       this.alphaUpper = alphaLower;
       this.psiAlphaUpper = psiAlphaLower;
@@ -176,14 +176,14 @@ final class StrongWolfeLineSearch {
       this.alphaLower = alphaK;
       this.psiAlphaLower = psiAlphaK;
       this.dPsiAlphaLower = dPsiAlphaK;
-      //return new Real.Interval(alphaK, alphaLower);
+      //return new Real.RealInterval(alphaK, alphaLower);
     } else {
       this.alphaT = this.alphaLower = this.alphaUpper;
     }
   }
 
   // Return an interval containing at least one point satisfying the Strong Wolfe Conditions.
-  private Real.Interval getInitialInterval() {
+  private RealInterval getInitialInterval() {
     double priorAlphaLower;
     int k = 0;
     while (k < 1000) {
@@ -191,7 +191,7 @@ final class StrongWolfeLineSearch {
         this.alphaUpper = alphaT;
         this.psiAlphaUpper = psiAlphaT;
         this.dPsiAlphaUpper = dPsiAlphaT;
-        return new Real.Interval(alphaLower, alphaT);
+        return new RealInterval(alphaLower, alphaT);
       }
       if (dPsiAlphaT * (alphaLower - alphaT) > 0) {
         priorAlphaLower = alphaLower;
@@ -204,7 +204,7 @@ final class StrongWolfeLineSearch {
           dPsiAlphaT = dPsi.at(alphaT, psiAlphaT + f0 + c1 * slope0 * alphaT);
         }
         if (alphaT == alphaMax) {
-          return new Real.Interval(alphaMax, alphaMax);
+          return new RealInterval(alphaMax, alphaMax);
         }
       } else if (dPsiAlphaT * (alphaLower - alphaT) < 0) {
         this.alphaUpper = alphaLower;
@@ -213,9 +213,9 @@ final class StrongWolfeLineSearch {
         this.alphaLower = alphaT;
         this.psiAlphaLower = psiAlphaT;
         this.dPsiAlphaLower = dPsiAlphaT;
-        return new Real.Interval(alphaT, alphaLower);
+        return new RealInterval(alphaT, alphaLower);
       } else {
-        return new Real.Interval(alphaT, alphaT);
+        return new RealInterval(alphaT, alphaT);
       }
       k++;
     }
