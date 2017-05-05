@@ -24,6 +24,7 @@
 package math;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
 /**
  * A representation of a complex number. This class is immutable and thread-safe.
@@ -213,5 +214,10 @@ public final class Complex implements FieldElement<Complex> {
               .append("i");
         }
         return sb.toString();
+    }
+
+    @Override
+    public int compareTo(@NonNull Complex other) {
+        return Double.compare(this.abs(), other.abs());
     }
 }

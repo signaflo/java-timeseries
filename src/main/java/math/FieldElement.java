@@ -32,18 +32,7 @@ import lombok.NonNull;
  * @param <T> The type of field element.
  * @author Jacob Rachiele
  */
-public interface FieldElement<T> extends Comparable<FieldElement<T>> {
-
-    @Override
-    default int compareTo(@NonNull FieldElement<T> element) {
-        if (abs() < element.abs()) {
-            return -1;
-        }
-        if (abs() == element.abs()) {
-            return 0;
-        }
-        return 1;
-    }
+public interface FieldElement<T> extends Comparable<T> {
 
     /**
      * Add this element to the given element.
