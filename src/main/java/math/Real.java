@@ -24,6 +24,7 @@
 package math;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
 /**
  * A numerical approximation of a <a target="_blank" href=https://en.wikipedia.org/wiki/Real_number>
@@ -196,7 +197,7 @@ public final class Real implements FieldElement<Real> {
     }
 
     @Override
-    public int compareTo(Real other) {
+    public int compareTo(@NonNull Real other) {
         return Double.compare(this.value, other.value);
     }
 
@@ -234,8 +235,24 @@ public final class Real implements FieldElement<Real> {
             return this.upper;
         }
 
+        /**
+         * Test if the endpoints of this interval are equal. Note that this method tests for <em>exact</em>
+         * equality. To test for equality within a given tolerance, use {@link #endpointsEqual(double)}.
+         *
+         * @return true if the endpoints are equal and false otherwise.
+         */
         public boolean endpointsEqual() {
-            return Math.abs(this.lower.value - this.upper.value) < EPSILON;
+            return this.lowerDbl() == this.upperDbl();
+        }
+
+        /**
+         * Test if the endpoints of this interval are equal within the given tolerance level.
+         *
+         * @param epsilon the tolerance level.
+         * @return true if the endpoints are equal within the given tolerance and false otherwise.
+         */
+        public boolean endpointsEqual(double epsilon) {
+            return Math.abs(this.lower.value - this.upper.value) < epsilon;
         }
 
         public boolean contains(final double value) {

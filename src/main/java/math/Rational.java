@@ -68,11 +68,11 @@ public final class Rational implements FieldElement<Rational> {
     @Override
     public Rational sqrt() {
         double top = Math.sqrt(this.p);
-        if (Math.abs(top - (int)top) > Math.ulp(1.0) || !Double.isFinite(top)) {
+        if (Math.abs(top - (int)top) > 0.0 || !Double.isFinite(top)) {
             throw new IllegalStateException("The square root of the rational number is not rational.");
         }
         double bottom = Math.sqrt(this.q);
-        if (Math.abs(bottom - (int)bottom) > Math.ulp(1.0) || !Double.isFinite(bottom)) {
+        if (Math.abs(bottom - (int)bottom) > 0.0 || !Double.isFinite(bottom)) {
             throw new IllegalStateException("The square root of the rational number is not rational.");
         }
         return new Rational((int)top, (int)bottom);

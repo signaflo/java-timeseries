@@ -1,6 +1,8 @@
 package math;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -8,6 +10,44 @@ import static org.hamcrest.Matchers.*;
 public class ComplexSpec {
 
     private static final double EPSILON = Math.ulp(1.0);
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
+    @Test
+    public void whenDivisionByZeroThenIllegalArgumentException() {
+        Complex zero = Complex.zero();
+        Complex x = new Complex(3.0, 5.0);
+        exception.expect(IllegalArgumentException.class);
+        x.dividedBy(zero);
+    }
+
+    @Test
+    public void whenDivisionByIntZeroThenIllegalArgumentException() {
+        Complex x = new Complex(3.0, 5.0);
+        exception.expect(IllegalArgumentException.class);
+        int zero = 0;
+        x.dividedBy(zero);
+    }
+
+    @Test
+    public void whenAdditiveInverseThenSumIsZero() {
+        Complex x = new Complex(3.0, 5.0);
+        Complex y = x.additiveInverse();
+        assertThat(x.plus(y).abs(), is(0.0));
+    }
+
+    @Test
+    public void whenCompareToThenOrderingCorrect() {
+        Complex a = new Complex(3.0, 5.0);
+        Complex b = new Complex(3.0, -4.0);
+        assertThat(a.compareTo(b), is(greaterThan(0)));
+        assertThat(b.compareTo(a), is(lessThan(0)));
+        Complex c = new Complex(3.0, 5.0);
+        assertThat(a.compareTo(c), is(0));
+        exception.expect(NullPointerException.class);
+        a.compareTo(null);
+    }
 
     @Test
     public void whenComplexNumberCreatedModulusCorrect() {

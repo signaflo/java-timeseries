@@ -24,7 +24,9 @@
 
 package math;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +39,87 @@ public class RationalSpec {
     Rational r1 = Rational.from(3, 4);
     Rational r2 = Rational.from(7, 9);
     Rational r3 = Rational.from(4);
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
+    @Test
+    public void whenQIsZeroThenIllegalArgument() {
+        exception.expect(IllegalArgumentException.class);
+        Rational.from(2, 0);
+    }
+
+    @Test
+    public void whenDivisionByZeroThenArithmeticException() {
+        exception.expect(ArithmeticException.class);
+        r1.dividedBy(0);
+    }
+
+    @Test
+    public void whenDivisionByIntThenResultCorrect() {
+        Rational expected = Rational.from(3, 16);
+        assertThat(r1.dividedBy(4), is(expected));
+        assertThat(r1.dividedBy(r3), is(expected));
+    }
+
+    @Test
+    public void whenDivisionByRationalThenResultCorrect() {
+        Rational expected = Rational.from(27, 28);
+        assertThat(r1.dividedBy(r2), is(expected));
+    }
+
+    @Test
+    public void whenComparedThenOrderCorrect() {
+        assertThat(r1.compareTo(r2), is(lessThan(0)));
+        assertThat(r2.compareTo(r1), is(greaterThan(0)));
+        r3 = Rational.from(3, 4);
+        assertThat(r1.compareTo(r3), is(0));
+        r3 = Rational.from(-3, 4);
+        assertThat(r1.compareTo(r3), is(greaterThan(0)));
+        assertThat(r3.compareTo(r1), is(lessThan(0)));
+        exception.expect(NullPointerException.class);
+        r1.compareTo(null);
+    }
+
+    @Test
+    public void whenConjugateThenSelf() {
+        assertThat(r1.conjugate(), is(r1));
+    }
+
+    @Test
+    public void whenMinusThenResultCorrect() {
+        assertThat(r2.minus(r1), is(Rational.from(1, 36)));
+    }
+
+    @Test
+    public void whenTimesThenResultCorrect() {
+        assertThat(r2.times(r1), is(Rational.from(7, 12)));
+    }
+
+    @Test
+    public void whenSqrtTopNotRationalThenIllegalState() {
+        exception.expect(IllegalStateException.class);
+        r1.sqrt();
+    }
+
+    @Test
+    public void whenSqrtBottomNotRationalThenIllegalState() {
+        r1 = Rational.from(4, 3);
+        exception.expect(IllegalStateException.class);
+        r1.sqrt();
+    }
+
+    @Test
+    public void whenSqrtThenResultCorrect() {
+        r1 = Rational.from(9, 16);
+        assertThat(r1.sqrt(), is(Rational.from(3, 4)));
+    }
+
+    @Test
+    public void whenAbsThenResultCorrect() {
+        r2 = Rational.from(-3, 4);
+        assertThat(r2.abs(), is(3.0/4.0));
+    }
 
     @Test
     public void whenAdditiveInverseThenSumIsZero() {

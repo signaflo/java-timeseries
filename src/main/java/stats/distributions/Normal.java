@@ -23,17 +23,18 @@
  */
 package stats.distributions;
 
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import smile.stat.distribution.GaussianDistribution;
 
 /**
  * A Normal, or Gaussian, probability distribution.
  */
-@EqualsAndHashCode @ToString
+@ToString
 public final class Normal implements Distribution {
 
     private final smile.stat.distribution.Distribution dist;
+    private final double mean;
+    private final double stdev;
 
     /**
      * Create a new Normal distribution with the given mean and standard deviation.
@@ -43,6 +44,8 @@ public final class Normal implements Distribution {
      */
     public Normal(final double mean, final double stdev) {
         this.dist = new GaussianDistribution(mean, stdev);
+        this.mean = mean;
+        this.stdev = stdev;
     }
 
     /**
@@ -62,4 +65,27 @@ public final class Normal implements Distribution {
         return this.dist.quantile(prob);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Normal normal = (Normal) o;
+
+        if (Double.compare(normal.mean, mean) != 0) return false;
+        if (Double.compare(normal.stdev, stdev) != 0) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(mean);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(stdev);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }

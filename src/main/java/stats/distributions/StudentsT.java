@@ -23,17 +23,17 @@
  */
 package stats.distributions;
 
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import smile.stat.distribution.TDistribution;
 
 /**
  * A Student's t probability distribution.
  */
-@EqualsAndHashCode @ToString
+@ToString
 public final class StudentsT implements Distribution {
 
     private final TDistribution dist;
+    private final int df;
 
     /**
      * Create a new Student's t distribution with the given degrees of freedom.
@@ -42,6 +42,7 @@ public final class StudentsT implements Distribution {
      */
     public StudentsT(final int df) {
         this.dist = new TDistribution(df);
+        this.df = df;
     }
 
     @Override
@@ -54,4 +55,20 @@ public final class StudentsT implements Distribution {
         return this.dist.quantile(prob);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        StudentsT studentsT = (StudentsT) o;
+
+        if (df != studentsT.df) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return df;
+    }
 }
