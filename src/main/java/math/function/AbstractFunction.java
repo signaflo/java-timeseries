@@ -27,43 +27,43 @@ import optim.NumericalDerivatives;
 
 /**
  * A partial implementation of a scalar-valued function of one variable.
- *
  */
 public abstract class AbstractFunction implements Function {
 
-  protected int functionEvaluations = 0;
-  protected int slopeEvaluations = 0;
-  
-  /**
-   * Compute and the return the slope at the given point.
-   * @param point an element of the function's domain.
-   * @return the slope of the function at the given point.
-   */
-  public double slopeAt(final double point) {
-    slopeEvaluations++;
-    return NumericalDerivatives.centralDifferenceApproximation(this, point, 1E-3);
-  }
+    protected int functionEvaluations = 0;
+    protected int slopeEvaluations = 0;
 
-  public double slopeAt(final double point, final double functionValue) {
-    slopeEvaluations++;
-    return NumericalDerivatives.forwardDifferenceApproximation(this, point, 1E-6, functionValue);
-  }
-  
-  /**
-   * The number of times this function has been evaluated.
-   *
-   * @return the number of times this function has been evaluated.
-   */
-  public int functionEvaluations() {
-    return this.functionEvaluations;
-  }
-  
-  /**
-   * The number of times the slope has been computed.
-   *
-   * @return the number of times the slope has been computed.
-   */
-  public int slopeEvaluations() {
-    return this.slopeEvaluations;
-  }
+    /**
+     * Compute and the return the slope at the given point.
+     *
+     * @param point an element of the function's domain.
+     * @return the slope of the function at the given point.
+     */
+    public double slopeAt(final double point) {
+        slopeEvaluations++;
+        return NumericalDerivatives.centralDifferenceApproximation(this, point, 1E-3);
+    }
+
+    public double slopeAt(final double point, final double functionValue) {
+        slopeEvaluations++;
+        return NumericalDerivatives.forwardDifferenceApproximation(this, point, 1E-6, functionValue);
+    }
+
+    /**
+     * The number of times this function has been evaluated.
+     *
+     * @return the number of times this function has been evaluated.
+     */
+    public int functionEvaluations() {
+        return this.functionEvaluations;
+    }
+
+    /**
+     * The number of times the slope has been computed.
+     *
+     * @return the number of times the slope has been computed.
+     */
+    public int slopeEvaluations() {
+        return this.slopeEvaluations;
+    }
 }

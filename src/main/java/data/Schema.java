@@ -29,58 +29,58 @@ import java.util.List;
 
 final class Schema {
 
-  private final List<DataType> schema;
+    private final List<DataType> schema;
 
-  Schema(final List<DataType> schema) {
-    this.schema = schema;
-  }
+    Schema(final List<DataType> schema) {
+        this.schema = schema;
+    }
 
-  Schema(final int numColumns) {
-    this.schema = new ArrayList<>(numColumns);
-  }
+    Schema(final int numColumns) {
+        this.schema = new ArrayList<>(numColumns);
+    }
 
-  Schema() {
-    this.schema = new ArrayList<>();
-  }
+    Schema() {
+        this.schema = new ArrayList<>();
+    }
 
-  void add(DataType type) {
-    this.schema.add(type);
-  }
+    void add(DataType type) {
+        this.schema.add(type);
+    }
 
-  DataType remove(final int i) {
-    return this.schema.remove(i);
-  }
+    DataType remove(final int i) {
+        return this.schema.remove(i);
+    }
 
-  boolean remove(final DataType type) {
-    return this.schema.remove(type);
-  }
+    boolean remove(final DataType type) {
+        return this.schema.remove(type);
+    }
 
-  DataType get(final int i) {
-    return this.schema.get(i);
-  }
+    DataType get(final int i) {
+        return this.schema.get(i);
+    }
 
-  int size() {
-    return this.schema.size();
-  }
+    int size() {
+        return this.schema.size();
+    }
 
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-    Schema schema1 = (Schema) o;
+        Schema schema1 = (Schema) o;
 
-    return schema.equals(schema1.schema);
-  }
+        return schema.equals(schema1.schema);
+    }
 
-  @Override
-  public int hashCode() {
-    return schema.hashCode();
-  }
+    @Override
+    public int hashCode() {
+        return schema.hashCode();
+    }
 
-  @Override
-  public String toString() {
-    return schema.toString();
-  }
+    @Override
+    public String toString() {
+        return schema.toString();
+    }
 }

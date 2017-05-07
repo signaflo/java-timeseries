@@ -2,16 +2,15 @@ package data;
 
 /**
  * Specifies a transformation to be applied to a set of data.
- * @author Jacob Rachiele
  *
+ * @author Jacob Rachiele
  */
 enum Transformation {
-  /**
-   * The natural logarithm.
-   */
-  LOG,
-  /**
-   * The square root.
-   */
-  SQRT
+    /**
+     * The natural logarithm.
+     */
+    LOG, /**
+     * The square root.
+     */
+    SQRT
 }

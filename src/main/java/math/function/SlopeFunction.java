@@ -29,12 +29,12 @@ package math.function;
 @FunctionalInterface
 public interface SlopeFunction {
 
-  /**
-   * Compute the slope of the function at the given point using the given function value.
-   *
-   * @param point the point at which to evaluate the slope.
-   * @param functionValue the function value at the point.
-   * @return the slope of the function at the given point.
-   */
-  double at(double point, double functionValue);
+    /**
+     * Compute the slope of the function at the given point using the given function value.
+     *
+     * @param point         the point at which to evaluate the slope.
+     * @param functionValue the function value at the point.
+     * @return the slope of the function at the given point.
+     */
+    double at(double point, double functionValue);
 }

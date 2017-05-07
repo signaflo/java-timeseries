@@ -26,11 +26,11 @@ package optim;
 
 class ViolatedTheoremAssumptionsException extends RuntimeException {
 
-  ViolatedTheoremAssumptionsException(String message) {
-    super(message);
-  }
+    ViolatedTheoremAssumptionsException(String message) {
+        super(message);
+    }
 
-  ViolatedTheoremAssumptionsException() {
-    super("The theorem assumptions have been violated.");
-  }
+    ViolatedTheoremAssumptionsException() {
+        super("The theorem assumptions have been violated.");
+    }
 }

@@ -26,43 +26,43 @@ package math.function;
 /**
  * A thin wrapper for a {@link Function Function}. Pass a lambda expression representing the function to the constructor
  * to quickly obtain a concrete {@link AbstractFunction} instead of writing a new class that extends AbstractFunction.
+ *
  * @author Jacob Rachiele
  */
 public class GeneralFunction extends AbstractFunction {
 
-  private final Function f;
-  private Function df;
+    private final Function f;
+    private Function df;
 
-  public GeneralFunction(final Function f) {
-    this.f = f;
-  }
-
-  public GeneralFunction(final Function f, final Function df) {
-    this.f = f;
-    this.df = df;
-  }
-
-  @Override
-  public double at(double point) {
-    functionEvaluations++;
-    return f.at(point);
-  }
-
-  @Override
-  public double slopeAt(double point) {
-    if (isSet(df)) {
-      return df.at(point);
+    public GeneralFunction(final Function f) {
+        this.f = f;
     }
-    else {
-      return super.slopeAt(point);
+
+    public GeneralFunction(final Function f, final Function df) {
+        this.f = f;
+        this.df = df;
     }
-  }
 
-  public void setDf(final Function df) {
-    this.df = df;
-  }
+    @Override
+    public double at(double point) {
+        functionEvaluations++;
+        return f.at(point);
+    }
 
-  private boolean isSet(Function f) {
-    return f != null;
-  }
+    @Override
+    public double slopeAt(double point) {
+        if (isSet(df)) {
+            return df.at(point);
+        } else {
+            return super.slopeAt(point);
+        }
+    }
+
+    public void setDf(final Function df) {
+        this.df = df;
+    }
+
+    private boolean isSet(Function f) {
+        return f != null;
+    }
 }

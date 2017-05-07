@@ -27,23 +27,23 @@ package data;
  * An exception thrown when at attempt is made to treat as a Double an object that is not one.
  *
  * @author Jacob Rachiele
- * Date: Dec 09 2016
- *
+ *         Date: Dec 09 2016
  */
 class NotADoubleException extends RuntimeException {
 
-  /**
-   * Create a new exception with the default message.
-   */
-  NotADoubleException() {
-    this("An attempt was made to treat a non-Double object as a Double.");
-  }
+    /**
+     * Create a new exception with the default message.
+     */
+    NotADoubleException() {
+        this("An attempt was made to treat a non-Double object as a Double.");
+    }
 
-  /**
-   * Create a new exception with the given message.
-   * @param message the message to use to inform the client why the exception was created.
-   */
-  NotADoubleException(String message) {
-    super(message);
-  }
+    /**
+     * Create a new exception with the given message.
+     *
+     * @param message the message to use to inform the client why the exception was created.
+     */
+    NotADoubleException(String message) {
+        super(message);
+    }
 }

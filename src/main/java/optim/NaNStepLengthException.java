@@ -26,9 +26,9 @@ package optim;
 /**
  * An exception for NaN step lengths.
  */
-class NaNStepLengthException extends ArithmeticException{
+class NaNStepLengthException extends ArithmeticException {
 
-  NaNStepLengthException(String message) {
-    super(message);
-  }
+    NaNStepLengthException(String message) {
+        super(message);
+    }
 }
