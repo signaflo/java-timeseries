@@ -1,11 +1,28 @@
 package timeseries;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class TimePeriodSpec {
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
+    @Test
+    public void whenZeroUnitLengthThenIllegalArgument() {
+        exception.expect(IllegalArgumentException.class);
+        new TimePeriod(TimeUnit.DAY, 0);
+    }
+
+    @Test
+    public void whenNegativeUnitLengthThenIllegalArgument() {
+        exception.expect(IllegalArgumentException.class);
+        new TimePeriod(TimeUnit.DAY, -1);
+    }
 
     @Test
     public final void whenDayTotalSecondsComputedThenResultCorrect() {
@@ -70,6 +87,13 @@ public class TimePeriodSpec {
     }
 
     @Test
+    public void whenHalfYearThenTwoInOneYear() {
+        TimePeriod halfYear = TimePeriod.halfYear();
+        TimePeriod oneYear = TimePeriod.oneYear();
+        assertThat(halfYear.frequencyPer(oneYear), is(2.0));
+    }
+
+    @Test
     public void whenOneMonthThenTwelveInOneYear() {
         TimePeriod oneMonth = TimePeriod.oneMonth();
         TimePeriod oneYear = TimePeriod.oneYear();
@@ -130,5 +154,21 @@ public class TimePeriodSpec {
         TimePeriod triAnnual = TimePeriod.triAnnual();
         TimePeriod oneYear = TimePeriod.oneYear();
         assertThat(triAnnual.frequencyPer(oneYear), is(3.0));
+    }
+
+    @Test
+    public void testEqualsAndHashCode() {
+        TimePeriod oneYear = TimePeriod.oneYear();
+        TimePeriod halfYear = TimePeriod.halfYear();
+        TimePeriod oneQuarter = TimePeriod.oneQuarter();
+        TimePeriod nullPeriod = null;
+        TimePeriod oneYearAgain = TimePeriod.oneYear();
+        String nonTimePeriod = "";
+        assertThat(oneYear.hashCode(), is(oneYearAgain.hashCode()));
+        assertThat(oneYear, is(oneYearAgain));
+        assertThat(oneYear, is(not(halfYear)));
+        assertThat(oneQuarter, is(not(oneYear)));
+        assertThat(oneYear, is(not(nullPeriod)));
+        assertThat(oneYear, is(not(nonTimePeriod)));
     }
 }
