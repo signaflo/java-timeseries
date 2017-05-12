@@ -45,7 +45,8 @@ public class Experiment<E> {
     }
 
     private void ensureIsSubset(Set<Outcome<E>> outcomes) {
-        if (!sampleSpace.samplePoints().containsAll(outcomes)) {
+        Set<Outcome<E>> samplePoints = sampleSpace.samplePoints();
+        if (!samplePoints.containsAll(outcomes)) {
             String message = "All event outcomes must belong to the sample space.";
             IllegalArgumentException e = new IllegalArgumentException(message);
             logger.error(message, e);

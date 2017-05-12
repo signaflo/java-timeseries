@@ -48,7 +48,7 @@ public final class CubicFunction extends AbstractFunction {
      * @param d the constant term of the polynomial.
      */
     public CubicFunction(final Real a, final Real b, final Real c, final Real d) {
-        if (a.value() == 0) {
+        if (a.asDouble() == 0) {
             throw new IllegalArgumentException("The first coefficient, a, cannot be zero.");
         }
         this.a = a;
@@ -120,17 +120,17 @@ public final class CubicFunction extends AbstractFunction {
      * @return the value of this function at the given point.
      */
     public Real at(final Real point) {
-        return Real.from(this.at(point.value()));
+        return Real.from(this.at(point.asDouble()));
     }
 
     @Override
     public double at(double x) {
-        return x * x * x * a.value() + x * x * b.value() + x * c.value() + d.value();
+        return x * x * x * a.asDouble() + x * x * b.asDouble() + x * c.asDouble() + d.asDouble();
     }
 
     @Override
     public double slopeAt(final double x) {
-        return 3 * x * x * a.value() + 2 * x * b.value() + c.value();
+        return 3 * x * x * a.asDouble() + 2 * x * b.asDouble() + c.asDouble();
     }
 
     /**
@@ -148,13 +148,13 @@ public final class CubicFunction extends AbstractFunction {
      * @return the coefficients of the polynomial as primitives.
      */
     public double[] coefficientsDbl() {
-        return new double[]{a.value(), b.value(), c.value(), d.value()};
+        return new double[]{a.asDouble(), b.asDouble(), c.asDouble(), d.asDouble()};
     }
 
     final Real[] criticalPoints() {
         Complex[] zeros = this.derivative.zeros();
         if (zeros[0].minus(zeros[1]).abs() < Math.ulp(1.0)) {
-            return new Real[]{Real.from(zeros[0].doubleValue())};
+            return new Real[]{Real.from(zeros[0].real())};
         } else if (allReal(zeros)) {
             return toReal(zeros);
         } else {
@@ -175,7 +175,7 @@ public final class CubicFunction extends AbstractFunction {
             throw new RuntimeException("This cubic function " + this.toString() + " has no local minimum.");
         }
         Real[] extremePoints = localExtremePoints();
-        if ((extremePoints[0].value() * a.value()) > (b.value() / -3.0)) {
+        if ((extremePoints[0].asDouble() * a.asDouble()) > (b.asDouble() / -3.0)) {
             return extremePoints[0];
         }
         return extremePoints[1];
@@ -187,7 +187,7 @@ public final class CubicFunction extends AbstractFunction {
             throw new RuntimeException("This cubic function " + this.toString() + " has no local maximum.");
         }
         Real[] extremePoints = localExtremePoints();
-        if ((extremePoints[0].value() * a.value()) < (b.value() / -3.0)) {
+        if ((extremePoints[0].asDouble() * a.asDouble()) < (b.asDouble() / -3.0)) {
             return extremePoints[0];
         }
         return extremePoints[1];
@@ -249,20 +249,20 @@ public final class CubicFunction extends AbstractFunction {
     private Real[] toReal(final Complex[] numbers) {
         Real[] reals = new Real[numbers.length];
         for (int i = 0; i < numbers.length; i++) {
-            reals[i] = Real.from(numbers[i].doubleValue());
+            reals[i] = Real.from(numbers[i].real());
         }
         return reals;
     }
 
     private double computeDiscriminant() {
-        return b.value() * b.value() - 3 * a.value() * c.value();
+        return b.asDouble() * b.asDouble() - 3 * a.asDouble() * c.asDouble();
     }
 
     private Real[] evaluate(final Real[] points) {
         Real[] values = new Real[points.length];
         for (int i = 0; i < points.length; i++) {
-            double x = points[i].value();
-            values[i] = Real.from(a.value() * x * x * x + b.value() * x * x + c.value() * x + d.value());
+            double x = points[i].asDouble();
+            values[i] = Real.from(a.asDouble() * x * x * x + b.asDouble() * x * x + c.asDouble() * x + d.asDouble());
         }
         return values;
     }
@@ -277,7 +277,7 @@ public final class CubicFunction extends AbstractFunction {
 
     @Override
     public String toString() {
-        return "f(x) = " + a.value() + "x^3 + " + b.value() + "x^2 + " + c.value() + "x + " + d.value();
+        return "f(x) = " + a.asDouble() + "x^3 + " + b.asDouble() + "x^2 + " + c.asDouble() + "x + " + d.asDouble();
     }
 
 }

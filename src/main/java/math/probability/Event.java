@@ -27,6 +27,7 @@ package math.probability;
 import com.google.common.collect.Sets;
 import math.Real;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Event<E> {
@@ -34,7 +35,7 @@ public class Event<E> {
     private final Set<Outcome<E>> elementaryOutcomes;
 
     Event(Set<Outcome<E>> elementaryOutcomes) {
-        this.elementaryOutcomes = elementaryOutcomes;
+        this.elementaryOutcomes = new HashSet<>(elementaryOutcomes);
     }
 
     public Real probability() {

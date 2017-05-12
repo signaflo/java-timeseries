@@ -29,27 +29,33 @@ package math;
  */
 public final class RealInterval implements Interval<Real> {
 
-    private static final double EPSILON = Math.ulp(1.0);
-
     private final Real lower;
     private final Real upper;
 
     RealInterval(final Real lower, final Real upper) {
+        if (lower.asDouble() > upper.asDouble()) {
+            throw new IllegalArgumentException("The value of lower must be less than or equal to the value of " +
+                                               "upper, but lower was " + lower + " and upper was " + upper);
+        }
         this.lower = lower;
         this.upper = upper;
     }
 
     public RealInterval(final double lower, final double upper) {
+        if (lower > upper) {
+            throw new IllegalArgumentException("The value of lower must be less than or equal to the value of " +
+                                               "upper, but lower was " + lower + " and upper was " + upper);
+        }
         this.lower = Real.from(lower);
         this.upper = Real.from(upper);
     }
 
     public double lowerDbl() {
-        return this.lower.value();
+        return this.lower.asDouble();
     }
 
     public double upperDbl() {
-        return this.upper.value();
+        return this.upper.asDouble();
     }
 
     @Override
@@ -60,6 +66,21 @@ public final class RealInterval implements Interval<Real> {
     @Override
     public Real upper() {
         return this.upper;
+    }
+
+    @Override
+    public boolean containsFieldElement(FieldElement f) {
+        double d;
+        if (f instanceof Complex) {
+            if (((Complex) f).isReal()) {
+                d = ((Complex)f).real();
+            } else {
+                return false;
+            }
+        } else {
+            d = f.asDouble();
+        }
+        return (d >= lower().asDouble()) && (d <= upper().asDouble());
     }
 
     @Override
@@ -82,6 +103,6 @@ public final class RealInterval implements Interval<Real> {
 
     @Override
     public String toString() {
-        return "(" + Double.toString(this.lower.value()) + ", " + Double.toString(this.upper.value()) + ")";
+        return "(" + Double.toString(this.lower.asDouble()) + ", " + Double.toString(this.upper.asDouble()) + ")";
     }
 }

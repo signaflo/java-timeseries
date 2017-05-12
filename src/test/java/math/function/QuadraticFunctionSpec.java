@@ -61,9 +61,9 @@ public class QuadraticFunctionSpec {
 
   @Test
   public void givenQuadraticFunctionCoefficientsReturned() {
-    assertThat(function.a().value(), is(1.0));
-    assertThat(function.b().value(), is(-5.0));
-    assertThat(function.c().value(), is(6.0));
+    assertThat(function.a().asDouble(), is(1.0));
+    assertThat(function.b().asDouble(), is(-5.0));
+    assertThat(function.c().asDouble(), is(6.0));
     assertThat(function.coefficients(), is(new Real[] {Real.from(1.0), Real.from(-5.0), Real.from(6.0)}));
   }
 

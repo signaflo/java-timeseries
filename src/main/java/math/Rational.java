@@ -90,7 +90,7 @@ public final class Rational implements FieldElement<Rational> {
 
     @Override
     public double abs() {
-        return Math.abs((double)p / q);
+        return Math.abs(this.asDouble());
     }
 
     @Override
@@ -103,6 +103,11 @@ public final class Rational implements FieldElement<Rational> {
     public Rational dividedBy(int value) {
         checkNonZero(value);
         return new Rational(this.p, this.q * value);
+    }
+
+    @Override
+    public double asDouble() {
+        return ((double)p / q);
     }
 
     private void checkNonZero(int value) {
@@ -157,8 +162,8 @@ public final class Rational implements FieldElement<Rational> {
 
     @Override
     public int compareTo(@NonNull Rational other) {
-        double thisVal = Real.from((double)this.p / this.q).value();
-        double otherVal = Real.from((double)other.p / other.q).value();
+        double thisVal = Real.from((double)this.p / this.q).asDouble();
+        double otherVal = Real.from((double)other.p / other.q).asDouble();
         return Double.compare(thisVal, otherVal);
     }
 

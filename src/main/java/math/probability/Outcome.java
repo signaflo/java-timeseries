@@ -37,7 +37,7 @@ public class Outcome<K> {
     private final Real probability;
 
     Outcome(K samplePoint, Real probability) {
-        validateProbability(probability.value());
+        validateProbability(probability.asDouble());
         this.samplePoint = samplePoint;
         this.probability = probability;
     }
@@ -60,6 +60,6 @@ public class Outcome<K> {
     @Override
     public String toString() {
         return samplePoint.toString() + " with probability " +
-               Double.toString(this.probability.value());
+               Double.toString(this.probability.asDouble());
     }
 }

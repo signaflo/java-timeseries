@@ -34,8 +34,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 public final class Real implements FieldElement<Real> {
 
-    private static final double EPSILON = Math.ulp(1.0);
-
     private final double value;
 
     /**
@@ -186,7 +184,8 @@ public final class Real implements FieldElement<Real> {
         return Math.abs(this.value);
     }
 
-    public double value() {
+    @Override
+    public double asDouble() {
         return this.value;
     }
 

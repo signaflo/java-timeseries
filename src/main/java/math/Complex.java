@@ -67,7 +67,7 @@ public final class Complex implements FieldElement<Complex> {
     }
 
     public static Complex from(Real real) {
-        return new Complex(real.value());
+        return new Complex(real.asDouble());
     }
 
     public static Complex zero() {
@@ -170,7 +170,7 @@ public final class Complex implements FieldElement<Complex> {
      *
      * @return the real part of this complex number.
      */
-    public final double doubleValue() {
+    public final double real() {
         return this.real;
     }
 
@@ -190,6 +190,17 @@ public final class Complex implements FieldElement<Complex> {
      */
     public final boolean isReal() {
         return Math.abs(this.im) < EPSILON;
+    }
+
+    /**
+     * Unsupported operation for complex numbers.
+     *
+     * @throws UnsupportedOperationException always.
+     */
+    @Override
+    @Deprecated
+    public double asDouble() {
+        throw new UnsupportedOperationException("Complex numbers cannot be converted to doubles.");
     }
 
     @Override

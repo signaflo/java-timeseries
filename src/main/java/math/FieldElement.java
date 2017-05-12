@@ -23,8 +23,6 @@
  */
 package math;
 
-import lombok.NonNull;
-
 /**
  * Represents an element of a mathematical <a target="_blank"
  * href="https://en.wikipedia.org/wiki/Field_(mathematics)">field</a>.
@@ -86,6 +84,14 @@ public interface FieldElement<T> extends Comparable<T> {
      * @return the absolute value of this element.
      */
     double abs();
+
+    /**
+     * Convert this field element to a double if possible. Otherwise, throw an unsupported operation exception.
+     *
+     * @return this field element as a double.
+     * @throws UnsupportedOperationException if the field element cannot be converted.
+     */
+    double asDouble();
 
     /**
      *

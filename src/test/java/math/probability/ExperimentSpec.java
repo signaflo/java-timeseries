@@ -57,7 +57,7 @@ public class ExperimentSpec {
         Event<Integer> rollATwo = dieToss.defineEvent(Collections.singleton(
                 new Outcome<>(2, Real.from(1.0/6.0))));
         Real conditionalProbability = rollATwo.probabilityGiven(evenResult);
-        assertThat(conditionalProbability.value(), is(closeTo(1.0/3.0, 1E-15)));
+        assertThat(conditionalProbability.asDouble(), is(closeTo(1.0 / 3.0, 1E-15)));
     }
 
     @Test
@@ -69,7 +69,7 @@ public class ExperimentSpec {
         Experiment<TwoTuple<Integer>> dieToss = new Experiment<>(sampleSpace);
         Event<TwoTuple<Integer>> sumIsSeven = dieToss.defineEvent(sumEqualsSeven);
         Event<TwoTuple<Integer>> firstTossFour = dieToss.defineEvent(getFirstTossFour(outcomes));
-        assertThat(sumIsSeven.probabilityGiven(firstTossFour).value(), is(closeTo(1.0/6.0, 1E-15)));
+        assertThat(sumIsSeven.probabilityGiven(firstTossFour).asDouble(), is(closeTo(1.0 / 6.0, 1E-15)));
 
     }
 

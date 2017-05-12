@@ -42,11 +42,9 @@ public interface Interval<T extends FieldElement<T>> {
         return !contains(value);
     }
 
-    default boolean contains(double value) {
-        return value >= lower().abs() && value <= upper().abs();
-    }
+    boolean containsFieldElement(FieldElement f);
 
-    default boolean doesntContain(double value) {
-        return !contains(value);
+    default boolean isSubset(Interval parent) {
+        return parent.containsFieldElement(this.lower()) && parent.containsFieldElement(this.upper());
     }
 }

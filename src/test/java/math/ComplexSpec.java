@@ -17,7 +17,7 @@ public class ComplexSpec {
     @Test
     public void whenNoArgConstructorThenComplexZero() {
         Complex shouldBeZero = new Complex();
-        assertThat(shouldBeZero.doubleValue(), is(0.0));
+        assertThat(shouldBeZero.real(), is(0.0));
         assertThat(shouldBeZero.im(), is(0.0));
     }
 
@@ -26,7 +26,7 @@ public class ComplexSpec {
         Complex c1 = new Complex(3, 5);
         Complex c2 = new Complex(2.4, 3.7);
         Complex sum = c1.plus(c2);
-        assertThat(sum.doubleValue(), is(equalTo(5.4)));
+        assertThat(sum.real(), is(equalTo(5.4)));
         assertThat(sum.im(), is(equalTo(8.7)));
     }
 
@@ -44,7 +44,7 @@ public class ComplexSpec {
         Complex c1 = new Complex(3, 5);
         Complex c2 = new Complex(2.4, 3.7);
         Complex product = c1.times(c2);
-        assertThat(product.doubleValue(), is(equalTo(-11.3)));
+        assertThat(product.real(), is(equalTo(-11.3)));
         assertThat(product.im(), is(equalTo(23.1)));
     }
 

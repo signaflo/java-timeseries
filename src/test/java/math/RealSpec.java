@@ -70,24 +70,24 @@ public class RealSpec {
 
     @Test
     public void whenRealIntervalContainsNumberThenTrue() {
-        Interval<Real> interval = new RealInterval(3.0, 10.0);
-        assertThat(interval.contains(9.99999999), is(true));
-        assertThat(interval.contains(10.0000001), is(false));
-        assertThat(interval.contains(2.9999999), is(false));
-        interval = new RealInterval(Real.from(10.0), Real.from(3.0));
-        assertThat(interval.contains(9.99999999), is(true));
-        assertThat(interval.contains(10.0000001), is(false));
-        assertThat(interval.contains(2.99999999), is(false));
+        Interval<Real> interval = new RealInterval(-10.0, -3.0);
+        assertThat(interval.contains(Real.from(-9.99999999)), is(true));
+        assertThat(interval.contains(Real.from(-10.0000001)), is(false));
+        assertThat(interval.contains(Real.from(-2.9999999)), is(false));
+        interval = new RealInterval(Real.from(3.0), Real.from(10.0));
+        assertThat(interval.contains(Real.from(9.99999999)), is(true));
+        assertThat(interval.contains(Real.from(10.0000001)), is(false));
+        assertThat(interval.contains(Real.from(2.99999999)), is(false));
     }
 
     @Test
     public void whenRealIntervalDoesntContainNumberThenFalse() {
         Interval<Real> interval = new RealInterval(3.0, 10.0);
-        assertThat(interval.doesntContain(9.99999999), is(false));
-        assertThat(interval.doesntContain(10.0000001), is(true));
-        interval = new RealInterval(Real.from(10.0), Real.from(3.0));
-        assertThat(interval.doesntContain(9.99999999), is(false));
-        assertThat(interval.doesntContain(10.0000001), is(true));
+        assertThat(interval.doesntContain(Real.from(9.99999999)), is(false));
+        assertThat(interval.doesntContain(Real.from(10.0000001)), is(true));
+        interval = new RealInterval(Real.from(3.0), Real.from(10.0));
+        assertThat(interval.doesntContain(Real.from(9.99999999)), is(false));
+        assertThat(interval.doesntContain(Real.from(10.0000001)), is(true));
     }
 
     @Test
@@ -104,7 +104,7 @@ public class RealSpec {
     @Test
     public void testIntervalEqualsAndHashCode() {
         Interval<Real> a = new RealInterval(3.0, 5.0);
-        Interval<Real> b = new RealInterval(5.0, 3.0);
+        Interval<Real> b = new RealInterval(-5.0, 3.0);
         Interval<Real> c = new RealInterval(3.0, 5.0);
         //noinspection ObjectEqualsNull
         assertThat(a.equals(null), is(false));
