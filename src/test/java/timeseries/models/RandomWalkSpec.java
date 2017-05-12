@@ -64,4 +64,19 @@ public class RandomWalkSpec {
         assertThat(forecast.lowerPredictionValues(), is(forecast.computeLowerPredictionBounds(7, 0.05)));
         assertThat(forecast.upperPredictionValues(), is(forecast.computeUpperPredictionBounds(7, 0.05)));
     }
+
+    @Test
+    public void testEqualsAndHashCode() {
+        RandomWalk rw1 = new RandomWalk(TestData.ausbeer());
+        RandomWalk rw2 = new RandomWalk(TestData.debitcards());
+        RandomWalk rw3 = new RandomWalk(TestData.ausbeer());
+        RandomWalk nullModel = null;
+        String aNonModel = "";
+        assertThat(rw1, is(rw1));
+        assertThat(rw1, is(rw3));
+        assertThat(rw1.hashCode(), is(rw3.hashCode()));
+        assertThat(rw1, is(not(rw2)));
+        assertThat(rw1, is(not(nullModel)));
+        assertThat(rw1, is(not(aNonModel)));
+    }
 }

@@ -7,13 +7,13 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import timeseries.TimeSeries;
 import timeseries.TimeUnit;
+import timeseries.Ts;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 
 public class MeanModelSpec {
@@ -115,6 +115,20 @@ public class MeanModelSpec {
         MeanForecast forecast = new MeanForecast(meanModel);
         exception.expect(IllegalArgumentException.class);
         forecast.computeUpperPredictionBounds(6, 1.05);
+    }
+
+    @Test
+    public void testEqualsAndHashCode() {
+        MeanModel model1 = new MeanModel(series);
+        MeanModel model2 = new MeanModel(TestData.debitcards());
+        MeanModel nullModel = null;
+        String aNonModel = "";
+        assertThat(meanModel, is(meanModel));
+        assertThat(meanModel, is(model1));
+        assertThat(meanModel.hashCode(), is(model1.hashCode()));
+        assertThat(model1, is(not(model2)));
+        assertThat(model2, is(not(nullModel)));
+        assertThat(model2, is(not(aNonModel)));
     }
 
 }

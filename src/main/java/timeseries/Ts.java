@@ -63,11 +63,7 @@ public final class Ts {
      * @return a new time series with the given series data, start year, and start month.
      */
     public static TimeSeries newMonthlySeries(final int startYear, final int startMonth, final double... series) {
-        final LocalDateTime localDateTime = LocalDateTime.of(startYear, startMonth, 1, 0, 0);
-        final OffsetDateTime startingInstant = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
-        final TimeUnit timeUnit = TimeUnit.MONTH;
-        final int periodLength = 1;
-        return new TimeSeries(new TimePeriod(timeUnit, periodLength), startingInstant, series);
+        return newMonthlySeries(startYear, startMonth, 1, series);
     }
 
     /**

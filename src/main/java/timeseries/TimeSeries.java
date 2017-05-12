@@ -225,7 +225,7 @@ public final class TimeSeries implements DataSet {
         final int period = (int) (this.timePeriod.frequencyPer(timePeriod));
         if (period == 0) {
             throw new IllegalArgumentException(
-                    "The given time period was of a smaller magnitude than the original time period." + " To " +
+                    "The given time period was of a smaller magnitude than the original time period. To " +
                             "aggregate a series, the time period argument must be of a larger magnitude than the " +
                             "original.");
         }
@@ -459,8 +459,7 @@ public final class TimeSeries implements DataSet {
     }
 
     /**
-     * Subtract the given series from this time series and return the result as a new time series. This is a vectorized
-     * operation.
+     * Subtract the given series from this time series and return the result as a new time series.
      *
      * @param otherSeries the series to subtract from this one.
      * @return The difference between this series and the given series.
@@ -469,21 +468,6 @@ public final class TimeSeries implements DataSet {
         final double[] subtracted = new double[this.series.length];
         for (int t = 0; t < subtracted.length; t++) {
             subtracted[t] = this.series[t] - otherSeries.series[t];
-        }
-        return new TimeSeries(this.timePeriod, observationTimes, subtracted);
-    }
-
-    /**
-     * Subtract the given series from this time series and return the result as a new time series. This is a vectorized
-     * operation.
-     *
-     * @param otherSeries the series to subtract from this one.
-     * @return The difference between this series and the given series.
-     */
-    public final TimeSeries minus(final double[] otherSeries) {
-        final double[] subtracted = new double[this.series.length];
-        for (int t = 0; t < subtracted.length; t++) {
-            subtracted[t] = this.series[t] - otherSeries[t];
         }
         return new TimeSeries(this.timePeriod, observationTimes, subtracted);
     }

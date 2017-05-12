@@ -1,5 +1,6 @@
 package timeseries;
 
+import com.sun.scenario.effect.Offset;
 import data.TestData;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,10 +20,38 @@ public class TimeSeriesSpec {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void whenBoxCoxTransformationWithOutOfRangeLambdaExceptionThrown() {
+    public void whenAggregateWithSmallerPeriodThenIllegalArgument() {
+        TimeSeries timeSeries = TestData.ausbeer();
         exception.expect(IllegalArgumentException.class);
+        timeSeries.aggregate(TimePeriod.oneMonth());
+    }
+
+    @Test
+    public void whenBoxCoxBackTransformLambdaTooBigThenIllegalArgument() {
         TimeSeries series = TestData.ausbeer();
+        exception.expect(IllegalArgumentException.class);
+        series.backTransform(2.5);
+    }
+
+    @Test
+    public void whenBoxCoxTransformationLambdaTooBigThenIllegalArgument() {
+        TimeSeries series = TestData.ausbeer();
+        exception.expect(IllegalArgumentException.class);
         series.transform(2.5);
+    }
+
+    @Test
+    public void whenBoxCoxBackTransformLambdaTooSmallThenIllegalArgument() {
+        TimeSeries series = TestData.ausbeer();
+        exception.expect(IllegalArgumentException.class);
+        series.backTransform(-1.5);
+    }
+
+    @Test
+    public void whenBoxCoxTransformationLambdaTooSmallThenIllegalArgument() {
+        TimeSeries series = TestData.ausbeer();
+        exception.expect(IllegalArgumentException.class);
+        series.transform(-1.5);
     }
 
     @Test
@@ -42,10 +71,44 @@ public class TimeSeriesSpec {
     }
 
     @Test
+    public void whenDifferencedNoArgThenDifferencedOnce() {
+        TimeSeries timeSeries = TestData.ausbeer();
+        assertThat(timeSeries.difference(), is(timeSeries.difference(1)));
+    }
+
+    @Test
+    public void whenStartTimeThenFirstObservationTime() {
+        TimeSeries timeSeries = Ts.newQuarterlySeries(1956, 1, TestData.ausbeerArray());
+        OffsetDateTime expected = OffsetDateTime.parse("1956-01-01T00:00:00Z");
+        assertThat(timeSeries.startTime(), is(expected));
+    }
+
+    @Test
+    public void whenDifferencedMoreThanOnceThenCorrectData() {
+        TimeSeries timeSeries = TestData.ausbeer();
+        TimeSeries diffedTwice = timeSeries.difference().difference();
+        assertThat(timeSeries.difference(1, 2), is(diffedTwice));
+    }
+
+    @Test
+    public void whenDataPointAccessedThenExpectedValueReturned() {
+        TimeSeries timeSeries = TestData.debitcards();
+        OffsetDateTime period = OffsetDateTime.parse("2000-01-01T00:00:00Z");
+        assertThat(timeSeries.at(period), is(timeSeries.at(0)));
+    }
+
+    @Test
     public void whenTimeSeriesMeanTakenThenResultCorrect() {
         double[] data = new double[]{3.0, 7.0, 5.0};
         TimeSeries series = new TimeSeries(OffsetDateTime.now(), data);
         assertThat(series.mean(), is(equalTo(5.0)));
+    }
+
+    @Test
+    public void whenAutoCovarianceNegativeLagThenIllegalArgument() {
+        TimeSeries series = TestData.ausbeer();
+        exception.expect(IllegalArgumentException.class);
+        series.autoCovarianceAtLag(-1);
     }
 
     @Test
@@ -135,5 +198,34 @@ public class TimeSeriesSpec {
         TimeSeries seriesOne = series.aggregateToYears();
         TimeSeries seriesTwo = series.aggregate(TimeUnit.YEAR);
         assertThat(seriesOne, is(equalTo(seriesTwo)));
+    }
+
+    @Test
+    public void whenFromThenCorrectSliceOfDataReturned() {
+        double[] ts = TestData.ausbeerArray();
+        TimeSeries series = new TimeSeries(TimePeriod.oneQuarter(), "1956-01-01T00:00:00", ts);
+        OffsetDateTime startSlice = OffsetDateTime.parse("1956-04-01T00:00:00Z");
+        OffsetDateTime endSlice = OffsetDateTime.parse("1957-01-01T00:00:00Z");
+        TimeSeries expected = series.timeSlice(2, 5);
+        assertThat(series.from(startSlice, endSlice), is(expected));
+        assertThat(series.from(1, 4), is(expected));
+    }
+
+    @Test
+    public void testHashCodeAndEquals() {
+        double[] ts = TestData.ausbeerArray();
+        TimeSeries series1 = Ts.newQuarterlySeries(1956, 1, ts);
+        TimeSeries series2 = Ts.newQuarterlySeries(1957, 2, ts);
+        TimeSeries series3 = TestData.elecSales();
+        TimeSeries series4 = Ts.newQuarterlySeries(1956, 1, ts);
+        TimeSeries nullSeries = null;
+        String aNonTimeSeries = "";
+        assertThat(series1, is(series1));
+        assertThat(series1, is(series4));
+        assertThat(series1.hashCode(), is(series4.hashCode()));
+        assertThat(series1, is(not(nullSeries)));
+        assertThat(series1, is(not(aNonTimeSeries)));
+        assertThat(series1, is(not(series2)));
+        assertThat(series2, is(not(series3)));
     }
 }
