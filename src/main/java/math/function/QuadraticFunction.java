@@ -45,7 +45,7 @@ public class QuadraticFunction extends AbstractFunction {
      * @param c the constant term of the polynomial.
      */
     public QuadraticFunction(final Real a, final Real b, final Real c) {
-        if (a.value() == 0) {
+        if (a.asDouble() == 0) {
             throw new IllegalArgumentException("The first coefficient, a, cannot be zero.");
         }
         this.a = a;
@@ -79,10 +79,10 @@ public class QuadraticFunction extends AbstractFunction {
         final Real bSquared = b.times(b);
         final Complex root1 = b.additiveInverse()
                                .plus(bSquared.minus(fourAC).complexSqrt())
-                               .dividedBy(a.times(2).value());
+                               .dividedBy(a.times(2).asDouble());
         final Complex root2 = b.additiveInverse()
                                .minus(bSquared.minus(fourAC).complexSqrt())
-                               .dividedBy(a.times(2).value());
+                               .dividedBy(a.times(2).asDouble());
         return new Complex[]{root1, root2};
     }
 
@@ -114,17 +114,17 @@ public class QuadraticFunction extends AbstractFunction {
     }
 
     public Real at(final Real point) {
-        return Real.from(this.at(point.value()));
+        return Real.from(this.at(point.asDouble()));
     }
 
     @Override
     public double at(final double x) {
-        return x * x * a.value() + x * b.value() + c.value();
+        return x * x * a.asDouble() + x * b.asDouble() + c.asDouble();
     }
 
     @Override
     public double slopeAt(final double x) {
-        return 2 * x * a.value() + b.value();
+        return 2 * x * a.asDouble() + b.asDouble();
     }
 
     /**
@@ -142,7 +142,7 @@ public class QuadraticFunction extends AbstractFunction {
      * @return the coefficients of the polynomial as primitives.
      */
     public double[] coefficientsDbl() {
-        return new double[]{a.value(), b.value(), c.value()};
+        return new double[]{a.asDouble(), b.asDouble(), c.asDouble()};
     }
 
     /**
@@ -151,7 +151,7 @@ public class QuadraticFunction extends AbstractFunction {
      * @return the point at which the localExtrema of this function occurs as a primitive.
      */
     public double extremePointDbl() {
-        return -b.value() / (2 * a.value());
+        return -b.asDouble() / (2 * a.asDouble());
     }
 
     /**
@@ -160,7 +160,7 @@ public class QuadraticFunction extends AbstractFunction {
      * @return the point at which the localExtrema of this function occurs.
      */
     public Real extremePoint() {
-        return Real.from(-b.value() / (2 * a.value()));
+        return Real.from(-b.asDouble() / (2 * a.asDouble()));
     }
 
     /**
@@ -170,7 +170,7 @@ public class QuadraticFunction extends AbstractFunction {
      */
     public double extremumDbl() {
         double x = extremePointDbl();
-        return a.value() * x * x + b.value() * x + c.value();
+        return a.asDouble() * x * x + b.asDouble() * x + c.asDouble();
     }
 
     /**
@@ -179,8 +179,8 @@ public class QuadraticFunction extends AbstractFunction {
      * @return the localExtrema of this function.
      */
     public Real extremum() {
-        double x = extremePoint().value();
-        return Real.from(a.value() * x * x + b.value() * x + c.value());
+        double x = extremePoint().asDouble();
+        return Real.from(a.asDouble() * x * x + b.asDouble() * x + c.asDouble());
     }
 
     /**
@@ -189,7 +189,7 @@ public class QuadraticFunction extends AbstractFunction {
      * @return true if this function has a minimum, false otherwise.
      */
     public boolean hasMinimum() {
-        return a.value() > 0.0;
+        return a.asDouble() > 0.0;
     }
 
     /**
@@ -198,7 +198,7 @@ public class QuadraticFunction extends AbstractFunction {
      * @return true if this function has a maximum, false otherwise.
      */
     public boolean hasMaximum() {
-        return a.value() < 0.0;
+        return a.asDouble() < 0.0;
     }
 
     @Override
@@ -223,6 +223,6 @@ public class QuadraticFunction extends AbstractFunction {
 
     @Override
     public String toString() {
-        return "f(x) = " + a.value() + "x^2 + " + b.value() + "x + " + c.value();
+        return "f(x) = " + a.asDouble() + "x^2 + " + b.asDouble() + "x + " + c.asDouble();
     }
 }

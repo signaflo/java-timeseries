@@ -67,7 +67,7 @@ public final class Complex implements FieldElement<Complex> {
     }
 
     public static Complex from(Real real) {
-        return new Complex(real.value());
+        return new Complex(real.asDouble());
     }
 
     public static Complex zero() {

@@ -35,8 +35,6 @@ import lombok.NonNull;
 @EqualsAndHashCode
 public final class Real implements FieldElement<Real> {
 
-    private static final double EPSILON = Math.ulp(1.0);
-
     private final double value;
 
     /**
@@ -187,7 +185,7 @@ public final class Real implements FieldElement<Real> {
         return Math.abs(this.value);
     }
 
-    public double value() {
+    public double asDouble() {
         return this.value;
     }
 
@@ -220,11 +218,11 @@ public final class Real implements FieldElement<Real> {
         }
 
         public double lowerDbl() {
-            return this.lower.value();
+            return this.lower.asDouble();
         }
 
         public double upperDbl() {
-            return this.upper.value();
+            return this.upper.asDouble();
         }
 
         public Real lower() {
@@ -286,7 +284,7 @@ public final class Real implements FieldElement<Real> {
 
         @Override
         public String toString() {
-            return "(" + Double.toString(this.lower.value()) + ", " + Double.toString(this.upper.value()) + ")";
+            return "(" + Double.toString(this.lower.asDouble()) + ", " + Double.toString(this.upper.asDouble()) + ")";
         }
     }
 }

@@ -112,6 +112,13 @@ public final class Rational implements FieldElement<Rational> {
     }
 
     @Override
+    public int compareTo(@NonNull Rational other) {
+        double thisVal = Real.from((double)this.p / this.q).asDouble();
+        double otherVal = Real.from((double)other.p / other.q).asDouble();
+        return Double.compare(thisVal, otherVal);
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Rational: ");
         if (this.p == 0) {
@@ -154,21 +161,4 @@ public final class Rational implements FieldElement<Rational> {
         int result = real.hashCode();
         return result * 31;
     }
-
-    @Override
-    public int compareTo(@NonNull Rational other) {
-        double thisVal = Real.from((double)this.p / this.q).value();
-        double otherVal = Real.from((double)other.p / other.q).value();
-        return Double.compare(thisVal, otherVal);
-    }
-
-//    Rational(String rational) {
-//        if (!isRational(rational)) {
-//            throw new IllegalArgumentException();
-//        }
-//    }
-//
-//    private boolean isRational(String rational) {
-//
-//    }
 }

@@ -75,12 +75,12 @@ public class RealSpec {
     @Test
     public void whenZeroConstructorThenZeroCreated() {
         a = Real.zero();
-        assertThat(a.value(), is(0.0));
+        assertThat(a.asDouble(), is(0.0));
     }
 
     @Test
     public void whenDividedByIntThenResultCorrect() {
-        assertThat(a.dividedBy(2).value(), is(1.5));
+        assertThat(a.dividedBy(2).asDouble(), is(1.5));
     }
 
     @Test

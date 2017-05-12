@@ -40,22 +40,22 @@ public class CubicFunctionSpec {
         Complex[] expected = new Complex[]{new Complex(-0.567520806326), new Complex(0.734187472992)};
         Real[] criticalPoints = f.criticalPoints();
         for (int i = 0; i < 2; i++) {
-            assertThat(criticalPoints[i].value(), is(closeTo(expected[i].doubleValue(), 1E-8)));
+            assertThat(criticalPoints[i].asDouble(), is(closeTo(expected[i].doubleValue(), 1E-8)));
         }
     }
 
     @Test
     public void whenLocalMinimumThenCorrectValue() {
         f = new CubicFunction(-4.0, 1.0, 5.0, 0.0);
-        assertThat(f.localMinimumPoint().value(), is(closeTo(-0.567520806326, 1E-8)));
-        assertThat(f.localMinimum().value(), is(closeTo(-1.78437606588, 1E-8)));
+        assertThat(f.localMinimumPoint().asDouble(), is(closeTo(-0.567520806326, 1E-8)));
+        assertThat(f.localMinimum().asDouble(), is(closeTo(-1.78437606588, 1E-8)));
     }
 
     @Test
     public void whenLocalMaximumThenCorrectValue() {
         f = new CubicFunction(-4.0, 1.0, 5.0, 0.0);
-        assertThat(f.localMaximumPoint().value(), is(closeTo(0.734187472992, 1E-8)));
-        assertThat(f.localMaximum().value(), is(closeTo(2.62696865847, 1E-8)));
+        assertThat(f.localMaximumPoint().asDouble(), is(closeTo(0.734187472992, 1E-8)));
+        assertThat(f.localMaximum().asDouble(), is(closeTo(2.62696865847, 1E-8)));
     }
 
     @Test
@@ -94,8 +94,8 @@ public class CubicFunctionSpec {
     @Test
     public void whenLocalExtremaThenValuesCorrect() {
         f = new CubicFunction(Real.from(-4.0), Real.from(1.0), Real.from(5.0), Real.from(0.0));
-        assertThat(f.localExtrema()[0].value(), is(closeTo(-1.78437606588, 1E-8)));
-        assertThat(f.localExtrema()[1].value(), is(closeTo(2.62696865847, 1E-8)));
+        assertThat(f.localExtrema()[0].asDouble(), is(closeTo(-1.78437606588, 1E-8)));
+        assertThat(f.localExtrema()[1].asDouble(), is(closeTo(2.62696865847, 1E-8)));
     }
 
     @Test
