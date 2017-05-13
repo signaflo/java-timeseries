@@ -19,7 +19,7 @@ Using
 <dependency>
     <groupId>com.github.jrachiele</groupId>
     <artifactId>java-timeseries</artifactId>
-    <version>0.2</version>
+    <version>0.2.1</version>
 </dependency>
 ```
 
