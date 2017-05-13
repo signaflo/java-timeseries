@@ -25,7 +25,7 @@ Using
 
 #### Gradle
 ```groovy
-compile 'com.github.jrachiele:java-timeseries:0.2'
+compile 'com.github.jrachiele:java-timeseries:0.2.1'
 ```
 
 Credits
