@@ -47,10 +47,11 @@ public final class Range {
      *
      * @param from the starting value of the range.
      * @param to   the ending value of the range, not included in the result.
+     * @param by   the increment amount.
      * @return a new range of doubles excluding the given <i>to</i> value.
      */
-    public static Range exclusiveRange(final int from, final int to) {
-        return new Range(from, to - 1, 1);
+    public static Range exclusiveRange(final double from, final double to, double by) {
+        return new Range(from, to - Math.signum(by) * by, by);
     }
 
     /**
@@ -58,10 +59,11 @@ public final class Range {
      *
      * @param from the starting value of the range.
      * @param to   the ending value of the range, included in the result.
+     * @param by   the increment amount.
      * @return a new range of doubles including the given <i>to</i> value.
      */
-    public static Range inclusiveRange(final int from, final int to) {
-        return new Range(from, to, 1);
+    public static Range inclusiveRange(final double from, final double to, double by) {
+        return new Range(from, to, by);
     }
 
     /**
