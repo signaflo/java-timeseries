@@ -22,31 +22,7 @@
  * Jacob Rachiele
  */
 
-package stats.distributions;
-
-import smile.math.Random;
-
-public final class Uniform implements Distribution {
-
-    private final double a;
-    private final double b;
-    private final Random random = new Random();
-
-    public Uniform(final double a, final double b) {
-        this.a = a;
-        this.b = b;
-    }
-
-    @Override
-    public double rand() {
-        return random.nextDouble(a, b);
-    }
-
-    @Override
-    public double quantile(double prob) {
-        if (prob < 0.0 || prob > 1.0) {
-            throw new IllegalArgumentException("The probability must be between 0 and 1 (inclusive).");
-        }
-        return prob * (b - a) + a;
-    }
-}
+/**
+ * Classes and methods for visualizing data.
+ */
+package data.visualization;
