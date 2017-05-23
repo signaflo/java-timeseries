@@ -23,8 +23,6 @@
  */
 package math.function;
 
-import optim.NumericalDerivatives;
-
 /**
  * A partial implementation of a scalar-valued function of one variable.
  */
