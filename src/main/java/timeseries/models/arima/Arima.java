@@ -25,7 +25,7 @@
 package timeseries.models.arima;
 
 import data.DoubleFunctions;
-import data.Operators;
+import data.operations.Operators;
 import linear.doubles.Matrix;
 import linear.doubles.Vector;
 import lombok.EqualsAndHashCode;
@@ -45,7 +45,7 @@ import java.time.ZoneOffset;
 import java.util.Arrays;
 
 import static data.DoubleFunctions.slice;
-import static data.Operators.differenceOf;
+import static data.operations.Operators.differenceOf;
 import static stats.Statistics.sumOf;
 import static stats.Statistics.sumOfSquared;
 
@@ -1245,7 +1245,7 @@ public final class Arima implements Model {
         }
     }
 
-    static class OptimFunction extends AbstractMultivariateFunction {
+    private static class OptimFunction extends AbstractMultivariateFunction {
 
         private final TimeSeries differencedSeries;
         private final ModelOrder order;
@@ -1257,8 +1257,9 @@ public final class Arima implements Model {
         private final double[] smaParams;
         private final double meanScale;
 
-        OptimFunction(final TimeSeries differencedSeries, final ModelOrder order, final FittingStrategy fittingStrategy,
-                      final int seasonalFrequency, final double meanScale) {
+        private OptimFunction(final TimeSeries differencedSeries, final ModelOrder order,
+                              final FittingStrategy fittingStrategy, final int seasonalFrequency,
+                              final double meanScale) {
             this.differencedSeries = differencedSeries;
             this.order = order;
             this.fittingStrategy = fittingStrategy;

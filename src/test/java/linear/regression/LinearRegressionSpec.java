@@ -26,7 +26,7 @@ package linear.regression;
 import com.google.common.testing.EqualsTester;
 import data.DoubleFunctions;
 import data.Range;
-import data.Operators;
+import data.operations.Operators;
 import data.TestData;
 import org.junit.Test;
 

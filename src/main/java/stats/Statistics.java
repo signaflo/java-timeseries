@@ -25,7 +25,7 @@ package stats;
 
 import java.util.Arrays;
 
-import static data.Operators.productOf;
+import static data.operations.Operators.productOf;
 
 /**
  * Static methods for computing basic statistics.

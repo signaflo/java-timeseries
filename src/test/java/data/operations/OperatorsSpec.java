@@ -1,4 +1,4 @@
-package data;
+package data.operations;
 
 import org.junit.Before;
 import org.junit.Rule;

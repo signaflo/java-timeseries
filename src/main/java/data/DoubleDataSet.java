@@ -23,6 +23,7 @@
  */
 package data;
 
+import data.operations.Operators;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;

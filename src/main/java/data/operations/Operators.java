@@ -21,7 +21,7 @@
  *
  * Jacob Rachiele
  */
-package data;
+package data.operations;
 
 /**
  * Static methods for performing vector operations on arrays.

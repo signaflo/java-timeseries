@@ -24,7 +24,7 @@
 package timeseries;
 
 import data.*;
-import lombok.EqualsAndHashCode;
+import data.operations.Operators;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
