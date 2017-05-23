@@ -32,7 +32,7 @@ public final class Range {
      */
     public Range(final double from, final double to, final double by) {
         if (by <= 0) {
-            throw new IllegalArgumentException("The by argument must be non-negative.");
+            throw new IllegalArgumentException("The by argument must be positive.");
         }
         this.by = by;
         int size = (int)Math.abs((to - from) / by) + 1;
@@ -51,7 +51,7 @@ public final class Range {
      * @return a new range of doubles excluding the given <i>to</i> value.
      */
     public static Range exclusiveRange(final double from, final double to, double by) {
-        return new Range(from, to - Math.signum(by) * by, by);
+        return new Range(from, to - Math.signum(to - from) * by, by);
     }
 
     /**
