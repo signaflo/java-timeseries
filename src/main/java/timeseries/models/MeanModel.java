@@ -48,7 +48,7 @@ public final class MeanModel implements Model {
     }
 
     @Override
-    public Forecast forecast(final int steps, final double alpha) {
+    public MeanForecast forecast(final int steps, final double alpha) {
         return new MeanForecast(this, steps, alpha);
     }
 
@@ -81,7 +81,7 @@ public final class MeanModel implements Model {
 
     @Override
     public String toString() {
-        return "timeSeries: " + timeSeries + "\nfittedSeries: " + fittedSeries + "\nmean: " + mean;
+        return "Mean model with estimated mean of " + mean;
     }
 
     @Override

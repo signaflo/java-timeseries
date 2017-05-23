@@ -23,10 +23,7 @@
  */
 package timeseries;
 
-import data.DataSet;
-import data.DoubleDataSet;
-import data.DoubleFunctions;
-import data.Plots;
+import data.*;
 import lombok.EqualsAndHashCode;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
@@ -610,13 +607,15 @@ public final class TimeSeries implements DataSet {
     }
 
     @Override
-    public DataSet times(DataSet otherData) {
-        return this.dataSet.times(otherData);
+    public TimeSeries times(DataSet otherData) {
+        return new TimeSeries(this.timePeriod(), this.observationTimes(),
+                              Operators.productOf(this.asArray(), otherData.asArray()));
     }
 
     @Override
-    public DataSet plus(DataSet otherData) {
-        return this.dataSet.plus(otherData);
+    public TimeSeries plus(DataSet otherData) {
+        return new TimeSeries(this.timePeriod(), this.observationTimes(),
+                              Operators.sumOf(this.asArray(), otherData.asArray()));
     }
 
     @Override

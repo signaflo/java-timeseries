@@ -130,7 +130,7 @@ public final class RandomWalk implements Model {
     }
 
     @Override
-    public Forecast forecast(final int steps, final double alpha) {
+    public RandomWalkForecast forecast(final int steps, final double alpha) {
         return new RandomWalkForecast(this, steps, alpha);
     }
 
