@@ -1,0 +1,3 @@
+jshell -c build/libs/java-timeseries-0.3-SNAPSHOT-all.jar \
+--startup ./scripts/imports.jsh
+
