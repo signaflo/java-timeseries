@@ -92,15 +92,16 @@ public final class BFGS {
             Vector nextIterate;
             Vector nextGradient;
             Vector searchDirection;
-            boolean stop = gradient.norm() < gradientNormTolerance || !Double.isFinite(gradient.norm());
-            int iterationsSinceIdentity = 0;
+            double gradientNorm = gradient.norm();
+            boolean stop = gradientNorm < gradientNormTolerance || !Double.isFinite(gradientNorm);
+            int iterationsSinceIdentityReset = 0;
 
             while (!stop) {
-                if (iterationsSinceIdentity > 2 * iterate.size()) {
+                if (iterationsSinceIdentityReset > 2 * iterate.size()) {
                     H = identity;
-                    iterationsSinceIdentity = 0;
+                    iterationsSinceIdentityReset = 0;
                 }
-                iterationsSinceIdentity++;
+                iterationsSinceIdentityReset++;
                 searchDirection = (H.times(gradient).scaledBy(-1.0));
                 slopeAt0 = searchDirection.dotProduct(gradient);
                 if (slopeAt0 > 0) {
@@ -148,7 +149,7 @@ public final class BFGS {
                     H = updateHessian();
                 } else if (!stop) {
                     H = identity;
-                    iterationsSinceIdentity = 0;
+                    iterationsSinceIdentityReset = 0;
                 }
                 iterate = nextIterate;
                 gradient = nextGradient;

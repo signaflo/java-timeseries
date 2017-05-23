@@ -30,7 +30,7 @@ import java.util.Arrays;
 
 /**
  * Represents the <a target="_blank" href="https://en.wikipedia.org/wiki/Newton_polynomial">Newton form</a>
- * of an interpolation polynomial.
+ * of an interpolating polynomial.
  *
  * @author Jacob Rachiele
  */
