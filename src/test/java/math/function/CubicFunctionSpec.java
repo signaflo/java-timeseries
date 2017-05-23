@@ -40,7 +40,7 @@ public class CubicFunctionSpec {
         Complex[] expected = new Complex[]{new Complex(-0.567520806326), new Complex(0.734187472992)};
         Real[] criticalPoints = f.criticalPoints();
         for (int i = 0; i < 2; i++) {
-            assertThat(criticalPoints[i].asDouble(), is(closeTo(expected[i].doubleValue(), 1E-8)));
+            assertThat(criticalPoints[i].asDouble(), is(closeTo(expected[i].real(), 1E-8)));
         }
     }
 

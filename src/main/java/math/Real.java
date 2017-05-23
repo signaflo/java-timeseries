@@ -102,10 +102,10 @@ public final class Real implements FieldElement<Real> {
 
     /**
      * Computes and returns the square root of this number if the number is non-negative, and throws
-     * and IllegalStateException otherwise. If there is potential for this real number to be negative, then
-     * {@link #complexSqrt()} should be called instead.
+     * an IllegalStateException otherwise. If there is potential for this real number to be negative, then
+     * {@link #complexSqrt()} should be used instead.
      *
-     * @return the square root of this number if the number is non-negative, otherwise throws an IllegalStateException.
+     * @return the square root of this number if the number is non-negative, otherwise an IllegalStateException.
      * @throws IllegalStateException if this real number is less than zero.
      */
     @Override
@@ -160,14 +160,6 @@ public final class Real implements FieldElement<Real> {
     @Override
     public Real dividedBy(Real other) {
         return Real.from(this.value / other.value);
-    }
-
-    @Override
-    public Real dividedBy(int value) {
-        if (value == 0) {
-            throw new ArithmeticException("Attempt to divide a real number by zero.");
-        }
-        return new Real(this.value / value);
     }
 
     /**

@@ -154,7 +154,7 @@ public final class CubicFunction extends AbstractFunction {
     final Real[] criticalPoints() {
         Complex[] zeros = this.derivative.zeros();
         if (zeros[0].minus(zeros[1]).abs() < Math.ulp(1.0)) {
-            return new Real[]{Real.from(zeros[0].doubleValue())};
+            return new Real[]{Real.from(zeros[0].real())};
         } else if (allReal(zeros)) {
             return toReal(zeros);
         } else {
@@ -181,7 +181,6 @@ public final class CubicFunction extends AbstractFunction {
         return extremePoints[1];
     }
 
-
     final Real localMaximumPoint() {
         if (!hasMaximum()) {
             throw new RuntimeException("This cubic function " + this.toString() + " has no local maximum.");
@@ -194,9 +193,9 @@ public final class CubicFunction extends AbstractFunction {
     }
 
     /**
-     * retrieve the points at which the local extrema of this function occurs.
+     * retrieve the points at which the local extrema of this function occur.
      *
-     * @return the points at which the local extrema of this function occurs.
+     * @return the points at which the local extrema of this function occur.
      */
     public Real[] localExtremePoints() {
         Real[] points = criticalPoints();
@@ -249,7 +248,7 @@ public final class CubicFunction extends AbstractFunction {
     private Real[] toReal(final Complex[] numbers) {
         Real[] reals = new Real[numbers.length];
         for (int i = 0; i < numbers.length; i++) {
-            reals[i] = Real.from(numbers[i].doubleValue());
+            reals[i] = Real.from(numbers[i].real());
         }
         return reals;
     }

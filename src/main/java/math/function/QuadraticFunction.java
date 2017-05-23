@@ -113,6 +113,12 @@ public class QuadraticFunction extends AbstractFunction {
         return this.c;
     }
 
+    /**
+     * Compute and return the value of the function at the given point.
+     *
+     * @param point the point at which to evaluate the function.
+     * @return the value of the function at the given point.
+     */
     public Real at(final Real point) {
         return Real.from(this.at(point.asDouble()));
     }
@@ -146,27 +152,27 @@ public class QuadraticFunction extends AbstractFunction {
     }
 
     /**
-     * retrieve the point at which the localExtrema of this function occurs as a primitive.
+     * retrieve the point at which the local extremum of this function occurs as a primitive.
      *
-     * @return the point at which the localExtrema of this function occurs as a primitive.
+     * @return the point at which the local extremum of this function occurs as a primitive.
      */
     public double extremePointDbl() {
         return -b.asDouble() / (2 * a.asDouble());
     }
 
     /**
-     * retrieve the point at which the localExtrema of this function occurs.
+     * retrieve the point at which the local extremum of this function occurs.
      *
-     * @return the point at which the localExtrema of this function occurs.
+     * @return the point at which the local extremum of this function occurs.
      */
     public Real extremePoint() {
         return Real.from(-b.asDouble() / (2 * a.asDouble()));
     }
 
     /**
-     * retrieve the localExtrema of this function as a primitive.
+     * retrieve the local extremum of this function as a primitive.
      *
-     * @return the localExtrema of this function as a primitive.
+     * @return the local extremum of this function as a primitive.
      */
     public double extremumDbl() {
         double x = extremePointDbl();
@@ -174,9 +180,9 @@ public class QuadraticFunction extends AbstractFunction {
     }
 
     /**
-     * retrieve the localExtrema of this function.
+     * retrieve the local extremum of this function.
      *
-     * @return the localExtrema of this function.
+     * @return the local extremum of this function.
      */
     public Real extremum() {
         double x = extremePoint().asDouble();

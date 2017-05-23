@@ -67,20 +67,9 @@ public class RealSpec {
     }
 
     @Test
-    public void whenDividedByZeroThenArithmeticException() {
-        exception.expect(ArithmeticException.class);
-        a.dividedBy(0);
-    }
-
-    @Test
     public void whenZeroConstructorThenZeroCreated() {
         a = Real.zero();
         assertThat(a.asDouble(), is(0.0));
-    }
-
-    @Test
-    public void whenDividedByIntThenResultCorrect() {
-        assertThat(a.dividedBy(2).asDouble(), is(1.5));
     }
 
     @Test

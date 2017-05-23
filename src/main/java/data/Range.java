@@ -26,9 +26,8 @@ public final class Range {
      * Create a new range with the given starting value, ending value, and increment amount.
      *
      * @param from the starting value of the range.
-     * @param to the ending value of the range.
-     * @param by the increment amount.
-     *
+     * @param to   the ending value of the range.
+     * @param by   the increment amount.
      * @throws IllegalArgumentException if the <em>by</em> argument is less than or equal to 0.
      */
     public Range(final double from, final double to, final double by) {
@@ -36,7 +35,7 @@ public final class Range {
             throw new IllegalArgumentException("The by argument must be positive.");
         }
         this.by = by;
-        int size = (int)(Math.abs((to - from) / by) + TOLERANCE) + 1;
+        int size = (int) (Math.abs((to - from) / by) + TOLERANCE) + 1;
         range = new double[size];
         for (int i = 0; i < range.length; i++) {
             range[i] = from + Math.signum(to - from) * i * by;
@@ -54,20 +53,47 @@ public final class Range {
     public static Range exclusiveRange(final double from, final double to, final double by) {
         double dist = to - from;
         double ratio = dist / by;
-        double offset = (Math.abs(ratio - (int)ratio) < TOLERANCE) ? Math.signum(dist) * by : 0.0;
+        double offset = (Math.abs(ratio - (int) ratio) < TOLERANCE) ? Math.signum(dist) * by : 0.0;
         return new Range(from, to - offset, by);
     }
 
     /**
-     * Create a new range of doubles including the given <i>to</i> value.
+     * Create a new range of doubles including the given <i>to</i> value if possible.
+     * Note that the given <i>to</i> value will be included only if (<i>to - from</i>)
+     * is an integer multiple of <i>by</i>.
      *
      * @param from the starting value of the range.
-     * @param to   the ending value of the range, included in the result.
+     * @param to   the ending value of the range, included in the result if possible.
      * @param by   the increment amount.
-     * @return a new range of doubles including the given <i>to</i> value.
+     * @return a new range of doubles including the given <i>to</i> value if possible.
      */
     public static Range inclusiveRange(final double from, final double to, final double by) {
         return new Range(from, to, by);
+    }
+
+    /**
+     * Create a new range of doubles excluding the given <i>to</i> value, with a default spacing between
+     * values of 1.0.
+     *
+     * @param from the starting value of the range.
+     * @param to   the ending value of the range, not included in the result.
+     * @return a new range of doubles excluding the given <i>to</i> value.
+     */
+    public static Range exclusiveRange(final double from, final double to) {
+        return exclusiveRange(from, to, 1.0);
+    }
+
+    /**
+     * Create a new range of doubles including the given <i>to</i> value if possible, with a default spacing
+     * between values of 1.0. Note that the given <i>to</i> value will be included only if (<i>to - from</i>)
+     * is an integer multiple of <i>1</i>.
+     *
+     * @param from the starting value of the range.
+     * @param to   the ending value of the range, included in the result if possible.
+     * @return new range of doubles including the given <i>to</i> value if possible.
+     */
+    public static Range inclusiveRange(final double from, final double to) {
+        return inclusiveRange(from, to, 1.0);
     }
 
     /**
@@ -123,7 +149,6 @@ public final class Range {
      * Return the ith element of this range, where indexing begins at 0.
      *
      * @param i the index of the range value to retrieve.
-     *
      * @return the ith element of this range.
      */
     public double at(int i) {

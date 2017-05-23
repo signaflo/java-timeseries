@@ -50,19 +50,6 @@ public class RationalSpec {
     }
 
     @Test
-    public void whenDivisionByZeroThenArithmeticException() {
-        exception.expect(ArithmeticException.class);
-        r1.dividedBy(0);
-    }
-
-    @Test
-    public void whenDivisionByIntThenResultCorrect() {
-        Rational expected = Rational.from(3, 16);
-        assertThat(r1.dividedBy(4), is(expected));
-        assertThat(r1.dividedBy(r3), is(expected));
-    }
-
-    @Test
     public void whenDivisionByRationalThenResultCorrect() {
         Rational expected = Rational.from(27, 28);
         assertThat(r1.dividedBy(r2), is(expected));

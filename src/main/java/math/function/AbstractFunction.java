@@ -34,7 +34,7 @@ public abstract class AbstractFunction implements Function {
     protected int slopeEvaluations = 0;
 
     /**
-     * Compute and the return the slope at the given point.
+     * Compute and return the slope at the given point.
      *
      * @param point an element of the function's domain.
      * @return the slope of the function at the given point.

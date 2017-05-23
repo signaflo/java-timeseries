@@ -41,7 +41,7 @@ public final class NewtonPolynomial {
     private final double[] coefficients;
 
     /**
-     * Create a new NewtonPolynomial with the given points and function values.
+     * Create a new Newton polynomial with the given points and function values.
      *
      * @param point the array of sample points.
      * @param value the array of sample function values at each corresponding point.
@@ -65,10 +65,10 @@ public final class NewtonPolynomial {
     }
 
     /**
-     * Get the ith coefficient of this Newton Polynomial.
+     * Get the ith coefficient of this Newton polynomial.
      *
      * @param i the index of the coefficient.
-     * @return the ith coefficient of this Newton Polynomial.
+     * @return the ith coefficient of this Newton polynomial.
      */
     double getCoefficient(final int i) {
         return this.coefficients[i];
@@ -90,9 +90,9 @@ public final class NewtonPolynomial {
     }
 
     /**
-     * Evaluate this Newton Polynomial at the given point.
+     * Evaluate this Newton polynomial at the given point.
      *
-     * @param x the point at which to evaluate this Newton Polynomial.
+     * @param x the point at which to evaluate this Newton polynomial.
      * @return the value of the polynomial at the given point.
      */
     public double evaluateAt(double x) {
@@ -106,11 +106,11 @@ public final class NewtonPolynomial {
     }
 
     /**
-     * Convert this NewtonPolynomial to the standard form of a quadratic function, <i>f(x)</i>
+     * Convert this Newton polynomial to the standard form of a quadratic function, <i>f(x)</i>
      * = a<i>x</i><sup>2</sup> + b<i>x</i> + c.
      *
-     * @return this Newton Polynomial converted to standard quadratic form.
-     * @throws IllegalStateException if the degree of this NewtonPolynomial is lower than 2.
+     * @return this Newton polynomial converted to standard quadratic form.
+     * @throws IllegalStateException if the degree of this Newton polynomial is lower than 2.
      */
     public QuadraticFunction toQuadratic() throws IllegalStateException {
         if (coefficients.length < 3) {
@@ -124,11 +124,11 @@ public final class NewtonPolynomial {
     }
 
     /**
-     * Convert this NewtonPolynomial to the standard form of a cubic function, <i>f(x)</i>
+     * Convert this Newton polynomial to the standard form of a cubic function, <i>f(x)</i>
      * = a<i>x</i><sup>3</sup> + b<i>x</i><sup>2</sup> + c<i>x</i> + d.
      *
-     * @return this Newton Polynomial converted to standard cubic form.
-     * @throws IllegalStateException if the degree of this NewtonPolynomial is lower than 3.
+     * @return this Newton polynomial converted to standard cubic form.
+     * @throws IllegalStateException if the degree of this Newton polynomial is lower than 3.
      */
     public CubicFunction toCubic() throws IllegalStateException {
         if (coefficients.length < 4) {

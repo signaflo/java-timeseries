@@ -97,13 +97,4 @@ public interface FieldElement<T> extends Comparable<T> {
      */
     T dividedBy(T other);
 
-    /**
-     *
-     * Divide this element by the given integer and return the result.
-     *
-     * @param other the divisor.
-     *
-     * @return this element divided by the given integer.
-     */
-    T dividedBy(int other);
 }

@@ -58,6 +58,11 @@ public class GeneralFunction extends AbstractFunction {
         }
     }
 
+    /**
+     * Set the derivative of this function.
+     *
+     * @param df the derivative of this function.
+     */
     public void setDf(final Function df) {
         this.df = df;
     }

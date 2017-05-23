@@ -133,11 +133,6 @@ public final class Complex implements FieldElement<Complex> {
     }
 
     @Override
-    public final Complex dividedBy(final int value) {
-        return this.dividedBy((double)value);
-    }
-
-    @Override
     public final Complex conjugate() {
         return new Complex(this.real, -this.im);
     }
@@ -170,7 +165,7 @@ public final class Complex implements FieldElement<Complex> {
      *
      * @return the real part of this complex number.
      */
-    public final double doubleValue() {
+    public final double real() {
         return this.real;
     }
 

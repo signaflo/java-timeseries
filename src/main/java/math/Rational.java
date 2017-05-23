@@ -99,12 +99,6 @@ public final class Rational implements FieldElement<Rational> {
         return new Rational(this.p * value.q, this.q * value.p);
     }
 
-    @Override
-    public Rational dividedBy(int value) {
-        checkNonZero(value);
-        return new Rational(this.p, this.q * value);
-    }
-
     private void checkNonZero(int value) {
         if (value == 0) {
             throw new ArithmeticException("Attempt to divide a rational number by zero.");
