@@ -23,7 +23,9 @@
  */
 package timeseries;
 
-import data.*;
+import data.DoubleDataSet;
+import data.DataSet;
+import data.DoubleFunctions;
 import data.operations.Operators;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
@@ -636,19 +638,6 @@ public final class TimeSeries implements DataSet {
     @Override
     public double correlation(DataSet otherData) {
         return this.dataSet.correlation(otherData);
-    }
-
-    /**
-     * Display a line plot connecting the observation times to the measurements.
-     */
-    @Override
-    public final void plot() {
-        Plots.plot(this, "Time Series Values", "series");
-    }
-
-    @Override
-    public void plotAgainst(DataSet otherData) {
-        this.dataSet.plotAgainst(otherData);
     }
 
     /**

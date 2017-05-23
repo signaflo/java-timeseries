@@ -23,7 +23,7 @@
  */
 package timeseries.models;
 
-import data.Plots;
+import data.visualization.Plots;
 import timeseries.TimeSeries;
 
 /**

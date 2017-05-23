@@ -100,18 +100,4 @@ public interface DataSet {
      * @return the observations.
      */
     double[] asArray();
-
-    /**
-     * Plot this data set. This method will produce a scatter plot of the data values against the integers
-     * from 0 to n - 1, where n is the size of the data set.
-     */
-    void plot();
-
-    /**
-     * Plot this data set against the given data set. The given data set will be plotted on the x-axis, while
-     * this data set will be plotted on the y-axis.
-     *
-     * @param otherData the data set to plot this data set against.
-     */
-    void plotAgainst(DataSet otherData);
 }

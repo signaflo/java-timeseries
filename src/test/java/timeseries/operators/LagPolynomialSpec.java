@@ -1,6 +1,6 @@
 package timeseries.operators;
 
-import data.TestData;
+import timeseries.TestData;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

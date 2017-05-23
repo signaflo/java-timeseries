@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.*;
 import org.junit.Test;
 
 import stats.Statistics;
+import timeseries.TestData;
 
 public class DoubleFunctionsSpec {
 

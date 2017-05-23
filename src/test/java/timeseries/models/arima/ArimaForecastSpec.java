@@ -26,7 +26,7 @@
 
 package timeseries.models.arima;
 
-import data.TestData;
+import timeseries.TestData;
 import org.junit.Test;
 import timeseries.TimeSeries;
 import timeseries.models.Forecast;

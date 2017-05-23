@@ -24,15 +24,9 @@
 package data;
 
 import data.operations.Operators;
-import org.knowm.xchart.XChartPanel;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
-import org.knowm.xchart.style.Styler.ChartTheme;
+
 import stats.Statistics;
 
-import javax.swing.*;
-import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
@@ -115,49 +109,6 @@ public final class DoubleDataSet implements DataSet {
     @Override
     public final double[] asArray() {
         return this.data.clone();
-    }
-
-    @Override
-    public void plot() {
-        new Thread(() -> {
-            final double[] indices = new double[this.data.length];
-            for (int i = 0; i < indices.length; i++) {
-                indices[i] = i;
-            }
-            XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).
-                    title("Scatter Plot").xAxisTitle("Index").yAxisTitle("Values").build();
-            chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter).
-                    setChartFontColor(Color.BLACK).setSeriesColors(new Color[]{Color.BLUE});
-            chart.addSeries("data", indices, data);
-            JPanel panel = new XChartPanel<>(chart);
-            JFrame frame = new JFrame("Data Set");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(panel);
-            frame.pack();
-            frame.setVisible(true);
-        }).run();
-    }
-
-    @Override
-    public void plotAgainst(final DataSet otherData) {
-        new Thread(() -> {
-            XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2)
-                                                .height(600)
-                                                .width(800)
-                                                .title("Scatter Plot")
-                                                .xAxisTitle("X")
-                                                .yAxisTitle("Y")
-                                                .build();
-            chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter).
-                    setChartFontColor(Color.DARK_GRAY).setSeriesColors(new Color[]{Color.BLUE});
-            chart.addSeries("Y against X", otherData.asArray(), this.data);
-            JPanel panel = new XChartPanel<>(chart);
-            JFrame frame = new JFrame("Scatter Plot");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(panel);
-            frame.pack();
-            frame.setVisible(true);
-        }).run();
     }
 
     @Override

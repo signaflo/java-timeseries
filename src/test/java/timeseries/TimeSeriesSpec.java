@@ -1,7 +1,5 @@
 package timeseries;
 
-import com.sun.scenario.effect.Offset;
-import data.TestData;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

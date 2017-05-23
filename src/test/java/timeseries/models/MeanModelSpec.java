@@ -1,13 +1,12 @@
 package timeseries.models;
 
 import data.DoubleFunctions;
-import data.TestData;
+import timeseries.TestData;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import timeseries.TimeSeries;
 import timeseries.TimeUnit;
-import timeseries.Ts;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;

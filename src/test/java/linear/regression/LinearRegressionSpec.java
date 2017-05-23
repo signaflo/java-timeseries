@@ -27,7 +27,7 @@ import com.google.common.testing.EqualsTester;
 import data.DoubleFunctions;
 import data.Range;
 import data.operations.Operators;
-import data.TestData;
+import timeseries.TestData;
 import org.junit.Test;
 
 import java.util.Arrays;

@@ -5,7 +5,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 
-import data.TestData;
+import timeseries.TestData;
 import timeseries.operators.LagPolynomial;
 
 public class KalmanFilterSpec {
