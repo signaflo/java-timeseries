@@ -66,7 +66,11 @@ public final class MultipleLinearRegression implements LinearRegression {
 
     @Override
     public double[][] predictors() {
-        return this.predictors.clone();
+        double[][] copy = new double[this.predictors.length][];
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] = this.predictors[i].clone();
+        }
+        return copy;
     }
 
     @Override
@@ -104,15 +108,34 @@ public final class MultipleLinearRegression implements LinearRegression {
         return this.hasIntercept;
     }
 
+    /**
+     * Create a new linear regression model from this one, using the given boolean to determine whether
+     * to fit an intercept or not.
+     *
+     * @param hasIntercept whether or not the new regression should have an intercept.
+     * @return a new linear regression model using the given boolean to determine whether to fit an intercept.
+     */
     public MultipleLinearRegression withHasIntercept(boolean hasIntercept) {
         return new Builder().from(this).hasIntercept(hasIntercept).build();
     }
 
+    /**
+     * Create a new linear regression model from this one, replacing the current response with the provided one.
+     *
+     * @param response the response variable of the new regression.
+     * @return a new linear regression model with the given response variable in place of the current one.
+     */
     public MultipleLinearRegression withResponse(double[] response) {
         return new Builder().from(this).response(response).build();
     }
 
-    public MultipleLinearRegression withPredictors(double... predictors) {
+    /**
+     * Create a new linear regression model from this one, with the given predictors fully replacing the current ones.
+     *
+     * @param predictors The new array of prediction variables to use for the regression.
+     * @return a new linear regression model using the given predictors in place of the current ones.
+     */
+    public MultipleLinearRegression withPredictors(double[]... predictors) {
         return new Builder().from(this).predictors(predictors).build();
     }
 
