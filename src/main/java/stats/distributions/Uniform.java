@@ -24,8 +24,11 @@
 
 package stats.distributions;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import smile.math.Random;
 
+@EqualsAndHashCode
 public final class Uniform implements Distribution {
 
     private final double a;
@@ -48,5 +51,10 @@ public final class Uniform implements Distribution {
             throw new IllegalArgumentException("The probability must be between 0 and 1 (inclusive).");
         }
         return prob * (b - a) + a;
+    }
+
+    @Override
+    public String toString() {
+        return "Uniform(" + Double.toString(a) + ", " + Double.toString(b) + ")";
     }
 }

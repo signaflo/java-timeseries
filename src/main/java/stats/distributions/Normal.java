@@ -29,7 +29,6 @@ import smile.stat.distribution.GaussianDistribution;
 /**
  * A Normal, or Gaussian, probability distribution.
  */
-@ToString
 public final class Normal implements Distribution {
 
     private final smile.stat.distribution.Distribution dist;
@@ -87,5 +86,10 @@ public final class Normal implements Distribution {
         temp = Double.doubleToLongBits(stdev);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return this.dist.toString();
     }
 }
