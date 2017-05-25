@@ -190,7 +190,8 @@ public final class TimeSeries implements DataSet {
         Map<OffsetDateTime, Integer> dateTimeIndex = new HashMap<>(series.length);
         int i = 0;
         for (OffsetDateTime dt : observationTimes) {
-            dateTimeIndex.put(dt, i++);
+            dateTimeIndex.put(dt, i);
+            i++;
         }
         this.dateTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
     }

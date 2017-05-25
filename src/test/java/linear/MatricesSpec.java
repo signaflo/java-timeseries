@@ -24,7 +24,9 @@
 
 package linear;
 
+import data.DoubleFunctions;
 import math.Real;
+import linear.Matrices.MatrixOrder;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -43,6 +45,24 @@ public class MatricesSpec {
     @Test
     public void whenMatrixFromThenCorrectMatrixCreated() {
         FieldMatrix<Real> matrix = Matrices.matrixFrom(array1, array2);
+        assertThat(matrix, is(matrix1));
+    }
+
+    @Test
+    public void whenMatrixFromOneDimArrayColumnMajorOrderCorrectMatrixCreated() {
+        int nrows = 3;
+        int ncols = 2;
+        FieldMatrix<Real> matrix = Matrices.matrixFrom(MatrixOrder.COLUMN_MAJOR, nrows, ncols,
+                                                       DoubleFunctions.combine(array1, array2));
+        assertThat(matrix, is(matrix1));
+    }
+
+    @Test
+    public void whenMatrixFromOneDimArrayRowMajorOrderCorrectMatrixCreated() {
+        int nrows = 3;
+        int ncols = 2;
+        double[] matrixArray = {1.5, 4.0, 3.0, 0.5, 5.0, 2.0};
+        FieldMatrix<Real> matrix = Matrices.matrixFrom(nrows, ncols, matrixArray);
         assertThat(matrix, is(matrix1));
     }
 }

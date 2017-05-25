@@ -56,8 +56,14 @@ import static stats.Statistics.sumOfSquared;
  */
 public final class Arima implements Model {
 
-    private static final double MACHINE_EPSILON = Math.ulp(1.0);
-    private static final double DEFAULT_TOLERANCE = Math.sqrt(MACHINE_EPSILON);
+
+    public enum Constant {
+        INCLUDE,
+        EXCLUDE
+    }
+
+    private static final double EPSILON = Math.ulp(1.0);
+    private static final double DEFAULT_TOLERANCE = Math.sqrt(EPSILON);
 
     private final TimeSeries observations;
     private final TimeSeries differencedSeries;
@@ -361,7 +367,8 @@ public final class Arima implements Model {
         final double[] extendedSeries = new double[2 * m + n];
         final double[] residuals = new double[2 * m + n];
         for (int i = 0; i < differencedSeries.n(); i++) {
-            extendedSeries[i] = differencedSeries.at(--n);
+            n--;
+            extendedSeries[i] = differencedSeries.at(n);
         }
 
         n = differencedSeries.n();
@@ -431,7 +438,8 @@ public final class Arima implements Model {
      * @return a new ARIMA model order.
      */
     public static ModelOrder order(final int p, final int d, final int q) {
-        return new ModelOrder(p, d, q, 0, 0, 0, d == 0);
+        Constant constant = (d == 0)? Constant.INCLUDE : Constant.EXCLUDE;
+        return new ModelOrder(p, d, q, 0, 0, 0, constant);
     }
 
     /**
@@ -444,7 +452,7 @@ public final class Arima implements Model {
      * @param constant whether or not to fit a constant to the model.
      * @return a new ARIMA model order.
      */
-    public static ModelOrder order(final int p, final int d, final int q, final boolean constant) {
+    public static ModelOrder order(final int p, final int d, final int q, final Constant constant) {
         return new ModelOrder(p, d, q, 0, 0, 0, constant);
     }
 
@@ -461,7 +469,8 @@ public final class Arima implements Model {
      * @return a new ARIMA model order.
      */
     public static ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q) {
-        return new ModelOrder(p, d, q, P, D, Q, d == 0 && D == 0);
+        Constant constant = (d == 0 && D == 0)? Constant.INCLUDE : Constant.EXCLUDE;
+        return new ModelOrder(p, d, q, P, D, Q, constant);
     }
 
     /**
@@ -478,7 +487,7 @@ public final class Arima implements Model {
      * @return a new ARIMA model order.
      */
     public static ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q,
-                                   final boolean constant) {
+                                   final Constant constant) {
         return new ModelOrder(p, d, q, P, D, Q, constant);
     }
 
@@ -584,7 +593,8 @@ public final class Arima implements Model {
      * @return a forecast with 95% prediction intervals for the given number of steps ahead.
      */
     public Forecast forecast(final int steps) {
-        return forecast(steps, 0.05);
+        final double defaultAlpha = 0.05;
+        return forecast(steps, defaultAlpha);
     }
 
     /*
@@ -852,14 +862,14 @@ public final class Arima implements Model {
         final int constant;
 
         private ModelOrder(final int p, final int d, final int q, final int P, final int D, final int Q,
-                           final boolean constant) {
+                           final Constant constant) {
             this.p = p;
             this.d = d;
             this.q = q;
             this.P = P;
             this.D = D;
             this.Q = Q;
-            this.constant = (constant) ? 1 : 0;
+            this.constant = (constant == Constant.INCLUDE) ? 1 : 0;
         }
 
         // This returns the total number of nonseasonal and seasonal ARMA parameters.
@@ -1048,7 +1058,7 @@ public final class Arima implements Model {
         }
 
         public final double[] getAllCoeffs() {
-            if (Math.abs(mean) < 1E-16) {
+            if (Math.abs(mean) < EPSILON) {
                 return DoubleFunctions.combine(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs);
             }
             return DoubleFunctions.append(DoubleFunctions.combine(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs), mean);
@@ -1064,8 +1074,10 @@ public final class Arima implements Model {
          * @return the order of the ARIMA model corresponding to the model coefficients.
          */
         private ModelOrder extractModelOrder() {
-            return new ModelOrder(arCoeffs.length, d, maCoeffs.length, sarCoeffs.length, D, smaCoeffs.length,
-                                  (Math.abs(mean) > 1E-16));
+            Constant constant = (Math.abs(mean) > EPSILON)
+                                           ? Constant.INCLUDE
+                                           : Constant.EXCLUDE;
+            return new ModelOrder(arCoeffs.length, d, maCoeffs.length, sarCoeffs.length, D, smaCoeffs.length, constant);
         }
 
         @Override
@@ -1140,22 +1152,22 @@ public final class Arima implements Model {
             }
 
             public Builder setARCoeffs(double... arCoeffs) {
-                this.arCoeffs = arCoeffs;
+                this.arCoeffs = arCoeffs.clone();
                 return this;
             }
 
             public Builder setSeasonalARCoeffs(double... sarCoeffs) {
-                this.sarCoeffs = sarCoeffs;
+                this.sarCoeffs = sarCoeffs.clone();
                 return this;
             }
 
             public Builder setMACoeffs(double... maCoeffs) {
-                this.maCoeffs = maCoeffs;
+                this.maCoeffs = maCoeffs.clone();
                 return this;
             }
 
             public Builder setSeasonalMACoeffs(double... smaCoeffs) {
-                this.smaCoeffs = smaCoeffs;
+                this.smaCoeffs = smaCoeffs.clone();
                 return this;
             }
 
@@ -1443,11 +1455,12 @@ public final class Arima implements Model {
          */
         public static class Builder {
 
+            private int defaultSimulationSize = 500;
             private ModelCoefficients coefficients = ModelCoefficients.newBuilder().build();
             private Distribution distribution = new Normal();
             private TimePeriod period = (coefficients.isSeasonal()) ? TimePeriod.oneMonth() : TimePeriod.oneYear();
             private TimePeriod seasonalCycle = TimePeriod.oneYear();
-            private int n = 500;
+            private int n = defaultSimulationSize;
             private boolean periodSet = false;
 
             /**

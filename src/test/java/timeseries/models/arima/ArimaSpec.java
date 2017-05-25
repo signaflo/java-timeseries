@@ -9,6 +9,7 @@ import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.models.Forecast;
 import timeseries.models.arima.Arima.ModelCoefficients;
+import timeseries.models.arima.Arima.Constant;
 import timeseries.models.arima.Arima.ModelOrder;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -24,7 +25,7 @@ public class ArimaSpec {
     public void whenZerosThenFittedAreZero() {
         TimeSeries timeSeries = new TimeSeries(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         double[] expected = new double[timeSeries.n()];
-        ModelOrder order = Arima.order(1, 0, 1, 0, 0, 0, true);
+        ModelOrder order = Arima.order(1, 0, 1, 0, 0, 0, Constant.INCLUDE);
         Arima arimaModel = Arima.model(timeSeries, order, Arima.FittingStrategy.USS);
         assertThat(arimaModel.fittedSeries().asArray(), is(expected));
     }
@@ -82,7 +83,7 @@ public class ArimaSpec {
     @Test
     public void whenArimaModelForecastThenForecastValuesCorrect() throws Exception {
         TimeSeries series = TestData.livestock();
-        ModelOrder order = Arima.order(1, 1, 1, 0, 0, 0, false);
+        ModelOrder order = Arima.order(1, 1, 1, 0, 0, 0, Constant.EXCLUDE);
         ModelCoefficients coeffs = ModelCoefficients.newBuilder().setARCoeffs(0.6480679).setMACoeffs(-0.5035514).
                 setDifferences(1).build();
         Arima model = Arima.model(series, coeffs, TimePeriod.oneYear());
@@ -139,7 +140,7 @@ public class ArimaSpec {
     public void testEqualsAndHashCode() {
         TimeSeries series = TestData.livestock();
         ModelOrder order = Arima.order(1, 1, 1);
-        ModelOrder order2 = Arima.order(1, 0, 1, true);
+        ModelOrder order2 = Arima.order(1, 0, 1, Constant.INCLUDE);
         Arima model1 = Arima.model(series, order);
         Arima model2 = Arima.model(series, order2, Arima.FittingStrategy.CSS);
         assertThat(model1, is(model1));

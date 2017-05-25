@@ -54,8 +54,10 @@ public class Matrices {
         switch (order) {
             case ROW_MAJOR:
                 return rowMajorMatrix(nrows, ncols, data);
+            case COLUMN_MAJOR:
+            default:
+                return columnMajorMatrix(nrows, ncols, data);
         }
-        return null;
     }
 
     private static FieldMatrix<Real> rowMajorMatrix(int nrows, int ncols, double... data) {
@@ -77,7 +79,7 @@ public class Matrices {
         for (int i = 0; i < ncols; i++) {
             column = new double[nrows];
             for (int j = 0; j < nrows; j++) {
-                column[j] = data[i + j * ncols];
+                column[j] = data[i * nrows + j];
             }
             realVectors.add(Vectors.vectorFrom(column));
         }
