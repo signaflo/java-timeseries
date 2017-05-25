@@ -57,7 +57,7 @@ final class StrongWolfeLineSearch {
     private double alphaT;
     private double psiAlphaT;
     private double dPsiAlphaT;
-    private double tolerance;
+    private final double tolerance;
 
     /**
      * Use a builder to create a new line search object.

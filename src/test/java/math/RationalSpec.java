@@ -28,9 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
@@ -115,7 +112,7 @@ public class RationalSpec {
 
     @Test
     public void testHashCodeAndEquals() {
-        Rational r4 = Rational.from(36, 48);;
+        Rational r4 = Rational.from(36, 48);
         Real real = Real.from(3.0/4.0);
         assertThat(r1.equals(r4), is(true));
         assertThat(r1.hashCode(), is(r4.hashCode()));

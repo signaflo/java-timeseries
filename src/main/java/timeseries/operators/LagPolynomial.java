@@ -40,8 +40,8 @@ import java.util.Arrays;
 public class LagPolynomial {
 
     final double[] parameters;
-    final double[] coefficients;
-    final int degree;
+    private final double[] coefficients;
+    private final int degree;
 
     /**
      * Construct a new lag polynomial from the given parameters. Note that the parameters given here are not the same as
@@ -72,7 +72,7 @@ public class LagPolynomial {
      * @param seasonalLag the period of seasonality, which is the lag to use for the operator.
      * @return a new lag polynomial representing the first seasonal difference operator.
      */
-    public static LagPolynomial firstSeasonalDifference(final int seasonalLag) {
+    private static LagPolynomial firstSeasonalDifference(final int seasonalLag) {
         double[] poly = new double[seasonalLag];
         poly[seasonalLag - 1] = -1.0;
         return new LagPolynomial(poly);

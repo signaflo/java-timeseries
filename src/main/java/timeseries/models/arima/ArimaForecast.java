@@ -38,8 +38,6 @@ import timeseries.operators.LagPolynomial;
 
 import javax.swing.*;
 import java.awt.*;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;

@@ -107,7 +107,7 @@ public final class Complex implements FieldElement<Complex> {
      * @param other the double to multiply this element by.
      * @return this element multiplied by the given double.
      */
-    public Complex times(final double other) {
+    private Complex times(final double other) {
         return new Complex(this.real * other, this.im * other);
     }
 

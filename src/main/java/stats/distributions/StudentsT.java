@@ -62,9 +62,7 @@ public final class StudentsT implements Distribution {
 
         StudentsT studentsT = (StudentsT) o;
 
-        if (df != studentsT.df) return false;
-
-        return true;
+        return df == studentsT.df;
     }
 
     @Override

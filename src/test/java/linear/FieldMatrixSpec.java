@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jacob Rachiele
+ * Copyright (c) 2017 Jacob Rachiele
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction
@@ -21,29 +21,42 @@
  *
  * Jacob Rachiele
  */
-package data;
 
-/**
- * An exception thrown when at attempt is made to treat as a Double an object that is not one.
- *
- * @author Jacob Rachiele
- *         Date: Dec 09 2016
- */
-class NotADoubleException extends RuntimeException {
+package linear;
 
-    /**
-     * Create a new exception with the default message.
-     */
-    NotADoubleException() {
-        this("An attempt was made to treat a non-Double object as a Double.");
+import math.Complex;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class FieldMatrixSpec {
+
+    private Complex c1 = new Complex(3, 5);
+    private Complex c2 = new Complex(2.5, 4.5);
+    private Complex c3 = new Complex(2.4, 4.0);
+    private Complex c4 = new Complex(6, 2);
+
+    private FieldVector<Complex> vec1;
+    private FieldVector<Complex> vec2;
+
+    @Before
+    public void beforeMethod() {
+        List<Complex> l1 = new ArrayList<>(2);
+        l1.add(c1);
+        l1.add(c2);
+        List<Complex> l2 = new ArrayList<>(2);
+        l2.add(c3);
+        l2.add(c4);
+        vec1 = new FieldVector<>(l1);
+        vec2 = new FieldVector<>(l2);
     }
 
-    /**
-     * Create a new exception with the given message.
-     *
-     * @param message the message to use to inform the client why the exception was created.
-     */
-    private NotADoubleException(String message) {
-        super(message);
+    @Test
+    public void testMatrixCreation() {
+        FieldMatrix<Complex> matrix = new FieldMatrix<>(Arrays.asList(vec1, vec2));
+
     }
 }

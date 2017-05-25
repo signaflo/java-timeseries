@@ -23,7 +23,6 @@
  */
 package stats.distributions;
 
-import lombok.ToString;
 import smile.stat.distribution.GaussianDistribution;
 
 /**
@@ -72,9 +71,7 @@ public final class Normal implements Distribution {
         Normal normal = (Normal) o;
 
         if (Double.compare(normal.mean, mean) != 0) return false;
-        if (Double.compare(normal.stdev, stdev) != 0) return false;
-
-        return true;
+        return Double.compare(normal.stdev, stdev) == 0;
     }
 
     @Override

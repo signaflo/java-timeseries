@@ -113,6 +113,14 @@ public final class DoubleFunctions {
         return doubles;
     }
 
+    public static double[] arrayFrom(double[] data, int... indices) {
+        double[] newArray = new double[indices.length];
+        for (int i = 0; i < newArray.length; i++) {
+            newArray[i] = data[indices[i]];
+        }
+        return newArray;
+    }
+
     /**
      * Create and return a new array of the given size with every value set to the given value.
      *

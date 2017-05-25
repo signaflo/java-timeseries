@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,6 +38,7 @@ public class FieldVectorSpec {
         complexList.add(c1);
         complexList.add(c2);
         assertThat(vector.elements(), is(equalTo(complexList)));
+        assertThat(vector.size(), is(2));
     }
 
     @Test

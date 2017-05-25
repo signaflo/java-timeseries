@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jacob Rachiele
+ * Copyright (c) 2017 Jacob Rachiele
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction
@@ -21,29 +21,17 @@
  *
  * Jacob Rachiele
  */
-package data;
 
-/**
- * An exception thrown when at attempt is made to treat as a Double an object that is not one.
- *
- * @author Jacob Rachiele
- *         Date: Dec 09 2016
- */
-class NotADoubleException extends RuntimeException {
+package linear;
 
-    /**
-     * Create a new exception with the default message.
-     */
-    NotADoubleException() {
-        this("An attempt was made to treat a non-Double object as a Double.");
-    }
+import math.Real;
+import math.Reals;
 
-    /**
-     * Create a new exception with the given message.
-     *
-     * @param message the message to use to inform the client why the exception was created.
-     */
-    private NotADoubleException(String message) {
-        super(message);
+final class Vectors {
+
+    private Vectors() {}
+
+    static FieldVector<Real> vectorFrom(double... elements) {
+        return new FieldVector<>(Reals.listFrom(elements));
     }
 }

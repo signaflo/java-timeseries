@@ -1,8 +1,5 @@
 package optim;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
 import math.function.AbstractMultivariateFunction;
 import org.junit.Test;
 

@@ -25,7 +25,6 @@
 package stats.distributions;
 
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import smile.math.Random;
 
 @EqualsAndHashCode

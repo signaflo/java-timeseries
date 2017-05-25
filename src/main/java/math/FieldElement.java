@@ -23,8 +23,6 @@
  */
 package math;
 
-import lombok.NonNull;
-
 /**
  * Represents an element of a mathematical <a target="_blank"
  * href="https://en.wikipedia.org/wiki/Field_(mathematics)">field</a>.

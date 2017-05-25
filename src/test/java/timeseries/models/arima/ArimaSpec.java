@@ -67,7 +67,7 @@ public class ArimaSpec {
         TimeSeries series = TestData.debitcards();
         ModelOrder order = Arima.order(1, 1, 1, 1, 1, 1);
         Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.USSML);
-        ;
+
         ModelCoefficients expected = ModelCoefficients.newBuilder()
                                                       .setARCoeffs(-0.1042)
                                                       .setMACoeffs(-0.6213)

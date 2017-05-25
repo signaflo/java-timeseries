@@ -830,7 +830,7 @@ public final class Arima implements Model {
         /**
          * Unconditional sum-of-squares followed by maximum likelihood.
          */
-        USSML;
+        USSML
 
     }
 

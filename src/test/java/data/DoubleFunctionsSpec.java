@@ -43,6 +43,14 @@ public class DoubleFunctionsSpec {
   }
 
   @Test
+  public void whenNewArrayFromIndicesThenCorrectValuesExtracted() {
+      double[] original = {2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0};
+      int[] indices = {1, 4, 6};
+      double[] expected = {4.0, 32.0, 128.0};
+      assertThat(DoubleFunctions.arrayFrom(original, indices), is(expected));
+  }
+
+  @Test
   public void whenAppendedThenNewArrayCorrect() {
     double[] expected = {1.0, 2.0, 3.0};
     double[] array1 = {1.0, 2.0};

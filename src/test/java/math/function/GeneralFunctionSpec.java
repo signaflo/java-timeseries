@@ -1,7 +1,6 @@
 package math.function;
 
 import linear.doubles.Vector;
-import optim.RosenbrockFunction;
 import optim.SphereFunction;
 import org.junit.Test;
 

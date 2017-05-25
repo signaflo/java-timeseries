@@ -239,10 +239,7 @@ public final class CubicFunction extends AbstractFunction {
                 return false;
             }
         }
-        if (numbers.length == 0) {
-            return false;
-        }
-        return true;
+        return numbers.length != 0;
     }
 
     private Real[] toReal(final Complex[] numbers) {
