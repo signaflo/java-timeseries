@@ -183,7 +183,7 @@ public final class Real implements FieldElement<Real> {
 
     @Override
     public String toString() {
-        return "Real: " + Double.toString(this.value);
+        return Double.toString(this.value);
     }
 
     @Override
