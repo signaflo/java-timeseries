@@ -27,16 +27,22 @@ package math;
 public class LinearEquation<T extends FieldElement<T>> {
 
     private final LinearExpression<T> leftSide;
-    private final FieldElement<T> rightSide;
+    private final T rightSide;
 
-    LinearEquation(LinearExpression<T> leftSide, FieldElement<T> rightSide) {
+    LinearEquation(LinearExpression<T> leftSide, T rightSide) {
         this.leftSide = leftSide;
         this.rightSide = rightSide;
     }
 
     LinearEquation<T> multiplyBy(T scalar) {
-        final FieldElement<T> newRightSide = rightSide.times(scalar);
-        final LinearExpression<T> newLeftSide = leftSide.times(scalar);
+        final T newRightSide = this.rightSide.times(scalar);
+        final LinearExpression<T> newLeftSide = this.leftSide.times(scalar);
+        return new LinearEquation<>(newLeftSide, newRightSide);
+    }
+
+    LinearEquation<T> add(LinearEquation<T> otherEquation) {
+        final T newRightSide = this.rightSide.plus(otherEquation.rightSide);
+        final LinearExpression<T> newLeftSide = this.leftSide.plus(otherEquation.leftSide);
         return new LinearEquation<>(newLeftSide, newRightSide);
     }
 

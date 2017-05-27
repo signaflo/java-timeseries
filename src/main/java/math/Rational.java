@@ -112,9 +112,23 @@ public final class Rational implements FieldElement<Rational> {
         return Double.compare(thisVal, otherVal);
     }
 
+    public String printAbs() {
+        StringBuilder sb = new StringBuilder();
+        if (this.p == 0) {
+            return sb.append("0").toString();
+        }
+        if (this.q == 1) {
+            return sb.append(Integer.toString(this.p)).toString();
+        }
+        if ((double)this.p / this.q == 1.0) {
+            return sb.append("1").toString();
+        }
+        return sb.append(this.p).append("/").append(this.q).toString();
+    }
+
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Rational: ");
+        StringBuilder sb = new StringBuilder();
         if (this.p == 0) {
             return sb.append("0").toString();
         }
@@ -154,5 +168,9 @@ public final class Rational implements FieldElement<Rational> {
         Real real = Real.from((double)this.p / this.q);
         int result = real.hashCode();
         return result * 31;
+    }
+
+    public static Rational zero() {
+        return Rational.from(0);
     }
 }

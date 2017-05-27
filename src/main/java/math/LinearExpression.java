@@ -24,8 +24,15 @@
 
 package math;
 
+import java.util.List;
+
 public interface LinearExpression<T extends FieldElement<T>> {
+
+    int numberOfTerms();
+
+    LinearTerm<T> getTerm(int i);
 
     LinearExpression<T> times(T scalar);
 
+    LinearExpression<T> plus(LinearExpression<T> otherExpression);
 }

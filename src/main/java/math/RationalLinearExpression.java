@@ -28,66 +28,45 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.*;
 
-public class RealLinearExpression implements LinearExpression<Real> {
+public class RationalLinearExpression implements LinearExpression<Rational> {
 
-    private final List<LinearTerm<Real>> variableTerms;
+    private final List<LinearTerm<Rational>> variableTerms;
 
-    private RealLinearExpression(Collection<LinearTerm<Real>> variableTerms) {
+    private RationalLinearExpression(Collection<LinearTerm<Rational>> variableTerms) {
         this.variableTerms = ImmutableList.copyOf(variableTerms);
     }
 
-    RealLinearExpression(double... coefficients) {
-        ImmutableList.Builder<LinearTerm<Real>> terms = ImmutableList.builder();
+    RationalLinearExpression(Rational... coefficients) {
+        ImmutableList.Builder<LinearTerm<Rational>> terms = ImmutableList.builder();
         for (int i = 0; i < coefficients.length; i++) {
-            LinearTerm<Real> term = new LinearTerm<>(i, Real.from(coefficients[i]));
+            LinearTerm<Rational> term = new LinearTerm<>(i, coefficients[i]);
             terms.add(term);
         }
         this.variableTerms = terms.build();
     }
 
     @Override
-    public String toString() {
-        LinearTerm<Real> term;
-        StringBuilder s = new StringBuilder();
-        if (variableTerms.size() > 0) {
-            term = variableTerms.get(0);
-            s.append(term.toString());
-        }
-        for (int i = 1; i < variableTerms.size(); i++) {
-            term = variableTerms.get(i);
-            if (term.getCoefficient().compareTo(Real.zero()) >= 0) {
-                s.append(" + ");
-            } else {
-                s.append(" - ");
-            }
-            s.append(term.getCoefficient().abs()).append("x")
-             .append(term.getVariable());
-        }
-        return s.toString();
-    }
-
-    @Override
-    public LinearExpression<Real> times(Real scalar) {
-        ImmutableList.Builder<LinearTerm<Real>> linearTermBuilder = ImmutableList.builder();
-        for (LinearTerm<Real> term : this.variableTerms) {
+    public LinearExpression<Rational> times(Rational scalar) {
+        ImmutableList.Builder<LinearTerm<Rational>> linearTermBuilder = ImmutableList.builder();
+        for (LinearTerm<Rational> term : this.variableTerms) {
             linearTermBuilder.add(term.times(scalar));
         }
-        return new RealLinearExpression(linearTermBuilder.build());
+        return new RationalLinearExpression(linearTermBuilder.build());
     }
 
     @Override
-    public LinearExpression<Real> plus(LinearExpression<Real> otherExpression) {
+    public LinearExpression<Rational> plus(LinearExpression<Rational> otherExpression) {
         if (this.numberOfTerms() != otherExpression.numberOfTerms()) {
             throw new IllegalArgumentException("The two expressions must have corresponding terms.");
         }
-        ImmutableList.Builder<LinearTerm<Real>> linearTermBuilder = ImmutableList.builder();
+        ImmutableList.Builder<LinearTerm<Rational>> linearTermBuilder = ImmutableList.builder();
         for (int i = 0; i < this.numberOfTerms(); i++) {
             if (this.getTerm(i).getVariable() != otherExpression.getTerm(i).getVariable()) {
                 throw new IllegalArgumentException("The two expressions must have corresponding terms.");
             }
             linearTermBuilder.add(this.getTerm(i).plus(otherExpression.getTerm(i)));
         }
-        return new RealLinearExpression(linearTermBuilder.build());
+        return new RationalLinearExpression(linearTermBuilder.build());
     }
 
     @Override
@@ -96,8 +75,27 @@ public class RealLinearExpression implements LinearExpression<Real> {
     }
 
     @Override
-    public LinearTerm<Real> getTerm(int i) {
+    public LinearTerm<Rational> getTerm(int i) {
         return this.variableTerms.get(i);
     }
 
+    @Override
+    public String toString() {
+        LinearTerm<Rational> term;
+        StringBuilder s = new StringBuilder();
+        if (variableTerms.size() > 0) {
+            term = variableTerms.get(0);
+            s.append(term.toString());
+        }
+        for (int i = 1; i < variableTerms.size(); i++) {
+            term = variableTerms.get(i);
+            if (term.getCoefficient().compareTo(Rational.zero()) >= 0) {
+                s.append(" + ");
+            } else {
+                s.append(" - ");
+            }
+            s.append(term.getCoefficient().printAbs()).append("x").append(term.getVariable());
+        }
+        return s.toString();
+    }
 }

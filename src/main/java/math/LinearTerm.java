@@ -27,11 +27,11 @@ package math;
 public class LinearTerm<T extends FieldElement<T>> {
 
     private final int variable;
-    private final FieldElement<T> coefficient;
+    private final T coefficient;
 
-    LinearTerm(final FieldElement<T> coefficient, final int variable) {
-        this.coefficient = coefficient;
+    LinearTerm(final int variable, final T coefficient) {
         this.variable = variable;
+        this.coefficient = coefficient;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class LinearTerm<T extends FieldElement<T>> {
         return this.coefficient + "x" + variable;
     }
 
-    FieldElement<T> getCoefficient() {
+    T getCoefficient() {
         return this.coefficient;
     }
 
@@ -47,7 +47,13 @@ public class LinearTerm<T extends FieldElement<T>> {
         return this.variable;
     }
 
+    LinearTerm<T> plus(LinearTerm<T> otherTerm) {
+        if (otherTerm.getVariable() != this.getVariable()) {
+            throw new IllegalStateException("Two terms must have the same variable part to be added.");
+        }
+        return new LinearTerm<>(this.variable, this.coefficient.plus(otherTerm.coefficient));
+    }
     public LinearTerm<T> times(T scalar) {
-        return new LinearTerm<>(this.coefficient.times(scalar), this.variable);
+        return new LinearTerm<>(this.variable, this.coefficient.times(scalar));
     }
 }

@@ -45,12 +45,13 @@ class SystemOfLinearEquations<T extends FieldElement<T>> {
         equations.set(equationJ, newEquationI);
     }
 
-    void multiplyEquation(int equation, T scalar) {
+    void scaleEquation(int equation, T scalar) {
         equations.set(equation, equations.get(equation).multiplyBy(scalar));
     }
 
-    void multiplyAndAdd(int equationI, int equationJ, T scalar) {
-
+    void scaleAndAdd(int equationI, int equationJ, T scalar) {
+        LinearEquation<T> scaledEquationI = this.equations.get(equationI).multiplyBy(scalar);
+        equations.set(equationJ, equations.get(equationJ).add(scaledEquationI));
     }
 
     public String toString() {
