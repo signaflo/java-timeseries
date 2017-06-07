@@ -263,7 +263,8 @@ public final class ArimaForecast implements Forecast {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final String newLine = System.lineSeparator();
+        StringBuilder builder = new StringBuilder(newLine);
         builder.append(String.format("%-18.18s", "| Date "))
                .append("  ")
                .append(String.format("%-13.13s", "| Forecast "))
@@ -272,9 +273,9 @@ public final class ArimaForecast implements Forecast {
                .append("  ")
                .append(String.format("%-13.13s", "| Upper " + String.format("%.1f", (1 - alpha) * 100) + "%"))
                .append(" |")
-               .append("\n")
+               .append(newLine)
                .append(String.format("%-70.70s", " -------------------------------------------------------------- "))
-               .append("\n");
+               .append(newLine);
         for (int i = 0; i < this.forecast.n(); i++) {
             builder.append(String.format("%-18.18s", "| " + forecast.observationTimes().get(i).toLocalDateTime()))
                    .append("  ")
@@ -284,7 +285,7 @@ public final class ArimaForecast implements Forecast {
                    .append("  ")
                    .append(String.format("%-13.13s", "| " + Double.toString(this.upperValues.at(i))))
                    .append(" |")
-                   .append("\n");
+                   .append(newLine);
         }
         return builder.toString();
     }
