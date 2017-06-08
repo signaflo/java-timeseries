@@ -8,9 +8,7 @@ import org.junit.rules.ExpectedException;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.models.Forecast;
-import timeseries.models.arima.Arima.ModelCoefficients;
 import timeseries.models.arima.Arima.Constant;
-import timeseries.models.arima.Arima.ModelOrder;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -33,24 +31,24 @@ public class ArimaSpec {
     @Test
     public void whenSimulateNLessThanOneThenException() {
         exception.expect(IllegalArgumentException.class);
-        Arima.Simulation.newBuilder().setN(0);
+        Simulation.newBuilder().setN(0);
     }
 
     @Test
     public void whenSimulateDistributionNullThenNPE() {
         exception.expect(NullPointerException.class);
-        Arima.Simulation.newBuilder().setDistribution(null);
+        Simulation.newBuilder().setDistribution(null);
     }
 
     @Test
     public void whenSimulateCoefficientsNullThenNPE() {
         exception.expect(NullPointerException.class);
-        Arima.Simulation.newBuilder().setCoefficients(null);
+        Simulation.newBuilder().setCoefficients(null);
     }
 
     @Test
     public void whenSimulateThenSeriesOfSizeNReturned() {
-        TimeSeries series = Arima.Simulation.newBuilder().setN(50).build().sim();
+        TimeSeries series = Simulation.newBuilder().setN(50).build().sim();
         assertThat(series.n(), is(50));
     }
 
@@ -186,9 +184,9 @@ public class ArimaSpec {
 
     @Test
     public void testModelCoefficientsEqualsAndHashCode() {
-        Arima.ModelCoefficients coeffs1 = Arima.ModelCoefficients.newBuilder().setARCoeffs(0.3).build();
-        Arima.ModelCoefficients coeffs2 = Arima.ModelCoefficients.newBuilder().setMACoeffs(-0.2).build();
-        Arima.ModelCoefficients coeffs3 = Arima.ModelCoefficients.newBuilder().setARCoeffs(0.3).build();
+        ModelCoefficients coeffs1 = ModelCoefficients.newBuilder().setARCoeffs(0.3).build();
+        ModelCoefficients coeffs2 = ModelCoefficients.newBuilder().setMACoeffs(-0.2).build();
+        ModelCoefficients coeffs3 = ModelCoefficients.newBuilder().setARCoeffs(0.3).build();
         assertThat(coeffs1, is(coeffs1));
         assertThat(coeffs1.hashCode(), is(coeffs3.hashCode()));
         assertThat(coeffs1, is(coeffs3));

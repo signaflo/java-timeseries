@@ -271,7 +271,7 @@ public final class TimePeriod {
 
     @Override
     public String toString() {
-        return "timeUnit: " + timeUnit + "\nperiodLength: " + periodLength;
+        return periodLength + " " + timeUnit + ((periodLength > 1) ? "s" : "");
     }
 
     @Override

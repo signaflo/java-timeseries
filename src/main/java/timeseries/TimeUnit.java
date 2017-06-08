@@ -118,4 +118,9 @@ public enum TimeUnit {
                ((thisDuration.getNano() * this.unitLength) / nanoSecondsPerSecond);
 
     }
+
+    @Override
+    public String toString() {
+        return this.name().toLowerCase();
+    }
 }

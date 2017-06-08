@@ -687,9 +687,6 @@ public final class TimeSeries implements DataSet {
     }
     // ********** Plots ********** //
 
-    // ********** Boiler Plate ********** //
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -714,41 +711,9 @@ public final class TimeSeries implements DataSet {
 
     @Override
     public String toString() {
-        NumberFormat numFormatter = new DecimalFormat("#0.0000");
-        StringBuilder builder = new StringBuilder();
-        builder.append("n: ").append(n).append("\nmean: ").append(numFormatter.format(mean)).append("\nseries: ");
-        if (series.length > 6) {
-            for (double d : DoubleFunctions.slice(series, 0, 3)) {
-                builder.append(numFormatter.format(d)).append(", ");
-            }
-            builder.append("..., ");
-            for (double d : DoubleFunctions.slice(series, n - 3, n - 1)) {
-                builder.append(numFormatter.format(d)).append(", ");
-            }
-            builder.append(numFormatter.format(series[n - 1]));
-        } else {
-            for (int i = 0; i < series.length - 1; i++) {
-                builder.append(numFormatter.format(series[i])).append(", ");
-            }
-            builder.append(numFormatter.format(series[n - 1]));
-        }
-        builder.append("\nobservationTimes: ");
-        if (series.length > 6) {
-            for (OffsetDateTime date : observationTimes.subList(0, 3)) {
-                builder.append(date.toString()).append(", ");
-            }
-            builder.append("..., ");
-            for (OffsetDateTime date : observationTimes.subList(n - 3, n - 1)) {
-                builder.append(date.toString()).append(", ");
-            }
-            builder.append(observationTimes.get(n - 1).toString());
-        } else {
-            for (int i = 0; i < observationTimes.size() - 1; i++) {
-                builder.append(observationTimes.get(i).toString()).append(", ");
-            }
-            builder.append(observationTimes.get(n - 1).toString());
-        }
-        return builder.append("\ntimePeriod: \n").append(timePeriod).toString();
+        String newLine = System.lineSeparator();
+        NumberFormat numFormatter = new DecimalFormat("#0.00");
+        return newLine + "number of observations: " + n + newLine + "mean: " + numFormatter.format(mean) + newLine +
+               "std: " + numFormatter.format(stdDeviation()) + newLine + "period: " + timePeriod;
     }
-    // ********** Boiler Plate ********** //
 }
