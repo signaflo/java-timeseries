@@ -21,7 +21,6 @@
  *
  * Jacob Rachiele
  */
-
 package timeseries.models.arima;
 
 import data.DoubleFunctions;
@@ -51,7 +50,6 @@ import static stats.Statistics.sumOfSquared;
  * @author Jacob Rachiele
  */
 public final class Arima implements Model {
-
 
     public enum Constant {
         INCLUDE,
@@ -362,16 +360,17 @@ public final class Arima implements Model {
                                            final double[] maCoeffs, final double mean, final ModelOrder order) {
         int n = differencedSeries.n();
         final int m = arCoeffs.length;
-        final double[] extendedFit = new double[2 * m + n];
-        final double[] extendedSeries = new double[2 * m + n];
-        final double[] residuals = new double[2 * m + n];
+        final int extendedLength = 2 * m + n;
+        final double[] extendedFit = new double[extendedLength];
+        final double[] extendedSeries = new double[extendedLength];
+        final double[] residuals = new double[extendedLength];
         for (int i = 0; i < differencedSeries.n(); i++) {
             n--;
             extendedSeries[i] = differencedSeries.at(n);
         }
 
         n = differencedSeries.n();
-        for (int t = n; t < n + 2 * m; t++) {
+        for (int t = n; t < extendedLength; t++) {
             extendedSeries[t] = mean;
             for (int i = 0; i < arCoeffs.length; i++) {
                 if (Math.abs(arCoeffs[i]) > 0) {
