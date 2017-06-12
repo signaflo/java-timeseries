@@ -109,7 +109,7 @@ public final class RandomWalkForecast implements Forecast {
     }
 
     private TimeSeries getFcstErrors() {
-        double[] errors = new double[forecast.n()];
+        double[] errors = new double[forecast.size()];
         for (int t = 0; t < errors.length; t++) {
             errors[t] = criticalValue * Math.sqrt(t + 1);
         }
@@ -120,7 +120,7 @@ public final class RandomWalkForecast implements Forecast {
     public void plot() {
         new Thread(() -> {
             final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
-            final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().n());
+            final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().size());
             for (OffsetDateTime dateTime : model.timeSeries().observationTimes()) {
                 xAxisObs.add(Date.from(dateTime.toInstant()));
             }

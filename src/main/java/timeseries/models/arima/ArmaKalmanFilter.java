@@ -3,6 +3,8 @@ package timeseries.models.arima;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.data.RowD1Matrix64F;
 
+import static java.lang.Math.PI;
+import static java.lang.Math.log;
 import static org.ejml.ops.CommonOps.*;
 
 /**
@@ -292,7 +294,7 @@ final class ArmaKalmanFilter {
         f = predictionErrorVariance[0] = predictedCovarianceFirstColumn.get(0);
 
         double ssq = ((predictionError[0] * predictionError[0]) / f);
-        double sumlog = Math.log(f);
+        double sumlog = log(f);
         // Initialize filteredState.
         RowD1Matrix64F newInfo = this.predictedCovarianceFirstColumn.copy();
         scale(predictionError[0], newInfo);
@@ -327,7 +329,7 @@ final class ArmaKalmanFilter {
             extractColumn(predictedStateCovariance, 0, predictedCovarianceFirstColumn);
             f = predictionErrorVariance[t] = predictedCovarianceFirstColumn.get(0);
             ssq += ((predictionError[t] * predictionError[t]) / f);
-            sumlog += Math.log(f);
+            sumlog += log(f);
 
             // Update filteredState.
             newInfo = this.predictedCovarianceFirstColumn.copy();
@@ -362,7 +364,7 @@ final class ArmaKalmanFilter {
             this.ssq = ssq;
             this.sumlog = sumlog;
             this.sigma2 = ssq / n;
-            this.logLikelihood = -0.5 * (n * (Math.log(sigma2) + Math.log(2 * Math.PI) + 1.0) + sumlog);
+            this.logLikelihood = (-n / 2.0) * (log(2 * PI * sigma2) + 1.0) - (0.5 * sumlog);
             this.residuals = residuals.clone();
         }
 

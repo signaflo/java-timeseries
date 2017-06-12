@@ -72,7 +72,7 @@ public final class DoubleDataSet implements DataSet {
     }
 
     @Override
-    public final int n() {
+    public final int size() {
         return this.data.length;
     }
 

@@ -113,7 +113,7 @@ public class Plots {
      */
     public static void plot(final DataSet dataSet) {
         new Thread(() -> {
-            final double[] indices = new double[dataSet.n()];
+            final double[] indices = new double[dataSet.size()];
             for (int i = 0; i < indices.length; i++) {
                 indices[i] = i;
             }

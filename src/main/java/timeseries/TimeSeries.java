@@ -605,8 +605,8 @@ public final class TimeSeries implements DataSet {
     }
 
     @Override
-    public int n() {
-        return this.dataSet.n();
+    public int size() {
+        return this.dataSet.size();
     }
 
     @Override

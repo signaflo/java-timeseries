@@ -36,7 +36,7 @@ public class RandomWalkSpec {
     @Test
     public void whenSimulatedThenSeriesHasGivenLength() {
         TimeSeries simulated = RandomWalk.simulate(0, 2, 10);
-        assertThat(simulated.n(), is(10));
+        assertThat(simulated.size(), is(10));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class RandomWalkSpec {
     public void whenPointForecastThenEqualToLastObserved() {
         TimeSeries series = TestData.sydneyAir();
         RandomWalk model = new RandomWalk(series);
-        assertThat(model.pointForecast(1).asArray()[0], is(series.at(series.n() - 1)));
+        assertThat(model.pointForecast(1).asArray()[0], is(series.at(series.size() - 1)));
     }
 
     @Test

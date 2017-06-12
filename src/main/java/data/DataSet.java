@@ -40,7 +40,7 @@ public interface DataSet {
      *
      * @return the size of the data set.
      */
-    int n();
+    int size();
 
     /**
      * Multiply every element of this data set with the corresponding element of the given data set.

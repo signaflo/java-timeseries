@@ -44,7 +44,7 @@ public final class MeanModel implements Model {
         this.timeSeries = observed;
         this.mean = this.timeSeries.mean();
         this.fittedSeries = new TimeSeries(observed.timePeriod(), observed.observationTimes().get(0),
-                                           DoubleFunctions.fill(observed.n(), this.mean));
+                                           DoubleFunctions.fill(observed.size(), this.mean));
     }
 
     @Override
@@ -54,7 +54,7 @@ public final class MeanModel implements Model {
 
     @Override
     public TimeSeries pointForecast(final int steps) {
-        int n = timeSeries.n();
+        int n = timeSeries.size();
         TimePeriod timePeriod = timeSeries.timePeriod();
 
         final double[] forecasted = DoubleFunctions.fill(steps, this.mean);

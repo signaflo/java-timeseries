@@ -107,7 +107,7 @@ public class DataSetSpec {
     double[] data = new double[] { 5.0, 7.5 };
     DataSet dataSet = new DoubleDataSet(data);
     long expected = 2;
-    long actual = dataSet.n();
+    long actual = dataSet.size();
     assertThat(actual, is(equalTo(expected)));
   }
 

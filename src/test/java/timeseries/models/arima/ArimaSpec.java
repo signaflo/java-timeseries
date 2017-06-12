@@ -22,8 +22,8 @@ public class ArimaSpec {
     @Test
     public void whenZerosThenFittedAreZero() {
         TimeSeries timeSeries = new TimeSeries(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        double[] expected = new double[timeSeries.n()];
-        ModelOrder order = Arima.order(1, 0, 1, 0, 0, 0, Constant.INCLUDE);
+        double[] expected = new double[timeSeries.size()];
+        ModelOrder order = ModelOrder.order(1, 0, 1, 0, 0, 0, Constant.INCLUDE);
         Arima arimaModel = Arima.model(timeSeries, order, Arima.FittingStrategy.USS);
         assertThat(arimaModel.fittedSeries().asArray(), is(expected));
     }
@@ -49,13 +49,13 @@ public class ArimaSpec {
     @Test
     public void whenSimulateThenSeriesOfSizeNReturned() {
         TimeSeries series = Simulation.newBuilder().setN(50).build().sim();
-        assertThat(series.n(), is(50));
+        assertThat(series.size(), is(50));
     }
 
     @Test
     public void whenArimaModelFitThenParametersSimilarToROutput() throws Exception {
         TimeSeries series = TestData.livestock();
-        ModelOrder order = Arima.order(1, 1, 1);
+        ModelOrder order = ModelOrder.order(1, 1, 1);
         Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.USSML);
         assertThat(model.coefficients().arCoeffs()[0], is(closeTo(0.64, 0.02)));
         assertThat(model.coefficients().maCoeffs()[0], is(closeTo(-0.50, 0.02)));
@@ -64,7 +64,7 @@ public class ArimaSpec {
     @Test
     public void whenArimaModelFitDebitcardsThenParametersSimilarToROutput() throws Exception {
         TimeSeries series = TestData.debitcards();
-        ModelOrder order = Arima.order(1, 1, 1, 1, 1, 1);
+        ModelOrder order = ModelOrder.order(1, 1, 1, 1, 1, 1);
         Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.USSML);
 
         ModelCoefficients expected = ModelCoefficients.newBuilder()
@@ -81,7 +81,6 @@ public class ArimaSpec {
     @Test
     public void whenArimaModelForecastThenForecastValuesCorrect() throws Exception {
         TimeSeries series = TestData.livestock();
-        ModelOrder order = Arima.order(1, 1, 1, 0, 0, 0, Constant.EXCLUDE);
         ModelCoefficients coeffs = ModelCoefficients.newBuilder().setARCoeffs(0.6480679).setMACoeffs(-0.5035514).
                 setDifferences(1).build();
         Arima model = Arima.model(series, coeffs, TimePeriod.oneYear());
@@ -137,8 +136,8 @@ public class ArimaSpec {
     @Test
     public void testEqualsAndHashCode() {
         TimeSeries series = TestData.livestock();
-        ModelOrder order = Arima.order(1, 1, 1);
-        ModelOrder order2 = Arima.order(1, 0, 1, Constant.INCLUDE);
+        ModelOrder order = ModelOrder.order(1, 1, 1);
+        ModelOrder order2 = ModelOrder.order(1, 0, 1, Constant.INCLUDE);
         Arima model1 = Arima.model(series, order);
         Arima model2 = Arima.model(series, order2, Arima.FittingStrategy.CSS);
         assertThat(model1, is(model1));
@@ -153,9 +152,9 @@ public class ArimaSpec {
 
     @Test
     public void testModelOrderEqualsAndHashCode() {
-        ModelOrder order1 = Arima.order(0, 1, 0);
-        ModelOrder order2 = Arima.order(1, 0, 1);
-        ModelOrder order3 = Arima.order(0, 1, 0);
+        ModelOrder order1 = ModelOrder.order(0, 1, 0);
+        ModelOrder order2 = ModelOrder.order(1, 0, 1);
+        ModelOrder order3 = ModelOrder.order(0, 1, 0);
         ModelOrder nullOrder = null;
         String aNonModelOrder = "";
         assertThat(order1, is(order1));

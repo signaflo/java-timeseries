@@ -50,7 +50,7 @@ public final class RandomWalk implements Model {
      * @param observed the observed series.
      */
     public RandomWalk(@NonNull final TimeSeries observed) {
-        if (observed.n() < 1) {
+        if (observed.size() < 1) {
             throw new IllegalArgumentException("A random walk model requires at least one observation.");
         }
         this.timeSeries = observed;
@@ -117,7 +117,7 @@ public final class RandomWalk implements Model {
 
     @Override
     public TimeSeries pointForecast(final int steps) {
-        int n = timeSeries.n();
+        int n = timeSeries.size();
         TimePeriod timePeriod = timeSeries.timePeriod();
         final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
                                                    .plus(timePeriod.periodLength() * timePeriod.timeUnit().unitLength(),
@@ -150,17 +150,17 @@ public final class RandomWalk implements Model {
     }
 
     private TimeSeries fitSeries() {
-        final double[] fitted = new double[timeSeries.n()];
+        final double[] fitted = new double[timeSeries.size()];
         fitted[0] = timeSeries.at(0);
-        for (int t = 1; t < timeSeries.n(); t++) {
+        for (int t = 1; t < timeSeries.size(); t++) {
             fitted[t] = timeSeries.at(t - 1);
         }
         return new TimeSeries(timeSeries.timePeriod(), timeSeries.observationTimes().get(0), fitted);
     }
 
     private TimeSeries calculateResiduals() {
-        final double[] residuals = new double[timeSeries.n()];
-        for (int t = 1; t < timeSeries.n(); t++) {
+        final double[] residuals = new double[timeSeries.size()];
+        for (int t = 1; t < timeSeries.size(); t++) {
             residuals[t] = timeSeries.at(t) - fittedSeries.at(t);
         }
         return new TimeSeries(timeSeries.timePeriod(), timeSeries.observationTimes().get(0), residuals);

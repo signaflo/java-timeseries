@@ -147,7 +147,7 @@ public final class ArimaForecast implements Forecast {
     }
 
     private double[] getPsiCoefficients() {
-        final int steps = this.forecast.n();
+        final int steps = this.forecast.size();
         LagPolynomial arPoly = LagPolynomial.autoRegressive(model.arSarCoefficients());
         LagPolynomial diffPoly = LagPolynomial.differences(model.order().d);
         LagPolynomial seasDiffPoly = LagPolynomial.seasonalDifferences(model.seasonalFrequency(), model.order().D);
@@ -171,7 +171,7 @@ public final class ArimaForecast implements Forecast {
 
     private double[] getStdErrors(final double criticalValue) {
         double[] psiCoeffs = getPsiCoefficients();
-        double[] stdErrors = new double[this.forecast.n()];
+        double[] stdErrors = new double[this.forecast.size()];
         double sigma = sqrt(model.sigma2());
         double sd;
         double psiWeightSum = 0.0;
@@ -188,7 +188,7 @@ public final class ArimaForecast implements Forecast {
     public void plot() {
         new Thread(() -> {
             final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
-            final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().n());
+            final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().size());
             for (OffsetDateTime dateTime : model.timeSeries().observationTimes()) {
                 xAxisObs.add(Date.from(dateTime.toInstant()));
             }
@@ -276,7 +276,7 @@ public final class ArimaForecast implements Forecast {
                .append(newLine)
                .append(String.format("%-70.70s", " -------------------------------------------------------------- "))
                .append(newLine);
-        for (int i = 0; i < this.forecast.n(); i++) {
+        for (int i = 0; i < this.forecast.size(); i++) {
             builder.append(String.format("%-18.18s", "| " + forecast.observationTimes().get(i).toLocalDateTime()))
                    .append("  ")
                    .append(String.format("%-13.13s", "| " +  Double.toString(forecast.at(i))))

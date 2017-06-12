@@ -52,9 +52,76 @@ public class ModelOrder {
         this.constant = (constant == Arima.Constant.INCLUDE) ? 1 : 0;
     }
 
+    /**
+     * Create and return a new non-seasonal model order with the given number of coefficients. A constant will be fit
+     * only if d is equal to 0.
+     *
+     * @param p the number of non-seasonal autoregressive coefficients.
+     * @param d the degree of non-seasonal differencing.
+     * @param q the number of non-seasonal moving-average coefficients.
+     * @return a new ARIMA model order.
+     */
+    public static ModelOrder order(final int p, final int d, final int q) {
+        Arima.Constant constant = (d == 0) ? Arima.Constant.INCLUDE : Arima.Constant.EXCLUDE;
+        return new ModelOrder(p, d, q, 0, 0, 0, constant);
+    }
+
+    /**
+     * Create and return a new non-seasonal model order with the given number of coefficients and indication of
+     * whether or not to fit a constant.
+     *
+     * @param p        the number of non-seasonal autoregressive coefficients.
+     * @param d        the degree of non-seasonal differencing.
+     * @param q        the number of non-seasonal moving-average coefficients.
+     * @param constant whether or not to fit a constant to the model.
+     * @return a new ARIMA model order.
+     */
+    public static ModelOrder order(final int p, final int d, final int q, final Arima.Constant constant) {
+        return new ModelOrder(p, d, q, 0, 0, 0, constant);
+    }
+
+    /**
+     * Create a new ModelOrder using the provided number of autoregressive and moving-average parameters, as well as the
+     * degrees of differencing. A constant will be fit only if both d and D are equal to 0.
+     *
+     * @param p the number of non-seasonal autoregressive coefficients.
+     * @param d the degree of non-seasonal differencing.
+     * @param q the number of non-seasonal moving-average coefficients.
+     * @param P the number of seasonal autoregressive coefficients.
+     * @param D the degree of seasonal differencing.
+     * @param Q the number of seasonal moving-average coefficients.
+     * @return a new ARIMA model order.
+     */
+    public static ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q) {
+        Arima.Constant constant = (d == 0 && D == 0) ? Arima.Constant.INCLUDE : Arima.Constant.EXCLUDE;
+        return new ModelOrder(p, d, q, P, D, Q, constant);
+    }
+
+    /**
+     * Create a new ModelOrder using the provided number of autoregressive and moving-average parameters, as well as the
+     * degrees of differencing and indication of whether or not to fit a constant.
+     *
+     * @param p        the number of non-seasonal autoregressive coefficients.
+     * @param d        the degree of non-seasonal differencing.
+     * @param q        the number of non-seasonal moving-average coefficients.
+     * @param P        the number of seasonal autoregressive coefficients.
+     * @param D        the degree of seasonal differencing.
+     * @param Q        the number of seasonal moving-average coefficients.
+     * @param constant determines whether or not a constant is fitted with the model.
+     * @return a new ARIMA model order.
+     */
+    public static ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q,
+                                   final Arima.Constant constant) {
+        return new ModelOrder(p, d, q, P, D, Q, constant);
+    }
+
     // This returns the total number of nonseasonal and seasonal ARMA parameters.
     int sumARMA() {
         return this.p + this.q + this.P + this.Q;
+    }
+
+    int npar() {
+        return this.sumARMA() + this.constant;
     }
 
     @Override

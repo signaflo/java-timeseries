@@ -161,7 +161,7 @@ public final class MeanForecast implements Forecast {
     public void plot() {
         new Thread(() -> {
             final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
-            final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().n());
+            final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().size());
             for (OffsetDateTime dateTime : model.timeSeries().observationTimes()) {
                 xAxisObs.add(Date.from(dateTime.toInstant()));
             }
@@ -198,16 +198,16 @@ public final class MeanForecast implements Forecast {
     }
 
     private TimeSeries computeUpperPredictionBounds() {
-        double[] upperPredictionValues = new double[this.forecast.n()];
-        for (int t = 0; t < this.forecast.n(); t++) {
+        double[] upperPredictionValues = new double[this.forecast.size()];
+        for (int t = 0; t < this.forecast.size(); t++) {
             upperPredictionValues[t] = forecast.at(t) + this.fcstErrors.at(t);
         }
         return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
     }
 
     private TimeSeries computeLowerPredictionBounds() {
-        double[] lowerPredictionValues = new double[this.forecast.n()];
-        for (int t = 0; t < this.forecast.n(); t++) {
+        double[] lowerPredictionValues = new double[this.forecast.size()];
+        for (int t = 0; t < this.forecast.size(); t++) {
             lowerPredictionValues[t] = forecast.at(t) - this.fcstErrors.at(t);
         }
         return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), lowerPredictionValues);
@@ -215,9 +215,9 @@ public final class MeanForecast implements Forecast {
 
     private TimeSeries getFcstErrors(final int steps, final double alpha) {
         double[] errors = new double[steps];
-        double criticalValue = new StudentsT(model.timeSeries().n() - 1).quantile(1 - alpha / 2);
+        double criticalValue = new StudentsT(model.timeSeries().size() - 1).quantile(1 - alpha / 2);
         double variance = model.timeSeries().variance();
-        double meanStdError = variance / model.timeSeries().n();
+        double meanStdError = variance / model.timeSeries().size();
         double fcstStdError = Math.sqrt(variance + meanStdError);
         for (int t = 0; t < errors.length; t++) {
             errors[t] = criticalValue * fcstStdError;

@@ -187,7 +187,7 @@ public class TimeSeriesSpec {
         OffsetDateTime expectedStart = OffsetDateTime.of(LocalDateTime.of(1956, 1, 1, 0, 0), ZoneOffset.ofHours(0));
         OffsetDateTime expectedEnd = OffsetDateTime.of(LocalDateTime.of(1996, 1, 1, 0, 0), ZoneOffset.ofHours(0));
         assertThat(aggregated.observationTimes().get(0), is(equalTo(expectedStart)));
-        assertThat(aggregated.observationTimes().get(aggregated.n() - 1), is(equalTo(expectedEnd)));
+        assertThat(aggregated.observationTimes().get(aggregated.size() - 1), is(equalTo(expectedEnd)));
     }
 
     @Test
