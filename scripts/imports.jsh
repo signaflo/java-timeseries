@@ -20,4 +20,5 @@ import static data.operations.Operators.*;
 import static data.visualization.Plots.*;
 import static timeseries.TestData.*;
 import static timeseries.models.arima.Arima.*;
+import static timeseries.models.arima.ModelOrder.*;
 import static stats.Statistics.*;

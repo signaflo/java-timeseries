@@ -10,6 +10,8 @@ import timeseries.TimeSeries;
 import timeseries.models.Forecast;
 import timeseries.models.arima.Arima.Constant;
 
+import java.util.Arrays;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
@@ -24,7 +26,7 @@ public class ArimaSpec {
         TimeSeries timeSeries = new TimeSeries(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         double[] expected = new double[timeSeries.size()];
         ModelOrder order = ModelOrder.order(1, 0, 1, 0, 0, 0, Constant.INCLUDE);
-        Arima arimaModel = Arima.model(timeSeries, order, Arima.FittingStrategy.USS);
+        Arima arimaModel = Arima.model(timeSeries, order, Arima.FittingStrategy.CSS);
         assertThat(arimaModel.fittedSeries().asArray(), is(expected));
     }
 
@@ -56,7 +58,7 @@ public class ArimaSpec {
     public void whenArimaModelFitThenParametersSimilarToROutput() throws Exception {
         TimeSeries series = TestData.livestock();
         ModelOrder order = ModelOrder.order(1, 1, 1);
-        Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.USSML);
+        Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.CSSML);
         assertThat(model.coefficients().arCoeffs()[0], is(closeTo(0.64, 0.02)));
         assertThat(model.coefficients().maCoeffs()[0], is(closeTo(-0.50, 0.02)));
     }
@@ -65,11 +67,11 @@ public class ArimaSpec {
     public void whenArimaModelFitDebitcardsThenParametersSimilarToROutput() throws Exception {
         TimeSeries series = TestData.debitcards();
         ModelOrder order = ModelOrder.order(1, 1, 1, 1, 1, 1);
-        Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.USSML);
+        Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.CSSML);
 
         ModelCoefficients expected = ModelCoefficients.newBuilder()
-                                                      .setARCoeffs(-0.1042)
-                                                      .setMACoeffs(-0.6213)
+                                                      .setARCoeffs(-0.1040)
+                                                      .setMACoeffs(-0.6214)
                                                       .setSeasonalARCoeffs(0.0051)
                                                       .setSeasonalMACoeffs(-0.5713)
                                                       .setDifferences(1)
@@ -131,6 +133,14 @@ public class ArimaSpec {
                                                           .build();
         Arima model = Arima.model(TestData.livestock(), coefficients, Arima.FittingStrategy.ML);
         assertThat(model.coefficients().intercept(), is(closeTo(4.85376578 * (1 - 0.01803952), 1E-4)));
+    }
+
+    @Test
+    public void testSimulation() {
+        ModelCoefficients simCoefficients = ModelCoefficients.newBuilder().setARCoeffs(0.3).build();
+        TimeSeries series = Simulation.newBuilder().setCoefficients(simCoefficients).sim();
+        Arima model = Arima.model(series, ModelOrder.order(1, 0, 0));
+        System.out.println(Arrays.toString(model.arSarCoefficients()));
     }
 
     @Test
