@@ -150,7 +150,7 @@ public final class ArimaForecast implements Forecast {
         final int steps = this.forecast.size();
         LagPolynomial arPoly = LagPolynomial.autoRegressive(model.arSarCoefficients());
         LagPolynomial diffPoly = LagPolynomial.differences(model.order().d);
-        LagPolynomial seasDiffPoly = LagPolynomial.seasonalDifferences(model.seasonalFrequency(), model.order().D);
+        LagPolynomial seasDiffPoly = LagPolynomial.seasonalDifferences(model.observationFrequency(), model.order().D);
         double[] phi = diffPoly.times(seasDiffPoly).times(arPoly).inverseParams();
         double[] theta = model.maSmaCoefficients();
         final double[] psi = new double[steps];

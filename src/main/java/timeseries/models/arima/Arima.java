@@ -43,13 +43,10 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
-import java.util.List;
 
-import static data.DoubleFunctions.*;
+import static data.DoubleFunctions.slice;
 import static data.operations.Operators.differenceOf;
-import static java.lang.Math.PI;
-import static java.lang.Math.abs;
-import static java.lang.Math.log;
+import static java.lang.Math.*;
 import static stats.Statistics.sumOfSquared;
 
 /**
@@ -59,37 +56,28 @@ import static stats.Statistics.sumOfSquared;
  */
 public final class Arima implements Model {
 
-    public enum Constant {
-        INCLUDE,
-        EXCLUDE
-    }
-
     private static final double EPSILON = Math.ulp(1.0);
     private static final double DEFAULT_TOLERANCE = Math.sqrt(EPSILON);
-
     private final TimeSeries observations;
     private final TimeSeries differencedSeries;
     private final TimeSeries fittedSeries;
     private final TimeSeries residuals;
-    private final int seasonalFrequency;
-
+    private final int observationFrequency;
     private final ModelOrder order;
     private final ModelInformation modelInfo;
     private final ModelCoefficients modelCoefficients;
     private final FittingStrategy fittingStrategy;
-
     private final double mean;
     private final double[] arSarCoeffs;
     private final double[] maSmaCoeffs;
     private final double[] stdErrors;
-
     private Arima(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle,
                   final FittingStrategy fittingStrategy) {
         this.observations = observations;
         this.order = order;
         this.fittingStrategy = fittingStrategy;
-        this.seasonalFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
-        this.differencedSeries = observations.difference(1, order.d).difference(seasonalFrequency, order.D);
+        this.observationFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
+        this.differencedSeries = observations.difference(1, order.d).difference(observationFrequency, order.D);
 
         final double meanParScale = (order.constant == 1) ? 10 * differencedSeries.stdDeviation() /
                                                             Math.sqrt(differencedSeries.size()) : 1.0;
@@ -107,12 +95,13 @@ public final class Arima implements Model {
         }
 
         final AbstractMultivariateFunction function = new OptimFunction(differencedSeries, order, fittingStrategy,
-                                                                        seasonalFrequency, meanParScale);
+                                                                        observationFrequency, meanParScale);
         final BFGS optimizer = new BFGS(function, initParams, DEFAULT_TOLERANCE, DEFAULT_TOLERANCE, initHessian);
         final Vector optimizedParams = optimizer.parameters();
         final Matrix inverseHessian = optimizer.inverseHessian();
 
-        this.stdErrors = DoubleFunctions.sqrt(Operators.scale(inverseHessian.diagonal(), 1.0 / differencedSeries.size()));
+        this.stdErrors = DoubleFunctions.sqrt(
+                Operators.scale(inverseHessian.diagonal(), 1.0 / differencedSeries.size()));
         if (order.constant == 1) {
             this.stdErrors[this.stdErrors.length - 1] *= meanParScale;
         }
@@ -122,8 +111,8 @@ public final class Arima implements Model {
         final double[] sarCoeffs = getSarCoeffs(optimizedParams);
         final double[] smaCoeffs = getSmaCoeffs(optimizedParams);
 
-        this.arSarCoeffs = expandArCoefficients(arCoeffs, sarCoeffs, seasonalFrequency);
-        this.maSmaCoeffs = expandMaCoefficients(maCoeffs, smaCoeffs, seasonalFrequency);
+        this.arSarCoeffs = expandArCoefficients(arCoeffs, sarCoeffs, observationFrequency);
+        this.maSmaCoeffs = expandMaCoefficients(maCoeffs, smaCoeffs, observationFrequency);
         this.mean = (order.constant == 1)
                     ? meanParScale * optimizedParams.at(order.p + order.q + order.P + order.Q)
                     : 0.0;
@@ -151,10 +140,10 @@ public final class Arima implements Model {
         this.modelCoefficients = coeffs;
         this.fittingStrategy = fittingStrategy;
         this.order = coeffs.extractModelOrder();
-        this.seasonalFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
-        this.differencedSeries = observations.difference(1, order.d).difference(seasonalFrequency, order.D);
-        this.arSarCoeffs = expandArCoefficients(coeffs.arCoeffs(), coeffs.seasonalARCoeffs(), seasonalFrequency);
-        this.maSmaCoeffs = expandMaCoefficients(coeffs.maCoeffs(), coeffs.seasonalMACoeffs(), seasonalFrequency);
+        this.observationFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
+        this.differencedSeries = observations.difference(1, order.d).difference(observationFrequency, order.D);
+        this.arSarCoeffs = expandArCoefficients(coeffs.arCoeffs(), coeffs.seasonalARCoeffs(), observationFrequency);
+        this.maSmaCoeffs = expandMaCoefficients(coeffs.maCoeffs(), coeffs.seasonalMACoeffs(), observationFrequency);
         this.mean = coeffs.mean();
         this.stdErrors = DoubleFunctions.fill(order.sumARMA() + order.constant, Double.POSITIVE_INFINITY);
 
@@ -208,8 +197,7 @@ public final class Arima implements Model {
      * @param order           the order of the ARIMA model.
      * @param fittingStrategy the strategy to use to fit the model to the data. Maximum-likelihood estimates are
      *                        typically preferred for greater precision and accuracy, but take longer to obtain than
-     *                        conditional or unconditional sum-of-squares estimates. Unconditional sum-of-squares tends
-     *                        to be more accurate, more precise, and quicker to obtain than conditional sum-of-squares.
+     *                        conditional sum-of-squares estimates.
      * @return a new ARIMA model from the given observations, model order, and fitting strategy.
      */
     public static Arima model(final TimeSeries observations, final ModelOrder order,
@@ -227,8 +215,7 @@ public final class Arima implements Model {
      *                        However, a seasonal cycle may be an arbitrary amount of time.
      * @param fittingStrategy the strategy to use to fit the model to the data. Maximum-likelihood estimates are
      *                        typically preferred for greater precision and accuracy, but take longer to obtain than
-     *                        conditional or unconditional sum-of-squares estimates. Unconditional sum-of-squares tends
-     *                        to be more accurate, more precise, and quicker to obtain than conditional sum-of-squares.
+     *                        conditional sum-of-squares estimates.
      * @return a new ARIMA model from the given observations, model order, seasonal cycle, and fitting strategy.
      */
     public static Arima model(final TimeSeries observations, final ModelOrder order, final TimePeriod seasonalCycle,
@@ -244,8 +231,7 @@ public final class Arima implements Model {
      * @param coeffs          the coefficients of the model.
      * @param fittingStrategy the strategy to use to fit the model to the data. Maximum-likelihood estimates are
      *                        typically preferred for greater precision and accuracy, but take longer to obtain than
-     *                        conditional or unconditional sum-of-squares estimates. Unconditional sum-of-squares tends
-     *                        to be more accurate, more precise, and quicker to obtain than conditional sum-of-squares.
+     *                        conditional sum-of-squares estimates.
      * @return a new ARIMA model from the given observations, model coefficients, and fitting strategy.
      */
     public static Arima model(final TimeSeries observations, final ModelCoefficients coeffs,
@@ -255,8 +241,7 @@ public final class Arima implements Model {
 
     /**
      * Create a new ARIMA model from the given observations, model coefficients, and seasonal cycle. This constructor
-     * sets
-     * the model {@link FittingStrategy} to unconditional sum-of-squares.
+     * sets the model {@link FittingStrategy} to conditional sum-of-squares followed by maximum likelihood.
      *
      * @param observations  the time series of observations.
      * @param coeffs        the coefficients of the model.
@@ -280,8 +265,7 @@ public final class Arima implements Model {
      *                        However, a seasonal cycle may be an arbitrary amount of time.
      * @param fittingStrategy the strategy to use to fit the model to the data. Maximum-likelihood estimates are
      *                        typically preferred for greater precision and accuracy, but take longer to obtain than
-     *                        conditional or unconditional sum-of-squares estimates. Unconditional sum-of-squares tends
-     *                        to be more accurate, more precise, and quicker to obtain than conditional sum-of-squares.
+     *                        conditional sum-of-squares estimates.
      * @return a new ARIMA model from the given observations, model coefficients, seasonal cycle, and fitting strategy.
      */
     public static Arima model(final TimeSeries observations, final ModelCoefficients coeffs,
@@ -296,7 +280,7 @@ public final class Arima implements Model {
      * @param arCoeffs          the autoregressive coefficients of the model.
      * @param maCoeffs          the moving-average coefficients of the model.
      * @param mean              the model mean.
-     * @param npar             the order of the model to be fit.
+     * @param npar              the order of the model to be fit.
      * @return information about the fitted model.
      */
     private static ModelInformation fitCSS(final TimeSeries differencedSeries, final double[] arCoeffs,
@@ -327,10 +311,6 @@ public final class Arima implements Model {
         return new ModelInformation(npar, sigma2, logLikelihood, residuals, fitted);
     }
 
-    private static double backcastIncrement(List<Double> series, int t) {
-        return abs(series.get(t) - series.get(t - 1));
-    }
-
     private static ModelInformation fitML(final TimeSeries differencedSeries, final double[] arCoeffs,
                                           final double[] maCoeffs, final double mean, int npar) {
         final double[] series = Operators.subtract(differencedSeries.asArray(), mean);
@@ -353,15 +333,15 @@ public final class Arima implements Model {
 
     // Expand the autoregressive coefficients by combining the non-seasonal and seasonal coefficients into a single
     // array, which takes advantage of the fact that a seasonal AR model is a special case of a non-seasonal
-    // AR model with zero coefficients at the non-seasonal indices.
+    // AR model, with zero coefficients at the non-seasonal indices.
     static double[] expandArCoefficients(final double[] arCoeffs, final double[] sarCoeffs,
-                                                 final int seasonalFrequency) {
+                                         final int seasonalFrequency) {
         double[] arSarCoeffs = new double[arCoeffs.length + sarCoeffs.length * seasonalFrequency];
 
         System.arraycopy(arCoeffs, 0, arSarCoeffs, 0, arCoeffs.length);
 
         // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
-        // which arises because the model's ar and sar polynomials are multiplied together.
+        // which arises because the model's ar and seasonal ar polynomials are multiplied together.
         for (int i = 0; i < sarCoeffs.length; i++) {
             arSarCoeffs[(i + 1) * seasonalFrequency - 1] = sarCoeffs[i];
             for (int j = 0; j < arCoeffs.length; j++) {
@@ -376,14 +356,14 @@ public final class Arima implements Model {
     // array, which takes advantage of the fact that a seasonal MA model is a special case of a non-seasonal
     // MA model with zero coefficients at the non-seasonal indices.
     static double[] expandMaCoefficients(final double[] maCoeffs, final double[] smaCoeffs,
-                                                 final int seasonalFrequency) {
+                                         final int seasonalFrequency) {
         double[] maSmaCoeffs = new double[maCoeffs.length + smaCoeffs.length * seasonalFrequency];
 
         System.arraycopy(maCoeffs, 0, maSmaCoeffs, 0, maCoeffs.length);
 
         // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
-        // which arises because the model's ma and sma polynomials are multiplied together.
-        // In contrast to the ar polynomial, the ma and sma product maintains a positive sign.
+        // which arises because the model's ma and seasonal ma polynomials are multiplied together.
+        // In contrast to the ar polynomial, the ma and seasonal ma product maintains a positive sign.
         for (int i = 0; i < smaCoeffs.length; i++) {
             maSmaCoeffs[(i + 1) * seasonalFrequency - 1] = smaCoeffs[i];
             for (int j = 0; j < maCoeffs.length; j++) {
@@ -391,6 +371,75 @@ public final class Arima implements Model {
             }
         }
         return maSmaCoeffs;
+    }
+
+    private static boolean isInvertible(double[] ma) {
+        if (ma.length > 0) {
+            double[] maCoeffs = new double[ma.length + 1];
+            maCoeffs[0] = 1.0;
+            System.arraycopy(ma, 0, maCoeffs, 1, ma.length);
+            final double[] roots = roots(maCoeffs);
+            for (double root : roots) {
+                if (root <= 1.0) return false;
+            }
+            return true;
+        }
+        return true;
+    }
+
+    private static boolean isStationary(double[] ar) {
+        if (ar.length > 0) {
+            double[] arCoeffs = new double[ar.length + 1];
+            arCoeffs[0] = 1.0;
+            for (int i = 0; i < ar.length; i++) {
+                arCoeffs[i + 1] = -ar[i];
+            }
+            final double[] roots = roots(arCoeffs);
+            for (double root : roots) {
+                if (root <= 1.0) return false;
+            }
+            return true;
+        }
+        // If ar.length == 0 then it is stationary.
+        return true;
+    }
+
+    private static double[] roots(double[] arCoeffs) {
+        final Complex64F[] complexRoots = findRoots(arCoeffs);
+        final double[] absoluteRoots = new double[complexRoots.length];
+        for (int i = 0; i < complexRoots.length; i++) {
+            absoluteRoots[i] = complexRoots[i].getMagnitude();
+        }
+        return absoluteRoots;
+    }
+
+    // Source: https://stackoverflow.com/questions/13805644/finding-roots-of-polynomial-in-java
+    private static Complex64F[] findRoots(double... coefficients) {
+        int N = coefficients.length - 1;
+
+        // Construct the companion matrix. This is a square N x N matrix.
+        final DenseMatrix64F c = new DenseMatrix64F(N, N);
+
+        double a = coefficients[N];
+        for (int i = 0; i < N; i++) {
+            c.set(i, N - 1, -coefficients[i] / a);
+        }
+        for (int i = 1; i < N; i++) {
+            c.set(i, i - 1, 1);
+        }
+
+        // Use generalized eigenvalue decomposition to find the roots.
+        EigenDecomposition<DenseMatrix64F> evd = DecompositionFactory.eig(N, false);
+
+        evd.decompose(c);
+
+        final Complex64F[] roots = new Complex64F[N];
+
+        for (int i = 0; i < N; i++) {
+            roots[i] = evd.getEigenvalue(i);
+        }
+
+        return roots;
     }
 
     /**
@@ -410,7 +459,7 @@ public final class Arima implements Model {
         System.arraycopy(differencedSeries.asArray(), 0, diffedFcst, 0, n);
         System.arraycopy(observations.asArray(), 0, fcst, 0, m);
         LagPolynomial diffPolynomial = LagPolynomial.differences(d);
-        LagPolynomial seasDiffPolynomial = LagPolynomial.seasonalDifferences(seasonalFrequency, D);
+        LagPolynomial seasDiffPolynomial = LagPolynomial.seasonalDifferences(observationFrequency, D);
         LagPolynomial lagPolyomial = diffPolynomial.times(seasDiffPolynomial);
         for (int t = 0; t < steps; t++) {
             diffedFcst[n + t] = mean;
@@ -464,7 +513,7 @@ public final class Arima implements Model {
      * Y_t, the "integrated" series, is Y_t(hat) = Y_t - diffedSeries_t + fittedArmaProcess_t.
      */
     private double[] integrate(final double[] fitted) {
-        final int offset = this.order.d + this.order.D * this.seasonalFrequency;
+        final int offset = this.order.d + this.order.D * this.observationFrequency;
         final double[] integrated = new double[this.observations.size()];
         for (int t = 0; t < offset; t++) {
             integrated[t] = observations.at(t);
@@ -554,8 +603,7 @@ public final class Arima implements Model {
      * number of observations.
      *
      * @return the maximum-likelihood estimate of the model variance, equal to the sum of squared residuals divided
-     * by the
-     * number of observations.
+     * by the number of observations.
      */
     public double sigma2() {
         return modelInfo.sigma2;
@@ -566,8 +614,8 @@ public final class Arima implements Model {
      *
      * @return the frequency of observations per seasonal cycle.
      */
-    public int seasonalFrequency() {
-        return this.seasonalFrequency;
+    public int observationFrequency() {
+        return this.observationFrequency;
     }
 
     /**
@@ -624,91 +672,10 @@ public final class Arima implements Model {
         return this.maSmaCoeffs.clone();
     }
 
-    private static boolean isInvertible(double[] ma) {
-        if (ma.length > 0) {
-            double[] maCoeffs = new double[ma.length + 1];
-            maCoeffs[0] = 1.0;
-            System.arraycopy(ma, 0, maCoeffs, 1, ma.length);
-            final double[] roots = roots(maCoeffs);
-            for (double root : roots) {
-                if (root <= 1.0) return false;
-            }
-            return true;
-        }
-        return true;
-    }
-
-    private static boolean isStationary(double[] ar) {
-        if (ar.length > 0) {
-            double[] arCoeffs = new double[ar.length + 1];
-            arCoeffs[0] = 1.0;
-            for (int i = 0; i < ar.length; i++) {
-                arCoeffs[i + 1] = -ar[i];
-            }
-            final double[] roots = roots(arCoeffs);
-            for (double root : roots) {
-                if (root <= 1.0) return false;
-            }
-            return true;
-        }
-        // If ar.length == 0 then it is stationary.
-        return true;
-    }
-
-
-    private static double[] roots(double[] arCoeffs) {
-        final Complex64F[] complexRoots = findRoots(arCoeffs);
-        final double[] absoluteRoots = new double[complexRoots.length];
-        for (int i = 0; i < complexRoots.length; i++) {
-            absoluteRoots[i] = complexRoots[i].getMagnitude();
-        }
-        return absoluteRoots;
-    }
-
-    /**
-     * <p>
-     * Given a set of polynomial coefficients, compute the roots of the polynomial.  Depending on
-     * the polynomial being considered the roots may contain complex number.  When complex numbers are
-     * present they will come in pairs of complex conjugates.
-     * </p>
-     *
-     * @param coefficients Coefficients of the polynomial.
-     * @return The roots of the polynomial
-     */
-    private static Complex64F[] findRoots(double... coefficients) {
-        int N = coefficients.length - 1;
-
-        // Construct the companion matrix. This is a square N x N matrix.
-        final DenseMatrix64F c = new DenseMatrix64F(N, N);
-
-        double a = coefficients[N];
-        for (int i = 0; i < N; i++) {
-            c.set(i, N - 1, -coefficients[i] / a);
-        }
-        for (int i = 1; i < N; i++) {
-            c.set(i, i - 1, 1);
-        }
-
-        // use generalized eigenvalue decomposition to find the roots
-        EigenDecomposition<DenseMatrix64F> evd = DecompositionFactory.eig(N, false);
-
-        evd.decompose(c);
-
-        final Complex64F[] roots = new Complex64F[N];
-
-        for (int i = 0; i < N; i++) {
-            roots[i] = evd.getEigenvalue(i);
-        }
-
-        return roots;
-    }
-
     @Override
     public String toString() {
         String newLine = System.lineSeparator();
-        return newLine + order +
-               newLine + modelInfo +
-               newLine + modelCoefficients +
+        return newLine + order + newLine + modelInfo + newLine + modelCoefficients +
                newLine + newLine + "fit using " + fittingStrategy;
     }
 
@@ -719,7 +686,7 @@ public final class Arima implements Model {
 
         Arima arima = (Arima) o;
 
-        if (seasonalFrequency != arima.seasonalFrequency) return false;
+        if (observationFrequency != arima.observationFrequency) return false;
         if (Double.compare(arima.mean, mean) != 0) return false;
         if (!observations.equals(arima.observations)) return false;
         if (!differencedSeries.equals(arima.differencedSeries)) return false;
@@ -741,7 +708,7 @@ public final class Arima implements Model {
         result = 31 * result + differencedSeries.hashCode();
         result = 31 * result + fittedSeries.hashCode();
         result = 31 * result + residuals.hashCode();
-        result = 31 * result + seasonalFrequency;
+        result = 31 * result + observationFrequency;
         result = 31 * result + order.hashCode();
         result = 31 * result + modelInfo.hashCode();
         result = 31 * result + modelCoefficients.hashCode();
@@ -751,6 +718,10 @@ public final class Arima implements Model {
         result = 31 * result + Arrays.hashCode(maSmaCoeffs);
         result = 31 * result + Arrays.hashCode(stdErrors);
         return result;
+    }
+
+    public enum Constant {
+        INCLUDE, EXCLUDE
     }
 
     /**
@@ -813,9 +784,8 @@ public final class Arima implements Model {
         public String toString() {
             String newLine = System.lineSeparator();
             NumberFormat numFormatter = new DecimalFormat("#0.0000");
-            return newLine + "sigma2: " + numFormatter.format(sigma2) +
-                   newLine + "logLikelihood: " + numFormatter.format(logLikelihood) +
-                   newLine + "AIC: " + numFormatter.format(aic);
+            return newLine + "sigma2: " + numFormatter.format(sigma2) + newLine + "logLikelihood: " +
+                   numFormatter.format(logLikelihood) + newLine + "AIC: " + numFormatter.format(aic);
         }
 
         @Override
@@ -901,13 +871,10 @@ public final class Arima implements Model {
         @Override
         public String toString() {
             String newLine = System.lineSeparator();
-            return order +
-                   newLine + "fittingStrategy: " + fittingStrategy +
-                   newLine + "seasonalFrequency: " + seasonalFrequency +
-                   newLine + "arParams: " + Arrays.toString(arParams) +
-                   newLine + "maParams: " + Arrays.toString(maParams) +
-                   newLine + "sarParams: " + Arrays.toString(sarParams) +
-                   newLine + "smaParams:" + " " + Arrays.toString(smaParams);
+            return order + newLine + "fittingStrategy: " + fittingStrategy + newLine + "observationFrequency: " +
+                   seasonalFrequency + newLine + "arParams: " + Arrays.toString(arParams) + newLine + "maParams: " +
+                   Arrays.toString(maParams) + newLine + "sarParams: " + Arrays.toString(sarParams) + newLine +
+                   "smaParams:" + " " + Arrays.toString(smaParams);
         }
 
         @Override
