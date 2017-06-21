@@ -25,8 +25,6 @@ package timeseries.models.arima;
 
 import data.Range;
 import linear.regression.primitive.LinearRegression;
-import org.ejml.interfaces.decomposition.SingularValueDecomposition;
-import org.ejml.ops.CommonOps;
 import timeseries.models.arima.ArimaKalmanFilter.KalmanOutput;
 
 import data.DoubleFunctions;
@@ -93,17 +91,7 @@ public final class Arima implements Model {
         final Vector initParams;
         final Matrix initHessian;
         final ModelParameters parameters = ModelParameters.initializePars(order.p, order.q, order.P, order.Q);
-        Matrix designMatrix = getDesignMatrix(differencedSeries.size(), order);
-        int ncol = order.numRegressors;
-        final SingularValueDecomposition<DenseMatrix64F> svd = DecompositionFactory.svd(designMatrix.nrow(), ncol,
-                                                                                        true, false,
-                                                                                        true);
-        DenseMatrix64F denseMatrix = new DenseMatrix64F(designMatrix.data2D());
-        DenseMatrix64F U = new DenseMatrix64F(designMatrix.nrow(), designMatrix.nrow());
-        svd.decompose(denseMatrix);
-        svd.getU(U, false);
-        final Matrix u = Matrix.create(ncol, ncol, U.getData());
-        designMatrix = u.times(designMatrix);
+        Matrix designMatrix = getDesignMatrix(observations.size(), order);
         final LinearRegression regression = getLinearRegression(differencedSeries, designMatrix);
         if (order.constant.include()) {
             parameters.setMean(regression.beta()[0]);
@@ -125,9 +113,9 @@ public final class Arima implements Model {
             initHessian = getInitialHessian(initParams.size());
         }
 
-        Matrix externalRegressors = Matrix.fromColumns(regression.designMatrix());
+        Matrix externalRegressors = Matrix.fromColumnVectors(regression.designMatrix());
         final AbstractMultivariateFunction function = new OptimFunction(observations, order, parameters,
-                                                                        fittingStrategy, externalRegressors,
+                                                                        fittingStrategy, designMatrix,
                                                                         observationFrequency);
         final BFGS optimizer = new BFGS(function, initParams, DEFAULT_TOLERANCE, DEFAULT_TOLERANCE, initHessian);
         final Vector optimizedParams = optimizer.parameters();
@@ -188,11 +176,15 @@ public final class Arima implements Model {
     }
 
     private LinearRegression getLinearRegression(TimeSeries differencedSeries, Matrix designMatrix) {
+        double[][] diffedMatrix = new double[designMatrix.nrow()][];
+        for (int i = 0; i < diffedMatrix.length; i++) {
+            diffedMatrix[i] = TimeSeries.differenceArray(designMatrix.data2D()[i], 1);
+        }
         TimeSeriesLinearRegression.Builder regressionBuilder = TimeSeriesLinearRegression.builder();
         regressionBuilder.response(differencedSeries);
         regressionBuilder.hasIntercept(TimeSeriesLinearRegression.Intercept.EXCLUDE);
         regressionBuilder.timeTrend(TimeSeriesLinearRegression.TimeTrend.EXCLUDE);
-        regressionBuilder.externalRegressors(designMatrix);
+        regressionBuilder.externalRegressors(new Matrix(diffedMatrix, false));
         return regressionBuilder.build();
     }
 
@@ -957,9 +949,6 @@ public final class Arima implements Model {
 
             final double[] arCoeffs = Arima.expandArCoefficients(arParams, sarParams, seasonalFrequency);
             final double[] maCoeffs = Arima.expandMaCoefficients(maParams, smaParams, seasonalFrequency);
-            final double mean = (order.constant.include())
-                                ? parameters.getMeanParScale() * params[order.sumARMA()]
-                                : 0.0;
 
             Vector regressionParameters = Vector.from(parameters.getRegressors(order));
             Vector regressionEffects = externalRegressors.times(regressionParameters);

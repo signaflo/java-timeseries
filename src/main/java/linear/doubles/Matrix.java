@@ -23,6 +23,8 @@
  */
 package linear.doubles;
 
+import data.DoubleFunctions;
+
 import java.util.Arrays;
 
 /**
@@ -87,8 +89,9 @@ public final class Matrix {
      *
      * @param matrixData the two-dimensional array of data constituting the matrix.
      */
-    public static Matrix fromColumns(final double[][] matrixData) {
-        return new Matrix(matrixData, true);
+    public static Matrix fromColumnVectors(final double[][] matrixData) {
+        double[] data = DoubleFunctions.combine(matrixData);
+        return new Matrix(matrixData.length, matrixData[0].length, data).transpose();
     }
 
     /**

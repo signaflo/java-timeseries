@@ -436,7 +436,7 @@ public final class TimeSeries implements DataSet {
      * @return a new time series differenced at the given lag.
      */
     public final TimeSeries difference(final int lag) {
-        double[] diffed = differenceArray(lag);
+        double[] diffed = differenceArray(this.asArray(), lag);
         final List<OffsetDateTime> obsTimes = this.observationTimes.subList(lag, n);
         return new TimeSeries(this.timePeriod, obsTimes, diffed);
     }
@@ -450,7 +450,7 @@ public final class TimeSeries implements DataSet {
         return difference(1);
     }
 
-    private double[] differenceArray(final int lag) {
+    public static double[] differenceArray(final double[] series, final int lag) {
         double[] differenced = new double[series.length - lag];
         for (int i = 0; i < differenced.length; i++) {
             differenced[i] = series[i + lag] - series[i];
