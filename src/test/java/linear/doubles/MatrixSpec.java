@@ -110,7 +110,7 @@ public final class MatrixSpec {
   public void whenTwoDimConstructorThenCorrectMatrix() {
     Matrix expectedResult = new Matrix(2, 3, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
     double[][] data = new double[][] {{4.0, 2.0, 1.5}, {2.5, 1.0, 3.0}};
-    assertThat(new Matrix(data, false), is(expectedResult));
+    assertThat(new Matrix(data), is(expectedResult));
   }
 
   @Test
@@ -118,7 +118,7 @@ public final class MatrixSpec {
     double[] m = new double[] {4.0, 2.0, 1.5, 2.5, 1.0, 3.0};
     Matrix expectedResult = Matrix.create(2, 3, m);
     double[][] data = new double[][] {{4.0, 2.0, 1.5}, {2.5, 1.0, 3.0}};
-    assertThat(new Matrix(data, false), is(expectedResult));
+    assertThat(new Matrix(data), is(expectedResult));
   }
 
   @Test

@@ -107,13 +107,13 @@ public final class Arima implements Model {
             parameters.setMean(firstModel.coefficients().mean());
             parameters.setDrift(firstModel.coefficients().drift());
             initParams = new Vector(parameters.getAllScaled(order));
-            initHessian = getInitialHessian(firstModel);
+            initHessian = getInitialHessian(initParams.size());
         } else {
             initParams = new Vector(parameters.getAllScaled(order));
             initHessian = getInitialHessian(initParams.size());
         }
 
-        Matrix externalRegressors = Matrix.fromColumnVectors(regression.designMatrix());
+        Matrix externalRegressors = new Matrix(regression.designMatrix()).transpose();
         final AbstractMultivariateFunction function = new OptimFunction(observations, order, parameters,
                                                                         fittingStrategy, designMatrix,
                                                                         observationFrequency);
@@ -147,12 +147,13 @@ public final class Arima implements Model {
         this.modelCoefficients = new ModelCoefficients(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs, order.d, order.D,
                                                        parameters.getMean(), parameters.getDrift());
         Vector regressionParameters = Vector.from(parameters.getRegressors(order));
-        Vector regressionEffects = externalRegressors.times(regressionParameters);
+        Vector regressionEffects = designMatrix.times(regressionParameters);
         TimeSeries armaSeries = this.observations.minus(regressionEffects.elements());
         TimeSeries differencedSeries = armaSeries.difference(1, order.d).difference(observationFrequency, order.D);
         if (fittingStrategy == FittingStrategy.CSS) {
             this.modelInfo = fitCSS(differencedSeries, arSarCoeffs, maSmaCoeffs, order.npar());
-            final double[] residuals = combine(new double[arSarCoeffs.length], modelInfo.residuals);
+            final double[] residuals = combine(
+                    new double[arSarCoeffs.length + order.d + order.D * observationFrequency], modelInfo.residuals);
             this.fittedSeries = observations.minus(new TimeSeries(residuals));
             this.residuals = observations.minus(this.fittedSeries);
         } else {
@@ -172,19 +173,19 @@ public final class Arima implements Model {
         if (order.drift.include()) {
             matrix[order.constant.asInt()] = Range.inclusiveRange(1, size).asArray();
         }
-        return new Matrix(matrix, false);
+        return new Matrix(matrix).transpose();
     }
 
     private LinearRegression getLinearRegression(TimeSeries differencedSeries, Matrix designMatrix) {
-        double[][] diffedMatrix = new double[designMatrix.nrow()][];
+        double[][] diffedMatrix = new double[designMatrix.ncol()][];
         for (int i = 0; i < diffedMatrix.length; i++) {
-            diffedMatrix[i] = TimeSeries.differenceArray(designMatrix.data2D()[i], 1);
+            diffedMatrix[i] = TimeSeries.differenceArray(designMatrix.transpose().data2D()[i], 1);
         }
         TimeSeriesLinearRegression.Builder regressionBuilder = TimeSeriesLinearRegression.builder();
         regressionBuilder.response(differencedSeries);
         regressionBuilder.hasIntercept(TimeSeriesLinearRegression.Intercept.EXCLUDE);
         regressionBuilder.timeTrend(TimeSeriesLinearRegression.TimeTrend.EXCLUDE);
-        regressionBuilder.externalRegressors(new Matrix(diffedMatrix, false));
+        regressionBuilder.externalRegressors(new Matrix(diffedMatrix));
         return regressionBuilder.build();
     }
 

@@ -23,8 +23,6 @@
  */
 package linear.doubles;
 
-import data.DoubleFunctions;
-
 import java.util.Arrays;
 
 /**
@@ -57,6 +55,14 @@ public final class Matrix {
         this.data = data.clone();
     }
 
+    public int nrow() {
+        return this.nrow;
+    }
+
+    public int ncol() {
+        return this.ncol;
+    }
+
     /**
      * Create a new matrix with the given dimensions filled with the supplied value.
      *
@@ -74,49 +80,16 @@ public final class Matrix {
     }
 
     /**
-     * Create a new matrix from the given two-dimensional array of data. Use this constructor if the data is
-     * stored row-by-row in the outer array.
-     *
-     * @param matrixData the two-dimensional array of data constituting the matrix.
-     */
-    private static Matrix fromRows(final double[][] matrixData) {
-        return new Matrix(matrixData, false);
-    }
-
-    /**
-     * Create a new matrix from the given two-dimensional array of data. Use this constructor if the data is
-     * stored column-by-column in the outer array.
-     *
-     * @param matrixData the two-dimensional array of data constituting the matrix.
-     */
-    public static Matrix fromColumnVectors(final double[][] matrixData) {
-        double[] data = DoubleFunctions.combine(matrixData);
-        return new Matrix(matrixData.length, matrixData[0].length, data).transpose();
-    }
-
-    /**
      * Create a new matrix from the given two-dimensional array of data.
      *
      * @param matrixData the two-dimensional array of data constituting the matrix.
-     * @param byColumn   whether the data is stored in the outer array by column or by row.
      */
-    public Matrix(final double[][] matrixData, boolean byColumn) {
-        if (byColumn) {
-            this.ncol = matrixData.length;
-            this.nrow = matrixData[0].length;
-            this.data = new double[nrow * ncol];
-            for (int i = 0; i < nrow; i++) {
-                for (int j = 0; j < ncol; j++) {
-                    this.data[j + i * ncol] = matrixData[j][i];
-                }
-            }
-        } else {
-            this.nrow = matrixData.length;
-            this.ncol = matrixData[0].length;
-            this.data = new double[nrow * ncol];
-            for (int i = 0; i < nrow; i++) {
-                System.arraycopy(matrixData[i], 0, data, i * ncol, ncol);
-            }
+    public Matrix(final double[][] matrixData) {
+        this.nrow = matrixData.length;
+        this.ncol = matrixData[0].length;
+        this.data = new double[nrow * ncol];
+        for (int i = 0; i < nrow; i++) {
+            System.arraycopy(matrixData[i], 0, this.data, i * ncol, ncol);
         }
     }
 
@@ -130,14 +103,6 @@ public final class Matrix {
      */
     public static Matrix create(final int nrow, final int ncol, final double[] data) {
         return new Matrix(nrow, ncol, data);
-    }
-
-    public int nrow() {
-        return this.nrow;
-    }
-
-    public int ncol() {
-        return this.ncol;
     }
 
     /**
@@ -175,10 +140,10 @@ public final class Matrix {
                     this.ncol + " columns and the other matrix has " + other.nrow + " rows.");
         }
         final double[] product = new double[this.nrow * other.ncol];
-        for (int i = 0; i < this.ncol; i++) {
+        for (int i = 0; i < this.nrow; i++) {
             for (int j = 0; j < other.ncol; j++) {
                 for (int k = 0; k < this.ncol; k++) {
-                    product[i * other.ncol + j] += this.data[i * this.ncol + k] * other.data[j + k * other.ncol];
+                    product[i * this.nrow + j] += this.data[i * this.ncol + k] * other.data[j + k * other.ncol];
                 }
             }
         }
@@ -308,7 +273,7 @@ public final class Matrix {
         StringBuilder representation = new StringBuilder();
         double[][] twoD = data2D();
         for (int i = 0; i < this.nrow; i++) {
-            representation.append(Arrays.toString(twoD[i])).append(System.lineSeparator());
+            representation.append(Arrays.toString(twoD[i])).append("\n");
         }
         return representation.toString();
     }
