@@ -23,6 +23,10 @@
  */
 package timeseries.models.arima;
 
+import data.Range;
+import linear.regression.primitive.LinearRegression;
+import org.ejml.interfaces.decomposition.SingularValueDecomposition;
+import org.ejml.ops.CommonOps;
 import timeseries.models.arima.ArimaKalmanFilter.KalmanOutput;
 
 import data.DoubleFunctions;
@@ -39,6 +43,7 @@ import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.models.Forecast;
 import timeseries.models.Model;
+import timeseries.models.regression.TimeSeriesLinearRegression;
 import timeseries.operators.LagPolynomial;
 
 import java.text.DecimalFormat;
@@ -46,6 +51,8 @@ import java.text.NumberFormat;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 
+import static data.DoubleFunctions.combine;
+import static data.DoubleFunctions.fill;
 import static data.DoubleFunctions.slice;
 import static data.operations.Operators.differenceOf;
 import static data.operations.Operators.scale;
@@ -83,43 +90,56 @@ public final class Arima implements Model {
         this.observationFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
         this.differencedSeries = observations.difference(1, order.d).difference(observationFrequency, order.D);
 
-        final double meanParScale;
         final Vector initParams;
         final Matrix initHessian;
-
+        final ModelParameters parameters = ModelParameters.initializePars(order.p, order.q, order.P, order.Q);
+        Matrix designMatrix = getDesignMatrix(differencedSeries.size(), order);
+        int ncol = order.numRegressors;
+        final SingularValueDecomposition<DenseMatrix64F> svd = DecompositionFactory.svd(designMatrix.nrow(), ncol,
+                                                                                        true, false,
+                                                                                        true);
+        DenseMatrix64F denseMatrix = new DenseMatrix64F(designMatrix.data2D());
+        DenseMatrix64F U = new DenseMatrix64F(designMatrix.nrow(), designMatrix.nrow());
+        svd.decompose(denseMatrix);
+        svd.getU(U, false);
+        final Matrix u = Matrix.create(ncol, ncol, U.getData());
+        designMatrix = u.times(designMatrix);
+        final LinearRegression regression = getLinearRegression(differencedSeries, designMatrix);
+        if (order.constant.include()) {
+            parameters.setMean(regression.beta()[0]);
+            parameters.setMeanParScale(10 * regression.standardErrors()[0]);
+        }
+        if (order.drift.include()) {
+            parameters.setDrift(regression.beta()[order.constant.asInt()]);
+            parameters.setDriftParScale(10 * regression.standardErrors()[order.constant.asInt()]);
+        }
         if (fittingStrategy == FittingStrategy.CSSML) {
-            meanParScale = (order.constant == 1) ? 10 * observations.stdDeviation() / Math.sqrt
-                    (observations.size()) : 1.0;
             final FittingStrategy subStrategy = FittingStrategy.CSS;
             final Arima firstModel = new Arima(observations, order, seasonalCycle, subStrategy);
-            double[] initParamsArray = firstModel.coefficients().getAllCoeffs();
-            if (order.constant == 1 && abs(meanParScale) > Math.ulp(1.0)) {
-                initParamsArray[initParamsArray.length - 1] = observations.mean() / meanParScale;
-            }
-            initParams = new Vector(initParamsArray);
+            parameters.setMean(firstModel.coefficients().mean());
+            parameters.setDrift(firstModel.coefficients().drift());
+            initParams = new Vector(parameters.getAllScaled(order));
             initHessian = getInitialHessian(firstModel);
         } else {
-            if (fittingStrategy == FittingStrategy.CSS) {
-                meanParScale = (order.constant == 1) ? 10 * differencedSeries.stdDeviation() / Math.sqrt
-                        (differencedSeries.size()) : 1.0;
-            } else {
-                meanParScale = (order.constant == 1) ? 10 * observations.stdDeviation() / Math.sqrt
-                        (observations.size()) : 1.0;
-            }
-            initParams = new Vector(getInitialParameters(meanParScale));
+            initParams = new Vector(parameters.getAllScaled(order));
             initHessian = getInitialHessian(initParams.size());
         }
 
-        final AbstractMultivariateFunction function = new OptimFunction(observations, order, fittingStrategy,
-                                                                        observationFrequency, meanParScale);
+        Matrix externalRegressors = Matrix.fromColumns(regression.designMatrix());
+        final AbstractMultivariateFunction function = new OptimFunction(observations, order, parameters,
+                                                                        fittingStrategy, externalRegressors,
+                                                                        observationFrequency);
         final BFGS optimizer = new BFGS(function, initParams, DEFAULT_TOLERANCE, DEFAULT_TOLERANCE, initHessian);
         final Vector optimizedParams = optimizer.parameters();
         final Matrix inverseHessian = optimizer.inverseHessian();
 
         this.stdErrors = DoubleFunctions.sqrt(
                 Operators.scale(inverseHessian.diagonal(), 1.0 / differencedSeries.size()));
-        if (order.constant == 1) {
-            this.stdErrors[this.stdErrors.length - 1] *= meanParScale;
+        if (order.constant.include()) {
+            this.stdErrors[order.sumARMA()] *= parameters.getMeanParScale();
+        }
+        if (order.drift.include()) {
+            this.stdErrors[order.sumARMA() + order.constant.asInt()] *= parameters.getDriftParScale();
         }
 
         final double[] arCoeffs = getArCoeffs(optimizedParams);
@@ -129,25 +149,51 @@ public final class Arima implements Model {
 
         this.arSarCoeffs = expandArCoefficients(arCoeffs, sarCoeffs, observationFrequency);
         this.maSmaCoeffs = expandMaCoefficients(maCoeffs, smaCoeffs, observationFrequency);
-        this.mean = (order.constant == 1)
-                    ? meanParScale * optimizedParams.at(order.p + order.q + order.P + order.Q)
-                    : 0.0;
+        this.mean = 0.0;
+        if (order.constant.include()) {
+            parameters.setAndScaleMean(optimizedParams.at(order.sumARMA()));
+        }
+        if (order.drift.include()) {
+            parameters.setAndScaleDrift(optimizedParams.at(order.sumARMA() + order.constant.asInt()));
+        }
         this.modelCoefficients = new ModelCoefficients(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs, order.d, order.D,
-                                                       this.mean);
-
+                                                       parameters.getMean(), parameters.getDrift());
+        Vector regressionParameters = Vector.from(parameters.getRegressors(order));
+        Vector regressionEffects = externalRegressors.times(regressionParameters);
+        TimeSeries armaSeries = this.observations.minus(regressionEffects.elements());
+        TimeSeries differencedSeries = armaSeries.difference(1, order.d).difference(observationFrequency, order.D);
         if (fittingStrategy == FittingStrategy.CSS) {
-            this.modelInfo = fitCSS(differencedSeries, arSarCoeffs, maSmaCoeffs, mean, order.npar());
-            final double[] residuals = modelInfo.residuals;
-            final double[] fittedArray = integrate(differenceOf(differencedSeries.asArray(), residuals));
-            this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
-            this.residuals = this.observations.minus(this.fittedSeries);
+            this.modelInfo = fitCSS(differencedSeries, arSarCoeffs, maSmaCoeffs, order.npar());
+            final double[] residuals = combine(new double[arSarCoeffs.length], modelInfo.residuals);
+            this.fittedSeries = observations.minus(new TimeSeries(residuals));
+            this.residuals = observations.minus(this.fittedSeries);
         } else {
             double[] delta = getDelta(this.order, this.observationFrequency);
-            this.modelInfo = fitML(observations, arSarCoeffs, maSmaCoeffs, delta, mean, order.npar());
+            this.modelInfo = fitML(armaSeries, arSarCoeffs, maSmaCoeffs, delta, mean, order.npar());
             final double[] residuals = modelInfo.residuals;
             this.fittedSeries = observations.minus(new TimeSeries(residuals));
-            this.residuals = this.observations.minus(this.fittedSeries);
+            this.residuals = observations.minus(this.fittedSeries);
         }
+    }
+
+    private Matrix getDesignMatrix(int size, ModelOrder order) {
+        double[][] matrix = new double[order.numRegressors()][size];
+        if (order.constant.include()) {
+            matrix[0] = fill(size, 1.0);
+        }
+        if (order.drift.include()) {
+            matrix[order.constant.asInt()] = Range.inclusiveRange(1, size).asArray();
+        }
+        return new Matrix(matrix, false);
+    }
+
+    private LinearRegression getLinearRegression(TimeSeries differencedSeries, Matrix designMatrix) {
+        TimeSeriesLinearRegression.Builder regressionBuilder = TimeSeriesLinearRegression.builder();
+        regressionBuilder.response(differencedSeries);
+        regressionBuilder.hasIntercept(TimeSeriesLinearRegression.Intercept.EXCLUDE);
+        regressionBuilder.timeTrend(TimeSeriesLinearRegression.TimeTrend.EXCLUDE);
+        regressionBuilder.externalRegressors(designMatrix);
+        return regressionBuilder.build();
     }
 
     private Arima(final TimeSeries observations, final ModelCoefficients coeffs, final TimePeriod seasonalCycle,
@@ -161,20 +207,19 @@ public final class Arima implements Model {
         this.arSarCoeffs = expandArCoefficients(coeffs.arCoeffs(), coeffs.seasonalARCoeffs(), observationFrequency);
         this.maSmaCoeffs = expandMaCoefficients(coeffs.maCoeffs(), coeffs.seasonalMACoeffs(), observationFrequency);
         this.mean = coeffs.mean();
-        this.stdErrors = DoubleFunctions.fill(order.sumARMA() + order.constant, Double.POSITIVE_INFINITY);
+        this.stdErrors = DoubleFunctions.fill(order.sumARMA() + order.constant.asInt() + order.drift.asInt(), 0.0);
 
         if (fittingStrategy == FittingStrategy.CSS) {
-            this.modelInfo = fitCSS(differencedSeries, arSarCoeffs, maSmaCoeffs, mean, order.npar());
-            final double[] residuals = modelInfo.residuals;
-            final double[] fittedArray = integrate(differenceOf(differencedSeries.asArray(), residuals));
-            this.fittedSeries = new TimeSeries(observations.timePeriod(), observations.observationTimes(), fittedArray);
-            this.residuals = this.observations.minus(this.fittedSeries);
+            this.modelInfo = fitCSS(differencedSeries, arSarCoeffs, maSmaCoeffs, order.npar());
+            final double[] residuals = combine(new double[arSarCoeffs.length], modelInfo.residuals);
+            this.fittedSeries = observations.minus(new TimeSeries(residuals));
+            this.residuals = observations.minus(this.fittedSeries);
         } else {
             double[] delta = getDelta(this.order, this.observationFrequency);
             this.modelInfo = fitML(observations, arSarCoeffs, maSmaCoeffs, delta, mean, order.npar());
             final double[] residuals = modelInfo.residuals;
             this.fittedSeries = observations.minus(new TimeSeries(residuals));
-            this.residuals = this.observations.minus(this.fittedSeries);
+            this.residuals = observations.minus(this.fittedSeries);
         }
     }
 
@@ -295,12 +340,11 @@ public final class Arima implements Model {
      * @param differencedSeries the time series of observations to model.
      * @param arCoeffs          the autoregressive coefficients of the model.
      * @param maCoeffs          the moving-average coefficients of the model.
-     * @param mean              the model mean.
      * @param npar              the order of the model to be fit.
      * @return information about the fitted model.
      */
     private static ModelInformation fitCSS(final TimeSeries differencedSeries, final double[] arCoeffs,
-                                           final double[] maCoeffs, final double mean, final int npar) {
+                                           final double[] maCoeffs, final int npar) {
         final int offset = arCoeffs.length;
         final int n = differencedSeries.size();
 
@@ -308,10 +352,10 @@ public final class Arima implements Model {
         final double[] residuals = new double[n];
 
         for (int t = offset; t < fitted.length; t++) {
-            fitted[t] = mean;
+            //fitted[t] = mean;
             for (int i = 0; i < arCoeffs.length; i++) {
                 if (abs(arCoeffs[i]) > 0.0) {
-                    fitted[t] += arCoeffs[i] * (differencedSeries.at(t - i - 1) - mean);
+                    fitted[t] += arCoeffs[i] * (differencedSeries.at(t - i - 1));
                 }
             }
             for (int j = 0; j < Math.min(t, maCoeffs.length); j++) {
@@ -330,7 +374,7 @@ public final class Arima implements Model {
     private static ModelInformation fitML(final TimeSeries observations, final double[] arCoeffs,
                                           final double[] maCoeffs, final double[] delta, double mean, int npar) {
         final double[] series = Operators.subtract(observations.asArray(), mean);
-        ArimaKalmanFilter.KalmanOutput output = kalmanFit(observations, arCoeffs, maCoeffs, delta, mean);
+        ArimaKalmanFilter.KalmanOutput output = kalmanFit(observations, arCoeffs, maCoeffs, delta);
         final double sigma2 = output.sigma2();
         final double logLikelihood = output.logLikelihood();
         final double[] residuals = output.residuals();
@@ -340,9 +384,8 @@ public final class Arima implements Model {
     }
 
     private static KalmanOutput kalmanFit(final TimeSeries observations, final double[] arCoeffs,
-                                                            final double[] maCoeffs, final double[] delta,
-                                                            final double mean) {
-        final double[] series = Operators.subtract(observations.asArray(), mean);
+                                                            final double[] maCoeffs, final double[] delta) {
+        final double[] series = observations.asArray();
         StateSpaceARIMA ss = new StateSpaceARIMA(series, arCoeffs, maCoeffs, delta);
         ArimaKalmanFilter kalmanFilter = new ArimaKalmanFilter(ss);
         return kalmanFilter.output();
@@ -567,11 +610,11 @@ public final class Arima implements Model {
         return builder.build();
     }
 
-    private double[] getInitialParameters(final double meanParScale) {
+    private double[] getInitialParameters(final ModelParameters parameters) {
         // Set initial constant to the mean and all other parameters to zero.
-        double[] initParams = new double[order.sumARMA() + order.constant];
-        if (order.constant == 1 && abs(meanParScale) > Math.ulp(1.0)) {
-            initParams[initParams.length - 1] = differencedSeries.mean() / meanParScale;
+        double[] initParams = new double[order.sumARMA() + order.constant.asInt() + order.drift.asInt()];
+        if (order.constant.include() && abs(parameters.getMeanParScale()) > EPSILON) {
+            initParams[initParams.length - 1] = parameters.getMean() / parameters.getMeanParScale();
         }
         return initParams;
     }
@@ -746,7 +789,39 @@ public final class Arima implements Model {
     }
 
     public enum Constant {
-        INCLUDE, EXCLUDE
+        INCLUDE(1), EXCLUDE(0);
+
+        private final int constant;
+
+        Constant(int constant) {
+            this.constant = constant;
+        }
+
+        public int asInt() {
+            return constant;
+        }
+
+        public boolean include() {
+            return this == INCLUDE;
+        }
+    }
+
+    public enum Drift {
+        INCLUDE(1), EXCLUDE(0);
+
+        private final int drift;
+
+        Drift(int drift) {
+            this.drift = drift;
+        }
+
+        public int asInt() {
+            return drift;
+        }
+
+        public boolean include() {
+            return this == INCLUDE;
+        }
     }
 
     /**
@@ -847,26 +922,27 @@ public final class Arima implements Model {
 
         private final TimeSeries observations;
         private final ModelOrder order;
+        private final ModelParameters parameters;
         private final FittingStrategy fittingStrategy;
         private final int seasonalFrequency;
         private final double[] arParams;
         private final double[] maParams;
         private final double[] sarParams;
         private final double[] smaParams;
-        private final double meanScale;
+        private final Matrix externalRegressors;
 
-        private OptimFunction(final TimeSeries observations, final ModelOrder order,
-                              final FittingStrategy fittingStrategy, final int seasonalFrequency,
-                              final double meanScale) {
+        private OptimFunction(TimeSeries observations, ModelOrder order, ModelParameters parameters,
+                              FittingStrategy fittingStrategy, Matrix externalRegressors, int seasonalFrequency) {
             this.observations = observations;
             this.order = order;
+            this.parameters = parameters;
             this.fittingStrategy = fittingStrategy;
+            this.externalRegressors = externalRegressors;
             this.seasonalFrequency = seasonalFrequency;
             this.arParams = new double[order.p];
             this.maParams = new double[order.q];
             this.sarParams = new double[order.P];
             this.smaParams = new double[order.Q];
-            this.meanScale = meanScale;
         }
 
         @Override
@@ -881,17 +957,22 @@ public final class Arima implements Model {
 
             final double[] arCoeffs = Arima.expandArCoefficients(arParams, sarParams, seasonalFrequency);
             final double[] maCoeffs = Arima.expandMaCoefficients(maParams, smaParams, seasonalFrequency);
-            final double mean = (order.constant == 1) ? meanScale * params[params.length - 1] : 0.0;
+            final double mean = (order.constant.include())
+                                ? parameters.getMeanParScale() * params[order.sumARMA()]
+                                : 0.0;
+
+            Vector regressionParameters = Vector.from(parameters.getRegressors(order));
+            Vector regressionEffects = externalRegressors.times(regressionParameters);
+            TimeSeries armaSeries = this.observations.minus(regressionEffects.elements());
 
             if (fittingStrategy == FittingStrategy.ML || fittingStrategy == FittingStrategy.CSSML) {
                 double[] delta = getDelta(this.order, this.seasonalFrequency);
-                ArimaKalmanFilter.KalmanOutput output = Arima.kalmanFit(observations, arCoeffs, maCoeffs,
-                                                                        delta, mean);
+                ArimaKalmanFilter.KalmanOutput output = Arima.kalmanFit(armaSeries, arCoeffs, maCoeffs, delta);
                 return 0.5 * (log(output.sigma2()) + output.sumLog() / output.n());
             }
 
-            TimeSeries differencedSeries = observations.difference(1, order.d).difference(seasonalFrequency, order.D);
-            final ModelInformation info = Arima.fitCSS(differencedSeries, arCoeffs, maCoeffs, mean, order.npar());
+            TimeSeries differencedSeries = armaSeries.difference(1, order.d).difference(seasonalFrequency, order.D);
+            final ModelInformation info = Arima.fitCSS(differencedSeries, arCoeffs, maCoeffs, order.npar());
             return 0.5 * log(info.sigma2);
         }
 
@@ -912,7 +993,6 @@ public final class Arima implements Model {
             OptimFunction that = (OptimFunction) o;
 
             if (seasonalFrequency != that.seasonalFrequency) return false;
-            if (Double.compare(that.meanScale, meanScale) != 0) return false;
             if (!observations.equals(that.observations)) return false;
             if (!order.equals(that.order)) return false;
             if (fittingStrategy != that.fittingStrategy) return false;
@@ -934,8 +1014,6 @@ public final class Arima implements Model {
             result = 31 * result + Arrays.hashCode(maParams);
             result = 31 * result + Arrays.hashCode(sarParams);
             result = 31 * result + Arrays.hashCode(smaParams);
-            temp = Double.doubleToLongBits(meanScale);
-            result = 31 * result + (int) (temp ^ (temp >>> 32));
             return result;
         }
     }

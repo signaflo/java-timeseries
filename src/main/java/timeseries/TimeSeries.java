@@ -473,6 +473,20 @@ public final class TimeSeries implements DataSet {
     }
 
     /**
+     * Subtract the given series from this time series and return the result as a new time series.
+     *
+     * @param otherSeries the series to subtract from this one.
+     * @return The difference between this series and the given series.
+     */
+    public final TimeSeries minus(final double[] otherSeries) {
+        final double[] subtracted = new double[this.series.length];
+        for (int t = 0; t < subtracted.length; t++) {
+            subtracted[t] = this.series[t] - otherSeries[t];
+        }
+        return new TimeSeries(this.timePeriod, observationTimes, subtracted);
+    }
+
+    /**
      * Return a slice of this time series from start (inclusive) to end (inclusive).
      *
      * @param start the beginning index of the slice. The value at the index is included in the returned TimeSeries.

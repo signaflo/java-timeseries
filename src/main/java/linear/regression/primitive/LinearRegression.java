@@ -35,6 +35,8 @@ public interface LinearRegression {
      */
     double[][] predictors();
 
+    double[][] designMatrix();
+
     /**
      * Get the response variable.
      *

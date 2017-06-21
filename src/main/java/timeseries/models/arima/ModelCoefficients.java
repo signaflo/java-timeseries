@@ -30,6 +30,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
 
+import static data.DoubleFunctions.append;
 import static stats.Statistics.sumOf;
 
 /**
@@ -51,6 +52,7 @@ public class ModelCoefficients {
     private final double mean;
     // The intercept is equal to mean * (1 - (sum of AR coefficients))
     private final double intercept;
+    private final double drift;
 
     /**
      * Create a structure holding the coefficients, the degrees of differencing, and the mean of a seasonal ARIMA
@@ -65,7 +67,7 @@ public class ModelCoefficients {
      * @param mean      the process mean.
      */
     ModelCoefficients(final double[] arCoeffs, final double[] maCoeffs, final double[] sarCoeffs,
-                      final double[] smaCoeffs, final int d, final int D, final double mean) {
+                      final double[] smaCoeffs, final int d, final int D, final double mean, final double drift) {
         this.arCoeffs = arCoeffs.clone();
         this.maCoeffs = maCoeffs.clone();
         this.sarCoeffs = sarCoeffs.clone();
@@ -74,6 +76,7 @@ public class ModelCoefficients {
         this.D = D;
         this.mean = mean;
         this.intercept = this.mean * (1 - sumOf(arCoeffs) - sumOf(sarCoeffs));
+        this.drift = drift;
     }
 
     private ModelCoefficients(Builder builder) {
@@ -85,6 +88,7 @@ public class ModelCoefficients {
         this.D = builder.D;
         this.mean = builder.mean;
         this.intercept = this.mean * (1 - sumOf(arCoeffs) - sumOf(sarCoeffs));
+        this.drift = builder.drift;
     }
 
     /**
@@ -159,6 +163,10 @@ public class ModelCoefficients {
         return mean;
     }
 
+    final double drift() {
+        return drift;
+    }
+
     /**
      * Get the model intercept term. Note that this is <i>not</i> the model mean, as in R, but the actual
      * intercept. The intercept is equal to &mu; &times; (1 - sum(AR)), where &mu; is the model mean and AR
@@ -171,10 +179,10 @@ public class ModelCoefficients {
     }
 
     final double[] getAllCoeffs() {
-        if (Math.abs(mean) < EPSILON) {
+        if (Math.abs(mean) < EPSILON && Math.abs(drift) < EPSILON) {
             return DoubleFunctions.combine(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs);
         }
-        return DoubleFunctions.append(DoubleFunctions.combine(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs), mean);
+        return append(append(DoubleFunctions.combine(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs), mean), drift);
     }
 
     final boolean isSeasonal() {
@@ -187,10 +195,14 @@ public class ModelCoefficients {
      * @return the order of the ARIMA model corresponding to the model coefficients.
      */
     ModelOrder extractModelOrder() {
-        Arima.Constant constant = (Math.abs(mean) > EPSILON)
-                                       ? Arima.Constant.INCLUDE
-                                       : Arima.Constant.EXCLUDE;
-        return new ModelOrder(arCoeffs.length, d, maCoeffs.length, sarCoeffs.length, D, smaCoeffs.length, constant);
+        Arima.Constant constant = (Math.abs(this.mean) > EPSILON)
+                                  ? Arima.Constant.INCLUDE
+                                  : Arima.Constant.EXCLUDE;
+        Arima.Drift drift = (Math.abs(this.drift) > EPSILON)
+                            ? Arima.Drift.INCLUDE
+                            : Arima.Drift.EXCLUDE;
+        return new ModelOrder(arCoeffs.length, d, maCoeffs.length, sarCoeffs.length, D, smaCoeffs.length,
+                              constant, drift);
     }
 
     @Override
@@ -281,6 +293,7 @@ public class ModelCoefficients {
         private int d = 0;
         private int D = 0;
         private double mean = 0.0;
+        private double drift = 0.0;
 
         private Builder() {
         }
@@ -317,6 +330,11 @@ public class ModelCoefficients {
 
         public Builder setMean(double mean) {
             this.mean = mean;
+            return this;
+        }
+
+        public Builder setDrift(double drift) {
+            this.drift = drift;
             return this;
         }
 

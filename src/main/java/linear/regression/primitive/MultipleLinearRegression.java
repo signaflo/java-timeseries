@@ -74,6 +74,19 @@ public final class MultipleLinearRegression implements LinearRegression {
     }
 
     @Override
+    public double[][] designMatrix() {
+        if (this.hasIntercept) {
+            double[][] copy = new double[this.predictors.length + 1][];
+            copy[0] = fill(response.length, 1.0);
+            for (int i = 1; i < copy.length; i++) {
+                copy[i] = this.predictors[i - 1].clone();
+            }
+            return copy;
+        }
+        return predictors();
+    }
+
+    @Override
     public double[] beta() {
         return beta;
     }

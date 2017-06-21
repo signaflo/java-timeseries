@@ -39,17 +39,25 @@ public class ModelOrder {
     final int P;
     final int D;
     final int Q;
-    final int constant;
+    final Arima.Constant constant;
+    final Arima.Drift drift;
+    final int sumARMA;
+    final int npar;
+    final int numRegressors;
 
     ModelOrder(final int p, final int d, final int q, final int P, final int D, final int Q,
-               final Arima.Constant constant) {
+               final Arima.Constant constant, final Arima.Drift drift) {
         this.p = p;
         this.d = d;
         this.q = q;
         this.P = P;
         this.D = D;
         this.Q = Q;
-        this.constant = (constant == Arima.Constant.INCLUDE) ? 1 : 0;
+        this.constant = constant;
+        this.drift = drift;
+        this.sumARMA = this.p + this.q + this.P + this.Q;
+        this.numRegressors = constant.asInt() + drift.asInt();
+        this.npar = sumARMA + numRegressors;
     }
 
     /**
@@ -63,7 +71,23 @@ public class ModelOrder {
      */
     public static ModelOrder order(final int p, final int d, final int q) {
         Arima.Constant constant = (d == 0) ? Arima.Constant.INCLUDE : Arima.Constant.EXCLUDE;
-        return new ModelOrder(p, d, q, 0, 0, 0, constant);
+        return new ModelOrder(p, d, q, 0, 0, 0, constant, Arima.Drift.EXCLUDE);
+    }
+
+    /**
+     * Create and return a new non-seasonal model order with the given number of coefficients and indication of
+     * whether or not to fit a constant.
+     *
+     * @param p        the number of non-seasonal autoregressive coefficients.
+     * @param d        the degree of non-seasonal differencing.
+     * @param q        the number of non-seasonal moving-average coefficients.
+     * @param constant whether or not to fit a constant to the model.
+     * @param drift    whether or not to include a drift term in the model.
+     * @return a new ARIMA model order.
+     */
+    public static ModelOrder order(final int p, final int d, final int q, final Arima.Constant constant,
+                                   final Arima.Drift drift) {
+        return new ModelOrder(p, d, q, 0, 0, 0, constant, drift);
     }
 
     /**
@@ -77,7 +101,7 @@ public class ModelOrder {
      * @return a new ARIMA model order.
      */
     public static ModelOrder order(final int p, final int d, final int q, final Arima.Constant constant) {
-        return new ModelOrder(p, d, q, 0, 0, 0, constant);
+        return new ModelOrder(p, d, q, 0, 0, 0, constant, Arima.Drift.EXCLUDE);
     }
 
     /**
@@ -94,7 +118,7 @@ public class ModelOrder {
      */
     public static ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q) {
         Arima.Constant constant = (d == 0 && D == 0) ? Arima.Constant.INCLUDE : Arima.Constant.EXCLUDE;
-        return new ModelOrder(p, d, q, P, D, Q, constant);
+        return new ModelOrder(p, d, q, P, D, Q, constant, Arima.Drift.EXCLUDE);
     }
 
     /**
@@ -112,16 +136,20 @@ public class ModelOrder {
      */
     public static ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q,
                                    final Arima.Constant constant) {
-        return new ModelOrder(p, d, q, P, D, Q, constant);
+        return new ModelOrder(p, d, q, P, D, Q, constant, Arima.Drift.EXCLUDE);
     }
 
     // This returns the total number of nonseasonal and seasonal ARMA parameters.
     int sumARMA() {
-        return this.p + this.q + this.P + this.Q;
+        return this.sumARMA;
     }
 
     int npar() {
-        return this.sumARMA() + this.constant;
+        return this.npar;
+    }
+
+    int numRegressors() {
+        return this.numRegressors;
     }
 
     @Override
@@ -135,7 +163,8 @@ public class ModelOrder {
         if (isSeasonal) {
             builder.append(") x (").append(P).append(", ").append(D).append(", ").append(Q);
         }
-        builder.append(") with").append((constant == 1) ? " a constant" : " no constant");
+        builder.append(") with").append((constant == Arima.Constant.INCLUDE) ? " a constant" : " no constant");
+        builder.append((drift == Arima.Drift.INCLUDE) ? " and drift" : "");
         return builder.toString();
     }
 
@@ -146,7 +175,8 @@ public class ModelOrder {
         result = prime * result + D;
         result = prime * result + P;
         result = prime * result + Q;
-        result = prime * result + constant;
+        result = prime * result + constant.asInt();
+        result = prime * result + drift.asInt();
         result = prime * result + d;
         result = prime * result + p;
         result = prime * result + q;
@@ -163,6 +193,7 @@ public class ModelOrder {
         if (P != other.P) return false;
         if (Q != other.Q) return false;
         if (constant != other.constant) return false;
+        if (drift != other.drift) return false;
         if (d != other.d) return false;
         return p == other.p && q == other.q;
     }
