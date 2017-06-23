@@ -32,6 +32,11 @@ import java.util.Arrays;
  */
 public final class Matrix {
 
+    public enum Order {
+        ROW_MAJOR,
+        COLUMN_MAJOR
+    }
+
     private final int nrow;
     private final int ncol;
     private final double[] data;
@@ -83,13 +88,32 @@ public final class Matrix {
      * Create a new matrix from the given two-dimensional array of data.
      *
      * @param matrixData the two-dimensional array of data constituting the matrix.
+     * @param order the storage order of the elements in the matrix data.
      */
-    public Matrix(final double[][] matrixData) {
-        this.nrow = matrixData.length;
-        this.ncol = matrixData[0].length;
-        this.data = new double[nrow * ncol];
-        for (int i = 0; i < nrow; i++) {
-            System.arraycopy(matrixData[i], 0, this.data, i * ncol, ncol);
+    public Matrix(final double[][] matrixData, Order order) {
+        if (matrixData.length == 0) {
+            //throw new IllegalArgumentException("The matrix data cannot be empty.");
+            this.ncol = 0;
+            this.nrow = 0;
+            this.data = new double[0];
+        }
+        else if (order == Order.COLUMN_MAJOR) {
+            this.ncol = matrixData.length;
+            this.nrow = matrixData[0].length;
+            this.data = new double[ncol * nrow];
+            for (int i = 0; i < nrow; i++) {
+                for (int j = 0; j < ncol; j++) {
+                    this.data[i * ncol + j] = matrixData[j][i];
+                }
+            }
+        } else {
+            this.nrow = matrixData.length;
+            this.ncol = matrixData[0].length;
+            this.data = new double[nrow * ncol];
+            for (int i = 0; i < nrow; i++) {
+                System.arraycopy(matrixData[i], 0, this.data, i * ncol, ncol);
+            }
+
         }
     }
 
@@ -247,9 +271,9 @@ public final class Matrix {
     }
 
     /**
-     * Obtain the array of data underlying this matrix.
+     * Obtain the array of data underlying this matrix in row-major order.
      *
-     * @return the array of data underlying this matrix.
+     * @return the array of data underlying this matrix in row-major order.
      */
     public double[] data() {
         return this.data.clone();
@@ -258,9 +282,18 @@ public final class Matrix {
     /**
      * Obtain the data in this matrix as a two-dimensional array.
      *
+     * @param order the storage order of the elements in the matrix data.
+     *
      * @return the data in this matrix as a two-dimensional array.
      */
-    public double[][] data2D() {
+    public double[][] data2D(Order order) {
+        if (order == Order.ROW_MAJOR) {
+            return data2DRowMajor();
+        }
+        return data2DColumnMajor();
+    }
+
+    private double[][] data2DRowMajor() {
         final double[][] twoD = new double[this.nrow][this.ncol];
         for (int i = 0; i < nrow; i++) {
             System.arraycopy(this.data, i * ncol, twoD[i], 0, ncol);
@@ -268,12 +301,23 @@ public final class Matrix {
         return twoD;
     }
 
+    private double[][] data2DColumnMajor() {
+        final double[][] twoD = new double[this.ncol][this.nrow];
+        for (int i = 0; i < ncol; i++) {
+            for (int j = 0; j < nrow; j++) {
+                twoD[i][j] = this.data[i + j * ncol];
+            }
+        }
+        return twoD;
+    }
+
     @Override
     public String toString() {
+        String newLine = System.lineSeparator();
         StringBuilder representation = new StringBuilder();
-        double[][] twoD = data2D();
+        double[][] twoD = data2D(Order.ROW_MAJOR);
         for (int i = 0; i < this.nrow; i++) {
-            representation.append(Arrays.toString(twoD[i])).append("\n");
+            representation.append(Arrays.toString(twoD[i])).append(newLine);
         }
         return representation.toString();
     }

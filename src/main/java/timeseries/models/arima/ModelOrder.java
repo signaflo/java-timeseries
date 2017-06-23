@@ -39,14 +39,14 @@ public class ModelOrder {
     final int P;
     final int D;
     final int Q;
-    final Arima.Constant constant;
-    final Arima.Drift drift;
+    final ArimaModel.Constant constant;
+    final ArimaModel.Drift drift;
     final int sumARMA;
     final int npar;
     final int numRegressors;
 
     ModelOrder(final int p, final int d, final int q, final int P, final int D, final int Q,
-               final Arima.Constant constant, final Arima.Drift drift) {
+               final ArimaModel.Constant constant, final ArimaModel.Drift drift) {
         this.p = p;
         this.d = d;
         this.q = q;
@@ -70,8 +70,8 @@ public class ModelOrder {
      * @return a new ARIMA model order.
      */
     public static ModelOrder order(final int p, final int d, final int q) {
-        Arima.Constant constant = (d == 0) ? Arima.Constant.INCLUDE : Arima.Constant.EXCLUDE;
-        return new ModelOrder(p, d, q, 0, 0, 0, constant, Arima.Drift.EXCLUDE);
+        ArimaModel.Constant constant = (d == 0) ? ArimaModel.Constant.INCLUDE : ArimaModel.Constant.EXCLUDE;
+        return new ModelOrder(p, d, q, 0, 0, 0, constant, ArimaModel.Drift.EXCLUDE);
     }
 
     /**
@@ -85,8 +85,8 @@ public class ModelOrder {
      * @param drift    whether or not to include a drift term in the model.
      * @return a new ARIMA model order.
      */
-    public static ModelOrder order(final int p, final int d, final int q, final Arima.Constant constant,
-                                   final Arima.Drift drift) {
+    public static ModelOrder order(final int p, final int d, final int q, final ArimaModel.Constant constant,
+                                   final ArimaModel.Drift drift) {
         return new ModelOrder(p, d, q, 0, 0, 0, constant, drift);
     }
 
@@ -100,8 +100,8 @@ public class ModelOrder {
      * @param constant whether or not to fit a constant to the model.
      * @return a new ARIMA model order.
      */
-    public static ModelOrder order(final int p, final int d, final int q, final Arima.Constant constant) {
-        return new ModelOrder(p, d, q, 0, 0, 0, constant, Arima.Drift.EXCLUDE);
+    public static ModelOrder order(final int p, final int d, final int q, final ArimaModel.Constant constant) {
+        return new ModelOrder(p, d, q, 0, 0, 0, constant, ArimaModel.Drift.EXCLUDE);
     }
 
     /**
@@ -117,8 +117,8 @@ public class ModelOrder {
      * @return a new ARIMA model order.
      */
     public static ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q) {
-        Arima.Constant constant = (d == 0 && D == 0) ? Arima.Constant.INCLUDE : Arima.Constant.EXCLUDE;
-        return new ModelOrder(p, d, q, P, D, Q, constant, Arima.Drift.EXCLUDE);
+        ArimaModel.Constant constant = (d == 0 && D == 0) ? ArimaModel.Constant.INCLUDE : ArimaModel.Constant.EXCLUDE;
+        return new ModelOrder(p, d, q, P, D, Q, constant, ArimaModel.Drift.EXCLUDE);
     }
 
     /**
@@ -135,8 +135,8 @@ public class ModelOrder {
      * @return a new ARIMA model order.
      */
     public static ModelOrder order(final int p, final int d, final int q, final int P, final int D, final int Q,
-                                   final Arima.Constant constant) {
-        return new ModelOrder(p, d, q, P, D, Q, constant, Arima.Drift.EXCLUDE);
+                                   final ArimaModel.Constant constant) {
+        return new ModelOrder(p, d, q, P, D, Q, constant, ArimaModel.Drift.EXCLUDE);
     }
 
     // This returns the total number of nonseasonal and seasonal ARMA parameters.
@@ -163,8 +163,8 @@ public class ModelOrder {
         if (isSeasonal) {
             builder.append(") x (").append(P).append(", ").append(D).append(", ").append(Q);
         }
-        builder.append(") with").append((constant == Arima.Constant.INCLUDE) ? " a constant" : " no constant");
-        builder.append((drift == Arima.Drift.INCLUDE) ? " and drift" : "");
+        builder.append(") with").append((constant == ArimaModel.Constant.INCLUDE) ? " a constant" : " no constant");
+        builder.append((drift == ArimaModel.Drift.INCLUDE) ? " and drift" : "");
         return builder.toString();
     }
 

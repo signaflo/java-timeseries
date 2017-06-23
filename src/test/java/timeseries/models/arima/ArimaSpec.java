@@ -10,8 +10,6 @@ import timeseries.TimeSeries;
 import timeseries.models.Forecast;
 import timeseries.models.arima.Arima.Constant;
 
-import java.util.Arrays;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
@@ -26,7 +24,7 @@ public class ArimaSpec {
         TimeSeries timeSeries = new TimeSeries(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         double[] expected = new double[timeSeries.size()];
         ModelOrder order = ModelOrder.order(1, 0, 1, 0, 0, 0, Constant.INCLUDE);
-        Arima arimaModel = Arima.model(timeSeries, order, Arima.FittingStrategy.CSS);
+        Arima arimaModel = Arima.model(timeSeries, order, ArimaModel.FittingStrategy.CSS);
         assertThat(arimaModel.fittedSeries().asArray(), is(expected));
     }
 
@@ -57,10 +55,12 @@ public class ArimaSpec {
     @Test
     public void whenArimaModelFitThenParametersSimilarToROutput() throws Exception {
         TimeSeries series = TestData.livestock();
+        ModelCoefficients coefficients = ModelCoefficients.newBuilder().setDifferences(1).setMean(50.0).build();
+        series = Simulation.newBuilder().setCoefficients(coefficients).sim();
         ModelOrder order = ModelOrder.order(0, 1, 0, Constant.EXCLUDE, Arima.Drift.INCLUDE);
         Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.CSSML);
-        //assertThat(model.coefficients().arCoeffs()[0], is(closeTo(0.64, 0.02)));
-       // assertThat(model.coefficients().maCoeffs()[0], is(closeTo(-0.50, 0.02)));
+        assertThat(model.coefficients().arCoeffs()[0], is(closeTo(0.64, 0.02)));
+        assertThat(model.coefficients().maCoeffs()[0], is(closeTo(-0.50, 0.02)));
     }
 
     @Test
@@ -99,7 +99,7 @@ public class ArimaSpec {
                                                     .setMACoeffs(-0.5035514)
                                                     .setDifferences(1)
                                                     .build();
-        Arima model = Arima.model(series, coeffs, TimePeriod.oneYear(), Arima.FittingStrategy.CSSML);
+        Arima model = Arima.model(series, coeffs, TimePeriod.oneYear(), ArimaModel.FittingStrategy.CSSML);
         Forecast fcst = model.forecast(10);
         double[] expectedLower = {432.515957, 420.689242, 410.419267, 401.104152, 392.539282, 384.606261, 377.216432,
                 370.29697, 363.786478, 357.632926
@@ -120,7 +120,7 @@ public class ArimaSpec {
                                                           .setMACoeffs(-0.5)
                                                           .setDifferences(1)
                                                           .build();
-        Arima model = Arima.model(TestData.livestock(), coefficients, Arima.FittingStrategy.ML);
+        Arima model = Arima.model(TestData.livestock(), coefficients, ArimaModel.FittingStrategy.ML);
         assertThat(model.sigma2(), is(closeTo(531.8796, 1E-4)));
         assertThat(model.logLikelihood(), is(closeTo(-210.1396, 1E-4)));
         assertThat(model.aic(), is(closeTo(426.2792, 1E-4)));
@@ -133,16 +133,8 @@ public class ArimaSpec {
                                                           .setARCoeffs(0.01803952)
                                                           .setDifferences(1)
                                                           .build();
-        Arima model = Arima.model(TestData.livestock(), coefficients, Arima.FittingStrategy.ML);
+        Arima model = Arima.model(TestData.livestock(), coefficients, ArimaModel.FittingStrategy.ML);
         assertThat(model.coefficients().intercept(), is(closeTo(4.85376578 * (1 - 0.01803952), 1E-4)));
-    }
-
-    @Test
-    public void testSimulation() {
-        ModelCoefficients simCoefficients = ModelCoefficients.newBuilder().setARCoeffs(0.3).build();
-        TimeSeries series = Simulation.newBuilder().setCoefficients(simCoefficients).sim();
-        Arima model = Arima.model(series, ModelOrder.order(1, 0, 0));
-        System.out.println(Arrays.toString(model.arSarCoefficients()));
     }
 
     @Test
@@ -151,7 +143,7 @@ public class ArimaSpec {
         ModelOrder order = ModelOrder.order(1, 1, 1);
         ModelOrder order2 = ModelOrder.order(1, 0, 1, Constant.INCLUDE);
         Arima model1 = Arima.model(series, order);
-        Arima model2 = Arima.model(series, order2, Arima.FittingStrategy.CSS);
+        Arima model2 = Arima.model(series, order2, ArimaModel.FittingStrategy.CSS);
         assertThat(model1, is(model1));
         assertThat(model1, is(not(new Object())));
         assertThat(model1.equals(null), is(false));
@@ -179,12 +171,12 @@ public class ArimaSpec {
 
     @Test
     public void testModelInfoEqualsAndHashCode() {
-        Arima.ModelInformation info1 = new Arima.ModelInformation(2, 50.0, -100.0, DoubleFunctions.arrayFrom(),
-                                                                  DoubleFunctions.arrayFrom());
-        Arima.ModelInformation info2 = new Arima.ModelInformation(2, 45.0, -90.0, DoubleFunctions.arrayFrom(),
-                                                                  DoubleFunctions.arrayFrom());
-        Arima.ModelInformation info3 = new Arima.ModelInformation(2, 50.0, -100.0, DoubleFunctions.arrayFrom(),
-                                                                  DoubleFunctions.arrayFrom());
+        ArimaModel.ModelInformation info1 = new ArimaModel.ModelInformation(2, 50.0, -100.0, DoubleFunctions.arrayFrom(),
+                                                                            DoubleFunctions.arrayFrom());
+        ArimaModel.ModelInformation info2 = new ArimaModel.ModelInformation(2, 45.0, -90.0, DoubleFunctions.arrayFrom(),
+                                                                            DoubleFunctions.arrayFrom());
+        ArimaModel.ModelInformation info3 = new ArimaModel.ModelInformation(2, 50.0, -100.0, DoubleFunctions.arrayFrom(),
+                                                                            DoubleFunctions.arrayFrom());
         assertThat(info1, is(info1));
         assertThat(info1.hashCode(), is(info3.hashCode()));
         assertThat(info1, is(info3));

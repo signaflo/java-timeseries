@@ -109,6 +109,7 @@ public class ModelCoefficients {
         return arCoeffs.clone();
     }
 
+
     /**
      * Get the moving-average coefficients.
      *
@@ -195,12 +196,12 @@ public class ModelCoefficients {
      * @return the order of the ARIMA model corresponding to the model coefficients.
      */
     ModelOrder extractModelOrder() {
-        Arima.Constant constant = (Math.abs(this.mean) > EPSILON)
-                                  ? Arima.Constant.INCLUDE
-                                  : Arima.Constant.EXCLUDE;
-        Arima.Drift drift = (Math.abs(this.drift) > EPSILON)
-                            ? Arima.Drift.INCLUDE
-                            : Arima.Drift.EXCLUDE;
+        ArimaModel.Constant constant = (Math.abs(this.mean) > EPSILON)
+                                  ? ArimaModel.Constant.INCLUDE
+                                  : ArimaModel.Constant.EXCLUDE;
+        ArimaModel.Drift drift = (Math.abs(this.drift) > EPSILON)
+                            ? ArimaModel.Drift.INCLUDE
+                            : ArimaModel.Drift.EXCLUDE;
         return new ModelOrder(arCoeffs.length, d, maCoeffs.length, sarCoeffs.length, D, smaCoeffs.length,
                               constant, drift);
     }
@@ -333,10 +334,12 @@ public class ModelCoefficients {
             return this;
         }
 
-        public Builder setDrift(double drift) {
+/*        public Builder setDrift(double drift) {
             this.drift = drift;
             return this;
-        }
+        }*/
+
+        //double[] stdErrors();
 
         public ModelCoefficients build() {
             return new ModelCoefficients(this);

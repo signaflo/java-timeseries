@@ -133,23 +133,21 @@ public final class TimeSeriesLinearRegression implements LinearRegression{
         }
 
         public Builder externalRegressors(Matrix predictors) {
-            externalRegressors(predictors.data2D());
+            externalRegressors(predictors.data2D(Matrix.Order.COLUMN_MAJOR));
             return this;
         }
 
         public Builder externalRegressor(double... predictor) {
-            int currentRows = this.predictors.length;
-            int currentCols = 0;
-            if (currentRows > 0) {
-                currentCols = this.predictors[0].length;
+            int currentCols = this.predictors.length;
+            int currentRows = 0;
+            if (currentCols > 0) {
+                currentRows = this.predictors[0].length;
             }
-            double[][] newPredictors = new double[currentRows][currentCols + 1];
-            for (int i = 0; i < currentRows; i++) {
-                for (int j = 0; j < currentCols; j++) {
-                    newPredictors[i][j] = this.predictors[i][j];
-                }
-                newPredictors[i][currentCols] = predictor[i];
+            double[][] newPredictors = new double[currentCols + 1][currentRows];
+            for (int i = 0; i < currentCols; i++) {
+                System.arraycopy(this.predictors[i], 0, newPredictors[i], 0, currentRows);
             }
+            newPredictors[currentCols] = predictor;
             this.predictors = newPredictors;
             return this;
         }

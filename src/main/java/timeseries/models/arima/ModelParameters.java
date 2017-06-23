@@ -37,6 +37,8 @@ import lombok.NonNull;
 @Data
 final class ModelParameters {
 
+    private static final double EPSILON = Math.ulp(1.0);
+
     private @NonNull double[] autoRegressivePars;
     private @NonNull double[] movingAveragePars;
     private @NonNull double[] seasonalAutoRegressivePars;
@@ -106,10 +108,10 @@ final class ModelParameters {
         System.arraycopy(seasonalMovingAveragePars, 0, pars, order.p + order.q + order.P,
                          seasonalMovingAveragePars.length);
         if (order.constant.include()) {
-            pars[order.sumARMA()] = this.mean / this.meanParScale;
+            pars[order.sumARMA()] = this.mean / (this.meanParScale + EPSILON);
         }
         if (order.drift.include()) {
-            pars[order.sumARMA() + order.constant.asInt()] = this.drift / this.driftParScale;
+            pars[order.sumARMA() + order.constant.asInt()] = this.drift / (this.driftParScale + EPSILON);
         }
         return pars;
     }

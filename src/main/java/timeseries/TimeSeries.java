@@ -450,7 +450,37 @@ public final class TimeSeries implements DataSet {
         return difference(1);
     }
 
-    public static double[] differenceArray(final double[] series, final int lag) {
+    /**
+     * Difference the given series the given number of times at the given lag.
+     *
+     * @param series the series to difference.
+     * @param lag   the lag at which to take differences.
+     * @param times the number of times to difference the series at the given lag.
+     * @return a new time series differenced the given number of times at the given lag.
+     */
+    public static double[] difference(final double[] series, final int lag, final int times) {
+        if (times > 0) {
+            double[] diffed = differenceArray(series, lag);
+            for (int i = 1; i < times; i++) {
+                diffed = differenceArray(diffed, lag);
+            }
+            return diffed;
+        }
+        return series.clone();
+    }
+
+    /**
+     * Difference the given series the given number of times at lag 1.
+     *
+     * @param series the series to difference.
+     * @param times the number of times to difference the series.
+     * @return a new time series differenced the given number of times at lag 1.
+     */
+    public static double[] difference(final double[] series, final int times) {
+        return difference(series, 1, times);
+    }
+
+    private static double[] differenceArray(final double[] series, final int lag) {
         double[] differenced = new double[series.length - lag];
         for (int i = 0; i < differenced.length; i++) {
             differenced[i] = series[i + lag] - series[i];
@@ -465,6 +495,12 @@ public final class TimeSeries implements DataSet {
      * @return The difference between this series and the given series.
      */
     public final TimeSeries minus(final TimeSeries otherSeries) {
+        if (otherSeries.size() == 0) {
+            return this;
+        }
+        if (otherSeries.size() != this.series.length) {
+            throw new IllegalArgumentException("The two series must have the same length.");
+        }
         final double[] subtracted = new double[this.series.length];
         for (int t = 0; t < subtracted.length; t++) {
             subtracted[t] = this.series[t] - otherSeries.series[t];
@@ -479,6 +515,12 @@ public final class TimeSeries implements DataSet {
      * @return The difference between this series and the given series.
      */
     public final TimeSeries minus(final double[] otherSeries) {
+        if (otherSeries.length == 0) {
+            return this;
+        }
+        if (otherSeries.length != this.series.length) {
+            throw new IllegalArgumentException("The two series must have the same length.");
+        }
         final double[] subtracted = new double[this.series.length];
         for (int t = 0; t < subtracted.length; t++) {
             subtracted[t] = this.series[t] - otherSeries[t];

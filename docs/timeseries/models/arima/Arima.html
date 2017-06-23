@@ -99,7 +99,7 @@ var activeTableTab = "activeTableTab";
 <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
 <li>
 <ul class="inheritance">
-<li>timeseries.models.arima.Arima</li>
+<li>timeseries.models.arima.ArimaModel</li>
 </ul>
 </li>
 </ul>
@@ -229,7 +229,7 @@ implements <a href="../../../timeseries/models/Model.html" title="interface in t
 </tr>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelCoefficients-timeseries.models.arima.Arima.FittingStrategy-">model</a></span>(<a href="../../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observations,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelCoefficients-timeseries.models.arima.ArimaModel.FittingStrategy-">model</a></span>(<a href="../../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observations,
      <a href="../../../timeseries/models/arima/Arima.ModelCoefficients.html" title="class in timeseries.models.arima">Arima.ModelCoefficients</a>&nbsp;coeffs,
      <a href="../../../timeseries/models/arima/Arima.FittingStrategy.html" title="enum in timeseries.models.arima">Arima.FittingStrategy</a>&nbsp;fittingStrategy)</code>
 <div class="block">Create a new ARIMA model from the given observations, model coefficients, and fitting strategy.</div>
@@ -237,7 +237,7 @@ implements <a href="../../../timeseries/models/Model.html" title="interface in t
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code>static <a href="../../../timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelCoefficients-timeseries.TimePeriod-">model</a></span>(<a href="../../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observations,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelCoefficients-timeseries.TimePeriod-">model</a></span>(<a href="../../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observations,
      <a href="../../../timeseries/models/arima/Arima.ModelCoefficients.html" title="class in timeseries.models.arima">Arima.ModelCoefficients</a>&nbsp;coeffs,
      <a href="../../../timeseries/TimePeriod.html" title="class in timeseries">TimePeriod</a>&nbsp;seasonalCycle)</code>
 <div class="block">Create a new ARIMA model from the given observations, model coefficients, and seasonal cycle.</div>
@@ -245,7 +245,7 @@ implements <a href="../../../timeseries/models/Model.html" title="interface in t
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelCoefficients-timeseries.TimePeriod-timeseries.models.arima.Arima.FittingStrategy-">model</a></span>(<a href="../../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observations,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelCoefficients-timeseries.TimePeriod-timeseries.models.arima.ArimaModel.FittingStrategy-">model</a></span>(<a href="../../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observations,
      <a href="../../../timeseries/models/arima/Arima.ModelCoefficients.html" title="class in timeseries.models.arima">Arima.ModelCoefficients</a>&nbsp;coeffs,
      <a href="../../../timeseries/TimePeriod.html" title="class in timeseries">TimePeriod</a>&nbsp;seasonalCycle,
      <a href="../../../timeseries/models/arima/Arima.FittingStrategy.html" title="enum in timeseries.models.arima">Arima.FittingStrategy</a>&nbsp;fittingStrategy)</code>
@@ -254,14 +254,14 @@ implements <a href="../../../timeseries/models/Model.html" title="interface in t
 </tr>
 <tr id="i12" class="altColor">
 <td class="colFirst"><code>static <a href="../../../timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelOrder-">model</a></span>(<a href="../../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observations,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelOrder-">model</a></span>(<a href="../../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observations,
      <a href="../../../timeseries/models/arima/Arima.ModelOrder.html" title="class in timeseries.models.arima">Arima.ModelOrder</a>&nbsp;order)</code>
 <div class="block">Create a new ARIMA model from the given observations and model order.</div>
 </td>
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelOrder-timeseries.models.arima.Arima.FittingStrategy-">model</a></span>(<a href="../../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observations,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelOrder-timeseries.models.arima.ArimaModel.FittingStrategy-">model</a></span>(<a href="../../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observations,
      <a href="../../../timeseries/models/arima/Arima.ModelOrder.html" title="class in timeseries.models.arima">Arima.ModelOrder</a>&nbsp;order,
      <a href="../../../timeseries/models/arima/Arima.FittingStrategy.html" title="enum in timeseries.models.arima">Arima.FittingStrategy</a>&nbsp;fittingStrategy)</code>
 <div class="block">Create a new ARIMA model from the given observations, model order, and fitting strategy.</div>
@@ -269,7 +269,7 @@ implements <a href="../../../timeseries/models/Model.html" title="interface in t
 </tr>
 <tr id="i14" class="altColor">
 <td class="colFirst"><code>static <a href="../../../timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelOrder-timeseries.TimePeriod-">model</a></span>(<a href="../../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observations,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelOrder-timeseries.TimePeriod-">model</a></span>(<a href="../../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observations,
      <a href="../../../timeseries/models/arima/Arima.ModelOrder.html" title="class in timeseries.models.arima">Arima.ModelOrder</a>&nbsp;order,
      <a href="../../../timeseries/TimePeriod.html" title="class in timeseries">TimePeriod</a>&nbsp;seasonalCycle)</code>
 <div class="block">Create a new ARIMA model from the given observations, model order, and seasonal cycle.</div>
@@ -277,7 +277,7 @@ implements <a href="../../../timeseries/models/Model.html" title="interface in t
 </tr>
 <tr id="i15" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelOrder-timeseries.TimePeriod-timeseries.models.arima.Arima.FittingStrategy-">model</a></span>(<a href="../../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observations,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelOrder-timeseries.TimePeriod-timeseries.models.arima.ArimaModel.FittingStrategy-">model</a></span>(<a href="../../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observations,
      <a href="../../../timeseries/models/arima/Arima.ModelOrder.html" title="class in timeseries.models.arima">Arima.ModelOrder</a>&nbsp;order,
      <a href="../../../timeseries/TimePeriod.html" title="class in timeseries">TimePeriod</a>&nbsp;seasonalCycle,
      <a href="../../../timeseries/models/arima/Arima.FittingStrategy.html" title="enum in timeseries.models.arima">Arima.FittingStrategy</a>&nbsp;fittingStrategy)</code>
@@ -403,7 +403,7 @@ implements <a href="../../../timeseries/models/Model.html" title="interface in t
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelOrder-">
+<a name="model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelOrder-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -422,7 +422,7 @@ implements <a href="../../../timeseries/models/Model.html" title="interface in t
 </dl>
 </li>
 </ul>
-<a name="model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelOrder-timeseries.TimePeriod-">
+<a name="model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelOrder-timeseries.TimePeriod-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -445,7 +445,7 @@ implements <a href="../../../timeseries/models/Model.html" title="interface in t
 </dl>
 </li>
 </ul>
-<a name="model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelOrder-timeseries.models.arima.Arima.FittingStrategy-">
+<a name="model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelOrder-timeseries.models.arima.ArimaModel.FittingStrategy-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -469,7 +469,7 @@ implements <a href="../../../timeseries/models/Model.html" title="interface in t
 </dl>
 </li>
 </ul>
-<a name="model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelOrder-timeseries.TimePeriod-timeseries.models.arima.Arima.FittingStrategy-">
+<a name="model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelOrder-timeseries.TimePeriod-timeseries.models.arima.ArimaModel.FittingStrategy-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -496,7 +496,7 @@ implements <a href="../../../timeseries/models/Model.html" title="interface in t
 </dl>
 </li>
 </ul>
-<a name="model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelCoefficients-timeseries.models.arima.Arima.FittingStrategy-">
+<a name="model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelCoefficients-timeseries.models.arima.ArimaModel.FittingStrategy-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -520,7 +520,7 @@ implements <a href="../../../timeseries/models/Model.html" title="interface in t
 </dl>
 </li>
 </ul>
-<a name="model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelCoefficients-timeseries.TimePeriod-">
+<a name="model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelCoefficients-timeseries.TimePeriod-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -544,7 +544,7 @@ implements <a href="../../../timeseries/models/Model.html" title="interface in t
 </dl>
 </li>
 </ul>
-<a name="model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelCoefficients-timeseries.TimePeriod-timeseries.models.arima.Arima.FittingStrategy-">
+<a name="model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelCoefficients-timeseries.TimePeriod-timeseries.models.arima.ArimaModel.FittingStrategy-">
 <!--   -->
 </a>
 <ul class="blockList">

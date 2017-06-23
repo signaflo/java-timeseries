@@ -74,10 +74,10 @@ public class Simulation {
     public TimeSeries sim() {
         final int burnin = (int) (n / 2.0);
         final int seasonalFrequency = (int) period.frequencyPer(seasonalCycle);
-        double[] arSarCoeffs = Arima.expandArCoefficients(coefficients.arCoeffs(), coefficients.seasonalARCoeffs(),
-                                                          seasonalFrequency);
-        double[] maSmaCoeffs = Arima.expandMaCoefficients(coefficients.maCoeffs(), coefficients.seasonalMACoeffs(),
-                                                          seasonalFrequency);
+        double[] arSarCoeffs = ArimaModel.expandArCoefficients(coefficients.arCoeffs(), coefficients.seasonalARCoeffs(),
+                                                               seasonalFrequency);
+        double[] maSmaCoeffs = ArimaModel.expandMaCoefficients(coefficients.maCoeffs(), coefficients.seasonalMACoeffs(),
+                                                               seasonalFrequency);
         int diffOffset = coefficients.d() + coefficients.D() * seasonalFrequency;
         int offset = Math.min(n, arSarCoeffs.length);
         double[] series = new double[n + burnin];

@@ -803,17 +803,17 @@
 <dd>
 <div class="block">Create a forecast with 95% prediction intervals for the given number of steps ahead.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="timeseries/models/arima/ArimaForecast.html#forecast-timeseries.models.arima.Arima-int-double-">forecast(Arima, int, double)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/ArimaForecast.html" title="class in timeseries.models.arima">ArimaForecast</a></dt>
+<dt><span class="memberNameLink"><a href="timeseries/models/arima/ArimaForecast.html#forecast-timeseries.models.arima.ArimaModel-int-double-">forecast(Arima, int, double)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/ArimaForecast.html" title="class in timeseries.models.arima">ArimaForecast</a></dt>
 <dd>
 <div class="block">Create a new forecast for the given number of steps ahead using the given ARIMA model and the given
  &alpha; significance level.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="timeseries/models/arima/ArimaForecast.html#forecast-timeseries.models.arima.Arima-int-">forecast(Arima, int)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/ArimaForecast.html" title="class in timeseries.models.arima">ArimaForecast</a></dt>
+<dt><span class="memberNameLink"><a href="timeseries/models/arima/ArimaForecast.html#forecast-timeseries.models.arima.ArimaModel-int-">forecast(Arima, int)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/ArimaForecast.html" title="class in timeseries.models.arima">ArimaForecast</a></dt>
 <dd>
 <div class="block">Create a new forecast for the given number of steps ahead using the given ARIMA model with a default
  &alpha; significance level of 0.05.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="timeseries/models/arima/ArimaForecast.html#forecast-timeseries.models.arima.Arima-">forecast(Arima)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/ArimaForecast.html" title="class in timeseries.models.arima">ArimaForecast</a></dt>
+<dt><span class="memberNameLink"><a href="timeseries/models/arima/ArimaForecast.html#forecast-timeseries.models.arima.ArimaModel-">forecast(Arima)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/ArimaForecast.html" title="class in timeseries.models.arima">ArimaForecast</a></dt>
 <dd>
 <div class="block">Create a new 12 step ahead forecast from the given ARIMA model with a default
  &alpha; significance level of 0.05.</div>
@@ -1267,31 +1267,31 @@
 <dd>
 <div class="block">Subtract the given series from this time series and return the result as a new time series.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelOrder-">model(TimeSeries, Arima.ModelOrder)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></dt>
+<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelOrder-">model(TimeSeries, Arima.ModelOrder)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></dt>
 <dd>
 <div class="block">Create a new ARIMA model from the given observations and model order.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelOrder-timeseries.TimePeriod-">model(TimeSeries, Arima.ModelOrder, TimePeriod)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></dt>
+<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelOrder-timeseries.TimePeriod-">model(TimeSeries, Arima.ModelOrder, TimePeriod)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></dt>
 <dd>
 <div class="block">Create a new ARIMA model from the given observations, model order, and seasonal cycle.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelOrder-timeseries.models.arima.Arima.FittingStrategy-">model(TimeSeries, Arima.ModelOrder, Arima.FittingStrategy)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></dt>
+<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelOrder-timeseries.models.arima.ArimaModel.FittingStrategy-">model(TimeSeries, Arima.ModelOrder, Arima.FittingStrategy)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></dt>
 <dd>
 <div class="block">Create a new ARIMA model from the given observations, model order, and fitting strategy.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelOrder-timeseries.TimePeriod-timeseries.models.arima.Arima.FittingStrategy-">model(TimeSeries, Arima.ModelOrder, TimePeriod, Arima.FittingStrategy)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></dt>
+<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelOrder-timeseries.TimePeriod-timeseries.models.arima.ArimaModel.FittingStrategy-">model(TimeSeries, Arima.ModelOrder, TimePeriod, Arima.FittingStrategy)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></dt>
 <dd>
 <div class="block">Create a new ARIMA model from the given observations, model order, seasonal cycle, and fitting strategy.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelCoefficients-timeseries.models.arima.Arima.FittingStrategy-">model(TimeSeries, Arima.ModelCoefficients, Arima.FittingStrategy)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></dt>
+<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelCoefficients-timeseries.models.arima.ArimaModel.FittingStrategy-">model(TimeSeries, Arima.ModelCoefficients, Arima.FittingStrategy)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></dt>
 <dd>
 <div class="block">Create a new ARIMA model from the given observations, model coefficients, and fitting strategy.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelCoefficients-timeseries.TimePeriod-">model(TimeSeries, Arima.ModelCoefficients, TimePeriod)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></dt>
+<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelCoefficients-timeseries.TimePeriod-">model(TimeSeries, Arima.ModelCoefficients, TimePeriod)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></dt>
 <dd>
 <div class="block">Create a new ARIMA model from the given observations, model coefficients, and seasonal cycle.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.Arima.ModelCoefficients-timeseries.TimePeriod-timeseries.models.arima.Arima.FittingStrategy-">model(TimeSeries, Arima.ModelCoefficients, TimePeriod, Arima.FittingStrategy)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></dt>
+<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.html#model-timeseries.TimeSeries-timeseries.models.arima.ArimaModel.ModelCoefficients-timeseries.TimePeriod-timeseries.models.arima.ArimaModel.FittingStrategy-">model(TimeSeries, Arima.ModelCoefficients, TimePeriod, Arima.FittingStrategy)</a></span> - Static method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.html" title="class in timeseries.models.arima">Arima</a></dt>
 <dd>
 <div class="block">Create a new ARIMA model from the given observations, model coefficients, seasonal cycle, and fitting strategy.</div>
 </dd>
@@ -1796,7 +1796,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.ModelCoefficients.Builder.html#setARCoeffs-double...-">setARCoeffs(double...)</a></span> - Method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.ModelCoefficients.Builder.html" title="class in timeseries.models.arima">Arima.ModelCoefficients.Builder</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.Simulation.Builder.html#setCoefficients-timeseries.models.arima.Arima.ModelCoefficients-">setCoefficients(Arima.ModelCoefficients)</a></span> - Method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.Simulation.Builder.html" title="class in timeseries.models.arima">Arima.Simulation.Builder</a></dt>
+<dt><span class="memberNameLink"><a href="timeseries/models/arima/Arima.Simulation.Builder.html#setCoefficients-timeseries.models.arima.ArimaModel.ModelCoefficients-">setCoefficients(Arima.ModelCoefficients)</a></span> - Method in class timeseries.models.arima.<a href="timeseries/models/arima/Arima.Simulation.Builder.html" title="class in timeseries.models.arima">Arima.Simulation.Builder</a></dt>
 <dd>
 <div class="block">Set the model coefficients to be used in simulating the ARIMA model.</div>
 </dd>

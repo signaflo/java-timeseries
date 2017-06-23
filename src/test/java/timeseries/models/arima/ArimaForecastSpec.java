@@ -62,9 +62,10 @@ public class ArimaForecastSpec {
     @Test
     public void whenArimaForecastThenForecastValuesCorrect() {
         TimeSeries timeSeries = TestData.debitcards();
-        Arima.FittingStrategy fittingStrategy = Arima.FittingStrategy.CSSML;
+        Arima.FittingStrategy fittingStrategy = ArimaModel.FittingStrategy.CSSML;
         ModelCoefficients coefficients = ModelCoefficients.newBuilder().setMACoeffs(-0.6760904)
-                                                          .setSeasonalMACoeffs(-0.5718134).setDifferences(1).setSeasonalDifferences(1).build();
+                                                          .setSeasonalMACoeffs(-0.5718134).setDifferences(1)
+                                                          .setSeasonalDifferences(1).build();
         Arima model = Arima.model(timeSeries, coefficients, fittingStrategy);
         Forecast forecast = ArimaForecast.forecast(model, 24);
         double[] expectedForecast = {19478.680824, 19400.979522, 20740.20164, 20600.788629, 23391.472355, 23436.878337,
