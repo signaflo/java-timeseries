@@ -55,9 +55,7 @@ public class ArimaSpec {
     @Test
     public void whenArimaModelFitThenParametersSimilarToROutput() throws Exception {
         TimeSeries series = TestData.livestock();
-        ModelCoefficients coefficients = ModelCoefficients.newBuilder().setDifferences(1).setMean(50.0).build();
-        series = Simulation.newBuilder().setCoefficients(coefficients).sim();
-        ModelOrder order = ModelOrder.order(0, 1, 0, Constant.EXCLUDE, Arima.Drift.INCLUDE);
+        ModelOrder order = ModelOrder.order(1, 0, 1);
         Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.CSSML);
         assertThat(model.coefficients().arCoeffs()[0], is(closeTo(0.64, 0.02)));
         assertThat(model.coefficients().maCoeffs()[0], is(closeTo(-0.50, 0.02)));
