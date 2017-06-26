@@ -196,7 +196,7 @@ final class ArimaModel implements Arima {
             this.residuals = observations.minus(this.fittedSeries);
         } else {
             double[] delta = getDelta(this.order, this.observationFrequency);
-            this.modelInfo = fitML(observations, arSarCoeffs, maSmaCoeffs, delta, order.npar());
+            this.modelInfo = fitML(armaSeries, arSarCoeffs, maSmaCoeffs, delta, order.npar());
             final double[] residuals = modelInfo.residuals;
             this.fittedSeries = observations.minus(new TimeSeries(residuals));
             this.residuals = observations.minus(this.fittedSeries);
