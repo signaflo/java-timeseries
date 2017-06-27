@@ -96,7 +96,7 @@ final class ArimaModel implements Arima {
 
         final Vector initParams;
         final Matrix initHessian;
-        final ModelParameters parameters = ModelParameters.initializePars(order.p, order.q, order.P, order.Q);
+        ModelParameters parameters = ModelParameters.initializePars(order.p, order.q, order.P, order.Q);
         Matrix regressionMatrix = getRegressionMatrix(observations.size(), order);
         if (regression == null) {
             regression = getLinearRegression(differencedSeries, regressionMatrix);
@@ -112,8 +112,11 @@ final class ArimaModel implements Arima {
         if (fittingStrategy == FittingStrategy.CSSML) {
             final FittingStrategy subStrategy = FittingStrategy.CSS;
             final ArimaModel firstModel = new ArimaModel(observations, order, seasonalCycle, subStrategy, regression);
-            parameters.setMean(firstModel.coefficients().mean());
-            parameters.setDrift(firstModel.coefficients().drift());
+            double meanParScale = parameters.getMeanParScale();
+            parameters = ModelParameters.fromCoefficients(firstModel.coefficients());
+            parameters.setMeanParScale(meanParScale);
+            //parameters.setMean(firstModel.coefficients().mean());
+            //parameters.setDrift(firstModel.coefficients().drift());
             initParams = new Vector(parameters.getAllScaled(order));
             initHessian = getInitialHessian(firstModel);
         } else {
@@ -505,7 +508,7 @@ final class ArimaModel implements Arima {
         double[] stdErrors = model.stdErrors;
         Matrix.IdentityBuilder builder = new Matrix.IdentityBuilder(stdErrors.length);
         for (int i = 0; i < stdErrors.length; i++) {
-            builder.set(i, i, stdErrors[i] * stdErrors[i] * differencedSeries.size());
+            builder.set(i, i, stdErrors[i] * stdErrors[i] * observations.size());
         }
         return builder.build();
     }
@@ -721,10 +724,6 @@ final class ArimaModel implements Arima {
         private final ModelParameters parameters;
         private final FittingStrategy fittingStrategy;
         private final int seasonalFrequency;
-        private final double[] arParams;
-        private final double[] maParams;
-        private final double[] sarParams;
-        private final double[] smaParams;
         private final Matrix externalRegressors;
 
         private OptimFunction(TimeSeries observations, ModelOrder order, ModelParameters parameters,
@@ -735,10 +734,6 @@ final class ArimaModel implements Arima {
             this.fittingStrategy = fittingStrategy;
             this.externalRegressors = externalRegressors;
             this.seasonalFrequency = seasonalFrequency;
-            this.arParams = new double[order.p];
-            this.maParams = new double[order.q];
-            this.sarParams = new double[order.P];
-            this.smaParams = new double[order.Q];
         }
 
         @Override
@@ -746,13 +741,24 @@ final class ArimaModel implements Arima {
             functionEvaluations++;
 
             final double[] params = point.elements();
-            System.arraycopy(params, 0, arParams, 0, order.p);
-            System.arraycopy(params, order.p, maParams, 0, order.q);
-            System.arraycopy(params, order.p + order.q, sarParams, 0, order.P);
-            System.arraycopy(params, order.p + order.q + order.P, smaParams, 0, order.Q);
+            parameters.setAutoRegressivePars(slice(params, 0, order.p));
+            parameters.setMovingAveragePars(slice(params, order.p, order.p + order.q));
+            parameters.setSeasonalAutoRegressivePars(slice(params, order.p + order.q, order.p + order.q + order.P));
+            parameters.setSeasonalMovingAveragePars(slice(params, order.p + order.q + order.P, order.p + order.q +
+                                                         order.P + order.Q));
 
-            final double[] arCoeffs = ArimaModel.expandArCoefficients(arParams, sarParams, seasonalFrequency);
-            final double[] maCoeffs = ArimaModel.expandMaCoefficients(maParams, smaParams, seasonalFrequency);
+            if (order.constant.include()) {
+                parameters.setAndScaleMean(params[order.sumARMA]);
+            }
+            if (order.drift.include()) {
+                parameters.setAndScaleDrift(params[order.sumARMA + order.constant.asInt()]);
+            }
+            final double[] arCoeffs = ArimaModel.expandArCoefficients(parameters.getAutoRegressivePars(),
+                                                                      parameters.getSeasonalAutoRegressivePars(),
+                                                                      seasonalFrequency);
+            final double[] maCoeffs = ArimaModel.expandMaCoefficients(parameters.getMovingAveragePars(),
+                                                                      parameters.getSeasonalMovingAveragePars(),
+                                                                      seasonalFrequency);
 
             Vector regressionParameters = Vector.from(parameters.getRegressors(order));
             Vector regressionEffects = externalRegressors.times(regressionParameters);
@@ -773,9 +779,7 @@ final class ArimaModel implements Arima {
         public String toString() {
             String newLine = System.lineSeparator();
             return order + newLine + "fittingStrategy: " + fittingStrategy + newLine + "observationFrequency: " +
-                   seasonalFrequency + newLine + "arParams: " + Arrays.toString(arParams) + newLine + "maParams: " +
-                   Arrays.toString(maParams) + newLine + "sarParams: " + Arrays.toString(sarParams) + newLine +
-                   "smaParams:" + " " + Arrays.toString(smaParams);
+                   seasonalFrequency + newLine + "parameters" + parameters;
         }
 
         @Override
@@ -789,24 +793,17 @@ final class ArimaModel implements Arima {
             if (!observations.equals(that.observations)) return false;
             if (!order.equals(that.order)) return false;
             if (fittingStrategy != that.fittingStrategy) return false;
-            if (!Arrays.equals(arParams, that.arParams)) return false;
-            if (!Arrays.equals(maParams, that.maParams)) return false;
-            if (!Arrays.equals(sarParams, that.sarParams)) return false;
-            return Arrays.equals(smaParams, that.smaParams);
+            return (parameters == that.parameters);
         }
 
         @Override
         public int hashCode() {
             int result;
-            long temp;
             result = observations.hashCode();
             result = 31 * result + order.hashCode();
             result = 31 * result + fittingStrategy.hashCode();
             result = 31 * result + seasonalFrequency;
-            result = 31 * result + Arrays.hashCode(arParams);
-            result = 31 * result + Arrays.hashCode(maParams);
-            result = 31 * result + Arrays.hashCode(sarParams);
-            result = 31 * result + Arrays.hashCode(smaParams);
+            result = 31 * result + parameters.hashCode();
             return result;
         }
     }
