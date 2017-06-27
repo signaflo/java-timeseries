@@ -27,14 +27,24 @@ package math;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 public class LinearSpec {
 
     @Test
     public void testLinear() {
-        LinearExpression<Real> realExpression1 = new RealLinearExpression(1, 2, 2);
-        LinearExpression<Real> realExpression2 = new RealLinearExpression(1, 3, 3);
-        LinearExpression<Real> realExpression3 = new RealLinearExpression(2, 6, 5);
+        Collection<LinearTerm<Real>> realTerms1 = Arrays.asList(LinearTerm.from(1, Real.from(1.0)),
+                                                               LinearTerm.from(2, Real.from(2.0)),
+                                                               LinearTerm.from(3, Real.from(2.0)));
+        Collection<LinearTerm<Real>> realTerms2 = Arrays.asList(LinearTerm.from(1, Real.from(1.0)),
+                                                                LinearTerm.from(2, Real.from(3.0)),
+                                                                LinearTerm.from(3, Real.from(3.0)));
+        Collection<LinearTerm<Real>> realTerms3 = Arrays.asList(LinearTerm.from(1, Real.from(2.0)),
+                                                                LinearTerm.from(2, Real.from(6.0)),
+                                                                LinearTerm.from(3, Real.from(5.0)));
+        LinearExpression<Real> realExpression1 = new LinearExpression<>(realTerms1, Field.real());
+        LinearExpression<Real> realExpression2 = new LinearExpression<>(realTerms2, Field.real());
+        LinearExpression<Real> realExpression3 = new LinearExpression<>(realTerms3, Field.real());
         LinearEquation<Real> linearEquation1 = new LinearEquation<>(realExpression1, Real.from(4.0));
         LinearEquation<Real> linearEquation2 = new LinearEquation<>(realExpression2, Real.from(5.0));
         LinearEquation<Real> linearEquation3 = new LinearEquation<>(realExpression3, Real.from(6.0));
@@ -54,21 +64,18 @@ public class LinearSpec {
 
     @Test
     public void testRationalSystem() {
-        LinearExpression<Rational> rationalExpression1 = new RationalLinearExpression(
-                Rational.from(7, 15),
-                Rational.from(6, 15),
-                Rational.from(2, 15)
-        );
-        LinearExpression<Rational> rationalExpression2 = new RationalLinearExpression(
-                Rational.from(6, 15),
-                Rational.from(4, 15),
-                Rational.from(5, 15)
-        );
-        LinearExpression<Rational> rationalExpression3 = new RationalLinearExpression(
-                Rational.from(2, 15),
-                Rational.from(5, 15),
-                Rational.from(8, 15)
-        );
+        Collection<LinearTerm<Rational>> rationalTerms1 = Arrays.asList(LinearTerm.from(1, Rational.from(7, 15)),
+                                                                LinearTerm.from(2, Rational.from(6, 15)),
+                                                                LinearTerm.from(3, Rational.from(2, 15)));
+        Collection<LinearTerm<Rational>> rationalTerms2 = Arrays.asList(LinearTerm.from(1, Rational.from(6, 15)),
+                                                                LinearTerm.from(2, Rational.from(4, 15)),
+                                                                LinearTerm.from(3, Rational.from(5, 15)));
+        Collection<LinearTerm<Rational>> rationalTerms3 = Arrays.asList(LinearTerm.from(1, Rational.from(2, 15)),
+                                                                LinearTerm.from(2, Rational.from(5, 15)),
+                                                                LinearTerm.from(3, Rational.from(8, 15)));
+        LinearExpression<Rational> rationalExpression1 = new LinearExpression<>(rationalTerms1, Field.rational());
+        LinearExpression<Rational> rationalExpression2 = new LinearExpression<>(rationalTerms2, Field.rational());
+        LinearExpression<Rational> rationalExpression3 = new LinearExpression<>(rationalTerms3, Field.rational());
         LinearEquation<Rational> rationalEquation1 = new LinearEquation<>(rationalExpression1, Rational.from(380));
         LinearEquation<Rational> rationalEquation2 = new LinearEquation<>(rationalExpression2, Rational.from(500));
         LinearEquation<Rational> rationalEquation3 = new LinearEquation<>(rationalExpression3, Rational.from(620));

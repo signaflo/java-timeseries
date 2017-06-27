@@ -29,9 +29,13 @@ public class LinearTerm<T extends FieldElement<T>> {
     private final int variable;
     private final T coefficient;
 
-    LinearTerm(final int variable, final T coefficient) {
+    private LinearTerm(final int variable, final T coefficient) {
         this.variable = variable;
         this.coefficient = coefficient;
+    }
+
+    static <T extends FieldElement<T>> LinearTerm<T> from(int variable, T coefficient) {
+        return new LinearTerm<>(variable, coefficient);
     }
 
     @Override
