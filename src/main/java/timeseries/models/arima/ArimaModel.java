@@ -430,17 +430,17 @@ final class ArimaModel implements Arima {
         System.arraycopy(observations.asArray(), 0, fcst, 0, m);
         LagPolynomial diffPolynomial = LagPolynomial.differences(d);
         LagPolynomial seasDiffPolynomial = LagPolynomial.seasonalDifferences(observationFrequency, D);
-        LagPolynomial lagPolyomial = diffPolynomial.times(seasDiffPolynomial);
+        LagPolynomial lagPolynomial = diffPolynomial.times(seasDiffPolynomial);
         double mean = this.coefficients().mean();
         for (int t = 0; t < steps; t++) {
             diffedFcst[n + t] = mean;
             fcst[m + t] = mean;
-            fcst[m + t] += lagPolyomial.fit(fcst, m + t);
+            fcst[m + t] += lagPolynomial.fit(fcst, m + t);
             for (int i = 0; i < arSarCoeffs.length; i++) {
                 diffedFcst[n + t] += arSarCoeffs[i] * (diffedFcst[n + t - i - 1] - mean);
                 fcst[m + t] += arSarCoeffs[i] * (diffedFcst[n + t - i - 1] - mean);
             }
-            for (int j = maSmaCoeffs.length; j > 0 && t - j < 0; j--) {
+            for (int j = maSmaCoeffs.length; j > 0 && t < j; j--) {
                 diffedFcst[n + t] += maSmaCoeffs[j - 1] * resid[m + t - j];
                 fcst[m + t] += maSmaCoeffs[j - 1] * resid[m + t - j];
             }
@@ -749,10 +749,10 @@ final class ArimaModel implements Arima {
                                                          order.P + order.Q));
 
             if (order.constant.include()) {
-                parameters.setAndScaleMean(params[order.sumARMA]);
+                parameters.setAndScaleMean(params[order.sumARMA()]);
             }
             if (order.drift.include()) {
-                parameters.setAndScaleDrift(params[order.sumARMA + order.constant.asInt()]);
+                parameters.setAndScaleDrift(params[order.sumARMA() + order.constant.asInt()]);
             }
             final double[] arCoeffs = ArimaModel.expandArCoefficients(parameters.getAutoRegressivePars(),
                                                                       parameters.getSeasonalAutoRegressivePars(),

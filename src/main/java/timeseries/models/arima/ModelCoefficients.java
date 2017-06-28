@@ -242,6 +242,9 @@ public class ModelCoefficients {
         else {
             sb.append(newLine).append("zero mean");
         }
+        if (Math.abs(drift) > EPSILON) {
+            sb.append(newLine).append("drift: ").append(numFormatter.format(drift));
+        }
         if (d > 0) sb.append(newLine).append(d).append(" non-seasonal difference").append((d > 1)? "s" : "");
         if (D > 0) sb.append(newLine).append(D).append(" seasonal difference").append((D > 1)? "s" : "");
         return sb.toString();
@@ -258,6 +261,7 @@ public class ModelCoefficients {
         if (D != that.D) return false;
         if (Double.compare(that.mean, mean) != 0) return false;
         if (Double.compare(that.intercept, intercept) != 0) return false;
+        if (Double.compare(that.drift, drift) != 0) return false;
         if (!Arrays.equals(arCoeffs, that.arCoeffs)) return false;
         if (!Arrays.equals(maCoeffs, that.maCoeffs)) return false;
         if (!Arrays.equals(sarCoeffs, that.sarCoeffs)) return false;
@@ -277,6 +281,8 @@ public class ModelCoefficients {
         temp = Double.doubleToLongBits(mean);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(intercept);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(drift);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
