@@ -19,35 +19,35 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenAggregateWithSmallerPeriodThenIllegalArgument() {
-        TimeSeries timeSeries = TestData.ausbeer();
+        TimeSeries timeSeries = TestData.ausbeer;
         exception.expect(IllegalArgumentException.class);
         timeSeries.aggregate(TimePeriod.oneMonth());
     }
 
     @Test
     public void whenBoxCoxBackTransformLambdaTooBigThenIllegalArgument() {
-        TimeSeries series = TestData.ausbeer();
+        TimeSeries series = TestData.ausbeer;
         exception.expect(IllegalArgumentException.class);
         series.backTransform(2.5);
     }
 
     @Test
     public void whenBoxCoxTransformationLambdaTooBigThenIllegalArgument() {
-        TimeSeries series = TestData.ausbeer();
+        TimeSeries series = TestData.ausbeer;
         exception.expect(IllegalArgumentException.class);
         series.transform(2.5);
     }
 
     @Test
     public void whenBoxCoxBackTransformLambdaTooSmallThenIllegalArgument() {
-        TimeSeries series = TestData.ausbeer();
+        TimeSeries series = TestData.ausbeer;
         exception.expect(IllegalArgumentException.class);
         series.backTransform(-1.5);
     }
 
     @Test
     public void whenBoxCoxTransformationLambdaTooSmallThenIllegalArgument() {
-        TimeSeries series = TestData.ausbeer();
+        TimeSeries series = TestData.ausbeer;
         exception.expect(IllegalArgumentException.class);
         series.transform(-1.5);
     }
@@ -70,27 +70,27 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenDifferencedNoArgThenDifferencedOnce() {
-        TimeSeries timeSeries = TestData.ausbeer();
+        TimeSeries timeSeries = TestData.ausbeer;
         assertThat(timeSeries.difference(), is(timeSeries.difference(1)));
     }
 
     @Test
     public void whenStartTimeThenFirstObservationTime() {
-        TimeSeries timeSeries = Ts.newQuarterlySeries(1956, 1, TestData.ausbeerArray());
+        TimeSeries timeSeries = Ts.newQuarterlySeries(1956, 1, TestData.ausbeerArray);
         OffsetDateTime expected = OffsetDateTime.parse("1956-01-01T00:00:00Z");
         assertThat(timeSeries.startTime(), is(expected));
     }
 
     @Test
     public void whenDifferencedMoreThanOnceThenCorrectData() {
-        TimeSeries timeSeries = TestData.ausbeer();
+        TimeSeries timeSeries = TestData.ausbeer;
         TimeSeries diffedTwice = timeSeries.difference().difference();
         assertThat(timeSeries.difference(1, 2), is(diffedTwice));
     }
 
     @Test
     public void whenDataPointAccessedThenExpectedValueReturned() {
-        TimeSeries timeSeries = TestData.debitcards();
+        TimeSeries timeSeries = TestData.debitcards;
         OffsetDateTime period = OffsetDateTime.parse("2000-01-01T00:00:00Z");
         assertThat(timeSeries.at(period), is(timeSeries.at(0)));
     }
@@ -104,7 +104,7 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenAutoCovarianceNegativeLagThenIllegalArgument() {
-        TimeSeries series = TestData.ausbeer();
+        TimeSeries series = TestData.ausbeer;
         exception.expect(IllegalArgumentException.class);
         series.autoCovarianceAtLag(-1);
     }
@@ -145,7 +145,7 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenFivePeriodMovingAverageComputedResultCorrect() {
-        TimeSeries series = TestData.elecSales();
+        TimeSeries series = TestData.elecSales;
         double[] expected = new double[]{2381.53, 2424.556, 2463.758, 2552.598, 2627.7, 2750.622, 2858.348, 3014.704,
                 3077.3, 3144.52, 3188.7, 3202.32, 3216.94, 3307.296, 3398.754, 3485.434};
         double[] result = series.movingAverage(5).asArray();
@@ -154,7 +154,7 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenFourPeriodMovingAverageComputedResultCorrect() {
-        TimeSeries series = TestData.elecSales();
+        TimeSeries series = TestData.elecSales;
         double[] expected = new double[]{2380.39, 2388.3275, 2435.7675, 2500.0675, 2573.5, 2688.1025, 2795.91,
                 2929.005, 3077.7, 3135.5, 3180.475, 3208.85, 3163.525, 3252.25, 3338.97, 3443.0425, 3562.7425};
         double[] result = series.movingAverage(4).asArray();
@@ -163,7 +163,7 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenFourPeriodCenteredMovingAverageComputedResultCorrect() {
-        TimeSeries series = TestData.elecSales();
+        TimeSeries series = TestData.elecSales;
         double[] expected = new double[]{2384.35875, 2412.0475, 2467.9175, 2536.78375, 2630.80125, 2742.00625,
                 2862.4575, 3003.3525, 3106.6, 3157.9875, 3194.6625, 3186.1875, 3207.8875, 3295.61, 3391.00625,
                 3502.8925};
@@ -173,7 +173,7 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenFivePeriodCenteredMovingAverageComputedResultCorrect() {
-        TimeSeries series = TestData.elecSales();
+        TimeSeries series = TestData.elecSales;
         double[] expected = new double[]{2381.53, 2424.556, 2463.758, 2552.598, 2627.7, 2750.622, 2858.348, 3014.704,
                 3077.3, 3144.52, 3188.7, 3202.32, 3216.94, 3307.296, 3398.754, 3485.434};
         double[] result = series.centeredMovingAverage(5).asArray();
@@ -182,7 +182,7 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenTimeSeriesAggregatedDatesCorrect() {
-        TimeSeries series = TestData.ausbeer();
+        TimeSeries series = TestData.ausbeer;
         TimeSeries aggregated = series.aggregate(TimeUnit.DECADE);
         OffsetDateTime expectedStart = OffsetDateTime.of(LocalDateTime.of(1956, 1, 1, 0, 0), ZoneOffset.ofHours(0));
         OffsetDateTime expectedEnd = OffsetDateTime.of(LocalDateTime.of(1996, 1, 1, 0, 0), ZoneOffset.ofHours(0));
@@ -192,7 +192,7 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenWeeklySeriesCreatedResultCorrect() {
-        TimeSeries series = TestData.sydneyAir();
+        TimeSeries series = TestData.sydneyAir;
         TimeSeries seriesOne = series.aggregateToYears();
         TimeSeries seriesTwo = series.aggregate(TimeUnit.YEAR);
         assertThat(seriesOne, is(equalTo(seriesTwo)));
@@ -200,7 +200,7 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenFromThenCorrectSliceOfDataReturned() {
-        double[] ts = TestData.ausbeerArray();
+        double[] ts = TestData.ausbeerArray;
         TimeSeries series = new TimeSeries(TimePeriod.oneQuarter(), "1956-01-01T00:00:00", ts);
         OffsetDateTime startSlice = OffsetDateTime.parse("1956-04-01T00:00:00Z");
         OffsetDateTime endSlice = OffsetDateTime.parse("1957-01-01T00:00:00Z");
@@ -211,10 +211,10 @@ public class TimeSeriesSpec {
 
     @Test
     public void testHashCodeAndEquals() {
-        double[] ts = TestData.ausbeerArray();
+        double[] ts = TestData.ausbeerArray;
         TimeSeries series1 = Ts.newQuarterlySeries(1956, 1, ts);
         TimeSeries series2 = Ts.newQuarterlySeries(1957, 2, ts);
-        TimeSeries series3 = TestData.elecSales();
+        TimeSeries series3 = TestData.elecSales;
         TimeSeries series4 = Ts.newQuarterlySeries(1956, 1, ts);
         TimeSeries nullSeries = null;
         String aNonTimeSeries = "";

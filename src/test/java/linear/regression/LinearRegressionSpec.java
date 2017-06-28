@@ -42,7 +42,7 @@ import static org.junit.Assert.assertArrayEquals;
 public class LinearRegressionSpec {
 
     private List<Double> time = Range.inclusiveRange(1, 47, 1.0).asList();
-    private List<Double> response = TestData.livestock().asList();
+    private List<Double> response = TestData.livestock.asList();
     private boolean hasIntercept = true;
     private MultipleLinearRegression regression = MultipleLinearRegression.builder()
                                                           .predictor(time)
@@ -119,7 +119,7 @@ public class LinearRegressionSpec {
         MultipleLinearRegression other = this.regression.withHasIntercept(!hasIntercept);
         MultipleLinearRegression other2 = this.regression
                 .withPredictor(Range.inclusiveRange(1961, 2007, 1.0).asList());
-        MultipleLinearRegression other3 = this.regression.withResponse(TestData.livestock().demean().asList());
+        MultipleLinearRegression other3 = this.regression.withResponse(TestData.livestock.demean().asList());
         new EqualsTester()
                 .addEqualityGroup(this.regression, MultipleLinearRegression.builder().from(this.regression).build())
                 .addEqualityGroup(other, MultipleLinearRegression.builder().from(other).build())

@@ -39,7 +39,7 @@ public final class LagPolynomialSpec {
 
     @Test
     public void whenLagPolyFitThenResultCorrect() {
-        TimeSeries series = TestData.ausbeer();
+        TimeSeries series = TestData.ausbeer;
         LagPolynomial poly = LagPolynomial.firstDifference();
         assertThat(poly.fit(series, 2), is(equalTo(series.at(1))));
         OffsetDateTime thirdObservationPeriod = OffsetDateTime.of(1956, 7, 1, 0, 0, 0, 0, ZoneOffset.UTC);
@@ -51,7 +51,7 @@ public final class LagPolynomialSpec {
 
     @Test
     public void whenLagPolyAppliedThenResultCorrect() {
-        TimeSeries series = TestData.ausbeer();
+        TimeSeries series = TestData.ausbeer;
         LagPolynomial poly = LagPolynomial.firstDifference();
         assertThat(poly.apply(series, 1), is(equalTo(series.at(1) - series.at(0))));
         OffsetDateTime secondObservationPeriod = OffsetDateTime.of(1956, 4, 1, 0, 0, 0, 0, ZoneOffset.UTC);
@@ -60,7 +60,7 @@ public final class LagPolynomialSpec {
 
     @Test
     public void whenLagPolyTwoDiffFitThenResultCorrect() {
-        TimeSeries series = TestData.ausbeer();
+        TimeSeries series = TestData.ausbeer;
         LagPolynomial poly = LagPolynomial.differences(2);
         assertThat(poly.fit(series, 2), is(equalTo(2 * series.at(1) - series.at(0))));
     }
@@ -119,7 +119,7 @@ public final class LagPolynomialSpec {
 
     @Test
     public void whenLagOperatorAppliedThenExpectedResult() {
-        TimeSeries series = TestData.ausbeer();
+        TimeSeries series = TestData.ausbeer;
         OffsetDateTime dateTime = OffsetDateTime.of(1956, 4, 1, 0, 0, 0, 0, ZoneOffset.UTC);
         assertThat(LagOperator.apply(series, dateTime), is(series.at(0)));
         assertThat(LagOperator.apply(series, 1), is(series.at(0)));

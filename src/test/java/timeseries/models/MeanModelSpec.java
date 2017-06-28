@@ -20,7 +20,7 @@ public class MeanModelSpec {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private final TimeSeries series = TestData.ausbeer();
+    private final TimeSeries series = TestData.ausbeer;
     private final MeanModel meanModel = new MeanModel(series);
 
     @Test
@@ -119,7 +119,7 @@ public class MeanModelSpec {
     @Test
     public void testEqualsAndHashCode() {
         MeanModel model1 = new MeanModel(series);
-        MeanModel model2 = new MeanModel(TestData.debitcards());
+        MeanModel model2 = new MeanModel(TestData.debitcards);
         MeanModel nullModel = null;
         String aNonModel = "";
         assertThat(meanModel, is(meanModel));

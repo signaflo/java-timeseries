@@ -41,21 +41,21 @@ public class RandomWalkSpec {
 
     @Test
     public void whenForecastThenNotNullReturned() {
-        TimeSeries series = TestData.sydneyAir();
+        TimeSeries series = TestData.sydneyAir;
         RandomWalk model = new RandomWalk(series);
         assertThat(model.forecast(1), is(not(nullValue())));
     }
 
     @Test
     public void whenPointForecastThenEqualToLastObserved() {
-        TimeSeries series = TestData.sydneyAir();
+        TimeSeries series = TestData.sydneyAir;
         RandomWalk model = new RandomWalk(series);
         assertThat(model.pointForecast(1).asArray()[0], is(series.at(series.size() - 1)));
     }
 
     @Test
     public void whenForecastThenPredictionIntervalCorrect() {
-        TimeSeries series = TestData.sydneyAir();
+        TimeSeries series = TestData.sydneyAir;
         RandomWalkForecast forecast = new RandomWalkForecast(series, 7, 0.05);
         double[] lowerValues = {0.955726, 0.735251, 0.566075, 0.423453, 0.2978, 0.184201, 0.079736};
         double[] upperValues = {2.020274, 2.240749, 2.409925, 2.552547, 2.6782, 2.791799, 2.896264};
@@ -67,9 +67,9 @@ public class RandomWalkSpec {
 
     @Test
     public void testEqualsAndHashCode() {
-        RandomWalk rw1 = new RandomWalk(TestData.ausbeer());
-        RandomWalk rw2 = new RandomWalk(TestData.debitcards());
-        RandomWalk rw3 = new RandomWalk(TestData.ausbeer());
+        RandomWalk rw1 = new RandomWalk(TestData.ausbeer);
+        RandomWalk rw2 = new RandomWalk(TestData.debitcards);
+        RandomWalk rw3 = new RandomWalk(TestData.ausbeer);
         RandomWalk nullModel = null;
         String aNonModel = "";
         assertThat(rw1, is(rw1));

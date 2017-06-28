@@ -54,7 +54,7 @@ public class ArimaSpec {
 
     @Test
     public void whenArimaModelFitThenParametersSimilarToROutput() throws Exception {
-        TimeSeries series = TestData.livestock();
+        TimeSeries series = TestData.livestock;
         ModelOrder order = ModelOrder.order(1, 1, 1);
         Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.CSSML);
         assertThat(model.coefficients().arCoeffs()[0], is(closeTo(0.64, 0.02)));
@@ -63,7 +63,7 @@ public class ArimaSpec {
 
     @Test
     public void whenArimaModelFitDebitcardsThenParametersSimilarToROutput() throws Exception {
-        TimeSeries series = TestData.debitcards();
+        TimeSeries series = TestData.debitcards;
         ModelOrder order = ModelOrder.order(1, 1, 1, 1, 1, 1);
         Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.CSSML);
 
@@ -80,7 +80,7 @@ public class ArimaSpec {
 
     @Test
     public void whenArimaModelForecastThenForecastValuesCorrect() throws Exception {
-        TimeSeries series = TestData.livestock();
+        TimeSeries series = TestData.livestock;
         ModelCoefficients coeffs = ModelCoefficients.newBuilder().setARCoeffs(0.6480679).setMACoeffs(-0.5035514).
                 setDifferences(1).build();
         Arima model = Arima.model(series, coeffs, TimePeriod.oneYear());
@@ -91,7 +91,7 @@ public class ArimaSpec {
 
     @Test
     public void whenArimaModelForecastThenPredictionLevelsAccurate() throws Exception {
-        TimeSeries series = TestData.livestock();
+        TimeSeries series = TestData.livestock;
         ModelCoefficients coeffs = ModelCoefficients.newBuilder()
                                                     .setARCoeffs(0.6480679 )
                                                     .setMACoeffs(-0.5035514)
@@ -118,7 +118,7 @@ public class ArimaSpec {
                                                           .setMACoeffs(-0.5)
                                                           .setDifferences(1)
                                                           .build();
-        Arima model = Arima.model(TestData.livestock(), coefficients, ArimaModel.FittingStrategy.ML);
+        Arima model = Arima.model(TestData.livestock, coefficients, ArimaModel.FittingStrategy.ML);
         assertThat(model.sigma2(), is(closeTo(531.8796, 1E-4)));
         assertThat(model.logLikelihood(), is(closeTo(-210.1396, 1E-4)));
         assertThat(model.aic(), is(closeTo(426.2792, 1E-4)));
@@ -131,13 +131,13 @@ public class ArimaSpec {
                                                           .setARCoeffs(0.01803952)
                                                           .setDifferences(1)
                                                           .build();
-        Arima model = Arima.model(TestData.livestock(), coefficients, ArimaModel.FittingStrategy.ML);
+        Arima model = Arima.model(TestData.livestock, coefficients, ArimaModel.FittingStrategy.ML);
         assertThat(model.coefficients().intercept(), is(closeTo(4.85376578 * (1 - 0.01803952), 1E-4)));
     }
 
     @Test
     public void testEqualsAndHashCode() {
-        TimeSeries series = TestData.livestock();
+        TimeSeries series = TestData.livestock;
         ModelOrder order = ModelOrder.order(1, 1, 1);
         ModelOrder order2 = ModelOrder.order(1, 0, 1, Constant.INCLUDE);
         Arima model1 = Arima.model(series, order);

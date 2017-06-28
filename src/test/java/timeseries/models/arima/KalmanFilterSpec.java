@@ -17,7 +17,7 @@ public class KalmanFilterSpec {
     LagPolynomial arDiff = arPoly.times(diffPoly);
     double[] ar = arDiff.inverseParams();
     double[] ma = {-0.8373430,  0.0,  0.0, 0.3854193, -0.3227282};
-    double[] y = TestData.ukcars().asArray();
+    double[] y = TestData.ukcars.asArray();
     StateSpaceARMA ss = new StateSpaceARMA(y, ar, ma);
     assertThat(ss.stateEffectsVector(), is(new double[] {1.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
   }
