@@ -48,7 +48,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
-import java.util.Optional;
 
 import static data.DoubleFunctions.combine;
 import static data.DoubleFunctions.fill;
@@ -128,6 +127,8 @@ final class ArimaModel implements Arima {
                                                                         fittingStrategy, regressionMatrix,
                                                                         observationFrequency);
         final BFGS optimizer = new BFGS(function, initParams, DEFAULT_TOLERANCE, DEFAULT_TOLERANCE, initHessian);
+        System.out.println(function.functionEvaluations());
+        System.out.println(function.gradientEvaluations());
         final Vector optimizedParams = optimizer.parameters();
         final Matrix inverseHessian = optimizer.inverseHessian();
 
@@ -759,6 +760,12 @@ final class ArimaModel implements Arima {
             final double[] maCoeffs = ArimaModel.expandMaCoefficients(parameters.getMovingAveragePars(),
                                                                       parameters.getSeasonalMovingAveragePars(),
                                                                       seasonalFrequency);
+            if (order.constant.include()) {
+                parameters.setAndScaleMean(params[order.sumARMA()]);
+            }
+            if (order.drift.include()) {
+                parameters.setAndScaleDrift(params[order.sumARMA() + order.constant.asInt()]);
+            }
 
             Vector regressionParameters = Vector.from(parameters.getRegressors(order));
             Vector regressionEffects = externalRegressors.times(regressionParameters);
