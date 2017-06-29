@@ -13,12 +13,12 @@ import math.stats.distributions.*;
 import timeseries.*;
 import timeseries.models.*;
 import timeseries.models.arima.*;
-import math.linear.regression.*;
+import regression.*;
 
-import static DoubleFunctions.*;
+import static data.DoubleFunctions.*;
 import static math.operations.Operators.*;
-import static Plots.*;
-import static TestData.*;
-import static Arima.*;
-import static ModelOrder.*;
+import static data.visualization.Plots.*;
+import static timeseries.TestData.*;
+import static timeseries.models.arima.Arima.*;
+import static timeseries.models.arima.ModelOrder.*;
 import static math.stats.Statistics.*;
