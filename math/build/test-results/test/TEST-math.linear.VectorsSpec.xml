@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="math.linear.VectorsSpec" tests="3" skipped="0" failures="0" errors="0" timestamp="2017-06-29T00:06:41" hostname="TVC15" time="0.005">
-  <properties/>
-  <testcase name="whenZeroVectorThenVectorOfZerosCreated" classname="math.linear.VectorsSpec" time="0.002"/>
-  <testcase name="whenLinearCombinationThenCorrectVectorReturned" classname="math.linear.VectorsSpec" time="0.001"/>
-  <testcase name="whenAxpyThenCorrectVectorReturned" classname="math.linear.VectorsSpec" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
