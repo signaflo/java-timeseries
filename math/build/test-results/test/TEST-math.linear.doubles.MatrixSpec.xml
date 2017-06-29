@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="math.linear.doubles.MatrixSpec" tests="17" skipped="0" failures="0" errors="0" timestamp="2017-06-29T00:06:41" hostname="TVC15" time="0.026">
+  <properties/>
+  <testcase name="whenIdentityBuilderThenCorrectMatrixBuilt" classname="math.linear.doubles.MatrixSpec" time="0.003"/>
+  <testcase name="whenMatrixDiffWithInvalidDimensionsException" classname="math.linear.doubles.MatrixSpec" time="0.001"/>
+  <testcase name="whenMatrixSumComputedThenSumIsAccurate" classname="math.linear.doubles.MatrixSpec" time="0.001"/>
+  <testcase name="whenMatrixHashCodeAndEqualsThenCorrectResponse" classname="math.linear.doubles.MatrixSpec" time="0.001"/>
+  <testcase name="whenMatrixVectorProductComputedThenProductIsAccurate" classname="math.linear.doubles.MatrixSpec" time="0.001"/>
+  <testcase name="whenMatrixProductWithInvalidDimensionsException" classname="math.linear.doubles.MatrixSpec" time="0.0"/>
+  <testcase name="whenMatrixDimensionsNotMatchAmountOfDataThenException" classname="math.linear.doubles.MatrixSpec" time="0.0"/>
+  <testcase name="whenMatrixSquareOrNotThenCorrectBooleanReturned" classname="math.linear.doubles.MatrixSpec" time="0.0"/>
+  <testcase name="whenMatrixSumWithInvalidDimensionsException" classname="math.linear.doubles.MatrixSpec" time="0.001"/>
+  <testcase name="whenTwoDimConstructorThenCorrectMatrix" classname="math.linear.doubles.MatrixSpec" time="0.0"/>
+  <testcase name="whenStaticMethodConstructorThenCorrectMatrix" classname="math.linear.doubles.MatrixSpec" time="0.002"/>
+  <testcase name="whenMatrixSumWithInvalidColumnDimensionException" classname="math.linear.doubles.MatrixSpec" time="0.001"/>
+  <testcase name="whenMatrixProductComputedThenProductIsAccurate" classname="math.linear.doubles.MatrixSpec" time="0.001"/>
+  <testcase name="whenMatrixTransposeThenCorrectMatrixReturned" classname="math.linear.doubles.MatrixSpec" time="0.001"/>
+  <testcase name="whenMatrixDiffWithInvalidColumnDimensionsException" classname="math.linear.doubles.MatrixSpec" time="0.001"/>
+  <testcase name="whenMatrixVectorProductWithInvalidDimensionsException" classname="math.linear.doubles.MatrixSpec" time="0.001"/>
+  <testcase name="whenFillConstructorThenCorrectMatrix" classname="math.linear.doubles.MatrixSpec" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

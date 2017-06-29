@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="timeseries.TimePeriodSpec" tests="23" skipped="0" failures="0" errors="0" timestamp="2017-06-29T00:04:53" hostname="TVC15" time="0.023">
+  <properties/>
+  <testcase name="whenMillisecondsTotalComputedResultCorrect" classname="timeseries.TimePeriodSpec" time="0.001"/>
+  <testcase name="whenMilliFrequencyPerComputedResultCorrect" classname="timeseries.TimePeriodSpec" time="0.001"/>
+  <testcase name="whenHalfDecadeThenTwoInOneDecade" classname="timeseries.TimePeriodSpec" time="0.001"/>
+  <testcase name="whenFrequencyPerComputedResultCorrect" classname="timeseries.TimePeriodSpec" time="0.001"/>
+  <testcase name="whenOneMonthThenTwelveInOneYear" classname="timeseries.TimePeriodSpec" time="0.001"/>
+  <testcase name="whenOneTenthSecondThenTenInOneSecond" classname="timeseries.TimePeriodSpec" time="0.001"/>
+  <testcase name="whenTriAnnualThenThreeInOneYear" classname="timeseries.TimePeriodSpec" time="0.001"/>
+  <testcase name="whenNanosecondsTotalComputedResultCorrect" classname="timeseries.TimePeriodSpec" time="0.0"/>
+  <testcase name="whenNanoFrequencyPerComputedResultCorrect" classname="timeseries.TimePeriodSpec" time="0.0"/>
+  <testcase name="whenZeroUnitLengthThenIllegalArgument" classname="timeseries.TimePeriodSpec" time="0.0"/>
+  <testcase name="whenDayTotalSecondsComputedThenResultCorrect" classname="timeseries.TimePeriodSpec" time="0.0"/>
+  <testcase name="whenOneHourCreatedThenSixtyMinutes" classname="timeseries.TimePeriodSpec" time="0.0"/>
+  <testcase name="whenOneQuarterThenFourInOneYear" classname="timeseries.TimePeriodSpec" time="0.0"/>
+  <testcase name="whenOneDayThenSevenInOneWeek" classname="timeseries.TimePeriodSpec" time="0.0"/>
+  <testcase name="whenHalfMonthThenTwentyFourInOneYear" classname="timeseries.TimePeriodSpec" time="0.0"/>
+  <testcase name="whenFrequencyPerReverseComputedResultCorrect" classname="timeseries.TimePeriodSpec" time="0.001"/>
+  <testcase name="testEqualsAndHashCode" classname="timeseries.TimePeriodSpec" time="0.001"/>
+  <testcase name="whenTwoYearsThenFiveInADecade" classname="timeseries.TimePeriodSpec" time="0.001"/>
+  <testcase name="whenHalfYearThenTwoInOneYear" classname="timeseries.TimePeriodSpec" time="0.001"/>
+  <testcase name="whenNegativeUnitLengthThenIllegalArgument" classname="timeseries.TimePeriodSpec" time="0.001"/>
+  <testcase name="whenHalfDayCreatedThenTwelveHours" classname="timeseries.TimePeriodSpec" time="0.0"/>
+  <testcase name="whenHalfCenturyThenTwoInOneCentury" classname="timeseries.TimePeriodSpec" time="0.0"/>
+  <testcase name="WhenHalfSecondThenTwoInOneSecond" classname="timeseries.TimePeriodSpec" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

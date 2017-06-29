@@ -99,7 +99,7 @@ var activeTableTab = "activeTableTab";
 <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
 <li>
 <ul class="inheritance">
-<li>timeseries.operators.LagPolynomial</li>
+<li>LagPolynomial</li>
 </ul>
 </li>
 </ul>
@@ -138,14 +138,14 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../timeseries/operators/LagPolynomial.html#apply-timeseries.TimeSeries-int-">apply</a></span>(<a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;timeSeries,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../timeseries/operators/LagPolynomial.html#apply-TimeSeries-int-">apply</a></span>(<a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;timeSeries,
      int&nbsp;index)</code>
 <div class="block">Apply this lag polynomial to a time series at the given index.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../timeseries/operators/LagPolynomial.html#apply-timeseries.TimeSeries-java.time.OffsetDateTime-">apply</a></span>(<a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;timeSeries,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../timeseries/operators/LagPolynomial.html#apply-TimeSeries-java.time.OffsetDateTime-">apply</a></span>(<a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;timeSeries,
      <a href="https://docs.oracle.com/javase/8/docs/api/java/time/OffsetDateTime.html?is-external=true" title="class or interface in java.time">OffsetDateTime</a>&nbsp;dateTime)</code>
 <div class="block">Apply this lag polynomial to a time series at the given date and time.</div>
 </td>
@@ -188,7 +188,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </tr>
 <tr id="i8" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../timeseries/operators/LagPolynomial.html#fit-timeseries.TimeSeries-int-">fit</a></span>(<a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;timeSeries,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../timeseries/operators/LagPolynomial.html#fit-TimeSeries-int-">fit</a></span>(<a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;timeSeries,
    int&nbsp;index)</code>
 <div class="block">Use this lag polynomial to fit the implied ARIMA model at the given index by applying the polynomial, then
  solving for the time series value at that index.</div>
@@ -196,7 +196,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </tr>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../timeseries/operators/LagPolynomial.html#fit-timeseries.TimeSeries-java.time.OffsetDateTime-">fit</a></span>(<a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;timeSeries,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../timeseries/operators/LagPolynomial.html#fit-TimeSeries-java.time.OffsetDateTime-">fit</a></span>(<a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;timeSeries,
    <a href="https://docs.oracle.com/javase/8/docs/api/java/time/OffsetDateTime.html?is-external=true" title="class or interface in java.time">OffsetDateTime</a>&nbsp;dateTime)</code>
 <div class="block">Use this lag polynomial to fit the implied ARIMA model at the given date and time by applying the polynomial,
  then
@@ -234,7 +234,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </tr>
 <tr id="i15" class="rowColor">
 <td class="colFirst"><code><a href="../../timeseries/operators/LagPolynomial.html" title="class in timeseries.operators">LagPolynomial</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../timeseries/operators/LagPolynomial.html#times-timeseries.operators.LagPolynomial-">times</a></span>(<a href="../../timeseries/operators/LagPolynomial.html" title="class in timeseries.operators">LagPolynomial</a>&nbsp;other)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../timeseries/operators/LagPolynomial.html#times-LagPolynomial-">times</a></span>(<a href="../../timeseries/operators/LagPolynomial.html" title="class in timeseries.operators">LagPolynomial</a>&nbsp;other)</code>
 <div class="block">Multiply this polynomial by another lag polynomial and return the result in a new lag polynomial.</div>
 </td>
 </tr>
@@ -360,7 +360,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </dl>
 </li>
 </ul>
-<a name="times-timeseries.operators.LagPolynomial-">
+<a name="times-LagPolynomial-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -376,7 +376,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </dl>
 </li>
 </ul>
-<a name="apply-timeseries.TimeSeries-int-">
+<a name="apply-TimeSeries-int-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -394,7 +394,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </dl>
 </li>
 </ul>
-<a name="apply-timeseries.TimeSeries-java.time.OffsetDateTime-">
+<a name="apply-TimeSeries-java.time.OffsetDateTime-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -412,7 +412,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </dl>
 </li>
 </ul>
-<a name="fit-timeseries.TimeSeries-int-">
+<a name="fit-TimeSeries-int-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -432,7 +432,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </dl>
 </li>
 </ul>
-<a name="fit-timeseries.TimeSeries-java.time.OffsetDateTime-">
+<a name="fit-TimeSeries-java.time.OffsetDateTime-">
 <!--   -->
 </a>
 <ul class="blockList">

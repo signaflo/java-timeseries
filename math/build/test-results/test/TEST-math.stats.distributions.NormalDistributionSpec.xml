@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="math.stats.distributions.NormalDistributionSpec" tests="3" skipped="0" failures="0" errors="0" timestamp="2017-06-29T00:06:41" hostname="TVC15" time="0.092">
+  <properties/>
+  <testcase name="whenNormalQuantileComputedResultCorrect" classname="math.stats.distributions.NormalDistributionSpec" time="0.078"/>
+  <testcase name="whenNormalRandGeneratedDoubleReturned" classname="math.stats.distributions.NormalDistributionSpec" time="0.009"/>
+  <testcase name="testEqualsAndHashCode" classname="math.stats.distributions.NormalDistributionSpec" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

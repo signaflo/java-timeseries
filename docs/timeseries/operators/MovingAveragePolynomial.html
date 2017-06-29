@@ -99,10 +99,10 @@ var activeTableTab = "activeTableTab";
 <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
 <li>
 <ul class="inheritance">
-<li><a href="../../timeseries/operators/LagPolynomial.html" title="class in timeseries.operators">timeseries.operators.LagPolynomial</a></li>
+<li><a href="../../timeseries/operators/LagPolynomial.html" title="class in timeseries.operators">LagPolynomial</a></li>
 <li>
 <ul class="inheritance">
-<li>timeseries.operators.MovingAveragePolynomial</li>
+<li>MovingAveragePolynomial</li>
 </ul>
 </li>
 </ul>
@@ -167,7 +167,7 @@ extends <a href="../../timeseries/operators/LagPolynomial.html" title="class in 
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../timeseries/operators/MovingAveragePolynomial.html#fit-timeseries.TimeSeries-int-">fit</a></span>(<a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;residualSeries,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../timeseries/operators/MovingAveragePolynomial.html#fit-TimeSeries-int-">fit</a></span>(<a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;residualSeries,
    int&nbsp;index)</code>
 <div class="block">Use this lag polynomial to fit the implied ARIMA model at the given index by applying the polynomial, then
  solving for the time series value at that index.</div>
@@ -175,11 +175,11 @@ extends <a href="../../timeseries/operators/LagPolynomial.html" title="class in 
 </tr>
 </table>
 <ul class="blockList">
-<li class="blockList"><a name="methods.inherited.from.class.timeseries.operators.LagPolynomial">
+<li class="blockList"><a name="methods.inherited.from.class.LagPolynomial">
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;timeseries.operators.<a href="../../timeseries/operators/LagPolynomial.html" title="class in timeseries.operators">LagPolynomial</a></h3>
-<code><a href="../../timeseries/operators/LagPolynomial.html#apply-timeseries.TimeSeries-int-">apply</a>, <a href="../../timeseries/operators/LagPolynomial.html#apply-timeseries.TimeSeries-java.time.OffsetDateTime-">apply</a>, <a href="../../timeseries/operators/LagPolynomial.html#autoRegressive-double...-">autoRegressive</a>, <a href="../../timeseries/operators/LagPolynomial.html#differences-int-">differences</a>, <a href="../../timeseries/operators/LagPolynomial.html#equals-java.lang.Object-">equals</a>, <a href="../../timeseries/operators/LagPolynomial.html#firstDifference--">firstDifference</a>, <a href="../../timeseries/operators/LagPolynomial.html#firstSeasonalDifference-int-">firstSeasonalDifference</a>, <a href="../../timeseries/operators/LagPolynomial.html#fit-timeseries.TimeSeries-java.time.OffsetDateTime-">fit</a>, <a href="../../timeseries/operators/LagPolynomial.html#hashCode--">hashCode</a>, <a href="../../timeseries/operators/LagPolynomial.html#inverseParams--">inverseParams</a>, <a href="../../timeseries/operators/LagPolynomial.html#movingAverage-double...-">movingAverage</a>, <a href="../../timeseries/operators/LagPolynomial.html#parameters--">parameters</a>, <a href="../../timeseries/operators/LagPolynomial.html#seasonalDifferences-int-int-">seasonalDifferences</a>, <a href="../../timeseries/operators/LagPolynomial.html#times-timeseries.operators.LagPolynomial-">times</a>, <a href="../../timeseries/operators/LagPolynomial.html#toString--">toString</a></code></li>
+<code><a href="../../timeseries/operators/LagPolynomial.html#apply-TimeSeries-int-">apply</a>, <a href="../../timeseries/operators/LagPolynomial.html#apply-TimeSeries-java.time.OffsetDateTime-">apply</a>, <a href="../../timeseries/operators/LagPolynomial.html#autoRegressive-double...-">autoRegressive</a>, <a href="../../timeseries/operators/LagPolynomial.html#differences-int-">differences</a>, <a href="../../timeseries/operators/LagPolynomial.html#equals-java.lang.Object-">equals</a>, <a href="../../timeseries/operators/LagPolynomial.html#firstDifference--">firstDifference</a>, <a href="../../timeseries/operators/LagPolynomial.html#firstSeasonalDifference-int-">firstSeasonalDifference</a>, <a href="../../timeseries/operators/LagPolynomial.html#fit-TimeSeries-java.time.OffsetDateTime-">fit</a>, <a href="../../timeseries/operators/LagPolynomial.html#hashCode--">hashCode</a>, <a href="../../timeseries/operators/LagPolynomial.html#inverseParams--">inverseParams</a>, <a href="../../timeseries/operators/LagPolynomial.html#movingAverage-double...-">movingAverage</a>, <a href="../../timeseries/operators/LagPolynomial.html#parameters--">parameters</a>, <a href="../../timeseries/operators/LagPolynomial.html#seasonalDifferences-int-int-">seasonalDifferences</a>, <a href="../../timeseries/operators/LagPolynomial.html#times-LagPolynomial-">times</a>, <a href="../../timeseries/operators/LagPolynomial.html#toString--">toString</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -224,7 +224,7 @@ extends <a href="../../timeseries/operators/LagPolynomial.html" title="class in 
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="fit-timeseries.TimeSeries-int-">
+<a name="fit-TimeSeries-int-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -232,12 +232,12 @@ extends <a href="../../timeseries/operators/LagPolynomial.html" title="class in 
 <h4>fit</h4>
 <pre>public&nbsp;double&nbsp;fit(<a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;residualSeries,
                   int&nbsp;index)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../timeseries/operators/LagPolynomial.html#fit-timeseries.TimeSeries-int-">LagPolynomial</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../timeseries/operators/LagPolynomial.html#fit-TimeSeries-int-">LagPolynomial</a></code></span></div>
 <div class="block">Use this lag polynomial to fit the implied ARIMA model at the given index by applying the polynomial, then
  solving for the time series value at that index.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../timeseries/operators/LagPolynomial.html#fit-timeseries.TimeSeries-int-">fit</a></code>&nbsp;in class&nbsp;<code><a href="../../timeseries/operators/LagPolynomial.html" title="class in timeseries.operators">LagPolynomial</a></code></dd>
+<dd><code><a href="../../timeseries/operators/LagPolynomial.html#fit-TimeSeries-int-">fit</a></code>&nbsp;in class&nbsp;<code><a href="../../timeseries/operators/LagPolynomial.html" title="class in timeseries.operators">LagPolynomial</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>residualSeries</code> - the time series containing the index to apply the lag polynomial to.</dd>
 <dd><code>index</code> - the index of the series to apply the lag polynomial at.</dd>

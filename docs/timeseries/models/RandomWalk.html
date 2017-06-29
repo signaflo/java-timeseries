@@ -99,7 +99,7 @@ var activeTableTab = "activeTableTab";
 <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
 <li>
 <ul class="inheritance">
-<li>timeseries.models.RandomWalk</li>
+<li>RandomWalk</li>
 </ul>
 </li>
 </ul>
@@ -136,7 +136,7 @@ implements <a href="../../timeseries/models/Model.html" title="interface in time
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../timeseries/models/RandomWalk.html#RandomWalk-timeseries.TimeSeries-">RandomWalk</a></span>(<a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observed)</code>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../timeseries/models/RandomWalk.html#RandomWalk-TimeSeries-">RandomWalk</a></span>(<a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;observed)</code>
 <div class="block">Create a new random walk model from the given time series of observations.</div>
 </td>
 </tr>
@@ -191,7 +191,7 @@ implements <a href="../../timeseries/models/Model.html" title="interface in time
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code>static <a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../timeseries/models/RandomWalk.html#simulate-stats.distributions.Distribution-int-">simulate</a></span>(<a href="../../stats/distributions/Distribution.html" title="interface in stats.distributions">Distribution</a>&nbsp;dist,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../timeseries/models/RandomWalk.html#simulate-math.stats.distributions.Distribution-int-">simulate</a></span>(<a href="../../math.stats/distributions/Distribution.html" title="interface in math.stats.distributions">Distribution</a>&nbsp;dist,
         int&nbsp;n)</code>
 <div class="block">Simulate a random walk assuming that the errors, or random shocks, follow the given Distribution.</div>
 </td>
@@ -238,7 +238,7 @@ implements <a href="../../timeseries/models/Model.html" title="interface in time
 <code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass--" title="class or interface in java.lang">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify--" title="class or interface in java.lang">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll--" title="class or interface in java.lang">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait--" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait-long-" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait-long-int-" title="class or interface in java.lang">wait</a></code></li>
 </ul>
 <ul class="blockList">
-<li class="blockList"><a name="methods.inherited.from.class.timeseries.models.Model">
+<li class="blockList"><a name="methods.inherited.from.class.Model">
 <!--   -->
 </a>
 <h3>Methods inherited from interface&nbsp;timeseries.models.<a href="../../timeseries/models/Model.html" title="interface in timeseries.models">Model</a></h3>
@@ -258,7 +258,7 @@ implements <a href="../../timeseries/models/Model.html" title="interface in time
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="RandomWalk-timeseries.TimeSeries-">
+<a name="RandomWalk-TimeSeries-">
 <!--   -->
 </a>
 <ul class="blockListLast">
@@ -281,14 +281,14 @@ implements <a href="../../timeseries/models/Model.html" title="interface in time
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="simulate-stats.distributions.Distribution-int-">
+<a name="simulate-math.stats.distributions.Distribution-int-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>simulate</h4>
 <pre>public static&nbsp;<a href="../../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;simulate(@NonNull
-                                  <a href="../../stats/distributions/Distribution.html" title="interface in stats.distributions">Distribution</a>&nbsp;dist,
+                                  <a href="../../math.stats/distributions/Distribution.html" title="interface in math.stats.distributions">Distribution</a>&nbsp;dist,
                                   int&nbsp;n)</pre>
 <div class="block">Simulate a random walk assuming that the errors, or random shocks, follow the given Distribution.</div>
 <dl>

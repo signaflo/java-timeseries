@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="timeseries.TimeSeriesSpec" tests="25" skipped="0" failures="0" errors="0" timestamp="2017-06-29T00:04:51" hostname="TVC15" time="0.07">
+  <properties/>
+  <testcase name="whenAutoCorrelationComputedUpToLagKThenResultingArrayCorrect" classname="timeseries.TimeSeriesSpec" time="0.001"/>
+  <testcase name="testHashCodeAndEquals" classname="timeseries.TimeSeriesSpec" time="0.002"/>
+  <testcase name="whenAggregateWithSmallerPeriodThenIllegalArgument" classname="timeseries.TimeSeriesSpec" time="0.001"/>
+  <testcase name="whenBoxCoxBackTransformLambdaTooSmallThenIllegalArgument" classname="timeseries.TimeSeriesSpec" time="0.001"/>
+  <testcase name="whenBoxCoxInvTransformLogThenDataTransformedCorrectly" classname="timeseries.TimeSeriesSpec" time="0.0"/>
+  <testcase name="whenTimeSeriesMeanTakenThenResultCorrect" classname="timeseries.TimeSeriesSpec" time="0.015"/>
+  <testcase name="whenBoxCoxTransformationLambdaTooSmallThenIllegalArgument" classname="timeseries.TimeSeriesSpec" time="0.0"/>
+  <testcase name="whenAutoCorrelationComputedTheResultIsCorrect" classname="timeseries.TimeSeriesSpec" time="0.001"/>
+  <testcase name="whenTimeSeriesAggregatedDatesCorrect" classname="timeseries.TimeSeriesSpec" time="0.001"/>
+  <testcase name="whenDifferencedNoArgThenDifferencedOnce" classname="timeseries.TimeSeriesSpec" time="0.001"/>
+  <testcase name="whenBoxCoxTransformationLambdaTooBigThenIllegalArgument" classname="timeseries.TimeSeriesSpec" time="0.001"/>
+  <testcase name="whenBoxCoxBackTransformLambdaTooBigThenIllegalArgument" classname="timeseries.TimeSeriesSpec" time="0.001"/>
+  <testcase name="whenAutoCovarianceComputedTheResultIsCorrect" classname="timeseries.TimeSeriesSpec" time="0.0"/>
+  <testcase name="whenFivePeriodMovingAverageComputedResultCorrect" classname="timeseries.TimeSeriesSpec" time="0.001"/>
+  <testcase name="whenFromThenCorrectSliceOfDataReturned" classname="timeseries.TimeSeriesSpec" time="0.019"/>
+  <testcase name="whenAutoCovarianceNegativeLagThenIllegalArgument" classname="timeseries.TimeSeriesSpec" time="0.001"/>
+  <testcase name="whenFourPeriodCenteredMovingAverageComputedResultCorrect" classname="timeseries.TimeSeriesSpec" time="0.0"/>
+  <testcase name="whenStartTimeThenFirstObservationTime" classname="timeseries.TimeSeriesSpec" time="0.001"/>
+  <testcase name="whenAutoCovarianceComputedUpToLagKThenResultingArrayCorrect" classname="timeseries.TimeSeriesSpec" time="0.0"/>
+  <testcase name="whenDifferencedMoreThanOnceThenCorrectData" classname="timeseries.TimeSeriesSpec" time="0.002"/>
+  <testcase name="whenDataPointAccessedThenExpectedValueReturned" classname="timeseries.TimeSeriesSpec" time="0.001"/>
+  <testcase name="whenBoxCoxTransformLogThenDataTransformedCorrectly" classname="timeseries.TimeSeriesSpec" time="0.0"/>
+  <testcase name="whenWeeklySeriesCreatedResultCorrect" classname="timeseries.TimeSeriesSpec" time="0.0"/>
+  <testcase name="whenFivePeriodCenteredMovingAverageComputedResultCorrect" classname="timeseries.TimeSeriesSpec" time="0.001"/>
+  <testcase name="whenFourPeriodMovingAverageComputedResultCorrect" classname="timeseries.TimeSeriesSpec" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

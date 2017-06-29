@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="timeseries.operators.LagPolynomialSpec" tests="15" skipped="0" failures="0" errors="0" timestamp="2017-06-29T00:04:51" hostname="TVC15" time="0.026">
+  <properties/>
+  <testcase name="whenZeroDegreeLagPolyMultipliedByDiffPolyCoeffsCorrect" classname="timeseries.operators.LagPolynomialSpec" time="0.004"/>
+  <testcase name="whenLagPolyTwoDiffFitThenResultCorrect" classname="timeseries.operators.LagPolynomialSpec" time="0.002"/>
+  <testcase name="whenNewAutoRegressivePolyCreatedCofficientsCorrect" classname="timeseries.operators.LagPolynomialSpec" time="0.0"/>
+  <testcase name="whenLagPolyAppliedThenResultCorrect" classname="timeseries.operators.LagPolynomialSpec" time="0.0"/>
+  <testcase name="whenSeasDifferencesLessThanZeroThenException" classname="timeseries.operators.LagPolynomialSpec" time="0.004"/>
+  <testcase name="whenLagPolyFitThenResultCorrect" classname="timeseries.operators.LagPolynomialSpec" time="0.002"/>
+  <testcase name="whenSeasonalDifferenceThenPolyAsExpected" classname="timeseries.operators.LagPolynomialSpec" time="0.0"/>
+  <testcase name="whenLagOperatorAppliedThenExpectedResult" classname="timeseries.operators.LagPolynomialSpec" time="0.0"/>
+  <testcase name="whenNewMovingAveragePolyCreatedCofficientsCorrect" classname="timeseries.operators.LagPolynomialSpec" time="0.0"/>
+  <testcase name="whenSecondDiffLagPolyCreatedCoefficientsCorrect" classname="timeseries.operators.LagPolynomialSpec" time="0.0"/>
+  <testcase name="whenSeasonalDifferenceThenRightDataReturned" classname="timeseries.operators.LagPolynomialSpec" time="0.0"/>
+  <testcase name="whenZeroDegreeLagPolynomialCreatedThenZeroDegreePolyReturned" classname="timeseries.operators.LagPolynomialSpec" time="0.0"/>
+  <testcase name="whenGetParametersThenSameAsArgsPassedIn" classname="timeseries.operators.LagPolynomialSpec" time="0.0"/>
+  <testcase name="whenSecondDiffArOneLagPolyCreatedCoefficientsCorrect" classname="timeseries.operators.LagPolynomialSpec" time="0.001"/>
+  <testcase name="whenDifferencesLessThanZeroThenException" classname="timeseries.operators.LagPolynomialSpec" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

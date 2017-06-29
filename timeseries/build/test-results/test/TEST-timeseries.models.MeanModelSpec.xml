@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="timeseries.models.MeanModelSpec" tests="14" skipped="0" failures="0" errors="0" timestamp="2017-06-29T00:04:51" hostname="TVC15" time="0.091">
+  <properties/>
+  <testcase name="whenUpperBoundsAlphaGreaterThanOneThenIllegalArgument" classname="timeseries.models.MeanModelSpec" time="0.067"/>
+  <testcase name="whenLowerBoundsAlphaGreaterThanOneThenIllegalArgument" classname="timeseries.models.MeanModelSpec" time="0.001"/>
+  <testcase name="whenMeanForecastComputedForecastValuesCorrect" classname="timeseries.models.MeanModelSpec" time="0.0"/>
+  <testcase name="whenMeanForecastThenPredictionIntervalsCorrect" classname="timeseries.models.MeanModelSpec" time="0.001"/>
+  <testcase name="whenMeanForecastComputedFirstObservationTimeCorrect" classname="timeseries.models.MeanModelSpec" time="0.0"/>
+  <testcase name="whenUpperBoundsStepsLessThanOneThenIllegalArgument" classname="timeseries.models.MeanModelSpec" time="0.001"/>
+  <testcase name="whenAlphaLessThanZeroThenIllegalArgumentException" classname="timeseries.models.MeanModelSpec" time="0.001"/>
+  <testcase name="whenAlphaGreaterThanOneThenIllegalArgumentException" classname="timeseries.models.MeanModelSpec" time="0.0"/>
+  <testcase name="whenMeanForecastComputedTimePeriodUnchanged" classname="timeseries.models.MeanModelSpec" time="0.0"/>
+  <testcase name="whenLowerBoundsStepsLessThanOneThenIllegalArgument" classname="timeseries.models.MeanModelSpec" time="0.001"/>
+  <testcase name="whenStepsLessThanOneThenIllegalArgumentException" classname="timeseries.models.MeanModelSpec" time="0.001"/>
+  <testcase name="whenUpperBoundsAlphaLessThanZeroThenIllegalArgument" classname="timeseries.models.MeanModelSpec" time="0.0"/>
+  <testcase name="testEqualsAndHashCode" classname="timeseries.models.MeanModelSpec" time="0.002"/>
+  <testcase name="whenLowerBoundsAlphaLessThanZeroThenIllegalArgument" classname="timeseries.models.MeanModelSpec" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

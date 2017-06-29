@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="regression.LinearRegressionSpec" tests="8" skipped="0" failures="0" errors="0" timestamp="2017-06-29T00:04:51" hostname="TVC15" time="0.053">
+  <properties/>
+  <testcase name="whenSimpleLinearRegressionThenSigma2Accurate" classname="regression.LinearRegressionSpec" time="0.0"/>
+  <testcase name="whenInterceptDirectlyGivenThenResultsEquivalent" classname="regression.LinearRegressionSpec" time="0.004"/>
+  <testcase name="whenSimpleRegressionThenFittedValuesCorrect" classname="regression.LinearRegressionSpec" time="0.001"/>
+  <testcase name="equalsContract" classname="regression.LinearRegressionSpec" time="0.038"/>
+  <testcase name="whenSimpleRegressionThenBetaEstimatedCorrectly" classname="regression.LinearRegressionSpec" time="0.001"/>
+  <testcase name="whenSimpleLinearRegressionThenStandardErrorsAccurate" classname="regression.LinearRegressionSpec" time="0.0"/>
+  <testcase name="whenBuiltThenDataProperlySet" classname="regression.LinearRegressionSpec" time="0.001"/>
+  <testcase name="whenSimpleRegressionNoInterceptThenBetaEstimatedCorrectly" classname="regression.LinearRegressionSpec" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

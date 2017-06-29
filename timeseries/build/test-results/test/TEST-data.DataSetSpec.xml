@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="data.DataSetSpec" tests="17" skipped="0" failures="0" errors="0" timestamp="2017-06-29T00:04:50" hostname="TVC15" time="0.11">
+  <properties/>
+  <testcase name="whenSumRequestedThenResultCorrect" classname="data.DataSetSpec" time="0.022"/>
+  <testcase name="whenCorrelationRequestedEvenNumDataPointsThenResultCorrect" classname="data.DataSetSpec" time="0.006"/>
+  <testcase name="whenMedianRequestedEvenNumDataPointsThenResultCorrect" classname="data.DataSetSpec" time="0.0"/>
+  <testcase name="whenMedianRequestedThenResultCorrect" classname="data.DataSetSpec" time="0.0"/>
+  <testcase name="whenStdDeviationRequestedEvenNumDataPointsThenResultCorrect" classname="data.DataSetSpec" time="0.0"/>
+  <testcase name="whenDataSetEqualToNullThenFalse" classname="data.DataSetSpec" time="0.0"/>
+  <testcase name="whenVarianceRequestedEvenNumDataPointsThenResultCorrect" classname="data.DataSetSpec" time="0.0"/>
+  <testcase name="whenPlusOperationCalledThenResultCorrect" classname="data.DataSetSpec" time="0.0"/>
+  <testcase name="whenTwoDataSetsNotEqualThenEqualsAndHashCodeCorrect" classname="data.DataSetSpec" time="0.002"/>
+  <testcase name="whenTwoDataSetsEqualThenEqualsAndHashCodeCorrect" classname="data.DataSetSpec" time="0.0"/>
+  <testcase name="whenMeanRequestedThenResultCorrect" classname="data.DataSetSpec" time="0.0"/>
+  <testcase name="whenTimesOperationCalledThenResultCorrect" classname="data.DataSetSpec" time="0.001"/>
+  <testcase name="whenDataSetNotEqualOtherObjectThenEqualsAndHashCodeCorrect" classname="data.DataSetSpec" time="0.052"/>
+  <testcase name="whenDataSetCreatedWithNullArrayThenExceptionThrown" classname="data.DataSetSpec" time="0.01"/>
+  <testcase name="whenCovarianceRequestedEvenNumDataPointsThenResultCorrect" classname="data.DataSetSpec" time="0.0"/>
+  <testcase name="whenSumOfSquaresComputedResultCorrect" classname="data.DataSetSpec" time="0.001"/>
+  <testcase name="whenLengthRequestedThenResultCorrect" classname="data.DataSetSpec" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

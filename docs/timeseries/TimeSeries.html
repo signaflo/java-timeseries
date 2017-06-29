@@ -99,7 +99,7 @@ var activeTableTab = "activeTableTab";
 <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
 <li>
 <ul class="inheritance">
-<li>timeseries.TimeSeries</li>
+<li>TimeSeries</li>
 </ul>
 </li>
 </ul>
@@ -139,35 +139,35 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#TimeSeries-timeseries.TimePeriod-java.util.List-double...-">TimeSeries</a></span>(<a href="../timeseries/TimePeriod.html" title="class in timeseries">TimePeriod</a>&nbsp;timePeriod,
+<td class="colOne"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#TimeSeries-TimePeriod-java.util.List-double...-">TimeSeries</a></span>(<a href="../timeseries/TimePeriod.html" title="class in timeseries">TimePeriod</a>&nbsp;timePeriod,
           <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/time/OffsetDateTime.html?is-external=true" title="class or interface in java.time">OffsetDateTime</a>&gt;&nbsp;observationTimes,
           double...&nbsp;series)</code>
 <div class="block">Create a new time series with the given time period, observation times, and observation data.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#TimeSeries-timeseries.TimePeriod-java.time.OffsetDateTime-double...-">TimeSeries</a></span>(<a href="../timeseries/TimePeriod.html" title="class in timeseries">TimePeriod</a>&nbsp;timePeriod,
+<td class="colOne"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#TimeSeries-TimePeriod-java.time.OffsetDateTime-double...-">TimeSeries</a></span>(<a href="../timeseries/TimePeriod.html" title="class in timeseries">TimePeriod</a>&nbsp;timePeriod,
           <a href="https://docs.oracle.com/javase/8/docs/api/java/time/OffsetDateTime.html?is-external=true" title="class or interface in java.time">OffsetDateTime</a>&nbsp;startTime,
           double...&nbsp;series)</code>
 <div class="block">Create a new time series using the given time period, the time of first observation, and the observation data.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#TimeSeries-timeseries.TimePeriod-java.lang.String-double...-">TimeSeries</a></span>(<a href="../timeseries/TimePeriod.html" title="class in timeseries">TimePeriod</a>&nbsp;timePeriod,
+<td class="colOne"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#TimeSeries-TimePeriod-java.lang.String-double...-">TimeSeries</a></span>(<a href="../timeseries/TimePeriod.html" title="class in timeseries">TimePeriod</a>&nbsp;timePeriod,
           <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;startTime,
           double...&nbsp;series)</code>
 <div class="block">Create a new time series using the given time period, the time of first observation, and the observation data.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#TimeSeries-timeseries.TimeUnit-java.time.OffsetDateTime-double...-">TimeSeries</a></span>(<a href="../timeseries/TimeUnit.html" title="enum in timeseries">TimeUnit</a>&nbsp;timeUnit,
+<td class="colOne"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#TimeSeries-TimeUnit-java.time.OffsetDateTime-double...-">TimeSeries</a></span>(<a href="../timeseries/TimeUnit.html" title="enum in timeseries">TimeUnit</a>&nbsp;timeUnit,
           <a href="https://docs.oracle.com/javase/8/docs/api/java/time/OffsetDateTime.html?is-external=true" title="class or interface in java.time">OffsetDateTime</a>&nbsp;startTime,
           double...&nbsp;series)</code>
 <div class="block">Create a new time series using the given unit of time, the time of first observation, and the observation data.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#TimeSeries-timeseries.TimeUnit-java.lang.String-double...-">TimeSeries</a></span>(<a href="../timeseries/TimeUnit.html" title="enum in timeseries">TimeUnit</a>&nbsp;timeUnit,
+<td class="colOne"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#TimeSeries-TimeUnit-java.lang.String-double...-">TimeSeries</a></span>(<a href="../timeseries/TimeUnit.html" title="enum in timeseries">TimeUnit</a>&nbsp;timeUnit,
           <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;startTime,
           double...&nbsp;series)</code>
 <div class="block">Create a new time series using the given unit of time, the time of first observation, and the observation data.</div>
@@ -190,13 +190,13 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code><a href="../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#aggregate-timeseries.TimePeriod-">aggregate</a></span>(<a href="../timeseries/TimePeriod.html" title="class in timeseries">TimePeriod</a>&nbsp;timePeriod)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#aggregate-TimePeriod-">aggregate</a></span>(<a href="../timeseries/TimePeriod.html" title="class in timeseries">TimePeriod</a>&nbsp;timePeriod)</code>
 <div class="block">Aggregate the time series up to the given time period.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#aggregate-timeseries.TimeUnit-">aggregate</a></span>(<a href="../timeseries/TimeUnit.html" title="enum in timeseries">TimeUnit</a>&nbsp;timeUnit)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#aggregate-TimeUnit-">aggregate</a></span>(<a href="../timeseries/TimeUnit.html" title="enum in timeseries">TimeUnit</a>&nbsp;timeUnit)</code>
 <div class="block">Aggregate the observations in this series to the given time unit.</div>
 </td>
 </tr>
@@ -266,14 +266,14 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#correlation-data.DataSet-">correlation</a></span>(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#correlation-DataSet-">correlation</a></span>(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</code>
 <div class="block">The unbiased sample correlation of these observations with the observations
  contained in the given data set.</div>
 </td>
 </tr>
 <tr id="i14" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#covariance-data.DataSet-">covariance</a></span>(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#covariance-DataSet-">covariance</a></span>(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</code>
 <div class="block">The unbiased sample covariance of these observations with the observations
  contained in the given data set.</div>
 </td>
@@ -345,7 +345,7 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </tr>
 <tr id="i26" class="altColor">
 <td class="colFirst"><code><a href="../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#minus-timeseries.TimeSeries-">minus</a></span>(<a href="../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;otherSeries)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#minus-TimeSeries-">minus</a></span>(<a href="../timeseries/TimeSeries.html" title="class in timeseries">TimeSeries</a>&nbsp;otherSeries)</code>
 <div class="block">Subtract the given series from this time series and return the result as a new time series.</div>
 </td>
 </tr>
@@ -381,13 +381,13 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </tr>
 <tr id="i32" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#plotAgainst-data.DataSet-">plotAgainst</a></span>(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#plotAgainst-DataSet-">plotAgainst</a></span>(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</code>
 <div class="block">Plot this data set against the given data set.</div>
 </td>
 </tr>
 <tr id="i33" class="rowColor">
 <td class="colFirst"><code><a href="../data/DataSet.html" title="interface in data">DataSet</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#plus-data.DataSet-">plus</a></span>(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#plus-DataSet-">plus</a></span>(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</code>
 <div class="block">Add every element of this data set to the corresponding element of the given data set.</div>
 </td>
 </tr>
@@ -429,7 +429,7 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </tr>
 <tr id="i40" class="altColor">
 <td class="colFirst"><code><a href="../data/DataSet.html" title="interface in data">DataSet</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#times-data.DataSet-">times</a></span>(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../timeseries/TimeSeries.html#times-DataSet-">times</a></span>(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</code>
 <div class="block">Multiply every element of this data set with the corresponding element of the given data set.</div>
 </td>
 </tr>
@@ -493,7 +493,7 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </dl>
 </li>
 </ul>
-<a name="TimeSeries-timeseries.TimeUnit-java.time.OffsetDateTime-double...-">
+<a name="TimeSeries-TimeUnit-java.time.OffsetDateTime-double...-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -511,7 +511,7 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </dl>
 </li>
 </ul>
-<a name="TimeSeries-timeseries.TimePeriod-java.lang.String-double...-">
+<a name="TimeSeries-TimePeriod-java.lang.String-double...-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -531,7 +531,7 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </dl>
 </li>
 </ul>
-<a name="TimeSeries-timeseries.TimePeriod-java.time.OffsetDateTime-double...-">
+<a name="TimeSeries-TimePeriod-java.time.OffsetDateTime-double...-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -549,7 +549,7 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </dl>
 </li>
 </ul>
-<a name="TimeSeries-timeseries.TimeUnit-java.lang.String-double...-">
+<a name="TimeSeries-TimeUnit-java.lang.String-double...-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -569,7 +569,7 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </dl>
 </li>
 </ul>
-<a name="TimeSeries-timeseries.TimePeriod-java.util.List-double...-">
+<a name="TimeSeries-TimePeriod-java.util.List-double...-">
 <!--   -->
 </a>
 <ul class="blockListLast">
@@ -609,7 +609,7 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </dl>
 </li>
 </ul>
-<a name="aggregate-timeseries.TimeUnit-">
+<a name="aggregate-TimeUnit-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -625,7 +625,7 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </dl>
 </li>
 </ul>
-<a name="aggregate-timeseries.TimePeriod-">
+<a name="aggregate-TimePeriod-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -873,7 +873,7 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </dl>
 </li>
 </ul>
-<a name="minus-timeseries.TimeSeries-">
+<a name="minus-TimeSeries-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -1123,18 +1123,18 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </dl>
 </li>
 </ul>
-<a name="times-data.DataSet-">
+<a name="times-DataSet-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>times</h4>
 <pre>public&nbsp;<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;times(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../data/DataSet.html#times-data.DataSet-">DataSet</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../data/DataSet.html#times-DataSet-">DataSet</a></code></span></div>
 <div class="block">Multiply every element of this data set with the corresponding element of the given data set.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../data/DataSet.html#times-data.DataSet-">times</a></code>&nbsp;in interface&nbsp;<code><a href="../data/DataSet.html" title="interface in data">DataSet</a></code></dd>
+<dd><code><a href="../data/DataSet.html#times-DataSet-">times</a></code>&nbsp;in interface&nbsp;<code><a href="../data/DataSet.html" title="interface in data">DataSet</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>otherData</code> - The data to multiply by.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -1143,18 +1143,18 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </dl>
 </li>
 </ul>
-<a name="plus-data.DataSet-">
+<a name="plus-DataSet-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>plus</h4>
 <pre>public&nbsp;<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;plus(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../data/DataSet.html#plus-data.DataSet-">DataSet</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../data/DataSet.html#plus-DataSet-">DataSet</a></code></span></div>
 <div class="block">Add every element of this data set to the corresponding element of the given data set.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../data/DataSet.html#plus-data.DataSet-">plus</a></code>&nbsp;in interface&nbsp;<code><a href="../data/DataSet.html" title="interface in data">DataSet</a></code></dd>
+<dd><code><a href="../data/DataSet.html#plus-DataSet-">plus</a></code>&nbsp;in interface&nbsp;<code><a href="../data/DataSet.html" title="interface in data">DataSet</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>otherData</code> - The data to add to.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -1197,19 +1197,19 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </dl>
 </li>
 </ul>
-<a name="covariance-data.DataSet-">
+<a name="covariance-DataSet-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>covariance</h4>
 <pre>public&nbsp;double&nbsp;covariance(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../data/DataSet.html#covariance-data.DataSet-">DataSet</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../data/DataSet.html#covariance-DataSet-">DataSet</a></code></span></div>
 <div class="block">The unbiased sample covariance of these observations with the observations
  contained in the given data set.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../data/DataSet.html#covariance-data.DataSet-">covariance</a></code>&nbsp;in interface&nbsp;<code><a href="../data/DataSet.html" title="interface in data">DataSet</a></code></dd>
+<dd><code><a href="../data/DataSet.html#covariance-DataSet-">covariance</a></code>&nbsp;in interface&nbsp;<code><a href="../data/DataSet.html" title="interface in data">DataSet</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>otherData</code> - the data to compute the covariance with.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -1218,19 +1218,19 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </dl>
 </li>
 </ul>
-<a name="correlation-data.DataSet-">
+<a name="correlation-DataSet-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>correlation</h4>
 <pre>public&nbsp;double&nbsp;correlation(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../data/DataSet.html#correlation-data.DataSet-">DataSet</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../data/DataSet.html#correlation-DataSet-">DataSet</a></code></span></div>
 <div class="block">The unbiased sample correlation of these observations with the observations
  contained in the given data set.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../data/DataSet.html#correlation-data.DataSet-">correlation</a></code>&nbsp;in interface&nbsp;<code><a href="../data/DataSet.html" title="interface in data">DataSet</a></code></dd>
+<dd><code><a href="../data/DataSet.html#correlation-DataSet-">correlation</a></code>&nbsp;in interface&nbsp;<code><a href="../data/DataSet.html" title="interface in data">DataSet</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>otherData</code> - the data to compute the correlation coefficient with.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -1253,19 +1253,19 @@ implements <a href="../data/DataSet.html" title="interface in data">DataSet</a><
 </dl>
 </li>
 </ul>
-<a name="plotAgainst-data.DataSet-">
+<a name="plotAgainst-DataSet-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>plotAgainst</h4>
 <pre>public&nbsp;void&nbsp;plotAgainst(<a href="../data/DataSet.html" title="interface in data">DataSet</a>&nbsp;otherData)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../data/DataSet.html#plotAgainst-data.DataSet-">DataSet</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../data/DataSet.html#plotAgainst-DataSet-">DataSet</a></code></span></div>
 <div class="block">Plot this data set against the given data set. The given data set will be plotted on the x-axis, while
  this data set will be plotted on the y-axis.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../data/DataSet.html#plotAgainst-data.DataSet-">plotAgainst</a></code>&nbsp;in interface&nbsp;<code><a href="../data/DataSet.html" title="interface in data">DataSet</a></code></dd>
+<dd><code><a href="../data/DataSet.html#plotAgainst-DataSet-">plotAgainst</a></code>&nbsp;in interface&nbsp;<code><a href="../data/DataSet.html" title="interface in data">DataSet</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>otherData</code> - the data set to plot this data set against.</dd>
 </dl>

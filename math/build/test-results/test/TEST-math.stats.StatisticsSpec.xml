@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="math.stats.StatisticsSpec" tests="11" skipped="0" failures="0" errors="0" timestamp="2017-06-29T00:06:40" hostname="TVC15" time="0.035">
+  <properties/>
+  <testcase name="whenMedianComputedThenResultCorrect" classname="math.stats.StatisticsSpec" time="0.017"/>
+  <testcase name="whenSumComputedThenResultCorrect" classname="math.stats.StatisticsSpec" time="0.001"/>
+  <testcase name="whenSquaresTakenThenResultCorrect" classname="math.stats.StatisticsSpec" time="0.001"/>
+  <testcase name="whenSumOfSquaresComputedThenResultCorrect" classname="math.stats.StatisticsSpec" time="0.001"/>
+  <testcase name="whenCorrelationComputedThenResultCorrect" classname="math.stats.StatisticsSpec" time="0.005"/>
+  <testcase name="whenDifferencesTakenThenResultCorrect" classname="math.stats.StatisticsSpec" time="0.0"/>
+  <testcase name="whenMeanComputedThenResultCorrect" classname="math.stats.StatisticsSpec" time="0.001"/>
+  <testcase name="whenCovarianceComputedThenResultCorrect" classname="math.stats.StatisticsSpec" time="0.0"/>
+  <testcase name="whenSumOfSquaredDifferencesComputedThenResultCorrect" classname="math.stats.StatisticsSpec" time="0.001"/>
+  <testcase name="whenVarianceComputedThenResultCorrect" classname="math.stats.StatisticsSpec" time="0.0"/>
+  <testcase name="whenStdDeviationComputedThenResultCorrect" classname="math.stats.StatisticsSpec" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

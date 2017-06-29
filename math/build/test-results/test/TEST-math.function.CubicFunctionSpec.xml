@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="math.function.CubicFunctionSpec" tests="12" skipped="0" failures="0" errors="0" timestamp="2017-06-29T00:06:41" hostname="TVC15" time="0.012">
+  <properties/>
+  <testcase name="whenNoLocalMaxExceptionThrown" classname="math.function.CubicFunctionSpec" time="0.0"/>
+  <testcase name="whenCriticalPointsThenCorrectValues" classname="math.function.CubicFunctionSpec" time="0.001"/>
+  <testcase name="whenLocalMinimumThenCorrectValue" classname="math.function.CubicFunctionSpec" time="0.001"/>
+  <testcase name="whenOneExtremePointsThenCriticalPointCorrect" classname="math.function.CubicFunctionSpec" time="0.001"/>
+  <testcase name="whenGettersThenValuesReturned" classname="math.function.CubicFunctionSpec" time="0.001"/>
+  <testcase name="whenLocalMaximumThenCorrectValue" classname="math.function.CubicFunctionSpec" time="0.001"/>
+  <testcase name="whenNoExtremePointsThenEmptyArray" classname="math.function.CubicFunctionSpec" time="0.001"/>
+  <testcase name="whenLeadingCoefficientZeroThenException" classname="math.function.CubicFunctionSpec" time="0.001"/>
+  <testcase name="whenRealLeadingCoefficientZeroThenException" classname="math.function.CubicFunctionSpec" time="0.001"/>
+  <testcase name="whenNoLocalMinExceptionThrown" classname="math.function.CubicFunctionSpec" time="0.001"/>
+  <testcase name="whenLocalExtremaThenValuesCorrect" classname="math.function.CubicFunctionSpec" time="0.001"/>
+  <testcase name="whenEvaluatedAtThenResultCorrect" classname="math.function.CubicFunctionSpec" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

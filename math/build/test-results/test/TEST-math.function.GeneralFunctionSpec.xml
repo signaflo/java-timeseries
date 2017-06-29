@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="math.function.GeneralFunctionSpec" tests="5" skipped="0" failures="0" errors="0" timestamp="2017-06-29T00:06:41" hostname="TVC15" time="0.011">
+  <properties/>
+  <testcase name="whenAbstractFunctionGradientThenCorrectVector" classname="math.function.GeneralFunctionSpec" time="0.0"/>
+  <testcase name="whenDfNotSetThenDerivativeApproximated" classname="math.function.GeneralFunctionSpec" time="0.002"/>
+  <testcase name="whenSlopeAtThenSlopeCorrect" classname="math.function.GeneralFunctionSpec" time="0.001"/>
+  <testcase name="whenFunctionEvaluatedCorrectResult" classname="math.function.GeneralFunctionSpec" time="0.002"/>
+  <testcase name="whenDfSetThenDerivativeExact" classname="math.function.GeneralFunctionSpec" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="math.polynomial.interpolation.NewtonPolynomialSpec" tests="13" skipped="0" failures="0" errors="0" timestamp="2017-06-29T00:06:41" hostname="TVC15" time="0.015">
+  <properties/>
+  <testcase name="whenNewtonPolynomialBuiltThenDividedDifferencesCorrect" classname="math.polynomial.interpolation.NewtonPolynomialSpec" time="0.0"/>
+  <testcase name="whenMultiplePointsThenFirstCoefficientEqualsFirstFunctionValue" classname="math.polynomial.interpolation.NewtonPolynomialSpec" time="0.0"/>
+  <testcase name="whenThreePointPolyEvalutatedThenResultCorrect" classname="math.polynomial.interpolation.NewtonPolynomialSpec" time="0.0"/>
+  <testcase name="whenThreePointsThenThirdCoefficientEqualsThirdDividedDifference" classname="math.polynomial.interpolation.NewtonPolynomialSpec" time="0.0"/>
+  <testcase name="whenPointAndValuesLengthDifferThenException" classname="math.polynomial.interpolation.NewtonPolynomialSpec" time="0.001"/>
+  <testcase name="whenToQuadraticOnLinearFunctionExceptionThrown" classname="math.polynomial.interpolation.NewtonPolynomialSpec" time="0.001"/>
+  <testcase name="whenOnePointThenCoefficientEqualsFunctionValue" classname="math.polynomial.interpolation.NewtonPolynomialSpec" time="0.001"/>
+  <testcase name="whenToCubicOnQuadraticFunctionExceptionThrown" classname="math.polynomial.interpolation.NewtonPolynomialSpec" time="0.001"/>
+  <testcase name="whenTwoPointsThenSecondCoefficientEqualsLinearSlopeValue" classname="math.polynomial.interpolation.NewtonPolynomialSpec" time="0.0"/>
+  <testcase name="whenPointAndValuesEmptyThenException" classname="math.polynomial.interpolation.NewtonPolynomialSpec" time="0.0"/>
+  <testcase name="whenConvertedThenQuadraticFunctionCorrect" classname="math.polynomial.interpolation.NewtonPolynomialSpec" time="0.0"/>
+  <testcase name="whenConvertedThenCubicFunctionCorrect" classname="math.polynomial.interpolation.NewtonPolynomialSpec" time="0.002"/>
+  <testcase name="testEqualsAndHashCode" classname="math.polynomial.interpolation.NewtonPolynomialSpec" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
