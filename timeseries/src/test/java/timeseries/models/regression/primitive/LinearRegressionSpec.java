@@ -22,13 +22,12 @@
  * Jacob Rachiele
  */
 
-package regression.primitive;
+package timeseries.models.regression.primitive;
 
 import com.google.common.testing.EqualsTester;
 import data.DoubleFunctions;
 import data.Range;
 import math.operations.Operators;
-import org.hamcrest.MatcherAssert;
 import timeseries.TestData;
 import org.junit.Test;
 

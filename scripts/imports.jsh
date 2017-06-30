@@ -13,7 +13,7 @@ import math.stats.distributions.*;
 import timeseries.*;
 import timeseries.models.*;
 import timeseries.models.arima.*;
-import regression.*;
+import timeseries.models.regression.*;
 
 import static data.DoubleFunctions.*;
 import static math.operations.Operators.*;

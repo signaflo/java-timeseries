@@ -31,6 +31,7 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 
 import static data.DoubleFunctions.append;
+import static data.DoubleFunctions.combine;
 import static math.stats.Statistics.sumOf;
 
 /**
@@ -67,7 +68,8 @@ public class ModelCoefficients {
      * @param mean      the process mean.
      */
     ModelCoefficients(final double[] arCoeffs, final double[] maCoeffs, final double[] sarCoeffs,
-                      final double[] smaCoeffs, final int d, final int D, final double mean, final double drift) {
+                      final double[] smaCoeffs, final int d, final int D, final double mean,
+                      final double drift, final int seasonalFrequency) {
         this.arCoeffs = arCoeffs.clone();
         this.maCoeffs = maCoeffs.clone();
         this.sarCoeffs = sarCoeffs.clone();
@@ -75,7 +77,7 @@ public class ModelCoefficients {
         this.d = d;
         this.D = D;
         this.mean = mean;
-        this.intercept = this.mean * (1 - sumOf(arCoeffs) - sumOf(sarCoeffs));
+        this.intercept = meanToIntercept(expandArCoefficients(arCoeffs, sarCoeffs, seasonalFrequency), mean);
         this.drift = drift;
     }
 
@@ -87,17 +89,58 @@ public class ModelCoefficients {
         this.d = builder.d;
         this.D = builder.D;
         this.mean = builder.mean;
-        this.intercept = this.mean * (1 - sumOf(arCoeffs) - sumOf(sarCoeffs));
+        this.intercept = meanToIntercept(expandArCoefficients(arCoeffs, sarCoeffs, builder.seasonalFrequency), mean);
         this.drift = builder.drift;
     }
 
-    /**
-     * Create a new builder for a ModelCoefficients object.
-     *
-     * @return a new builder for a ModelCoefficients object.
-     */
-    public static Builder newBuilder() {
-        return new Builder();
+    // Expand the autoregressive coefficients by combining the non-seasonal and seasonal coefficients into a single
+    // array, which takes advantage of the fact that a seasonal AR model is a special case of a non-seasonal
+    // AR model, with zero coefficients at the non-seasonal indices.
+    static double[] expandArCoefficients(final double[] arCoeffs, final double[] sarCoeffs,
+                                         final int seasonalFrequency) {
+        double[] arSarCoeffs = new double[arCoeffs.length + sarCoeffs.length * seasonalFrequency];
+
+        System.arraycopy(arCoeffs, 0, arSarCoeffs, 0, arCoeffs.length);
+
+        // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
+        // which arises because the model's ar and seasonal ar polynomials are multiplied together.
+        for (int i = 0; i < sarCoeffs.length; i++) {
+            arSarCoeffs[(i + 1) * seasonalFrequency - 1] = sarCoeffs[i];
+            for (int j = 0; j < arCoeffs.length; j++) {
+                arSarCoeffs[(i + 1) * seasonalFrequency + j] = -sarCoeffs[i] * arCoeffs[j];
+            }
+        }
+
+        return arSarCoeffs;
+    }
+
+    // Expand the moving average coefficients by combining the non-seasonal and seasonal coefficients into a single
+    // array, which takes advantage of the fact that a seasonal MA model is a special case of a non-seasonal
+    // MA model with zero coefficients at the non-seasonal indices.
+    static double[] expandMaCoefficients(final double[] maCoeffs, final double[] smaCoeffs,
+                                         final int seasonalFrequency) {
+        double[] maSmaCoeffs = new double[maCoeffs.length + smaCoeffs.length * seasonalFrequency];
+
+        System.arraycopy(maCoeffs, 0, maSmaCoeffs, 0, maCoeffs.length);
+
+        // Note that we take into account the interaction between the seasonal and non-seasonal coefficients,
+        // which arises because the model's ma and seasonal ma polynomials are multiplied together.
+        // In contrast to the ar polynomial, the ma and seasonal ma product maintains a positive sign.
+        for (int i = 0; i < smaCoeffs.length; i++) {
+            maSmaCoeffs[(i + 1) * seasonalFrequency - 1] = smaCoeffs[i];
+            for (int j = 0; j < maCoeffs.length; j++) {
+                maSmaCoeffs[(i + 1) * seasonalFrequency + j] = smaCoeffs[i] * maCoeffs[j];
+            }
+        }
+        return maSmaCoeffs;
+    }
+
+    static double meanToIntercept(double[] autoRegressiveCoefficients, double mean) {
+        return mean * (1 - sumOf(autoRegressiveCoefficients));
+    }
+
+    static double interceptToMean(double[] autoRegressiveCoefficients, double intercept) {
+        return intercept / (1 - sumOf(autoRegressiveCoefficients));
     }
 
     /**
@@ -181,9 +224,9 @@ public class ModelCoefficients {
 
     final double[] getAllCoeffs() {
         if (Math.abs(mean) < EPSILON && Math.abs(drift) < EPSILON) {
-            return DoubleFunctions.combine(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs);
+            return combine(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs);
         }
-        return append(append(DoubleFunctions.combine(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs), mean), drift);
+        return append(append(combine(arCoeffs, maCoeffs, sarCoeffs, smaCoeffs), mean), drift);
     }
 
     final boolean isSeasonal() {
@@ -204,6 +247,26 @@ public class ModelCoefficients {
                             : ArimaModel.Drift.EXCLUDE;
         return new ModelOrder(arCoeffs.length, d, maCoeffs.length, sarCoeffs.length, D, smaCoeffs.length,
                               constant, drift);
+    }
+
+    double[] getRegressors(final ModelOrder order) {
+        double[] regressors = new double[order.npar() - order.sumARMA()];
+        if (order.constant.include()) {
+            regressors[0] = this.intercept;
+        }
+        if (order.drift.include()) {
+            regressors[order.constant.asInt()] = this.drift;
+        }
+        return regressors;
+    }
+
+    /**
+     * Create a new builder for a ModelCoefficients object.
+     *
+     * @return a new builder for a ModelCoefficients object.
+     */
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     @Override
@@ -299,6 +362,7 @@ public class ModelCoefficients {
         private double[] smaCoeffs = new double[]{};
         private int d = 0;
         private int D = 0;
+        private int seasonalFrequency = 1;
         private double mean = 0.0;
         private double drift = 0.0;
 
@@ -332,6 +396,11 @@ public class ModelCoefficients {
 
         public Builder setSeasonalDifferences(int D) {
             this.D = D;
+            return this;
+        }
+
+        public Builder setSeasonalFrequency(int seasonalFrequency) {
+            this.seasonalFrequency = seasonalFrequency;
             return this;
         }
 

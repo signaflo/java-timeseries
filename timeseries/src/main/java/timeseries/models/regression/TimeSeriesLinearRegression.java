@@ -26,8 +26,8 @@ package timeseries.models.regression;
 
 import data.Range;
 import math.linear.doubles.Matrix;
-import regression.primitive.LinearRegression;
-import regression.primitive.MultipleLinearRegression;
+import timeseries.models.regression.primitive.LinearRegression;
+import timeseries.models.regression.primitive.MultipleLinearRegression;
 import lombok.NonNull;
 import timeseries.TimeSeries;
 

@@ -21,10 +21,10 @@
  *
  * Jacob Rachiele
  */
-package regression.primitive;
+package timeseries.models.regression.primitive;
 
 /**
- * A math.linear regression model.
+ * A math.linear timeseries.models.regression model.
  */
 public interface LinearRegression {
 

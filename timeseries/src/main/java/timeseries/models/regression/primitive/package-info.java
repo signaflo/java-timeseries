@@ -23,6 +23,6 @@
  */
 
 /**
- * Linear regression models.
+ * Linear timeseries.models.regression models that use primitive data types.
  */
-package regression;
+package timeseries.models.regression.primitive;

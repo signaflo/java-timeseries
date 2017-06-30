@@ -21,13 +21,12 @@
  *
  * Jacob Rachiele
  */
-package regression;
+package timeseries.models.regression;
 
 import com.google.common.testing.EqualsTester;
 import data.DoubleFunctions;
 import data.Range;
 import math.operations.Operators;
-import org.junit.Assert;
 import timeseries.TestData;
 import org.junit.Test;
 

@@ -80,8 +80,9 @@ public class ArimaSpec {
     @Test
     public void whenArimaModelFitThenParametersSimilarToROutput() throws Exception {
         TimeSeries series = TestData.livestock;
-        ModelOrder order = ModelOrder.order(1, 1, 1);
+        ModelOrder order = ModelOrder.order(1, 0, 1);
         Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.CSSML);
+        model.forecast(12);
         MatcherAssert.assertThat(model.coefficients().arCoeffs()[0], is(closeTo(0.64, 0.02)));
         MatcherAssert.assertThat(model.coefficients().maCoeffs()[0], is(closeTo(-0.50, 0.02)));
     }
@@ -99,6 +100,7 @@ public class ArimaSpec {
                                                       .setSeasonalMACoeffs(-0.5713)
                                                       .setDifferences(1)
                                                       .setSeasonalDifferences(1)
+                                                      .setSeasonalFrequency(12)
                                                       .build();
         assertArrayEquals(expected.getAllCoeffs(), model.coefficients().getAllCoeffs(), 1E-2);
     }
@@ -194,11 +196,14 @@ public class ArimaSpec {
 
     @Test
     public void testModelInfoEqualsAndHashCode() {
-        ArimaModel.ModelInformation info1 = new ArimaModel.ModelInformation(2, 50.0, -100.0, DoubleFunctions.arrayFrom(),
+        ArimaModel.ModelInformation info1 = new ArimaModel.ModelInformation(2, 50.0, -100.0,
+                                                                            DoubleFunctions.arrayFrom(),
                                                                             DoubleFunctions.arrayFrom());
-        ArimaModel.ModelInformation info2 = new ArimaModel.ModelInformation(2, 45.0, -90.0, DoubleFunctions.arrayFrom(),
+        ArimaModel.ModelInformation info2 = new ArimaModel.ModelInformation(2, 45.0, -90.0,
+                                                                            DoubleFunctions.arrayFrom(),
                                                                             DoubleFunctions.arrayFrom());
-        ArimaModel.ModelInformation info3 = new ArimaModel.ModelInformation(2, 50.0, -100.0, DoubleFunctions.arrayFrom(),
+        ArimaModel.ModelInformation info3 = new ArimaModel.ModelInformation(2, 50.0, -100.0,
+                                                                            DoubleFunctions.arrayFrom(),
                                                                             DoubleFunctions.arrayFrom());
         assertThat(info1, is(info1));
         assertThat(info1.hashCode(), is(info3.hashCode()));

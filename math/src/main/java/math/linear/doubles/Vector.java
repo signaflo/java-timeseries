@@ -90,6 +90,9 @@ public final class Vector {
      * @return this vector added to the given vector.
      */
     public Vector plus(final Vector other) {
+        if (other.elements().length == 0) {
+            return this;
+        }
         final double[] summed = new double[this.size()];
         for (int i = 0; i < summed.length; i++) {
             summed[i] = this.elements[i] + other.elements[i];

@@ -27,6 +27,8 @@ package timeseries.models.arima;
 import lombok.Data;
 import lombok.NonNull;
 
+import static math.stats.Statistics.sumOf;
+
 /**
  * The parameters of an ARIMA model. The main difference between this class and {@link ModelCoefficients} is that
  * the coefficients represent fixed, unchanging quantities that are either known or have been estimated,
@@ -44,8 +46,10 @@ final class ModelParameters {
     private @NonNull double[] seasonalAutoRegressivePars;
     private @NonNull double[] seasonalMovingAveragePars;
     private double mean = 0.0;
+    private double intercept = 0.0;
     private double drift = 0.0;
     private double meanParScale = 1.0;
+    private double interceptParScale = 1.0;
     private double driftParScale = 1.0;
 
 //    ModelParameters(int numAR, int numMA, int numSAR, int numSMA) {
@@ -55,16 +59,24 @@ final class ModelParameters {
 //        this.seasonalMovingAveragePars = new double[numSMA];
 //    }
 
-    double getScaledMean() {
-        return this.mean / this.meanParScale;
-    }
-
-    double getScaledDrift() {
-        return this.drift / this.driftParScale;
-    }
+//    double getScaledMean() {
+//        return this.mean / this.meanParScale;
+//    }
+//
+//    double getScaledIntercept() {
+//        return this.intercept / this.interceptParScale;
+//    }
+//
+//    double getScaledDrift() {
+//        return this.drift / this.driftParScale;
+//    }
 
     void setAndScaleMean(final double meanFactor) {
         this.mean = meanFactor * this.meanParScale;
+    }
+
+    void setAndScaleIntercept(final double interceptFactor) {
+        this.intercept = interceptFactor * this.interceptParScale;
     }
 
     void setAndScaleDrift(final double driftFactor) {
@@ -74,7 +86,7 @@ final class ModelParameters {
     double[] getRegressors(final ModelOrder order) {
         double[] regressors = new double[order.npar() - order.sumARMA()];
         if (order.constant.include()) {
-            regressors[0] = this.mean;
+            regressors[0] = this.intercept;
         }
         if (order.drift.include()) {
             regressors[order.constant.asInt()] = this.drift;
@@ -91,7 +103,7 @@ final class ModelParameters {
         System.arraycopy(seasonalMovingAveragePars, 0, pars, order.p + order.q + order.P,
                          seasonalMovingAveragePars.length);
         if (order.constant.include()) {
-            pars[order.sumARMA()] = this.mean;
+            pars[order.sumARMA()] = this.intercept;
         }
         if (order.drift.include()) {
             pars[order.sumARMA() + order.constant.asInt()] = this.drift;
@@ -108,7 +120,7 @@ final class ModelParameters {
         System.arraycopy(seasonalMovingAveragePars, 0, pars, order.p + order.q + order.P,
                          seasonalMovingAveragePars.length);
         if (order.constant.include()) {
-            pars[order.sumARMA()] = this.mean / (this.meanParScale + EPSILON);
+            pars[order.sumARMA()] = this.intercept / (this.interceptParScale + EPSILON);
         }
         if (order.drift.include()) {
             pars[order.sumARMA() + order.constant.asInt()] = this.drift / (this.driftParScale + EPSILON);
@@ -122,6 +134,7 @@ final class ModelParameters {
                                                          coefficients.seasonalARCoeffs(),
                                                          coefficients.seasonalMACoeffs());
         parameters.setMean(coefficients.mean());
+        parameters.setIntercept(coefficients.intercept());
         parameters.setDrift(coefficients.drift());
         return parameters;
     }

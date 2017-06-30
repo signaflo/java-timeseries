@@ -22,12 +22,12 @@
  * Jacob Rachiele
  */
 
-package regression;
+package timeseries.models.regression;
 
 import java.util.List;
 
 /**
- * A math.linear regression model.
+ * A math.linear timeseries.models.regression model.
  */
 public interface LinearRegression {
 
