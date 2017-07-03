@@ -165,15 +165,15 @@ public final class ArimaForecast implements Forecast {
     }
 
     private double[] getAllAutoRegressiveCoefficients(Arima model) {
-        ModelCoefficients coefficients = model.coefficients();
-        return ModelCoefficients.expandArCoefficients(coefficients.arCoeffs(),
+        ArimaCoefficients coefficients = model.coefficients();
+        return ArimaCoefficients.expandArCoefficients(coefficients.arCoeffs(),
                                                       coefficients.seasonalARCoeffs(),
                                                       model.observationFrequency());
     }
 
     private double[] getAllMovingAverageCoefficients(Arima model) {
-        ModelCoefficients coefficients = model.coefficients();
-        return ModelCoefficients.expandMaCoefficients(coefficients.maCoeffs(),
+        ArimaCoefficients coefficients = model.coefficients();
+        return ArimaCoefficients.expandMaCoefficients(coefficients.maCoeffs(),
                                                       coefficients.seasonalMACoeffs(),
                                                       model.observationFrequency());
     }

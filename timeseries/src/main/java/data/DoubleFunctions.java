@@ -212,41 +212,41 @@ public final class DoubleFunctions {
         return sqrtData;
     }
 
-    public static double[] reverse(final double... data) {
-        int n = data.length;
-        double[] reversed = new double[n];
-        for (int i = 0; i < reversed.length; i++, --n) {
-            reversed[i] = data[n];
-        }
-        return reversed;
-    }
+//    public static double[] reverse(final double... data) {
+//        int n = data.length;
+//        double[] reversed = new double[n];
+//        for (int i = 0; i < reversed.length; i++, --n) {
+//            reversed[i] = data[n];
+//        }
+//        return reversed;
+//    }
+//
+//    public static List<Double> reverseArrayToList(final double... data) {
+//        int n = data.length;
+//        List<Double> reversed = new ArrayList<>(n);
+//        while (n > 0) {
+//            reversed.add(data[--n]);
+//        }
+//        return reversed;
+//    }
 
-    public static List<Double> reverseArrayToList(final double... data) {
-        int n = data.length;
-        List<Double> reversed = new ArrayList<>(n);
-        while (n > 0) {
-            reversed.add(data[--n]);
-        }
-        return reversed;
-    }
-
-    public static double[] reverseListToArray(final List<Double> data) {
-        int n = data.size();
-        double[] reversed = new double[data.size()];
-        for (int i = 0; i < reversed.length; i++) {
-            reversed[i] = data.get(--n);
-        }
-        return reversed;
-    }
-
-    public static List<Double> reverse(final List<Double> data) {
-        int n = data.size();
-        List<Double> reversed = new ArrayList<>(n);
-        while (n > 0) {
-            reversed.add(data.get(--n));
-        }
-        return reversed;
-    }
+//    public static double[] reverseListToArray(final List<Double> data) {
+//        int n = data.size();
+//        double[] reversed = new double[data.size()];
+//        for (int i = 0; i < reversed.length; i++) {
+//            reversed[i] = data.get(--n);
+//        }
+//        return reversed;
+//    }
+//
+//    public static List<Double> reverse(final List<Double> data) {
+//        int n = data.size();
+//        List<Double> reversed = new ArrayList<>(n);
+//        while (n > 0) {
+//            reversed.add(data.get(--n));
+//        }
+//        return reversed;
+//    }
 
     public static double round(final double value, final int precision) {
         double scale = Math.pow(10.0, precision);

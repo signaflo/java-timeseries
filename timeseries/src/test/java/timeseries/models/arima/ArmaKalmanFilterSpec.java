@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertArrayEquals;
 
-public class KalmanFilterSpec {
+public class ArmaKalmanFilterSpec {
 
     @Test
     public void whenStateSpaceArmaInitializedThenDataSetProperly() throws Exception {
@@ -42,7 +42,7 @@ public class KalmanFilterSpec {
         double[] ar = arDiff.inverseParams();
         double[] ma = {-0.8373430, 0.0, 0.0, 0.3854193, -0.3227282};
         double[] y = TestData.ukcars.asArray();
-        StateSpaceARMA ss = new StateSpaceARMA(y, ar, ma);
+        ArmaStateSpace ss = new ArmaStateSpace(y, ar, ma);
         assertThat(ss.stateEffectsVector(), is(new double[]{1.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
     }
 

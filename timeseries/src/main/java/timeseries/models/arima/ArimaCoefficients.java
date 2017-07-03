@@ -24,8 +24,6 @@
 
 package timeseries.models.arima;
 
-import data.DoubleFunctions;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
@@ -40,7 +38,7 @@ import static math.stats.Statistics.sumOf;
  *
  * @author Jacob Rachiele
  */
-public class ModelCoefficients {
+public class ArimaCoefficients {
 
     private static final double EPSILON = Math.ulp(1.0);
 
@@ -67,7 +65,7 @@ public class ModelCoefficients {
      * @param D         the seasonal degree of differencing.
      * @param mean      the process mean.
      */
-    ModelCoefficients(final double[] arCoeffs, final double[] maCoeffs, final double[] sarCoeffs,
+    ArimaCoefficients(final double[] arCoeffs, final double[] maCoeffs, final double[] sarCoeffs,
                       final double[] smaCoeffs, final int d, final int D, final double mean,
                       final double drift, final int seasonalFrequency) {
         this.arCoeffs = arCoeffs.clone();
@@ -81,7 +79,7 @@ public class ModelCoefficients {
         this.drift = drift;
     }
 
-    private ModelCoefficients(Builder builder) {
+    private ArimaCoefficients(Builder builder) {
         this.arCoeffs = builder.arCoeffs.clone();
         this.maCoeffs = builder.maCoeffs.clone();
         this.sarCoeffs = builder.sarCoeffs.clone();
@@ -238,21 +236,21 @@ public class ModelCoefficients {
      *
      * @return the order of the ARIMA model corresponding to the model coefficients.
      */
-    ModelOrder extractModelOrder() {
+    ArimaOrder extractModelOrder() {
         ArimaModel.Constant constant = (Math.abs(this.mean) > EPSILON)
                                   ? ArimaModel.Constant.INCLUDE
                                   : ArimaModel.Constant.EXCLUDE;
         ArimaModel.Drift drift = (Math.abs(this.drift) > EPSILON)
                             ? ArimaModel.Drift.INCLUDE
                             : ArimaModel.Drift.EXCLUDE;
-        return new ModelOrder(arCoeffs.length, d, maCoeffs.length, sarCoeffs.length, D, smaCoeffs.length,
+        return new ArimaOrder(arCoeffs.length, d, maCoeffs.length, sarCoeffs.length, D, smaCoeffs.length,
                               constant, drift);
     }
 
-    double[] getRegressors(final ModelOrder order) {
+    double[] getRegressors(final ArimaOrder order) {
         double[] regressors = new double[order.npar() - order.sumARMA()];
         if (order.constant.include()) {
-            regressors[0] = this.intercept;
+            regressors[0] = this.mean;
         }
         if (order.drift.include()) {
             regressors[order.constant.asInt()] = this.drift;
@@ -261,9 +259,9 @@ public class ModelCoefficients {
     }
 
     /**
-     * Create a new builder for a ModelCoefficients object.
+     * Create a new builder for a ArimaCoefficients object.
      *
-     * @return a new builder for a ModelCoefficients object.
+     * @return a new builder for a ArimaCoefficients object.
      */
     public static Builder newBuilder() {
         return new Builder();
@@ -318,7 +316,7 @@ public class ModelCoefficients {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ModelCoefficients that = (ModelCoefficients) o;
+        ArimaCoefficients that = (ArimaCoefficients) o;
 
         if (d != that.d) return false;
         if (D != that.D) return false;
@@ -409,6 +407,11 @@ public class ModelCoefficients {
             return this;
         }
 
+        public Builder setDrift(double drift) {
+            this.drift = drift;
+            return this;
+        }
+
 /*        public Builder setDrift(double drift) {
             this.drift = drift;
             return this;
@@ -416,8 +419,22 @@ public class ModelCoefficients {
 
         //double[] stdErrors();
 
-        public ModelCoefficients build() {
-            return new ModelCoefficients(this);
+        public ArimaCoefficients build() {
+            verifyState(this);
+            return new ArimaCoefficients(this);
+        }
+
+        private void verifyState(Builder builder) {
+            if ((builder.d + builder.D > 0) && builder.mean != 0.0) {
+                String message = "An ARIMA model cannot have both differencing and a mean, though it " +
+                                 "might possibly include a drift term.";
+                throw new IllegalStateException(message);
+            }
+            if ((builder.d + builder.D > 1) && builder.drift != 0.0) {
+                String message = "An ARIMA model with more than one degree of differencing may not include " +
+                                 "a drift term.";
+                throw new IllegalStateException(message);
+            }
         }
     }
 }

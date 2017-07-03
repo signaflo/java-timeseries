@@ -53,7 +53,7 @@ class ArimaKalmanFilter {
     private final DenseMatrix64F PZtfZ;
     private final KalmanOutput kalmanOutput;
 
-    ArimaKalmanFilter(final StateSpaceARIMA ss) {
+    ArimaKalmanFilter(final ArimaStateSpace ss) {
         this.y = ss.observations();
         this.r = ss.r();
         this.d = ss.d();
@@ -162,7 +162,7 @@ class ArimaKalmanFilter {
         return new KalmanOutput(n, ssq, sumlog, predictionError);
     }
 
-    private DenseMatrix64F initializePredictedCovariance(final StateSpaceARIMA ss) {
+    private DenseMatrix64F initializePredictedCovariance(final ArimaStateSpace ss) {
         DenseMatrix64F P0 = new DenseMatrix64F(rd, rd);
         double[] P = getInitialStateCovariance(ss.arParams(), ss.maParams());
         DenseMatrix64F arMatrix = new DenseMatrix64F(r, r, true, unpack(P));

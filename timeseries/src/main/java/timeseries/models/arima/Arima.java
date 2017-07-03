@@ -38,7 +38,7 @@ public interface Arima extends Model {
      * @param order        the order of the ARIMA model.
      * @return a new ARIMA model from the given observations and model order.
      */
-    static ArimaModel model(TimeSeries observations, ModelOrder order) {
+    static ArimaModel model(TimeSeries observations, ArimaOrder order) {
         return new ArimaModel(observations, order, TimePeriod.oneYear(), FittingStrategy.CSSML);
     }
 
@@ -53,7 +53,7 @@ public interface Arima extends Model {
      *                      However, a seasonal cycle may be an arbitrary amount of time.
      * @return a new ARIMA model from the given observations, model order, and seasonal cycle.
      */
-    static ArimaModel model(TimeSeries observations, ModelOrder order, TimePeriod seasonalCycle) {
+    static ArimaModel model(TimeSeries observations, ArimaOrder order, TimePeriod seasonalCycle) {
         return new ArimaModel(observations, order, seasonalCycle, FittingStrategy.CSSML);
     }
 
@@ -68,7 +68,7 @@ public interface Arima extends Model {
      *                        conditional sum-of-squares estimates.
      * @return a new ARIMA model from the given observations, model order, and fitting strategy.
      */
-    static ArimaModel model(TimeSeries observations, ModelOrder order, FittingStrategy fittingStrategy) {
+    static ArimaModel model(TimeSeries observations, ArimaOrder order, FittingStrategy fittingStrategy) {
         return new ArimaModel(observations, order, TimePeriod.oneYear(), fittingStrategy);
     }
 
@@ -85,7 +85,7 @@ public interface Arima extends Model {
      *                        conditional sum-of-squares estimates.
      * @return a new ARIMA model from the given observations, model order, seasonal cycle, and fitting strategy.
      */
-    static ArimaModel model(TimeSeries observations, ModelOrder order, TimePeriod seasonalCycle,
+    static ArimaModel model(TimeSeries observations, ArimaOrder order, TimePeriod seasonalCycle,
                             FittingStrategy fittingStrategy) {
         return new ArimaModel(observations, order, seasonalCycle, fittingStrategy);
     }
@@ -101,7 +101,7 @@ public interface Arima extends Model {
      *                        conditional sum-of-squares estimates.
      * @return a new ARIMA model from the given observations, model coefficients, and fitting strategy.
      */
-    static ArimaModel model(TimeSeries observations, ModelCoefficients coeffs, FittingStrategy fittingStrategy) {
+    static ArimaModel model(TimeSeries observations, ArimaCoefficients coeffs, FittingStrategy fittingStrategy) {
         return new ArimaModel(observations, coeffs, TimePeriod.oneYear(), fittingStrategy);
     }
 
@@ -116,7 +116,7 @@ public interface Arima extends Model {
      *                      However, a seasonal cycle may be an arbitrary amount of time.
      * @return a new ARIMA model from the given observations, model coefficients, and seasonal cycle.
      */
-    static ArimaModel model(TimeSeries observations, ModelCoefficients coeffs, TimePeriod seasonalCycle) {
+    static ArimaModel model(TimeSeries observations, ArimaCoefficients coeffs, TimePeriod seasonalCycle) {
         return new ArimaModel(observations, coeffs, seasonalCycle, FittingStrategy.CSSML);
     }
 
@@ -133,7 +133,7 @@ public interface Arima extends Model {
      *                        conditional sum-of-squares estimates.
      * @return a new ARIMA model from the given observations, model coefficients, seasonal cycle, and fitting strategy.
      */
-    static ArimaModel model(TimeSeries observations, ModelCoefficients coeffs, TimePeriod seasonalCycle,
+    static ArimaModel model(TimeSeries observations, ArimaCoefficients coeffs, TimePeriod seasonalCycle,
                             FittingStrategy fittingStrategy) {
         return new ArimaModel(observations, coeffs, seasonalCycle, fittingStrategy);
     }
@@ -163,9 +163,9 @@ public interface Arima extends Model {
 
     double[] stdErrors();
 
-    ModelCoefficients coefficients();
+    ArimaCoefficients coefficients();
 
-    ModelOrder order();
+    ArimaOrder order();
 
     double logLikelihood();
 

@@ -41,15 +41,15 @@ import java.time.ZoneOffset;
  */
 @EqualsAndHashCode
 @ToString
-public class Simulation {
+public class ArimaSimulation {
 
-    private final ModelCoefficients coefficients;
+    private final ArimaCoefficients coefficients;
     private final Distribution distribution;
     private final TimePeriod period;
     private final TimePeriod seasonalCycle;
     private final int n;
 
-    private Simulation(Builder builder) {
+    private ArimaSimulation(Builder builder) {
         this.coefficients = builder.coefficients;
         this.distribution = builder.distribution;
         this.period = builder.period;
@@ -74,9 +74,9 @@ public class Simulation {
     public TimeSeries sim() {
         final int burnin = (int) (n / 2.0);
         final int seasonalFrequency = (int) period.frequencyPer(seasonalCycle);
-        double[] arSarCoeffs = ModelCoefficients.expandArCoefficients(coefficients.arCoeffs(), coefficients.seasonalARCoeffs(),
+        double[] arSarCoeffs = ArimaCoefficients.expandArCoefficients(coefficients.arCoeffs(), coefficients.seasonalARCoeffs(),
                                                                       seasonalFrequency);
-        double[] maSmaCoeffs = ModelCoefficients.expandMaCoefficients(coefficients.maCoeffs(), coefficients.seasonalMACoeffs(),
+        double[] maSmaCoeffs = ArimaCoefficients.expandMaCoefficients(coefficients.maCoeffs(), coefficients.seasonalMACoeffs(),
                                                                       seasonalFrequency);
         int diffOffset = coefficients.d() + coefficients.D() * seasonalFrequency;
         int offset = Math.min(n, arSarCoeffs.length);
@@ -121,7 +121,7 @@ public class Simulation {
     public static class Builder {
 
         private int defaultSimulationSize = 500;
-        private ModelCoefficients coefficients = ModelCoefficients.newBuilder().build();
+        private ArimaCoefficients coefficients = ArimaCoefficients.newBuilder().build();
         private Distribution distribution = new Normal();
         private TimePeriod period = (coefficients.isSeasonal()) ? TimePeriod.oneMonth() : TimePeriod.oneYear();
         private TimePeriod seasonalCycle = TimePeriod.oneYear();
@@ -134,7 +134,7 @@ public class Simulation {
          * @param coefficients the model coefficients for the simulation.
          * @return this builder.
          */
-        public Builder setCoefficients(ModelCoefficients coefficients) {
+        public Builder setCoefficients(ArimaCoefficients coefficients) {
             if (coefficients == null) {
                 throw new NullPointerException("The model coefficients cannot be null.");
             }
@@ -207,21 +207,21 @@ public class Simulation {
 
         /**
          * Simulate the time series directly from this builder. This is equivalent to calling build on this builder,
-         * then sim on the returned Simulation object.
+         * then sim on the returned ArimaSimulation object.
          *
          * @return the simulated time series.
          */
         public TimeSeries sim() {
-            return new Simulation(this).sim();
+            return new ArimaSimulation(this).sim();
         }
 
         /**
-         * Construct and return a new fully built and immutable Simulation object.
+         * Construct and return a new fully built and immutable ArimaSimulation object.
          *
-         * @return a new fully built and immutable Simulation object.
+         * @return a new fully built and immutable ArimaSimulation object.
          */
-        public Simulation build() {
-            return new Simulation(this);
+        public ArimaSimulation build() {
+            return new ArimaSimulation(this);
         }
     }
 }

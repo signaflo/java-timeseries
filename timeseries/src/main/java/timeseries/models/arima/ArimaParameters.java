@@ -27,17 +27,15 @@ package timeseries.models.arima;
 import lombok.Data;
 import lombok.NonNull;
 
-import static math.stats.Statistics.sumOf;
-
 /**
- * The parameters of an ARIMA model. The main difference between this class and {@link ModelCoefficients} is that
+ * The parameters of an ARIMA model. The main difference between this class and {@link ArimaCoefficients} is that
  * the coefficients represent fixed, unchanging quantities that are either known or have been estimated,
  * whereas the parameters represent the coefficients before they are known, or before they have been fully estimated.
- * For this reason, the ModelCoefficients class is immutable while the variables of this class may be updated after
+ * For this reason, the ArimaCoefficients class is immutable while the variables of this class may be updated after
  * they have been initialized.
  */
 @Data
-final class ModelParameters {
+final class ArimaParameters {
 
     private static final double EPSILON = Math.ulp(1.0);
 
@@ -52,7 +50,7 @@ final class ModelParameters {
     private double interceptParScale = 1.0;
     private double driftParScale = 1.0;
 
-//    ModelParameters(int numAR, int numMA, int numSAR, int numSMA) {
+//    ArimaParameters(int numAR, int numMA, int numSAR, int numSMA) {
 //        this.autoRegressivePars = new double[numAR];
 //        this.movingAveragePars = new double[numMA];
 //        this.seasonalAutoRegressivePars = new double[numSAR];
@@ -83,10 +81,10 @@ final class ModelParameters {
         this.drift = driftFactor * this.driftParScale;
     }
 
-    double[] getRegressors(final ModelOrder order) {
+    double[] getRegressors(final ArimaOrder order) {
         double[] regressors = new double[order.npar() - order.sumARMA()];
         if (order.constant.include()) {
-            regressors[0] = this.intercept;
+            regressors[0] = this.mean;
         }
         if (order.drift.include()) {
             regressors[order.constant.asInt()] = this.drift;
@@ -94,7 +92,7 @@ final class ModelParameters {
         return regressors;
     }
 
-    double[] getAll(ModelOrder order) {
+    double[] getAll(ArimaOrder order) {
         double[] pars = new double[order.npar()];
         System.arraycopy(autoRegressivePars, 0, pars, 0, autoRegressivePars.length);
         System.arraycopy(movingAveragePars, 0, pars, order.p, movingAveragePars.length);
@@ -103,7 +101,7 @@ final class ModelParameters {
         System.arraycopy(seasonalMovingAveragePars, 0, pars, order.p + order.q + order.P,
                          seasonalMovingAveragePars.length);
         if (order.constant.include()) {
-            pars[order.sumARMA()] = this.intercept;
+            pars[order.sumARMA()] = this.mean;
         }
         if (order.drift.include()) {
             pars[order.sumARMA() + order.constant.asInt()] = this.drift;
@@ -111,7 +109,7 @@ final class ModelParameters {
         return pars;
     }
 
-    double[] getAllScaled(ModelOrder order) {
+    double[] getAllScaled(ArimaOrder order) {
         double[] pars = new double[order.npar()];
         System.arraycopy(autoRegressivePars, 0, pars, 0, autoRegressivePars.length);
         System.arraycopy(movingAveragePars, 0, pars, order.p, movingAveragePars.length);
@@ -120,7 +118,7 @@ final class ModelParameters {
         System.arraycopy(seasonalMovingAveragePars, 0, pars, order.p + order.q + order.P,
                          seasonalMovingAveragePars.length);
         if (order.constant.include()) {
-            pars[order.sumARMA()] = this.intercept / (this.interceptParScale + EPSILON);
+            pars[order.sumARMA()] = this.mean / (this.meanParScale + EPSILON);
         }
         if (order.drift.include()) {
             pars[order.sumARMA() + order.constant.asInt()] = this.drift / (this.driftParScale + EPSILON);
@@ -128,8 +126,8 @@ final class ModelParameters {
         return pars;
     }
 
-    static ModelParameters fromCoefficients(ModelCoefficients coefficients) {
-        ModelParameters parameters = new ModelParameters(coefficients.arCoeffs(),
+    static ArimaParameters fromCoefficients(ArimaCoefficients coefficients) {
+        ArimaParameters parameters = new ArimaParameters(coefficients.arCoeffs(),
                                                          coefficients.maCoeffs(),
                                                          coefficients.seasonalARCoeffs(),
                                                          coefficients.seasonalMACoeffs());
@@ -139,20 +137,20 @@ final class ModelParameters {
         return parameters;
     }
 
-    static ModelParameters fromOrder(ModelOrder order) {
+    static ArimaParameters fromOrder(ArimaOrder order) {
         return initializePars(order.p, order.q, order.P, order.Q);
     }
 
-    static ModelParameters initializePars(int numAR, int numMA, int numSAR, int numSMA) {
+    static ArimaParameters initializePars(int numAR, int numMA, int numSAR, int numSMA) {
         double[] autoRegressivePars = new double[numAR];
         double[] movingAveragePars = new double[numMA];
         double[] seasonalAutoRegressivePars = new double[numSAR];
         double[] seasonalMovingAveragePars = new double[numSMA];
-        return new ModelParameters(autoRegressivePars, movingAveragePars, seasonalAutoRegressivePars,
+        return new ArimaParameters(autoRegressivePars, movingAveragePars, seasonalAutoRegressivePars,
                                    seasonalMovingAveragePars);
     }
 
-//    private ModelParameters(ModelParameters parameters) {
+//    private ArimaParameters(ArimaParameters parameters) {
 //        this.autoRegressivePars = parameters.autoRegressivePars.clone();
 //        this.movingAveragePars = parameters.movingAveragePars.clone();
 //        this.seasonalAutoRegressivePars = parameters.seasonalAutoRegressivePars.clone();

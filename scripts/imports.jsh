@@ -1,3 +1,4 @@
+
 import java.io.*
 import java.math.*
 import java.net.*
@@ -20,5 +21,5 @@ import static math.operations.Operators.*;
 import static data.visualization.Plots.*;
 import static timeseries.TestData.*;
 import static timeseries.models.arima.Arima.*;
-import static timeseries.models.arima.ModelOrder.*;
+import static timeseries.models.arima.ArimaOrder.*;
 import static math.stats.Statistics.*;

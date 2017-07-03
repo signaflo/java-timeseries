@@ -58,7 +58,7 @@ final class ArmaKalmanFilter {
 
     private final KalmanOutput kalmanOutput;
 
-    ArmaKalmanFilter(final StateSpaceARMA ss) {
+    ArmaKalmanFilter(final ArmaStateSpace ss) {
         this.y = ss.differencedSeries();
         this.r = ss.r();
 
@@ -371,7 +371,7 @@ final class ArmaKalmanFilter {
         return new KalmanOutput(this.y.length, ssq, sumlog, predictionError);
     }
 
-    private DenseMatrix64F initializePredictedCovariance(final StateSpaceARMA ss) {
+    private DenseMatrix64F initializePredictedCovariance(final ArmaStateSpace ss) {
         double[] P = getInitialStateCovariance(ss.arParams(), ss.maParams());
         return new DenseMatrix64F(ss.r(), ss.r(), true, unpack(P));
     }
