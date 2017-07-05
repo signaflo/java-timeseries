@@ -26,7 +26,7 @@ package timeseries.models.arima;
 
 /**
  * The order of an ARIMA model, consisting of the number of autoregressive and moving average parameters, along with
- * the degree of differencing and a flag indicating whether or not the model includes a constant.
+ * the degree of differencing and flags indicating whether or not the model includes a constant and/or drift term.
  * This class is immutable and thread-safe.
  *
  * @author Jacob Rachiele

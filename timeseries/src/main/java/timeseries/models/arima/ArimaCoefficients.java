@@ -34,7 +34,7 @@ import static math.stats.Statistics.sumOf;
 
 /**
  * Consists of the autoregressive and moving-average coefficients for a seasonal ARIMA model, along with the
- * degrees of differencing and the model mean.
+ * degrees of differencing and the model mean and/or drift term.
  *
  * @author Jacob Rachiele
  */

@@ -58,11 +58,13 @@ subprojects {
     }
 
     task generateJavadoc(type: Javadoc) {
-        source = sourceSets.main.allJava // + sourceSets.apt.allJava
-        classpath = sourceSets.main.compileClasspath // + sourceSets.apt.compileClasspath
+        source = sourceSets.main.allJava
+        classpath = files(sourceSets.main.compileClasspath, project(':math').sourceSets.main.compileClasspath)
+        // + sourceSets.apt.compileClasspath
         options.memberLevel = JavadocMemberLevel.PUBLIC
         options {
-            links "https://docs.oracle.com/javase/8/docs/api/"
+            links "https://docs.oracle.com/javase/8/docs/api/",
+            "../../../../math/build/docs/javadoc"
             //"https://google.github.io/guava/releases/21.0/api/docs"
         }
     }

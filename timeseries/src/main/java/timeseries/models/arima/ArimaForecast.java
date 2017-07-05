@@ -150,7 +150,7 @@ public final class ArimaForecast implements Forecast {
         final int steps = this.forecast.size();
         LagPolynomial arPoly = LagPolynomial.autoRegressive(getAllAutoRegressiveCoefficients(model));
         LagPolynomial diffPoly = LagPolynomial.differences(model.order().d);
-        LagPolynomial seasDiffPoly = LagPolynomial.seasonalDifferences(model.observationFrequency(), model.order().D);
+        LagPolynomial seasDiffPoly = LagPolynomial.seasonalDifferences(model.seasonalFrequency(), model.order().D);
         double[] phi = diffPoly.times(seasDiffPoly).times(arPoly).inverseParams();
         double[] theta = getAllMovingAverageCoefficients(model);
         final double[] psi = new double[steps];
@@ -168,14 +168,14 @@ public final class ArimaForecast implements Forecast {
         ArimaCoefficients coefficients = model.coefficients();
         return ArimaCoefficients.expandArCoefficients(coefficients.arCoeffs(),
                                                       coefficients.seasonalARCoeffs(),
-                                                      model.observationFrequency());
+                                                      model.seasonalFrequency());
     }
 
     private double[] getAllMovingAverageCoefficients(Arima model) {
         ArimaCoefficients coefficients = model.coefficients();
         return ArimaCoefficients.expandMaCoefficients(coefficients.maCoeffs(),
                                                       coefficients.seasonalMACoeffs(),
-                                                      model.observationFrequency());
+                                                      model.seasonalFrequency());
     }
 
     private TimeSeries getFcstErrors(final double criticalValue) {

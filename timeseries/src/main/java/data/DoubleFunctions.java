@@ -26,7 +26,6 @@ package data;
 import com.google.common.primitives.Doubles;
 import math.stats.Statistics;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,7 +37,8 @@ public final class DoubleFunctions {
 
     private static final double EPSILON = Math.ulp(1.0);
 
-    private DoubleFunctions() {}
+    private DoubleFunctions() {
+    }
 
     /**
      * Create and return a new array from the given data.
@@ -114,7 +114,14 @@ public final class DoubleFunctions {
         return doubles;
     }
 
-    public static double[] arrayFrom(double[] data, int... indices) {
+    /**
+     * Create a new array from the data in the given array at the specified indices.
+     *
+     * @param data the data to create the new array from.
+     * @param indices the indices at which to select data from the given array.
+     * @return a new array from the data in the given array at the specified indices.
+     */
+    static double[] arrayFrom(double[] data, int... indices) {
         double[] newArray = new double[indices.length];
         for (int i = 0; i < newArray.length; i++) {
             newArray[i] = data[indices[i]];
@@ -137,6 +144,12 @@ public final class DoubleFunctions {
         return filled;
     }
 
+    /**
+     * Create a new list of boxed Doubles from the given array of primitive doubles.
+     *
+     * @param data the data to populate the new list with.
+     * @return a new list of boxed Doubles from the given array of primitive doubles.
+     */
     public static List<Double> listFrom(final double... data) {
         return Doubles.asList(data.clone());
     }
@@ -248,13 +261,27 @@ public final class DoubleFunctions {
 //        return reversed;
 //    }
 
+    /**
+     * Round the given value to the specified precision.
+     *
+     * @param value     the value to round.
+     * @param precision the decimal place precision to round to.
+     * @return the given value rounded to the specified precision.
+     */
     public static double round(final double value, final int precision) {
         double scale = Math.pow(10.0, precision);
         return Math.round(value * scale) / scale;
     }
 
+    /**
+     * Round the given values to the specified precision.
+     *
+     * @param values    the values to round.
+     * @param precision the decimal place precision to round to.
+     * @return the given values rounded to the specified precision.
+     */
     public static double[] round(final double[] values, final int precision) {
-        double[] rounded  = new double[values.length];
+        double[] rounded = new double[values.length];
         for (int i = 0; i < values.length; i++) {
             rounded[i] = round(values[i], precision);
         }

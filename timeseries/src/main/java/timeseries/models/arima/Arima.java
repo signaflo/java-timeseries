@@ -29,6 +29,9 @@ import timeseries.TimeSeries;
 import timeseries.models.Forecast;
 import timeseries.models.Model;
 
+/**
+ * A seasonal autoregressive integrated moving average (ARIMA) model.
+ */
 public interface Arima extends Model {
     /**
      * Create a new ARIMA model from the given observations and model order. This constructor sets the
@@ -36,9 +39,10 @@ public interface Arima extends Model {
      *
      * @param observations the time series of observations.
      * @param order        the order of the ARIMA model.
+     *
      * @return a new ARIMA model from the given observations and model order.
      */
-    static ArimaModel model(TimeSeries observations, ArimaOrder order) {
+    static Arima model(TimeSeries observations, ArimaOrder order) {
         return new ArimaModel(observations, order, TimePeriod.oneYear(), FittingStrategy.CSSML);
     }
 
@@ -51,9 +55,10 @@ public interface Arima extends Model {
      * @param seasonalCycle the amount of time it takes for the seasonal pattern to complete one cycle. For example,
      *                      monthly data usually has a cycle of one year, hourly data a cycle of one day, etc...
      *                      However, a seasonal cycle may be an arbitrary amount of time.
+     *
      * @return a new ARIMA model from the given observations, model order, and seasonal cycle.
      */
-    static ArimaModel model(TimeSeries observations, ArimaOrder order, TimePeriod seasonalCycle) {
+    static Arima model(TimeSeries observations, ArimaOrder order, TimePeriod seasonalCycle) {
         return new ArimaModel(observations, order, seasonalCycle, FittingStrategy.CSSML);
     }
 
@@ -66,9 +71,10 @@ public interface Arima extends Model {
      * @param fittingStrategy the strategy to use to fit the model to the data. Maximum-likelihood estimates are
      *                        typically preferred for greater precision and accuracy, but take longer to obtain than
      *                        conditional sum-of-squares estimates.
+     *
      * @return a new ARIMA model from the given observations, model order, and fitting strategy.
      */
-    static ArimaModel model(TimeSeries observations, ArimaOrder order, FittingStrategy fittingStrategy) {
+    static Arima model(TimeSeries observations, ArimaOrder order, FittingStrategy fittingStrategy) {
         return new ArimaModel(observations, order, TimePeriod.oneYear(), fittingStrategy);
     }
 
@@ -83,9 +89,10 @@ public interface Arima extends Model {
      * @param fittingStrategy the strategy to use to fit the model to the data. Maximum-likelihood estimates are
      *                        typically preferred for greater precision and accuracy, but take longer to obtain than
      *                        conditional sum-of-squares estimates.
+     *
      * @return a new ARIMA model from the given observations, model order, seasonal cycle, and fitting strategy.
      */
-    static ArimaModel model(TimeSeries observations, ArimaOrder order, TimePeriod seasonalCycle,
+    static Arima model(TimeSeries observations, ArimaOrder order, TimePeriod seasonalCycle,
                             FittingStrategy fittingStrategy) {
         return new ArimaModel(observations, order, seasonalCycle, fittingStrategy);
     }
@@ -99,9 +106,10 @@ public interface Arima extends Model {
      * @param fittingStrategy the strategy to use to fit the model to the data. Maximum-likelihood estimates are
      *                        typically preferred for greater precision and accuracy, but take longer to obtain than
      *                        conditional sum-of-squares estimates.
+     *
      * @return a new ARIMA model from the given observations, model coefficients, and fitting strategy.
      */
-    static ArimaModel model(TimeSeries observations, ArimaCoefficients coeffs, FittingStrategy fittingStrategy) {
+    static Arima model(TimeSeries observations, ArimaCoefficients coeffs, FittingStrategy fittingStrategy) {
         return new ArimaModel(observations, coeffs, TimePeriod.oneYear(), fittingStrategy);
     }
 
@@ -114,9 +122,10 @@ public interface Arima extends Model {
      * @param seasonalCycle the amount of time it takes for the seasonal pattern to complete one cycle. For example,
      *                      monthly data usually has a cycle of one year, hourly data a cycle of one day, etc...
      *                      However, a seasonal cycle may be an arbitrary amount of time.
+     *
      * @return a new ARIMA model from the given observations, model coefficients, and seasonal cycle.
      */
-    static ArimaModel model(TimeSeries observations, ArimaCoefficients coeffs, TimePeriod seasonalCycle) {
+    static Arima model(TimeSeries observations, ArimaCoefficients coeffs, TimePeriod seasonalCycle) {
         return new ArimaModel(observations, coeffs, seasonalCycle, FittingStrategy.CSSML);
     }
 
@@ -131,9 +140,10 @@ public interface Arima extends Model {
      * @param fittingStrategy the strategy to use to fit the model to the data. Maximum-likelihood estimates are
      *                        typically preferred for greater precision and accuracy, but take longer to obtain than
      *                        conditional sum-of-squares estimates.
+     *
      * @return a new ARIMA model from the given observations, model coefficients, seasonal cycle, and fitting strategy.
      */
-    static ArimaModel model(TimeSeries observations, ArimaCoefficients coeffs, TimePeriod seasonalCycle,
+    static Arima model(TimeSeries observations, ArimaCoefficients coeffs, TimePeriod seasonalCycle,
                             FittingStrategy fittingStrategy) {
         return new ArimaModel(observations, coeffs, seasonalCycle, fittingStrategy);
     }
@@ -159,18 +169,52 @@ public interface Arima extends Model {
 
     double sigma2();
 
-    int observationFrequency();
+    /**
+     * Get the frequency of observations per seasonal cycle.
+     *
+     * @return the frequency of observations per seasonal cycle.
+     */
+    int seasonalFrequency();
 
+    /**
+     * Get the standard errors of the model parameters.
+     *
+     * @return the standard errors of the model parameters.
+     */
     double[] stdErrors();
 
+    /**
+     * Get the coefficients of this ARIMA model.
+     *
+     * @return the coefficients of this ARIMA model.
+     */
     ArimaCoefficients coefficients();
 
+    /**
+     * Get the order of this ARIMA model.
+     *
+     * @return the order of this ARIMA model.
+     */
     ArimaOrder order();
 
+    /**
+     * Get the natural logarithm of the likelihood of the model parameters given the data.
+     *
+     * @return the natural logarithm of the likelihood of the model parameters given the data.
+     */
     double logLikelihood();
 
+    /**
+     * Get the Akaike Information Criterion (AIC) for this model. The AIC is defined as 2k &minus;
+     * 2L where k is the number of parameters in the model and L is the logarithm of the likelihood.
+     *
+     * @return the Akaike Information Criterion (AIC) for this model.
+     */
     double aic();
 
+    /**
+     * An indicator for whether an ARIMA model has a constant term.
+     */
     enum Constant {
         INCLUDE(1), EXCLUDE(0);
 
@@ -189,6 +233,9 @@ public interface Arima extends Model {
         }
     }
 
+    /**
+     * An indicator for whether an ARIMA model has a drift term.
+     */
     enum Drift {
         INCLUDE(1), EXCLUDE(0);
 
