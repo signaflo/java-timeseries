@@ -33,8 +33,7 @@ import java.util.Arrays;
 public final class Matrix {
 
     public enum Order {
-        ROW_MAJOR,
-        COLUMN_MAJOR
+        ROW_MAJOR, COLUMN_MAJOR
     }
 
     private final int nrow;
@@ -88,7 +87,7 @@ public final class Matrix {
      * Create a new matrix from the given two-dimensional array of data.
      *
      * @param matrixData the two-dimensional array of data constituting the matrix.
-     * @param order the storage order of the elements in the matrix data.
+     * @param order      the storage order of the elements in the matrix data.
      */
     public Matrix(final double[][] matrixData, Order order) {
         if (matrixData.length == 0) {
@@ -96,8 +95,7 @@ public final class Matrix {
             this.ncol = 0;
             this.nrow = 0;
             this.data = new double[0];
-        }
-        else if (order == Order.COLUMN_MAJOR) {
+        } else if (order == Order.COLUMN_MAJOR) {
             this.ncol = matrixData.length;
             this.nrow = matrixData[0].length;
             this.data = new double[ncol * nrow];
@@ -175,10 +173,10 @@ public final class Matrix {
     }
 
     /**
-     * Transform the given vector with this matrix and return the resulting transformation.
+     * Multiply this matrix by the given vector and return the resulting transformation.
      *
-     * @param vector the vector to transform.
-     * @return the given vector transformed by this matrix.
+     * @param vector the vector to multiply.
+     * @return the given vector multiplied by this matrix.
      */
     public Vector times(final Vector vector) {
         double[] elements = vector.elements();
@@ -283,7 +281,6 @@ public final class Matrix {
      * Obtain the data in this matrix as a two-dimensional array.
      *
      * @param order the storage order of the elements in the matrix data.
-     *
      * @return the data in this matrix as a two-dimensional array.
      */
     public double[][] data2D(Order order) {

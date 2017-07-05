@@ -200,13 +200,9 @@ public final class Complex implements FieldElement<Complex> {
         }
 
         if (im < 0.0) {
-            sb.append(" - ")
-              .append(Math.abs(im))
-              .append("i");
+            sb.append(" - ").append(Math.abs(im)).append("i");
         } else if (im > 0.0) {
-            sb.append(" + ")
-              .append(im)
-              .append("i");
+            sb.append(" + ").append(im).append("i");
         }
         return sb.toString();
     }

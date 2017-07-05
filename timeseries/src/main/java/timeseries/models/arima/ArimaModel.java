@@ -40,7 +40,7 @@ import org.ejml.interfaces.decomposition.EigenDecomposition;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.models.Forecast;
-import timeseries.models.regression.TimeSeriesLinearRegression;
+import timeseries.models.regression.primitive.TimeSeriesLinearRegression;
 import timeseries.operators.LagPolynomial;
 
 import java.text.DecimalFormat;

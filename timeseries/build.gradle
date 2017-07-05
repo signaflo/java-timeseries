@@ -9,6 +9,34 @@ repositories {
     jcenter()
 }
 
+task generateJavadoc(type: Javadoc) {
+    source = sourceSets.main.allJava
+    classpath = files(sourceSets.main.compileClasspath, project(':math').sourceSets.main.compileClasspath)
+    // + sourceSets.apt.compileClasspath
+    options.memberLevel = JavadocMemberLevel.PUBLIC
+    options {
+        links "https://docs.oracle.com/javase/8/docs/api/",
+                rootDir.path + "/math/build/docs/javadoc"
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: generateJavadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
 dependencies {
     api project(':math')
+    implementation 'org.apache.commons:commons-csv:1.4'
 }

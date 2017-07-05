@@ -41,7 +41,7 @@ import java.util.List;
 import static data.DoubleFunctions.*;
 
 /**
- * A math.linear timeseries.models.regression model with support for both single and multiple prediction variables.
+ * A linear regression model with support for both single and multiple prediction variables.
  * This implementation is immutable and thread-safe.
  */
 @EqualsAndHashCode @ToString
@@ -109,41 +109,41 @@ public final class MultipleLinearRegression implements LinearRegression {
     }
 
     /**
-     * Create a new math.linear timeseries.models.regression model from this one, using the given boolean to determine whether
+     * Create a new linear regression model from this one, using the given boolean to determine whether
      * to fit an intercept or not.
      *
-     * @param hasIntercept whether or not the new timeseries.models.regression should have an intercept.
-     * @return a new math.linear timeseries.models.regression model using the given boolean to determine whether to fit an intercept.
+     * @param hasIntercept whether or not the new regression should have an intercept.
+     * @return a new linear regression model using the given boolean to determine whether to fit an intercept.
      */
     public MultipleLinearRegression withHasIntercept(boolean hasIntercept) {
         return new Builder().from(this).hasIntercept(hasIntercept).build();
     }
 
     /**
-     * Create a new math.linear timeseries.models.regression model from this one, replacing the current response with the provided one.
+     * Create a new linear regression model from this one, replacing the current response with the provided one.
      *
-     * @param response the response variable of the new timeseries.models.regression.
-     * @return a new math.linear timeseries.models.regression model with the given response variable in place of the current one.
+     * @param response the response variable of the new regression.
+     * @return a new linear regression model with the given response variable in place of the current one.
      */
     public MultipleLinearRegression withResponse(List<Double> response) {
         return new Builder().from(this).response(response).build();
     }
 
     /**
-     * Create a new timeseries.models.regression from this one, adding the given predictor to the current ones.
+     * Create a new regression from this one, adding the given predictor to the current ones.
      *
-     * @param predictor The prediction variable to add to this timeseries.models.regression.
-     * @return a new timeseries.models.regression with the given predictor added to the current ones.
+     * @param predictor The prediction variable to add to this regression.
+     * @return a new regression with the given predictor added to the current ones.
      */
     public MultipleLinearRegression withPredictor(List<Double> predictor) {
         return new Builder().from(this).predictor(predictor).build();
     }
 
     /**
-     * Create a new math.linear timeseries.models.regression model from this one, with the given predictors fully replacing the current ones.
+     * Create a new linear regression model from this one, with the given predictors fully replacing the current ones.
      *
-     * @param predictors The new list of prediction variables to use for the timeseries.models.regression.
-     * @return a new math.linear timeseries.models.regression model using the given predictors in place of the current ones.
+     * @param predictors The new list of prediction variables to use for the regression.
+     * @return a new linear regression model using the given predictors in place of the current ones.
      */
     public MultipleLinearRegression withPredictors(List<List<Double>> predictors) {
         return new Builder().from(this).predictors(predictors).build();
@@ -159,7 +159,7 @@ public final class MultipleLinearRegression implements LinearRegression {
     }
 
     /**
-     * A builder for a multiple math.linear timeseries.models.regression model.
+     * A builder for a multiple linear regression model.
      */
     public static final class Builder {
 
@@ -168,7 +168,7 @@ public final class MultipleLinearRegression implements LinearRegression {
         private boolean hasIntercept = true;
 
         /**
-         * Copy the attributes of the given timeseries.models.regression object to this builder and return this builder.
+         * Copy the attributes of the given regression object to this builder and return this builder.
          *
          * @param regression the object to copy the attributes from.
          * @return this builder.

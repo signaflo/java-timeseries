@@ -27,7 +27,7 @@ package timeseries.models.regression;
 import java.util.List;
 
 /**
- * A math.linear timeseries.models.regression model.
+ * A linear regression model.
  */
 public interface LinearRegression {
 

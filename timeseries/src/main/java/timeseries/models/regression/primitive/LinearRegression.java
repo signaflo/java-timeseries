@@ -24,7 +24,7 @@
 package timeseries.models.regression.primitive;
 
 /**
- * A math.linear timeseries.models.regression model.
+ * A linear regression model.
  */
 public interface LinearRegression {
 
@@ -35,6 +35,11 @@ public interface LinearRegression {
      */
     double[][] predictors();
 
+    /**
+     * Get the model's design matrix.
+     *
+     * @return the model's design matrix.
+     */
     double[][] designMatrix();
 
     /**
