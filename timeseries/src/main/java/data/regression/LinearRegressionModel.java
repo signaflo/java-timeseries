@@ -22,14 +22,14 @@
  * Jacob Rachiele
  */
 
-package timeseries.models.regression;
+package data.regression;
 
 import java.util.List;
 
 /**
  * A linear regression model.
  */
-public interface LinearRegression {
+public interface LinearRegressionModel {
 
     /**
      * Get the prediction variables.

@@ -25,7 +25,11 @@
 package timeseries.models.regression.primitive;
 
 import data.Range;
+import data.regression.primitive.LinearRegressionModel;
+import data.regression.primitive.MultipleLinearRegressionModel;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.ToString;
 import math.linear.doubles.Matrix;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
@@ -33,17 +37,27 @@ import timeseries.TimeSeries;
 /**
  * A linear regression model for time series data.
  */
-public final class TimeSeriesLinearRegression implements LinearRegression {
+@EqualsAndHashCode @ToString
+public final class TimeSeriesLinearRegressionModel implements LinearRegressionModel {
 
-    private final LinearRegression regression;
+    private final LinearRegressionModel regression;
+    private final TimeSeries timeSeries;
+    private final TimePeriod seasonalCycle;
+    private final Intercept intercept;
+    private final TimeTrend timeTrend;
+    private final Seasonal seasonal;
 
-    TimeSeriesLinearRegression(Builder timeSeriesRegressionBuilder) {
-        TimeSeries timeSeries = timeSeriesRegressionBuilder.response;
-        MultipleLinearRegression.Builder regressionBuilder = MultipleLinearRegression.builder();
+    TimeSeriesLinearRegressionModel(Builder timeSeriesRegressionBuilder) {
+        this.timeSeries = timeSeriesRegressionBuilder.response;
+        this.seasonalCycle = timeSeriesRegressionBuilder.seasonalCycle;
+        MultipleLinearRegressionModel.Builder regressionBuilder = MultipleLinearRegressionModel.builder();
         regressionBuilder.hasIntercept(timeSeriesRegressionBuilder.intercept.include())
                          .predictors(timeSeriesRegressionBuilder.predictors)
                          .response(timeSeries.asArray());
         this.regression = regressionBuilder.build();
+        this.intercept = timeSeriesRegressionBuilder.intercept;
+        this.timeTrend = timeSeriesRegressionBuilder.timeTrend;
+        this.seasonal = timeSeriesRegressionBuilder.seasonal;
     }
 
     @Override
@@ -91,7 +105,23 @@ public final class TimeSeriesLinearRegression implements LinearRegression {
         return regression.hasIntercept();
     }
 
-    public static TimeSeriesLinearRegression.Builder builder() {
+    public Intercept intercept() {
+        return this.intercept;
+    }
+
+    public TimeTrend timeTrend() {
+        return this.timeTrend;
+    }
+
+    public Seasonal seasonal() {
+        return this.seasonal;
+    }
+
+    public int seasonalFrequency() {
+        return (int) this.timeSeries.timePeriod().frequencyPer(this.seasonalCycle);
+    }
+
+    public static TimeSeriesLinearRegressionModel.Builder builder() {
         return new Builder();
     }
 
@@ -99,10 +129,19 @@ public final class TimeSeriesLinearRegression implements LinearRegression {
      * An indicator for whether a time series regression model has an intercept.
      */
     public enum Intercept {
-        INCLUDE, EXCLUDE;
+        INCLUDE(1), EXCLUDE(0);
+
+        private final int intercept;
+
+        Intercept(final int intercept) {
+            this.intercept = intercept;
+        }
 
         boolean include() {
             return this == INCLUDE;
+        }
+        int asInt() {
+            return this.intercept;
         }
     }
 
@@ -110,10 +149,19 @@ public final class TimeSeriesLinearRegression implements LinearRegression {
      * An indicator for whether a time series regression model has a time trend.
      */
     public enum TimeTrend {
-        INCLUDE, EXCLUDE;
+        INCLUDE(1), EXCLUDE(0);
+
+        private final int timeTrend;
+
+        TimeTrend(final int timeTrend) {
+            this.timeTrend = timeTrend;
+        }
 
         boolean include() {
             return this == INCLUDE;
+        }
+        int asInt() {
+            return this.timeTrend;
         }
     }
 
@@ -121,10 +169,19 @@ public final class TimeSeriesLinearRegression implements LinearRegression {
      * An indictor for whether a time series regresson model has a seasonal component.
      */
     public enum Seasonal {
-        INCLUDE, EXCLUDE;
+        INCLUDE(1), EXCLUDE(0);
+
+        private final int seasonal;
+
+        Seasonal(final int seasonal) {
+            this.seasonal = seasonal;
+        }
 
         boolean include() {
             return this == INCLUDE;
+        }
+        int asInt() {
+            return this.seasonal;
         }
     }
 
@@ -239,7 +296,7 @@ public final class TimeSeriesLinearRegression implements LinearRegression {
             return this;
         }
 
-        public TimeSeriesLinearRegression build() {
+        public TimeSeriesLinearRegressionModel build() {
             if (this.timeTrend.include()) {
                 this.externalRegressors(Range.inclusiveRange(1, response.size()).asArray());
             }
@@ -248,7 +305,7 @@ public final class TimeSeriesLinearRegression implements LinearRegression {
                 double[][] seasonalRegressors = getSeasonalRegressors(seasonalFrequency);
                 this.externalRegressors(seasonalRegressors);
             }
-            return new TimeSeriesLinearRegression(this);
+            return new TimeSeriesLinearRegressionModel(this);
         }
 
         // What we are doing here is equivalent to how R handles "factors" in linear regression models.

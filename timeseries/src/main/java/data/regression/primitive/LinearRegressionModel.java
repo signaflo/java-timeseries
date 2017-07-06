@@ -21,12 +21,12 @@
  *
  * Jacob Rachiele
  */
-package timeseries.models.regression.primitive;
+package data.regression.primitive;
 
 /**
  * A linear regression model.
  */
-public interface LinearRegression {
+public interface LinearRegressionModel {
 
     /**
      * Get the prediction variables.

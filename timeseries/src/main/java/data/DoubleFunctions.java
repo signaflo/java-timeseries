@@ -26,6 +26,7 @@ package data;
 import com.google.common.primitives.Doubles;
 import math.stats.Statistics;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -152,6 +153,22 @@ public final class DoubleFunctions {
      */
     public static List<Double> listFrom(final double... data) {
         return Doubles.asList(data.clone());
+    }
+
+    public static List<List<Double>> twoDListFrom(final double[]... data) {
+        List<List<Double>> newList = new ArrayList<>(data.length);
+        for (double[] array : data) {
+            newList.add(Doubles.asList(array.clone()));
+        }
+        return newList;
+    }
+
+    public static double[][] twoDArrayFrom(final List<List<Double>> data) {
+        double[][] newArray = new double[data.size()][];
+        for (int i = 0; i < data.size(); i++) {
+            newArray[i] = arrayFrom(data.get(i));
+        }
+        return newArray;
     }
 
     /**

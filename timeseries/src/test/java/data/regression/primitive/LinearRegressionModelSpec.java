@@ -22,7 +22,7 @@
  * Jacob Rachiele
  */
 
-package timeseries.models.regression.primitive;
+package data.regression.primitive;
 
 import com.google.common.testing.EqualsTester;
 import data.DoubleFunctions;
@@ -35,16 +35,16 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.junit.Assert.assertArrayEquals;
 
-public class LinearRegressionSpec {
+public class LinearRegressionModelSpec {
 
     private double[] time = Range.inclusiveRange(1, 47, 1.0).asArray();
     private double[] response = TestData.livestock.asArray();
     private boolean hasIntercept = true;
-    private MultipleLinearRegression regression = MultipleLinearRegression.builder()
-                                                                          .predictors(time)
-                                                                          .response(response)
-                                                                          .hasIntercept(hasIntercept)
-                                                                          .build();
+    private MultipleLinearRegressionModel regression = MultipleLinearRegressionModel.builder()
+                                                                                    .predictors(time)
+                                                                                    .response(response)
+                                                                                    .hasIntercept(hasIntercept)
+                                                                                    .build();
 
     @Test
     public void whenBuiltThenDataProperlySet() {
@@ -76,8 +76,8 @@ public class LinearRegressionSpec {
 
     @Test
     public void whenSimpleRegressionNoInterceptThenBetaEstimatedCorrectly() {
-        LinearRegression regression = MultipleLinearRegression.builder().from(this.regression).hasIntercept(false)
-                                                              .build();
+        LinearRegressionModel regression = MultipleLinearRegressionModel.builder().from(this.regression).hasIntercept(false)
+                                                                        .build();
         double[] expected = {11.76188};
         assertArrayEquals(expected, regression.beta(), 1E-4);
     }
@@ -90,25 +90,25 @@ public class LinearRegressionSpec {
     @Test
     public void whenInterceptDirectlyGivenThenResultsEquivalent() {
         double[] ones = DoubleFunctions.fill(47, 1.0);
-        LinearRegression multipleRegression = MultipleLinearRegression.builder()
-                                                                      .from(this.regression)
-                                                                      .hasIntercept(false)
-                                                                      .predictors(ones, time)
-                                                                      .build();
+        LinearRegressionModel multipleRegression = MultipleLinearRegressionModel.builder()
+                                                                                .from(this.regression)
+                                                                                .hasIntercept(false)
+                                                                                .predictors(ones, time)
+                                                                                .build();
         assertThat(multipleRegression.beta(), is(this.regression.beta()));
     }
 
     @Test
     public void equalsContract() {
-        MultipleLinearRegression other = this.regression.withHasIntercept(!hasIntercept);
-        MultipleLinearRegression other2 = this.regression
+        MultipleLinearRegressionModel other = this.regression.withHasIntercept(!hasIntercept);
+        MultipleLinearRegressionModel other2 = this.regression
                 .withPredictors(Range.inclusiveRange(1961, 2007, 1.0).asArray());
-        MultipleLinearRegression other3 = this.regression.withResponse(TestData.livestock.demean().asArray());
+        MultipleLinearRegressionModel other3 = this.regression.withResponse(TestData.livestock.demean().asArray());
         new EqualsTester()
-                .addEqualityGroup(this.regression, MultipleLinearRegression.builder().from(this.regression).build())
-                .addEqualityGroup(other, MultipleLinearRegression.builder().from(other).build())
-                .addEqualityGroup(other2, MultipleLinearRegression.builder().from(other2).build())
-                .addEqualityGroup(other3, MultipleLinearRegression.builder().from(other3).build())
+                .addEqualityGroup(this.regression, MultipleLinearRegressionModel.builder().from(this.regression).build())
+                .addEqualityGroup(other, MultipleLinearRegressionModel.builder().from(other).build())
+                .addEqualityGroup(other2, MultipleLinearRegressionModel.builder().from(other2).build())
+                .addEqualityGroup(other3, MultipleLinearRegressionModel.builder().from(other3).build())
                 .testEquals();
     }
 

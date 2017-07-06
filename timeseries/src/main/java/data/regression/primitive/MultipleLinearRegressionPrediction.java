@@ -22,26 +22,37 @@
  * Jacob Rachiele
  */
 
-package timeseries.models.regression.primitive;
+package data.regression.primitive;
 
-import org.junit.Test;
-import timeseries.TestData;
-import timeseries.TimeSeries;
-import timeseries.models.regression.primitive.TimeSeriesLinearRegression.Seasonal;
 
-import static org.junit.Assert.assertArrayEquals;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import math.linear.doubles.Matrix;
+import math.linear.doubles.Vector;
 
-public class TimeSeriesLinearRegressionSpec {
+@EqualsAndHashCode @ToString
+public class MultipleLinearRegressionPrediction implements LinearRegressionPrediction{
 
-    @Test
-    public void whenTSLRFitThenBetaCorrect() {
-        TimeSeries debitcards = TestData.debitcards;
-        TimeSeriesLinearRegression.Builder tslmBuilder = TimeSeriesLinearRegression.builder()
-                                                                                   .response(debitcards)
-                                                                                   .seasonal(Seasonal.INCLUDE);
-        TimeSeriesLinearRegression regression = tslmBuilder.build();
-        double[] expected = {6568.304945, 92.552198, -344.706044, 590.510989, 367.035714, 2166.637363, 2343.239011,
-                2621.840659, 3399.442308, 1197.505495, 1310.491758, 868.631868, 5646.618132};
-        assertArrayEquals(expected, regression.beta(), 1E-6);
+    private final LinearRegressionModel model;
+    private final double[] predictedValues;
+
+    MultipleLinearRegressionPrediction(LinearRegressionModel model, double[][] newPredictors) {
+        this.model = model;
+        Matrix predictionMatrix = new Matrix(newPredictors, Matrix.Order.COLUMN_MAJOR);
+        Vector beta = Vector.from(model.beta());
+        this.predictedValues = predictionMatrix.times(beta).elements();
+    }
+
+    private double[][] copy(double[][] values) {
+        double[][] copied = new double[values.length][];
+        for (int i = 0; i < values.length; i++) {
+            copied[i] = values[i].clone();
+        }
+        return copied;
+    }
+
+    @Override
+    public double[] predictedValues() {
+        return this.predictedValues.clone();
     }
 }

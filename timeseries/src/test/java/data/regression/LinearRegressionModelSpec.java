@@ -21,7 +21,7 @@
  *
  * Jacob Rachiele
  */
-package timeseries.models.regression;
+package data.regression;
 
 import com.google.common.testing.EqualsTester;
 import data.DoubleFunctions;
@@ -40,15 +40,15 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
-public class LinearRegressionSpec {
+public class LinearRegressionModelSpec {
 
     private List<Double> time = Range.inclusiveRange(1, 47, 1.0).asList();
     private List<Double> response = TestData.livestock.asList();
     private boolean hasIntercept = true;
-    private MultipleLinearRegression regression = MultipleLinearRegression.builder()
-                                                          .predictor(time)
-                                                          .response(response)
-                                                          .build();
+    private MultipleLinearRegressionModel regression = MultipleLinearRegressionModel.builder()
+                                                                                    .predictor(time)
+                                                                                    .response(response)
+                                                                                    .build();
 
     @Test
     public void whenBuiltThenDataProperlySet() {
@@ -80,10 +80,10 @@ public class LinearRegressionSpec {
 
     @Test
     public void whenSimpleRegressionNoInterceptThenBetaEstimatedCorrectly() {
-        LinearRegression regression = MultipleLinearRegression.builder()
-                                                              .from(this.regression)
-                                                              .hasIntercept(false)
-                                                              .build();
+        LinearRegressionModel regression = MultipleLinearRegressionModel.builder()
+                                                                        .from(this.regression)
+                                                                        .hasIntercept(false)
+                                                                        .build();
         double[] expected = {11.76188};
         assertArrayEquals(expected, arrayFrom(regression.beta()), 1E-4);
     }
@@ -92,17 +92,17 @@ public class LinearRegressionSpec {
     public void whenInterceptDirectlyGivenThenResultsEquivalent() {
         List<Double> ones = listFrom(DoubleFunctions.fill(47, 1.0));
         List<List<Double>> predictors = Arrays.asList(ones, time);
-        LinearRegression multipleRegression = MultipleLinearRegression.builder()
-                                                                      .from(this.regression)
-                                                                      .hasIntercept(false)
-                                                                      .predictors(predictors)
-                                                                      .build();
+        LinearRegressionModel multipleRegression = MultipleLinearRegressionModel.builder()
+                                                                                .from(this.regression)
+                                                                                .hasIntercept(false)
+                                                                                .predictors(predictors)
+                                                                                .build();
         assertThat(multipleRegression.beta(), is(this.regression.beta()));
-        multipleRegression = MultipleLinearRegression.builder()
-                                                     .from(this.regression)
-                                                     .hasIntercept(false)
-                                                     .predictor(ones)
-                                                     .build();
+        multipleRegression = MultipleLinearRegressionModel.builder()
+                                                          .from(this.regression)
+                                                          .hasIntercept(false)
+                                                          .predictor(ones)
+                                                          .build();
         double[] actual = arrayFrom(multipleRegression.beta());
         double[] expected = arrayFrom(this.regression.beta());
         Arrays.sort(actual);
@@ -117,15 +117,16 @@ public class LinearRegressionSpec {
 
     @Test
     public void equalsContract() {
-        MultipleLinearRegression other = this.regression.withHasIntercept(!hasIntercept);
-        MultipleLinearRegression other2 = this.regression
+        MultipleLinearRegressionModel other = this.regression.withHasIntercept(!hasIntercept);
+        MultipleLinearRegressionModel other2 = this.regression
                 .withPredictor(Range.inclusiveRange(1961, 2007, 1.0).asList());
-        MultipleLinearRegression other3 = this.regression.withResponse(TestData.livestock.demean().asList());
+        MultipleLinearRegressionModel other3 = this.regression.withResponse(TestData.livestock.demean().asList());
         new EqualsTester()
-                .addEqualityGroup(this.regression, MultipleLinearRegression.builder().from(this.regression).build())
-                .addEqualityGroup(other, MultipleLinearRegression.builder().from(other).build())
-                .addEqualityGroup(other2, MultipleLinearRegression.builder().from(other2).build())
-                .addEqualityGroup(other3, MultipleLinearRegression.builder().from(other3).build())
+                .addEqualityGroup(this.regression, MultipleLinearRegressionModel.builder().from(this.regression)
+                                                                                .build())
+                .addEqualityGroup(other, MultipleLinearRegressionModel.builder().from(other).build())
+                .addEqualityGroup(other2, MultipleLinearRegressionModel.builder().from(other2).build())
+                .addEqualityGroup(other3, MultipleLinearRegressionModel.builder().from(other3).build())
                 .testEquals();
     }
 

@@ -14,7 +14,7 @@ import math.stats.distributions.*;
 import timeseries.*;
 import timeseries.models.*;
 import timeseries.models.arima.*;
-import timeseries.models.regression.*;
+import data.regression.*;
 
 import static data.DoubleFunctions.*;
 import static math.operations.Operators.*;

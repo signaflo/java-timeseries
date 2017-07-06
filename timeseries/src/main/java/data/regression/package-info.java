@@ -1,4 +1,4 @@
 /**
  * Linear regression models.
  */
-package timeseries.models.regression;
+package data.regression;

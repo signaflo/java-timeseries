@@ -24,7 +24,7 @@
 package timeseries.models.arima;
 
 import data.Range;
-import timeseries.models.regression.primitive.LinearRegression;
+import data.regression.primitive.LinearRegressionModel;
 import lombok.EqualsAndHashCode;
 import timeseries.models.arima.ArimaKalmanFilter.KalmanOutput;
 
@@ -40,7 +40,7 @@ import org.ejml.interfaces.decomposition.EigenDecomposition;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.models.Forecast;
-import timeseries.models.regression.primitive.TimeSeriesLinearRegression;
+import timeseries.models.regression.primitive.TimeSeriesLinearRegressionModel;
 import timeseries.operators.LagPolynomial;
 
 import java.text.DecimalFormat;
@@ -85,7 +85,7 @@ final class ArimaModel implements Arima {
     }
 
     private ArimaModel(final TimeSeries observations, final ArimaOrder order, final TimePeriod seasonalCycle,
-                       final FittingStrategy fittingStrategy, LinearRegression regression) {
+                       final FittingStrategy fittingStrategy, LinearRegressionModel regression) {
         this.observations = observations;
         this.order = order;
         this.fittingStrategy = fittingStrategy;
@@ -231,7 +231,7 @@ final class ArimaModel implements Arima {
         return new Matrix(matrix, Matrix.Order.COLUMN_MAJOR);
     }
 
-    private LinearRegression getLinearRegression(TimeSeries differencedSeries, Matrix designMatrix) {
+    private LinearRegressionModel getLinearRegression(TimeSeries differencedSeries, Matrix designMatrix) {
         double[][] diffedMatrix = new double[designMatrix.ncol()][];
         double[][] designMatrixTwoD = designMatrix.data2D(Matrix.Order.COLUMN_MAJOR);
         for (int i = 0; i < diffedMatrix.length; i++) {
@@ -240,10 +240,10 @@ final class ArimaModel implements Arima {
         for (int i = 0; i < diffedMatrix.length; i++) {
             diffedMatrix[i] = TimeSeries.difference(diffedMatrix[i], seasonalFrequency, order.D);
         }
-        TimeSeriesLinearRegression.Builder regressionBuilder = TimeSeriesLinearRegression.builder();
+        TimeSeriesLinearRegressionModel.Builder regressionBuilder = TimeSeriesLinearRegressionModel.builder();
         regressionBuilder.response(differencedSeries);
-        regressionBuilder.hasIntercept(TimeSeriesLinearRegression.Intercept.EXCLUDE);
-        regressionBuilder.timeTrend(TimeSeriesLinearRegression.TimeTrend.EXCLUDE);
+        regressionBuilder.hasIntercept(TimeSeriesLinearRegressionModel.Intercept.EXCLUDE);
+        regressionBuilder.timeTrend(TimeSeriesLinearRegressionModel.TimeTrend.EXCLUDE);
         regressionBuilder.externalRegressors(new Matrix(diffedMatrix, Matrix.Order.COLUMN_MAJOR));
         return regressionBuilder.build();
     }

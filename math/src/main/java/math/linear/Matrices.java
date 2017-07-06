@@ -29,7 +29,7 @@ import math.Real;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Matrices {
+class Matrices {
 
     enum MatrixOrder {
         ROW_MAJOR,
