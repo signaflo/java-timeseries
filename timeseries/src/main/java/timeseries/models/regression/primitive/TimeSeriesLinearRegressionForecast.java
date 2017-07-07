@@ -27,27 +27,37 @@ package timeseries.models.regression.primitive;
 import data.DoubleFunctions;
 import data.Range;
 import data.regression.primitive.LinearRegressionPrediction;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import math.linear.doubles.Matrix;
 import math.linear.doubles.Vector;
 
+import static timeseries.models.regression.primitive.TimeSeriesLinearRegressionModel.getSeasonalRegressors;
+
+@EqualsAndHashCode @ToString
 public class TimeSeriesLinearRegressionForecast implements LinearRegressionPrediction {
 
     private final TimeSeriesLinearRegressionModel model;
     private final double[] predictedValues;
 
-    TimeSeriesLinearRegressionForecast(TimeSeriesLinearRegressionModel model, int steps) {
+    private TimeSeriesLinearRegressionForecast(TimeSeriesLinearRegressionModel model, int steps) {
         this.model = model;
         Vector beta = Vector.from(model.beta());
         Matrix X = getPredictionMatrix(model, steps);
         this.predictedValues = X.times(beta).elements();
     }
 
+    public static TimeSeriesLinearRegressionForecast forecast(TimeSeriesLinearRegressionModel model, int steps) {
+        return new TimeSeriesLinearRegressionForecast(model, steps);
+    }
+
     private Matrix getPredictionMatrix(TimeSeriesLinearRegressionModel model, int steps) {
         int intercept = model.intercept().asInt();
         int timeTrend = model.timeTrend().asInt();
         int seasonal = model.seasonal().asInt();
+        int seasonalFrequency = model.seasonalFrequency();
+        int ncols = intercept + timeTrend + (seasonalFrequency - 1) * seasonal;
 
-        int ncols = intercept + timeTrend + (model.seasonalFrequency() - 1) * seasonal;
         double[][] designMatrix = new double[ncols][steps];
         if (model.intercept().include()) {
             designMatrix[0] = DoubleFunctions.fill(steps, 1.0);
@@ -58,30 +68,13 @@ public class TimeSeriesLinearRegressionForecast implements LinearRegressionPredi
             designMatrix[intercept] = Range.exclusiveRange(startTime, endTime).asArray();
         }
         if (model.seasonal().include()) {
-            double[][] seasonalMatrix = getSeasonalRegressors(model.seasonalFrequency(), steps);
+            int periodOffset = model.response().length % seasonalFrequency;
+            double[][] seasonalMatrix = getSeasonalRegressors(steps, seasonalFrequency, periodOffset);
             for (int i = 0; i < seasonalMatrix.length; i++) {
                 designMatrix[i + intercept + timeTrend] = seasonalMatrix[i];
             }
         }
         return new Matrix(designMatrix, Matrix.Order.COLUMN_MAJOR);
-    }
-
-    // What we are doing here is equivalent to how R handles "factors" in linear regression models.
-    private double[][] getSeasonalRegressors(int seasonalFrequency, int steps) {
-        int startTime = model.response().length % model.seasonalFrequency() + 1;
-        double[][] seasonalRegressors = new double[seasonalFrequency - 1][steps];
-        for (int i = 1; i < seasonalFrequency; i++) {
-            seasonalRegressors[i - 1] = getIthSeasonalRegressor((i - 1) + startTime, seasonalFrequency, steps);
-        }
-        return seasonalRegressors;
-    }
-
-    private double[] getIthSeasonalRegressor(int i, int seasonalFrequency, int steps) {
-        double[] regressor = new double[steps];
-        for (int j = 0; j < regressor.length && i < steps; j += seasonalFrequency) {
-            regressor[j + i] = 1.0;
-        }
-        return regressor;
     }
 
     @Override

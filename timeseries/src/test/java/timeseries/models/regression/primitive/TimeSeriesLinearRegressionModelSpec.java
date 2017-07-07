@@ -36,7 +36,7 @@ public class TimeSeriesLinearRegressionModelSpec {
 
     @Test
     public void whenTSLRFitThenBetaCorrect() {
-        TimeSeries debitcards = TestData.debitcards;
+        TimeSeries debitcards = TestData.debitcards.timeSlice(1, 156);
         TimeSeriesLinearRegressionModel.Builder tslmBuilder = TimeSeriesLinearRegressionModel.builder()
                                                                                              .response(debitcards)
                                                                                              .seasonal(Seasonal.INCLUDE);

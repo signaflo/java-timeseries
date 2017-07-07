@@ -185,6 +185,27 @@ public final class TimeSeriesLinearRegressionModel implements LinearRegressionMo
         }
     }
 
+    static double[] getIthSeasonalRegressor(int nrows, int startRow, int seasonalFrequency) {
+        double[] regressor = new double[nrows];
+        for (int j = 0; j < regressor.length - startRow; j += seasonalFrequency) {
+            regressor[j + startRow] = 1.0;
+        }
+        return regressor;
+    }
+
+    // What we are doing here is equivalent to how R handles "factors" in linear regression models.
+    static double[][] getSeasonalRegressors(int nrows, int seasonalFrequency, int periodOffset) {
+        int ncols = seasonalFrequency - 1;
+        double[][] seasonalRegressors = new double[ncols][nrows];
+        for (int i = 0; i < ncols; i++) {
+            // Apparently, the "modulus" operator in Java is not actually a modulus operator, but a remainder operator.
+            // floorMod was added in Java 8 to give results one would expect when doing modular arithmetic.
+            int startRow = Math.floorMod(i + 1 - periodOffset, seasonalFrequency);
+            seasonalRegressors[i] = getIthSeasonalRegressor(nrows, startRow, seasonalFrequency);
+        }
+        return seasonalRegressors;
+    }
+
     /**
      * A builder for a time series linear regression model.
      */
@@ -302,27 +323,12 @@ public final class TimeSeriesLinearRegressionModel implements LinearRegressionMo
             }
             if (this.seasonal.include()) {
                 int seasonalFrequency = (int) this.response.timePeriod().frequencyPer(this.seasonalCycle);
-                double[][] seasonalRegressors = getSeasonalRegressors(seasonalFrequency);
+                int periodOffset = 0;
+                double[][] seasonalRegressors = getSeasonalRegressors(this.response.size(), seasonalFrequency,
+                                                                      periodOffset);
                 this.externalRegressors(seasonalRegressors);
             }
             return new TimeSeriesLinearRegressionModel(this);
-        }
-
-        // What we are doing here is equivalent to how R handles "factors" in linear regression models.
-        private double[][] getSeasonalRegressors(int seasonalFrequency) {
-            double[][] seasonalRegressors = new double[seasonalFrequency - 1][this.response.size()];
-            for (int i = 1; i < seasonalFrequency; i++) {
-                seasonalRegressors[i - 1] = getIthSeasonalRegressor(i, seasonalFrequency);
-            }
-            return seasonalRegressors;
-        }
-
-        private double[] getIthSeasonalRegressor(int i, int seasonalFrequency) {
-            double[] regressor = new double[this.response.size()];
-            for (int j = 0; j < regressor.length; j += seasonalFrequency) {
-                regressor[j + i] = 1.0;
-            }
-            return regressor;
         }
     }
 }
