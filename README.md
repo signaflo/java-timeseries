@@ -35,24 +35,27 @@ Features
 
 Using
 ------
+Please note that this library is still in early development stages. 
+Major API changes are expected in the near future.
+
 #### Maven
 
 ```groovy
 <dependency>
     <groupId>com.github.jrachiele</groupId>
     <artifactId>timeseries</artifactId>
-    <version>0.3.0</version>
+    <version>0.3</version>
 </dependency>
 <dependency>
   <groupId>com.github.jrachiele</groupId>
   <artifactId>math</artifactId>
-  <version>0.3.0></version>
+  <version>0.3></version>
 ```
 
 #### Gradle
 ```groovy
-compile 'com.github.jrachiele:timeseries:0.3.0'
-compile 'com.github.jrachiele:math:0.3.0'
+compile 'com.github.jrachiele:timeseries:0.3'
+compile 'com.github.jrachiele:math:0.3'
 ```
 
 Credits
