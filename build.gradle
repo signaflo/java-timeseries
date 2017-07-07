@@ -40,7 +40,7 @@ subprojects {
     apply plugin: 'signing'
 
     group = "com.github.jrachiele"
-    version = "0.3"
+    version = "0.4-SNAPSHOT"
 
     sourceCompatibility = 1.8
 
