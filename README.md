@@ -19,13 +19,13 @@ Using
 <dependency>
     <groupId>com.github.jrachiele</groupId>
     <artifactId>java-timeseries</artifactId>
-    <version>0.2.1</version>
+    <version>0.3.0</version>
 </dependency>
 ```
 
 #### Gradle
 ```groovy
-compile 'com.github.jrachiele:java-timeseries:0.2.1'
+compile 'com.github.jrachiele:java-timeseries:0.3.0'
 ```
 
 Credits
