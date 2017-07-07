@@ -2,7 +2,7 @@ Java Time Series
 ===============
 Time series analysis in Java.
 
-##NOTICE##
+## NOTICE
 -------
 Major API changes have been made with release 0.3. The first and most obvious
 is that the single java-timeseries project has been split up into two
