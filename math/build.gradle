@@ -1,12 +1,12 @@
-group 'com.github.jrachiele'
-version '0.3-SNAPSHOT'
-
-apply plugin: 'java-library'
-
-sourceCompatibility = 1.8
-
-repositories {
-    jcenter()
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'com.github.jrachiele:math'
+                artifactId 'math'
+            }
+        }
+    }
 }
 
 task generateJavadoc(type: Javadoc) {

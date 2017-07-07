@@ -1,17 +1,5 @@
 apply plugin: 'java-library'
 apply plugin: 'jacoco'
-apply plugin: 'maven'
-apply plugin: 'signing'
-
-group = "com.github.jrachiele"
-version = "0.3-SNAPSHOT"
-
-ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
-
-signing {
-    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
-}
 
 compileJava {
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
@@ -19,10 +7,6 @@ compileJava {
 
 compileTestJava {
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-}
-
-repositories {
-    mavenCentral()
 }
 
 buildscript {
@@ -52,6 +36,66 @@ allprojects {
 subprojects {
     apply plugin: 'java-library'
     apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'maven'
+    apply plugin: 'signing'
+
+    group = "com.github.jrachiele"
+    version = "0.3"
+
+    sourceCompatibility = 1.8
+
+    ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+    signing {
+        required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.archives
+    }
+    repositories {
+        jcenter()
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project {
+                    packaging 'jar'
+                    // optionally artifactId can be defined here
+                    description 'Time Series Analysis in Java'
+                    url 'https://github.com/jrachiele/java-timeseries'
+
+                    scm {
+                        connection 'scm:git:git://github.com/jrachiele/java-timeseries.git'
+                        developerConnection 'scm:git:ssh://github.com/jrachiele/java-timeseries.git'
+                        url 'https://github.com/jrachiele/java-timeseries'
+                    }
+
+                    licenses {
+                        license {
+                            name 'MIT License'
+                            url 'https://opensource.org/licenses/MIT'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            name 'Jacob Rachiele'
+                            email 'jrachiele@utexas.edu'
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     shadowJar {
         configurations = [project.configurations.getByName("runtimeClasspath")]
@@ -72,50 +116,6 @@ subprojects {
         testImplementation 'junit:junit:4.12'
         testImplementation 'org.hamcrest:hamcrest-library:1.3'
         testRuntimeOnly 'org.slf4j:slf4j-nop:1.7.25'
-    }
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            pom.project {
-                name 'com.github.jrachiele:java-timeseries'
-                packaging 'jar'
-                // optionally artifactId can be defined here
-                description 'Time Series Analysis in Java'
-                url 'https://github.com/jrachiele/java-timeseries'
-
-                scm {
-                    connection 'scm:git:git://github.com/jrachiele/java-timeseries.git'
-                    developerConnection 'scm:git:ssh://github.com/jrachiele/java-timeseries.git'
-                    url 'https://github.com/jrachiele/java-timeseries'
-                }
-
-                licenses {
-                    license {
-                        name 'MIT License'
-                        url 'https://opensource.org/licenses/MIT'
-                    }
-                }
-
-                developers {
-                    developer {
-                        name 'Jacob Rachiele'
-                        email 'jrachiele@utexas.edu'
-                    }
-                }
-            }
-        }
     }
 }
 
