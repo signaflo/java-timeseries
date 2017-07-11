@@ -117,16 +117,16 @@ public class LinearRegressionModelSpec {
 
     @Test
     public void equalsContract() {
-        MultipleLinearRegressionModel other = this.regression.withHasIntercept(!hasIntercept);
-        MultipleLinearRegressionModel other2 = this.regression
+
+        MultipleLinearRegressionModel model1 = this.regression.withHasIntercept(!hasIntercept);
+        MultipleLinearRegressionModel model2 = this.regression
                 .withPredictor(Range.inclusiveRange(1961, 2007, 1.0).asList());
-        MultipleLinearRegressionModel other3 = this.regression.withResponse(TestData.livestock.demean().asList());
+        MultipleLinearRegressionModel model3 = this.regression.withResponse(TestData.livestock.demean().asList());
         new EqualsTester()
-                .addEqualityGroup(this.regression, MultipleLinearRegressionModel.builder().from(this.regression)
-                                                                                .build())
-                .addEqualityGroup(other, MultipleLinearRegressionModel.builder().from(other).build())
-                .addEqualityGroup(other2, MultipleLinearRegressionModel.builder().from(other2).build())
-                .addEqualityGroup(other3, MultipleLinearRegressionModel.builder().from(other3).build())
+                .addEqualityGroup(regression, MultipleLinearRegressionModel.builder().from(regression).build())
+                .addEqualityGroup(model1, MultipleLinearRegressionModel.builder().from(model1).build())
+                .addEqualityGroup(model2, MultipleLinearRegressionModel.builder().from(model2).build())
+                .addEqualityGroup(model3, MultipleLinearRegressionModel.builder().from(model3).build())
                 .testEquals();
     }
 

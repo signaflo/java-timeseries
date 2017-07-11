@@ -1,5 +1,4 @@
 apply plugin: 'java-library'
-apply plugin: 'jacoco'
 
 compileJava {
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
@@ -38,6 +37,7 @@ subprojects {
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'maven'
     apply plugin: 'signing'
+    apply plugin: 'jacoco'
 
     group = "com.github.jrachiele"
     version = "0.4-SNAPSHOT"

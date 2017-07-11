@@ -81,8 +81,38 @@ public class ArimaOrder {
      * @param p        the number of non-seasonal autoregressive coefficients.
      * @param d        the degree of non-seasonal differencing.
      * @param q        the number of non-seasonal moving-average coefficients.
-     * @param constant whether or not to fit a constant to the model.
-     * @param drift    whether or not to include a drift term in the model.
+     * @param constant determines whether or not a constant is fitted with the model.
+     * @return         a new ARIMA model order.
+     */
+    public static ArimaOrder order(final int p, final int d, final int q, final ArimaModel.Constant constant) {
+        return new ArimaOrder(p, d, q, 0, 0, 0, constant, ArimaModel.Drift.EXCLUDE);
+    }
+
+    /**
+     * Create and return a new non-seasonal model order with the given number of coefficients and indication of
+     * whether or not to fit a drift. A constant will be fit only if both the degree of differencing is zero
+     * and no drift term is included.
+     *
+     * @param p        the number of non-seasonal autoregressive coefficients.
+     * @param d        the degree of non-seasonal differencing.
+     * @param q        the number of non-seasonal moving-average coefficients.
+     * @param drift    determines whether or not a drift term is fitted with the model.
+     * @return         a new ARIMA model order.
+     */
+    public static ArimaOrder order(final int p, final int d, final int q, final ArimaModel.Drift drift) {
+        Arima.Constant constant = (d > 0 && drift.include())? Arima.Constant.EXCLUDE : Arima.Constant.INCLUDE;
+        return new ArimaOrder(p, d, q, 0, 0, 0, constant, drift);
+    }
+
+    /**
+     * Create and return a new non-seasonal model order with the given number of coefficients and indication of
+     * whether or not to fit a constant and/or drift term.
+     *
+     * @param p        the number of non-seasonal autoregressive coefficients.
+     * @param d        the degree of non-seasonal differencing.
+     * @param q        the number of non-seasonal moving-average coefficients.
+     * @param constant determines whether or not a constant is fitted with the model.
+     * @param drift    determines whether or not a drift term is fitted with the model.
      * @return a new ARIMA model order.
      *
      * @throws IllegalArgumentException if the degree of differencing is greater than zero
@@ -96,36 +126,6 @@ public class ArimaOrder {
                                                " than zero.");
         }
         return new ArimaOrder(p, d, q, 0, 0, 0, constant, drift);
-    }
-
-    /**
-     * Create and return a new non-seasonal model order with the given number of coefficients and indication of
-     * whether or not to fit a drift. A constant will be fit only if both the degree of differencing is zero
-     * and there is no drift term to be included.
-     *
-     * @param p        the number of non-seasonal autoregressive coefficients.
-     * @param d        the degree of non-seasonal differencing.
-     * @param q        the number of non-seasonal moving-average coefficients.
-     * @param drift    whether or not to fit a drift term to the model.
-     * @return         a new ARIMA model order.
-     */
-    public static ArimaOrder order(final int p, final int d, final int q, final ArimaModel.Drift drift) {
-        Arima.Constant constant = (d > 0 && drift.include())? Arima.Constant.EXCLUDE : Arima.Constant.INCLUDE;
-        return new ArimaOrder(p, d, q, 0, 0, 0, constant, drift);
-    }
-
-    /**
-     * Create and return a new non-seasonal model order with the given number of coefficients and indication of
-     * whether or not to fit a constant.
-     *
-     * @param p        the number of non-seasonal autoregressive coefficients.
-     * @param d        the degree of non-seasonal differencing.
-     * @param q        the number of non-seasonal moving-average coefficients.
-     * @param          constant whether or not to fit a constant to the model.
-     * @return         a new ARIMA model order.
-     */
-    public static ArimaOrder order(final int p, final int d, final int q, final ArimaModel.Constant constant) {
-        return new ArimaOrder(p, d, q, 0, 0, 0, constant, ArimaModel.Drift.EXCLUDE);
     }
 
     /**
@@ -165,7 +165,27 @@ public class ArimaOrder {
 
     /**
      * Create a new ArimaOrder using the provided number of autoregressive and moving-average parameters, as well as the
-     * degrees of differencing and indication of whether or not to fit a constant and or a drift term.
+     * degrees of differencing and indication of whether or not to fit a drift term. A constant will be included
+     * only if both d and D are equal to 0.
+     *
+     * @param p        the number of non-seasonal autoregressive coefficients.
+     * @param d        the degree of non-seasonal differencing.
+     * @param q        the number of non-seasonal moving-average coefficients.
+     * @param P        the number of seasonal autoregressive coefficients.
+     * @param D        the degree of seasonal differencing.
+     * @param Q        the number of seasonal moving-average coefficients.
+     * @param drift determines whether or not a drift term is fitted with the model.
+     * @return a new ARIMA model order.
+     */
+    public static ArimaOrder order(final int p, final int d, final int q, final int P, final int D, final int Q,
+                                   final ArimaModel.Drift drift) {
+        Arima.Constant constant = ((d + D) > 0)? Arima.Constant.EXCLUDE : Arima.Constant.INCLUDE;
+        return new ArimaOrder(p, d, q, P, D, Q, constant, drift);
+    }
+
+    /**
+     * Create a new ArimaOrder using the provided number of autoregressive and moving-average parameters, as well as the
+     * degrees of differencing and indication of whether or not to fit a constant and/or a drift term.
      *
      * @param p        the number of non-seasonal autoregressive coefficients.
      * @param d        the degree of non-seasonal differencing.
@@ -174,11 +194,11 @@ public class ArimaOrder {
      * @param D        the degree of seasonal differencing.
      * @param Q        the number of seasonal moving-average coefficients.
      * @param constant determines whether or not a constant is fitted with the model.
-     * @param drift    whether or not to fit a drift term to the model.
+     * @param drift    determines whether or not a drift term is fitted with the model.
      * @return a new ARIMA model order.
      *
      * @throws IllegalArgumentException if the degree of differencing (seasonal or non-seasonal) is greater than zero
-     *                                  and both a drift term and constant are set to be included.
+     *                                  and both a drift term and constant are included.
      */
     public static ArimaOrder order(final int p, final int d, final int q, final int P, final int D, final int Q,
                                    final ArimaModel.Constant constant, final Arima.Drift drift) {

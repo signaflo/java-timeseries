@@ -24,6 +24,7 @@
 
 package data;
 
+import com.google.common.testing.EqualsTester;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -32,8 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 
 public class RangeSpec {
@@ -174,7 +174,39 @@ public class RangeSpec {
         List<Double> expected = Arrays.asList(1.0, 2.0, 3.0);
         Range range = Range.inclusiveRange(1, 3, 1.0);
         assertThat(range.asList(), is(expected));
+    }
 
+    @Test
+    public void whenAtThenCorrectIndexChosen() {
+        Range range = Range.inclusiveRange(1, 3, 1.0);
+        assertThat(range.at(2), is(3.0));
+    }
+
+    @Test
+    public void whenSizeThenCorrectValue() {
+        Range range = Range.inclusiveRange(1, 3, 0.5);
+        assertThat(range.size(), is(5));
+        range = Range.exclusiveRange(1, 3, 0.5);
+        assertThat(range.size(), is(4));
+    }
+
+    @Test
+    public void whenStartAndEndThenCorrectValues() {
+        Range range = Range.inclusiveRange(1, 3, 0.5);
+        assertThat(range.start(), is(1.0));
+        assertThat(range.end(), is(3.0));
+    }
+
+    @Test
+    public void equalsContract() {
+        Range range1 = Range.inclusiveRange(1, 3, 1.0);
+        Range range2 = Range.inclusiveRange(1, 3, 1.0);
+        Range range3 = Range.exclusiveRange(1, 3, 1.0);
+        Range range4 = Range.exclusiveRange(1, 3, 1.0);
+        new EqualsTester()
+                .addEqualityGroup(range1, range2)
+                .addEqualityGroup(range3, range4)
+                .testEquals();
     }
 
 }
