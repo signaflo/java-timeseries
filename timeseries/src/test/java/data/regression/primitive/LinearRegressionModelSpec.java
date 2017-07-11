@@ -55,6 +55,13 @@ public class LinearRegressionModelSpec {
     }
 
     @Test
+    public void whenDesignMatrixThenCorrectDataReturned() {
+        double[] ones = DoubleFunctions.fill(response.length, 1.0);
+        double[][] expected = new double[][] {ones, time};
+        assertThat(regression.designMatrix(), is(expected));
+    }
+
+    @Test
     public void whenSimpleRegressionThenBetaEstimatedCorrectly() {
         double[] expected = {217.818827, 4.883391};
         assertArrayEquals(expected, regression.beta(), 1E-4);
