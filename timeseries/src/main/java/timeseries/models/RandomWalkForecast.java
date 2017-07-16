@@ -95,7 +95,7 @@ public final class RandomWalkForecast implements Forecast {
         for (int t = 0; t < steps; t++) {
             upperPredictionValues[t] = forecast.at(t) + criticalValue * Math.sqrt(t + 1);
         }
-        return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
+        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
     }
 
     @Override
@@ -105,7 +105,7 @@ public final class RandomWalkForecast implements Forecast {
         for (int t = 0; t < steps; t++) {
             upperPredictionValues[t] = forecast.at(t) - criticalValue * Math.sqrt(t + 1);
         }
-        return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
+        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
     }
 
     private TimeSeries getFcstErrors() {
@@ -113,7 +113,7 @@ public final class RandomWalkForecast implements Forecast {
         for (int t = 0; t < errors.length; t++) {
             errors[t] = criticalValue * Math.sqrt(t + 1);
         }
-        return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
+        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
     }
 
     @Override

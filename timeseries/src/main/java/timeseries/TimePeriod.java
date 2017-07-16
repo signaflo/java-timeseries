@@ -40,8 +40,8 @@ public final class TimePeriod {
      * Create a new time period with the given unit of time and period length.
      *
      * @param timeUnit     the unit of time underlying this time period
-     * @param periodLength the length of this time period relative to the given unit of time. Note the
-     *                     periodLength argument must be a long. Most decimal time periods can be modeled by
+     * @param periodLength the length of this time period relative to the given unit of time. Note that the
+     *                     period length must be a long. Most decimal time periods can be modeled by
      *                     converting to an appropriate time unit with a smaller order of magnitude. For example, the
      *                     {@link TimePeriod#halfMonth} constructor works by converting
      *                     15.2184375 days to 1314873 seconds.
@@ -80,7 +80,6 @@ public final class TimePeriod {
     }
 
     /**
-     * ex
      * Create and return a new TimePeriod representing one half of a decade.
      *
      * @return a new TimePeriod representing one half of a decade.
@@ -198,6 +197,11 @@ public final class TimePeriod {
         return new TimePeriod(TimeUnit.MONTH, 4);
     }
 
+    /**
+     * Create and return a new TimePeriod representing one second.
+     *
+     * @return a new TimePeriod representing one second.
+     */
     public static TimePeriod oneSecond() {
         return new TimePeriod(TimeUnit.SECOND, 1);
     }

@@ -31,7 +31,9 @@ import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.style.Styler;
+import org.knowm.xchart.style.lines.SeriesLines;
 import org.knowm.xchart.style.markers.Circle;
+import org.knowm.xchart.style.markers.SeriesMarkers;
 import timeseries.TimeSeries;
 
 import javax.swing.*;
@@ -103,6 +105,58 @@ public class Plots {
             frame.pack();
             frame.setVisible(true);
         }).start();
+    }
+
+    /**
+     * Plot the sample autocorrelations of the given time series up to the given lag.
+     *
+     * @param timeSeries the series to plot.
+     * @param k the maximum lag to include in the acf plot.
+     */
+    public final void plotAcf(TimeSeries timeSeries, final int k) {
+        final double[] acf = timeSeries.autoCorrelationUpToLag(k);
+        final double[] lags = new double[k + 1];
+        for (int i = 1; i < lags.length; i++) {
+            lags[i] = i;
+        }
+        final double upper = (-1 / timeSeries.size()) + (2 / Math.sqrt(timeSeries.size()));
+        final double lower = (-1 / timeSeries.size()) - (2 / Math.sqrt(timeSeries.size()));
+        final double[] upperLine = new double[lags.length];
+        final double[] lowerLine = new double[lags.length];
+        for (int i = 0; i < lags.length; i++) {
+            upperLine[i] = upper;
+        }
+        for (int i = 0; i < lags.length; i++) {
+            lowerLine[i] = lower;
+        }
+
+        new Thread(() -> {
+            XYChart chart = new XYChartBuilder().theme(Styler.ChartTheme.GGPlot2)
+                                                .height(800)
+                                                .width(1200)
+                                                .title("Autocorrelations By Lag")
+                                                .build();
+            XYSeries series = chart.addSeries("Autocorrelation", lags, acf);
+            XYSeries series2 = chart.addSeries("Upper Bound", lags, upperLine);
+            XYSeries series3 = chart.addSeries("Lower Bound", lags, lowerLine);
+            chart.getStyler()
+                 .setChartFontColor(Color.BLACK)
+                 .setSeriesColors(new Color[]{Color.BLACK, Color.BLUE, Color.BLUE});
+
+            series.setXYSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
+            series2.setXYSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line)
+                   .setMarker(SeriesMarkers.NONE)
+                   .setLineStyle(SeriesLines.DASH_DASH);
+            series3.setXYSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line)
+                   .setMarker(SeriesMarkers.NONE)
+                   .setLineStyle(SeriesLines.DASH_DASH);
+            JPanel panel = new XChartPanel<>(chart);
+            JFrame frame = new JFrame("Autocorrelation by Lag");
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.add(panel);
+            frame.pack();
+            frame.setVisible(true);
+        }).run();
     }
 
     /**

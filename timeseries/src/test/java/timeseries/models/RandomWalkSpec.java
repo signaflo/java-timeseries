@@ -55,7 +55,7 @@ public class RandomWalkSpec {
     @Test
     public void whenEmptyTimeSeriesThenIllegalArgumentException() {
         exception.expect(IllegalArgumentException.class);
-        new RandomWalk(new TimeSeries());
+        new RandomWalk(TimeSeries.from());
     }
 
     @Test

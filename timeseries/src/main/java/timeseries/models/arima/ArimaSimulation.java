@@ -112,7 +112,7 @@ public class ArimaSimulation {
             series[t] += poly.fit(series, t);
         }
         series = DoubleFunctions.slice(series, burnin, n + burnin);
-        return new TimeSeries(period, OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);
+        return TimeSeries.from(period, OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);
     }
 
     /**

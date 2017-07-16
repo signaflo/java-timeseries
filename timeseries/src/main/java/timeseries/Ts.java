@@ -50,7 +50,7 @@ public final class Ts {
     public static TimeSeries newAnnualSeries(final int startYear, final double... series) {
         final LocalDateTime localDateTime = LocalDateTime.of(startYear, Month.JANUARY, 1, 0, 0);
         final OffsetDateTime startingInstant = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
-        return new TimeSeries(TimePeriod.oneYear(), startingInstant, series);
+        return TimeSeries.from(TimePeriod.oneYear(), startingInstant, series);
     }
 
     /**
@@ -82,7 +82,7 @@ public final class Ts {
                 .of(startYear, startMonth, startDay, 0, 0, 0, 0, ZoneOffset.ofHours(ZONE_OFFSET));
         final TimeUnit timeUnit = TimeUnit.MONTH;
         final int periodLength = 1;
-        return new TimeSeries(new TimePeriod(timeUnit, periodLength), startingInstant, series);
+        return TimeSeries.from(new TimePeriod(timeUnit, periodLength), startingInstant, series);
     }
 
     /**
@@ -100,7 +100,7 @@ public final class Ts {
                 .of(startYear, startMonth, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0));
         final TimeUnit timeUnit = TimeUnit.QUARTER;
         final int periodLength = 1;
-        return new TimeSeries(new TimePeriod(timeUnit, periodLength), startingInstant, series);
+        return TimeSeries.from(new TimePeriod(timeUnit, periodLength), startingInstant, series);
     }
 
 }

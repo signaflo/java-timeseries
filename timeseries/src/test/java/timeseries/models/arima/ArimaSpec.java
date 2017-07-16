@@ -45,7 +45,7 @@ public class ArimaSpec {
 
     @Test
     public void whenZerosThenFittedAreZero() {
-        TimeSeries timeSeries = new TimeSeries(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        TimeSeries timeSeries = TimeSeries.from(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         double[] expected = new double[timeSeries.size()];
         ArimaOrder order = ArimaOrder.order(1, 0, 1, 0, 0, 0, Constant.INCLUDE);
         Arima arimaModel = Arima.model(timeSeries, order, ArimaModel.FittingStrategy.CSS);

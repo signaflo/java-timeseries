@@ -132,7 +132,7 @@ public final class ArimaForecast implements Forecast {
         for (int t = 0; t < steps; t++) {
             upperPredictionValues[t] = forecast.at(t) + errors[t];
         }
-        return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
+        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
     }
 
     @Override
@@ -143,7 +143,7 @@ public final class ArimaForecast implements Forecast {
         for (int t = 0; t < steps; t++) {
             lowerPredictionValues[t] = forecast.at(t) + errors[t];
         }
-        return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), lowerPredictionValues);
+        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), lowerPredictionValues);
     }
 
     private double[] getPsiCoefficients() {
@@ -180,7 +180,7 @@ public final class ArimaForecast implements Forecast {
 
     private TimeSeries getFcstErrors(final double criticalValue) {
         double[] errors = getStdErrors(criticalValue);
-        return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
+        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
     }
 
     private double[] getStdErrors(final double criticalValue) {

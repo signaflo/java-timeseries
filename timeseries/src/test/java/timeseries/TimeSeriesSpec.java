@@ -81,7 +81,7 @@ public class TimeSeriesSpec {
     public void whenBoxCoxTransformLogThenDataTransformedCorrectly() {
         double[] data = new double[]{3.0, 7.0, Math.E};
         double[] expected = new double[]{Math.log(3.0), Math.log(7.0), 1.0};
-        TimeSeries timeSeries = new TimeSeries(data);
+        TimeSeries timeSeries = TimeSeries.from(data);
         assertArrayEquals(expected, timeSeries.transform(0).asArray(), 1E-4);
     }
 
@@ -89,7 +89,7 @@ public class TimeSeriesSpec {
     public void whenBoxCoxInvTransformLogThenDataTransformedCorrectly() {
         double[] data = new double[]{Math.log(3.0), Math.log(7.0), 1.0};
         double[] expected = new double[]{3.0, 7.0, Math.E};
-        TimeSeries timeSeries = new TimeSeries(data);
+        TimeSeries timeSeries = TimeSeries.from(data);
         assertArrayEquals(expected, timeSeries.backTransform(0).asArray(), 1E-4);
     }
 
@@ -123,7 +123,7 @@ public class TimeSeriesSpec {
     @Test
     public void whenTimeSeriesMeanTakenThenResultCorrect() {
         double[] data = new double[]{3.0, 7.0, 5.0};
-        TimeSeries series = new TimeSeries(OffsetDateTime.now(), data);
+        TimeSeries series = TimeSeries.from(OffsetDateTime.now(), data);
         assertThat(series.mean(), is(equalTo(5.0)));
     }
 
@@ -136,7 +136,7 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenAutoCovarianceComputedTheResultIsCorrect() {
-        TimeSeries series = new TimeSeries(10.0, 5.0, 4.5, 7.7, 3.4, 6.9);
+        TimeSeries series = TimeSeries.from(10.0, 5.0, 4.5, 7.7, 3.4, 6.9);
         double[] acvf = new double[]{4.889, -1.837, -0.407, 1.310, -1.917, 0.406};
         for (int i = 0; i < acvf.length; i++) {
             assertThat(series.autoCovarianceAtLag(i), is(closeTo(acvf[i], 1E-2)));
@@ -145,7 +145,7 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenAutoCorrelationComputedTheResultIsCorrect() {
-        TimeSeries series = new TimeSeries(10.0, 5.0, 4.5, 7.7, 3.4, 6.9);
+        TimeSeries series = TimeSeries.from(10.0, 5.0, 4.5, 7.7, 3.4, 6.9);
         double[] acf = new double[]{1.000, -0.376, -0.083, 0.268, -0.392, 0.083};
         for (int i = 0; i < acf.length; i++) {
             assertThat(series.autoCorrelationAtLag(i), is(closeTo(acf[i], 1E-2)));
@@ -154,7 +154,7 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenAutoCovarianceComputedUpToLagKThenResultingArrayCorrect() {
-        TimeSeries series = new TimeSeries(10.0, 5.0, 4.5, 7.7, 3.4, 6.9);
+        TimeSeries series = TimeSeries.from(10.0, 5.0, 4.5, 7.7, 3.4, 6.9);
         double[] expected = new double[]{4.889, -1.837, -0.407, 1.310, -1.917, 0.406};
         double[] result = series.autoCovarianceUpToLag(9);
         assertArrayEquals(expected, result, 1E-2);
@@ -162,7 +162,7 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenAutoCorrelationComputedUpToLagKThenResultingArrayCorrect() {
-        TimeSeries series = new TimeSeries(10.0, 5.0, 4.5, 7.7, 3.4, 6.9);
+        TimeSeries series = TimeSeries.from(10.0, 5.0, 4.5, 7.7, 3.4, 6.9);
         double[] expected = new double[]{1.000, -0.376, -0.083, 0.268, -0.392, 0.083};
         double[] result = series.autoCorrelationUpToLag(5);
         assertArrayEquals(expected, result, 1E-2);
@@ -226,12 +226,12 @@ public class TimeSeriesSpec {
     @Test
     public void whenFromThenCorrectSliceOfDataReturned() {
         double[] ts = TestData.ausbeerArray;
-        TimeSeries series = new TimeSeries(TimePeriod.oneQuarter(), "1956-01-01T00:00:00", ts);
+        TimeSeries series = TimeSeries.from(TimePeriod.oneQuarter(), "1956-01-01T00:00:00", ts);
         OffsetDateTime startSlice = OffsetDateTime.parse("1956-04-01T00:00:00Z");
         OffsetDateTime endSlice = OffsetDateTime.parse("1957-01-01T00:00:00Z");
         TimeSeries expected = series.timeSlice(2, 5);
-        assertThat(series.from(startSlice, endSlice), is(expected));
-        assertThat(series.from(1, 4), is(expected));
+        assertThat(series.slice(startSlice, endSlice), is(expected));
+        assertThat(series.slice(1, 4), is(expected));
     }
 
     @Test

@@ -104,7 +104,7 @@ public final class MeanForecast implements Forecast {
         for (int t = 0; t < steps; t++) {
             upperPredictionValues[t] = forecast.at(t) + fcstStdError.at(t);
         }
-        return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
+        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
     }
 
     @Override
@@ -122,7 +122,7 @@ public final class MeanForecast implements Forecast {
         for (int t = 0; t < steps; t++) {
             lowerPredictionValues[t] = forecast.at(t) - fcstStdError.at(t);
         }
-        return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), lowerPredictionValues);
+        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), lowerPredictionValues);
     }
 
     @Override
@@ -202,7 +202,7 @@ public final class MeanForecast implements Forecast {
         for (int t = 0; t < this.forecast.size(); t++) {
             upperPredictionValues[t] = forecast.at(t) + this.fcstErrors.at(t);
         }
-        return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
+        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
     }
 
     private TimeSeries computeLowerPredictionBounds() {
@@ -210,7 +210,7 @@ public final class MeanForecast implements Forecast {
         for (int t = 0; t < this.forecast.size(); t++) {
             lowerPredictionValues[t] = forecast.at(t) - this.fcstErrors.at(t);
         }
-        return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), lowerPredictionValues);
+        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), lowerPredictionValues);
     }
 
     private TimeSeries getFcstErrors(final int steps, final double alpha) {
@@ -222,7 +222,7 @@ public final class MeanForecast implements Forecast {
         for (int t = 0; t < errors.length; t++) {
             errors[t] = criticalValue * fcstStdError;
         }
-        return new TimeSeries(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
+        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
     }
 
 }

@@ -163,13 +163,13 @@ final class ArimaModel implements Arima {
             this.modelInfo = fitCSS(differencedSeries, arSarCoeffs, maSmaCoeffs, order.npar());
             final double[] residuals = combine(
                     new double[order.d + order.D * seasonalFrequency], modelInfo.residuals);
-            this.fittedSeries = observations.minus(new TimeSeries(residuals));
+            this.fittedSeries = observations.minus(TimeSeries.from(residuals));
             this.residuals = observations.minus(this.fittedSeries);
         } else {
             double[] delta = getDelta(this.order, this.seasonalFrequency);
             this.modelInfo = fitML(armaSeries, arSarCoeffs, maSmaCoeffs, delta, order.npar());
             final double[] residuals = modelInfo.residuals;
-            this.fittedSeries = observations.minus(new TimeSeries(residuals));
+            this.fittedSeries = observations.minus(TimeSeries.from(residuals));
             this.residuals = observations.minus(this.fittedSeries);
         }
     }
@@ -197,13 +197,13 @@ final class ArimaModel implements Arima {
         if (fittingStrategy == FittingStrategy.CSS) {
             this.modelInfo = fitCSS(differencedSeries, arSarCoeffs, maSmaCoeffs, order.npar());
             final double[] residuals = combine(new double[arSarCoeffs.length], modelInfo.residuals);
-            this.fittedSeries = observations.minus(new TimeSeries(residuals));
+            this.fittedSeries = observations.minus(TimeSeries.from(residuals));
             this.residuals = observations.minus(this.fittedSeries);
         } else {
             double[] delta = getDelta(this.order, this.seasonalFrequency);
             this.modelInfo = fitML(armaSeries, arSarCoeffs, maSmaCoeffs, delta, order.npar());
             final double[] residuals = modelInfo.residuals;
-            this.fittedSeries = observations.minus(new TimeSeries(residuals));
+            this.fittedSeries = observations.minus(TimeSeries.from(residuals));
             this.residuals = observations.minus(this.fittedSeries);
         }
     }
@@ -435,7 +435,7 @@ final class ArimaModel implements Arima {
                                                      .plus(timePeriod.periodLength() *
                                                            timePeriod.timeUnit().unitLength(),
                                                            timePeriod.timeUnit().temporalUnit());
-        return new TimeSeries(timePeriod, startTime, fcst);
+        return TimeSeries.from(timePeriod, startTime, fcst);
     }
 
     @Override

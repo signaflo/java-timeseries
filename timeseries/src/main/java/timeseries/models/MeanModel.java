@@ -43,8 +43,8 @@ public final class MeanModel implements Model {
     public MeanModel(final TimeSeries observed) {
         this.timeSeries = observed;
         this.mean = this.timeSeries.mean();
-        this.fittedSeries = new TimeSeries(observed.timePeriod(), observed.observationTimes().get(0),
-                                           DoubleFunctions.fill(observed.size(), this.mean));
+        this.fittedSeries = TimeSeries.from(observed.timePeriod(), observed.observationTimes().get(0),
+                                            DoubleFunctions.fill(observed.size(), this.mean));
     }
 
     @Override
@@ -61,7 +61,7 @@ public final class MeanModel implements Model {
         final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
                                                    .plus(timePeriod.periodLength() * timePeriod.timeUnit().unitLength(),
                                                          timePeriod.timeUnit().temporalUnit());
-        return new TimeSeries(timePeriod, startTime, forecasted);
+        return TimeSeries.from(timePeriod, startTime, forecasted);
     }
 
     @Override
