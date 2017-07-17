@@ -27,7 +27,10 @@ import com.google.common.primitives.Doubles;
 import math.stats.Statistics;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Static methods for creating, manipulating, and operating on arrays of primitive doubles.
@@ -86,31 +89,34 @@ public final class DoubleFunctions {
     }
 
     /**
-     * Create a new primitive double array from the given list of data.
+     * Create a new primitive double array from the given collection of numbers.
      *
      * @param data the data to use in the new array.
-     * @return a new array from the given list of data.
+     * @return a new array from the given collection of numbers.
      */
-    public static double[] arrayFrom(List<Double> data) {
+    public static double[] arrayFrom(Collection<? extends Number> data) {
         final int size = data.size();
         final double[] doubles = new double[size];
-        for (int i = 0; i < size; i++) {
-            doubles[i] = data.get(i);
+        Iterator<? extends Number> iterator = data.iterator();
+        int i = 0;
+        while (iterator.hasNext()) {
+            doubles[i] = iterator.next().doubleValue();
+            i++;
         }
         return doubles;
     }
 
     /**
-     * Create a new primitive double array from the given boxed Double array.
+     * Create a new primitive double array from the given boxed Number array.
      *
      * @param data the data to use in the new array.
-     * @return a new array from the given boxed Double array.
+     * @return a new array from the given boxed Number array.
      */
-    public static double[] arrayFrom(Double[] data) {
+    public static double[] arrayFrom(Number[] data) {
         final int size = data.length;
         final double[] doubles = new double[size];
         for (int i = 0; i < size; i++) {
-            doubles[i] = data[i];
+            doubles[i] = data[i].doubleValue();
         }
         return doubles;
     }
