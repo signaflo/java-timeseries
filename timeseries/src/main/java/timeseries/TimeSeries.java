@@ -57,7 +57,7 @@ public final class TimeSeries implements DataSet {
     }
 
     private TimeSeries(final OffsetDateTime startTime, final double... series) {
-        this(TimePeriod.oneMonth(), startTime, series);
+        this(TimePeriod.oneYear(), startTime, series);
     }
 
     private TimeSeries(final TimePeriod timePeriod, final String startTime, final double... series) {

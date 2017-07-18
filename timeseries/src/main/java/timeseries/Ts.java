@@ -78,11 +78,9 @@ public final class Ts {
      */
     public static TimeSeries newMonthlySeries(final int startYear, final int startMonth, final int startDay,
                                               final double... series) {
-        final OffsetDateTime startingInstant = OffsetDateTime
+        final OffsetDateTime time = OffsetDateTime
                 .of(startYear, startMonth, startDay, 0, 0, 0, 0, ZoneOffset.ofHours(ZONE_OFFSET));
-        final TimeUnit timeUnit = TimeUnit.MONTH;
-        final int periodLength = 1;
-        return TimeSeries.from(new TimePeriod(timeUnit, periodLength), startingInstant, series);
+        return TimeSeries.from(TimePeriod.oneMonth(), time, series);
     }
 
     /**
