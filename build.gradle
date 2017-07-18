@@ -39,11 +39,6 @@ subprojects {
     apply plugin: 'signing'
     apply plugin: 'jacoco'
 
-    group = "com.github.jrachiele"
-    version = "0.4-SNAPSHOT"
-
-    sourceCompatibility = 1.8
-
     ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
     signing {

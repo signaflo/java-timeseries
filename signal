@@ -1,3 +1,5 @@
-jshell -c timeseries/build/libs/timeseries-0.4-SNAPSHOT-all.jar \
+VERSION=$(./gradlew properties | grep ^version: )
+VERSION_NO=$(echo ${VERSION:8:13})
+jshell -c timeseries/build/libs/timeseries-${VERSION_NO}-all.jar \
 --startup ./scripts/imports.jsh
 

@@ -5,7 +5,7 @@
 /target/
 .gradle/
 .settings/
-/gradle.properties
+/*/gradle.properties
 /.gitignore
 .idea/
 /classes/
