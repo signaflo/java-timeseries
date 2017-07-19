@@ -94,6 +94,7 @@ subprojects {
 
     shadowJar {
         configurations = [project.configurations.getByName("runtimeClasspath")]
+        archiveName = "signal.jar"
     }
 
     dependencies {
