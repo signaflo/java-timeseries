@@ -46,16 +46,11 @@ Major API changes are expected in the near future.
     <artifactId>timeseries</artifactId>
     <version>0.3</version>
 </dependency>
-<dependency>
-  <groupId>com.github.jrachiele</groupId>
-  <artifactId>math</artifactId>
-  <version>0.3></version>
 ```
 
 #### Gradle
 ```groovy
 compile 'com.github.jrachiele:timeseries:0.3'
-compile 'com.github.jrachiele:math:0.3'
 ```
 
 Credits
