@@ -60,6 +60,10 @@ public final class TimeSeries implements DataSet {
         this(TimePeriod.oneYear(), startTime, series);
     }
 
+    private TimeSeries(final TimePeriod timePeriod, final double... series) {
+        this(timePeriod, OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC), series);
+    }
+
     private TimeSeries(final TimePeriod timePeriod, final String startTime, final double... series) {
         this.dataSet = new DoubleDataSet(series);
         this.series = series.clone();
@@ -154,7 +158,20 @@ public final class TimeSeries implements DataSet {
     }
 
     /**
-     * Create a new time series using the given time period, the time of first observation, and the observation data.
+     * Create a new time series using the given time period and observation data. This constructor will set the
+     * starting observation period to Jan. 1st of year 1. It is useful for when the time period between
+     * observations matter, but the actual dates do not.
+     *
+     * @param timePeriod the period of time between observations.
+     * @param series     the observation data.
+     * @return a new time series from the supplied data.
+     */
+    public static TimeSeries from(final TimePeriod timePeriod, final double... series) {
+        return new TimeSeries(timePeriod, series);
+    }
+
+    /**
+     * Create a new time series using the given time period, the time of first observation, and observation data.
      *
      * @param timePeriod the period of time between observations.
      * @param startTime  the time at which the first observation was made. Usually a rough approximation.

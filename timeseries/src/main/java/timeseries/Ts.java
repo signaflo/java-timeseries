@@ -49,8 +49,28 @@ public final class Ts {
      */
     public static TimeSeries newAnnualSeries(final int startYear, final double... series) {
         final LocalDateTime localDateTime = LocalDateTime.of(startYear, Month.JANUARY, 1, 0, 0);
-        final OffsetDateTime startingInstant = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
-        return TimeSeries.from(TimePeriod.oneYear(), startingInstant, series);
+        final OffsetDateTime startPeriod = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
+        return TimeSeries.from(TimePeriod.oneYear(), startPeriod, series);
+    }
+
+    /**
+     * Construct a new time series with observations made annually, without regard to the observation dates.
+     *
+     * @param series the sequence of observations constituting this time series.
+     * @return a new time series with the given series data.
+     */
+    public static TimeSeries newAnnualSeries(final double... series) {;
+        return TimeSeries.from(TimePeriod.oneYear(), series);
+    }
+
+    /**
+     * Construct a new time series of monthly observations without regard to the observation dates.
+     *
+     * @param series the sequence of observations constituting this time series.
+     * @return a new time series with the given series data.
+     */
+    public static TimeSeries newMonthlySeries(final double... series) {
+        return TimeSeries.from(TimePeriod.oneMonth(), series);
     }
 
     /**
@@ -78,9 +98,19 @@ public final class Ts {
      */
     public static TimeSeries newMonthlySeries(final int startYear, final int startMonth, final int startDay,
                                               final double... series) {
-        final OffsetDateTime time = OffsetDateTime
+        final OffsetDateTime startPeriod = OffsetDateTime
                 .of(startYear, startMonth, startDay, 0, 0, 0, 0, ZoneOffset.ofHours(ZONE_OFFSET));
-        return TimeSeries.from(TimePeriod.oneMonth(), time, series);
+        return TimeSeries.from(TimePeriod.oneMonth(), startPeriod, series);
+    }
+
+    /**
+     * Construct a new time series with quarterly observations without regard to the observation dates.
+     *
+     * @param series       The sequence of observations constituting this time series.
+     * @return A new time series with the given year, quarter, and series data.
+     */
+    public static TimeSeries newQuarterlySeries(final double... series) {
+        return TimeSeries.from(TimePeriod.oneQuarter(), series);
     }
 
     /**
@@ -94,11 +124,29 @@ public final class Ts {
      */
     public static TimeSeries newQuarterlySeries(final int startYear, final int startQuarter, final double... series) {
         final int startMonth = 3 * startQuarter - 2;
-        final OffsetDateTime startingInstant = OffsetDateTime
+        final OffsetDateTime startPeriod = OffsetDateTime
                 .of(startYear, startMonth, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0));
-        final TimeUnit timeUnit = TimeUnit.QUARTER;
-        final int periodLength = 1;
-        return TimeSeries.from(new TimePeriod(timeUnit, periodLength), startingInstant, series);
+        return TimeSeries.from(TimePeriod.oneQuarter(), startPeriod, series);
+    }
+
+    public static TimeSeries newWeeklySeries(double... series) {
+        return TimeSeries.from(TimePeriod.oneWeek(), series);
+    }
+
+    /**
+     * Construct a new time series with weekly observations starting at the given year, month, and day.
+     *
+     * @param startYear  The year of the first observation.
+     * @param startMonth The month of the first observation - an integer between
+     *                   1 and 12 corresponding to the months January through December.
+     * @param startDay   The day of the first observation - an integer between 1 and 31.
+     * @param series     The sequence of observations constituting this time series.
+     * @return A new time series with the given year, month, day, and series data.
+     */
+    public static TimeSeries newWeeklySeries(int startYear, int startMonth, int startDay, double... series) {
+        final OffsetDateTime startPeriod = OffsetDateTime
+                .of(startYear, startMonth, startDay, 0, 0, 0, 0, ZoneOffset.ofHours(ZONE_OFFSET));
+        return TimeSeries.from(TimePeriod.oneWeek(), startPeriod, series);
     }
 
 }

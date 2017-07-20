@@ -104,8 +104,8 @@ subprojects {
         compileOnly 'org.projectlombok:lombok:1.16.14'
 
         implementation 'com.google.guava:guava:21.0'
-        implementation 'org.knowm.xchart:xchart:3.2.2'
         implementation 'org.ejml:all:0.30'
+        implementation 'org.knowm.xchart:xchart:3.2.2'
         implementation 'org.slf4j:slf4j-api:1.7.25'
 
         testImplementation 'com.google.guava:guava-testlib:21.0'
