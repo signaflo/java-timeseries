@@ -24,10 +24,8 @@
 
 package data.regression;
 
-import java.util.List;
-
 public interface LinearRegressionPrediction {
 
-    List<Double> predictedValues();
+    double[] predictedValues();
 
 }

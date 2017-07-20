@@ -36,7 +36,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.Temporal;
 import java.util.*;
-import java.util.List;
 
 /**
  * An immutable sequence of observations taken at regular time intervals.
@@ -50,7 +49,7 @@ public final class TimeSeries implements DataSet {
     private final double mean;
     private final double[] series;
     private final List<Temporal> observationTimes;
-    private final Map<Temporal, Integer> dateTimeIndex;
+    private final Map<Temporal, Integer> observationTimeIndex;
     private final DoubleDataSet dataSet;
 
     private TimeSeries(final double... series) {
@@ -58,6 +57,10 @@ public final class TimeSeries implements DataSet {
     }
 
     private TimeSeries(final Temporal startTime, final double... series) {
+        this(TimePeriod.oneYear(), startTime, series);
+    }
+
+    private TimeSeries(final String startTime, final double... series) {
         this(TimePeriod.oneYear(), startTime, series);
     }
 
@@ -90,7 +93,7 @@ public final class TimeSeries implements DataSet {
             dateTimeIndex.put(dateTime, i);
         }
         this.observationTimes = Collections.unmodifiableList(dateTimes);
-        this.dateTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
+        this.observationTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
     }
 
     private TimeSeries(final TimePeriod timePeriod, final Temporal startTime, final double... series) {
@@ -112,7 +115,7 @@ public final class TimeSeries implements DataSet {
             dateTimeIndex.put(dateTime, i);
         }
         this.observationTimes = Collections.unmodifiableList(dateTimes);
-        this.dateTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
+        this.observationTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
     }
 
     private TimeSeries(final TimeUnit timeUnit, final String startTime, final double... series) {
@@ -133,7 +136,7 @@ public final class TimeSeries implements DataSet {
             dateTimeIndex.put(dt, i);
             i++;
         }
-        this.dateTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
+        this.observationTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
     }
 
     /**
@@ -155,6 +158,19 @@ public final class TimeSeries implements DataSet {
      * @return a new time series from the supplied data.
      */
     public static TimeSeries from(final Temporal startTime, final double... series) {
+        return new TimeSeries(startTime, series);
+    }
+
+    /**
+     * Create a new time series using the given unit of time, the time of first observation, and the observation data.
+     *
+     * @param startTime the time at which the first observation was made. The string must represent either a valid
+     *                  {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
+     *                  UTC/Greenwich offset, i.e., an offset of 0, will be used.
+     * @param series    the observation data.
+     * @return a new time series from the supplied data.
+     */
+    public static TimeSeries from(final String startTime, final double... series) {
         return new TimeSeries(startTime, series);
     }
 
@@ -336,7 +352,7 @@ public final class TimeSeries implements DataSet {
      * @return the value of the time series at the given date and time.
      */
     public final double at(final OffsetDateTime dateTime) {
-        return this.series[dateTimeIndex.get(dateTime)];
+        return this.series[observationTimeIndex.get(dateTime)];
     }
 
     /**
@@ -590,8 +606,8 @@ public final class TimeSeries implements DataSet {
      * @return a slice of this time series from start (inclusive) to end (inclusive).
      */
     public final TimeSeries slice(final OffsetDateTime start, final OffsetDateTime end) {
-        final int startIdx = this.dateTimeIndex.get(start);
-        final int endIdx = this.dateTimeIndex.get(end);
+        final int startIdx = this.observationTimeIndex.get(start);
+        final int endIdx = this.observationTimeIndex.get(end);
         final double[] sliced = new double[endIdx - startIdx + 1];
         System.arraycopy(series, startIdx, sliced, 0, endIdx - startIdx + 1);
         final List<Temporal> obsTimes = this.observationTimes.subList(startIdx, endIdx + 1);
@@ -668,7 +684,7 @@ public final class TimeSeries implements DataSet {
      * @return the mapping of observation times to array indices for this series.
      */
     public final Map<Temporal, Integer> dateTimeIndex() {
-        return this.dateTimeIndex;
+        return this.observationTimeIndex;
     }
 
     /**

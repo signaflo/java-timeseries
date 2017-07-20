@@ -24,39 +24,35 @@
 
 package data.regression;
 
+
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import math.linear.doubles.Matrix;
 import math.linear.doubles.Vector;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static data.DoubleFunctions.arrayFrom;
-import static data.DoubleFunctions.listFrom;
-import static data.DoubleFunctions.twoDArrayFrom;
-
-public class MultipleLinearRegressionPrediction implements LinearRegressionPrediction {
+@EqualsAndHashCode @ToString
+public class MultipleLinearRegressionPrediction implements LinearRegressionPrediction{
 
     private final LinearRegressionModel model;
-    private final List<Double> predictedValues;
+    private final double[] predictedValues;
 
-    MultipleLinearRegressionPrediction(LinearRegressionModel model, List<List<Double>> newPredictors) {
+    MultipleLinearRegressionPrediction(LinearRegressionModel model, double[][] newPredictors) {
         this.model = model;
-        Matrix predictionMatrix = new Matrix(twoDArrayFrom(newPredictors), Matrix.Order.COLUMN_MAJOR);
-        Vector beta = Vector.from(arrayFrom(model.beta()));
-        this.predictedValues = listFrom(predictionMatrix.times(beta).elements());
+        Matrix predictionMatrix = new Matrix(newPredictors, Matrix.Order.COLUMN_MAJOR);
+        Vector beta = Vector.from(model.beta());
+        this.predictedValues = predictionMatrix.times(beta).elements();
     }
 
-    private double[][] copy(double[][] values) {
-        double[][] copied = new double[values.length][];
-        for (int i = 0; i < values.length; i++) {
-            copied[i] = values[i].clone();
-        }
-        return copied;
-    }
+//    private static double[][] copyTwoDArray(double[][] values) {
+//        double[][] copied = new double[values.length][];
+//        for (int i = 0; i < values.length; i++) {
+//            copied[i] = values[i].clone();
+//        }
+//        return copied;
+//    }
 
     @Override
-    public List<Double> predictedValues() {
-        return new ArrayList<>(this.predictedValues);
+    public double[] predictedValues() {
+        return this.predictedValues.clone();
     }
 }

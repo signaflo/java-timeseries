@@ -22,13 +22,11 @@
  * Jacob Rachiele
  */
 
-package timeseries.models.regression.primitive;
+package timeseries.models.regression;
 
 import org.junit.Test;
 import timeseries.TestData;
 import timeseries.TimeSeries;
-import timeseries.models.regression.primitive.TimeSeriesLinearRegressionModel;
-import timeseries.models.regression.primitive.TimeSeriesLinearRegressionModel.Seasonal;
 
 import static org.junit.Assert.assertArrayEquals;
 
@@ -39,7 +37,8 @@ public class TimeSeriesLinearRegressionModelSpec {
         TimeSeries debitcards = TestData.debitcards.timeSlice(1, 156);
         TimeSeriesLinearRegressionModel.Builder tslmBuilder = TimeSeriesLinearRegressionModel.builder()
                                                                                              .response(debitcards)
-                                                                                             .seasonal(Seasonal.INCLUDE);
+                                                                                             .seasonal(
+                                                                                                     TimeSeriesLinearRegressionModel.Seasonal.INCLUDE);
         TimeSeriesLinearRegressionModel regression = tslmBuilder.build();
         double[] expected = {6568.304945, 92.552198, -344.706044, 590.510989, 367.035714, 2166.637363, 2343.239011,
                 2621.840659, 3399.442308, 1197.505495, 1310.491758, 868.631868, 5646.618132};

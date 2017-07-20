@@ -21,6 +21,7 @@
  *
  * Jacob Rachiele
  */
+
 package data.regression;
 
 import com.google.common.testing.EqualsTester;
@@ -30,84 +31,62 @@ import math.operations.Operators;
 import timeseries.TestData;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static data.DoubleFunctions.arrayFrom;
-import static data.DoubleFunctions.listFrom;
-import static org.junit.Assert.assertArrayEquals;
-
-import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 public class LinearRegressionModelSpec {
 
-    private List<Double> time = Range.inclusiveRange(1, 47, 1.0).asList();
-    private List<Double> response = TestData.livestock.asList();
+    private double[] time = Range.inclusiveRange(1, 47, 1.0).asArray();
+    private double[] response = TestData.livestock.asArray();
     private boolean hasIntercept = true;
     private MultipleLinearRegressionModel regression = MultipleLinearRegressionModel.builder()
-                                                                                    .predictor(time)
+                                                                                    .predictors(time)
                                                                                     .response(response)
+                                                                                    .hasIntercept(hasIntercept)
                                                                                     .build();
 
     @Test
     public void whenBuiltThenDataProperlySet() {
         assertThat(regression.hasIntercept(), is(hasIntercept));
         assertThat(regression.response(), is(response));
-        assertThat(regression.predictors().get(0), is(time));
+        assertThat(regression.predictors()[0], is(time));
         assertThat(regression.beta(), is(not(nullValue())));
+    }
+
+    @Test
+    public void whenDesignMatrixThenCorrectDataReturned() {
+        double[] ones = DoubleFunctions.fill(response.length, 1.0);
+        double[][] expected = new double[][] {ones, time};
+        assertThat(regression.designMatrix(), is(expected));
     }
 
     @Test
     public void whenSimpleRegressionThenBetaEstimatedCorrectly() {
         double[] expected = {217.818827, 4.883391};
-        assertArrayEquals(expected, arrayFrom(regression.beta()), 1E-4);
+        assertArrayEquals(expected, regression.beta(), 1E-4);
     }
 
     @Test
     public void whenSimpleLinearRegressionThenStandardErrorsAccurate() {
-        double[] expected = new double[] {4.8168057, 0.1747239};
-        assertArrayEquals(expected, arrayFrom(regression.standardErrors()), 1E-4);
+        double[] expected = new double[]{4.8168057, 0.1747239};
+        assertArrayEquals(expected, regression.standardErrors(), 1E-4);
     }
 
     @Test
     public void whenSimpleRegressionThenFittedValuesCorrect() {
-        double[] fitted = arrayFrom(getFittedValues());
-        assertArrayEquals(fitted, arrayFrom(regression.fitted()), 1E-4);
-        double[] residuals = Operators.differenceOf(arrayFrom(response), fitted);
-        assertArrayEquals(residuals, arrayFrom(regression.residuals()), 1E-4);
+        double[] fitted = getFittedValues();
+        assertArrayEquals(fitted, regression.fitted(), 1E-4);
+        double[] residuals = Operators.differenceOf(response, fitted);
+        assertArrayEquals(residuals, regression.residuals(), 1E-4);
     }
 
     @Test
     public void whenSimpleRegressionNoInterceptThenBetaEstimatedCorrectly() {
-        LinearRegressionModel regression = MultipleLinearRegressionModel.builder()
-                                                                        .from(this.regression)
-                                                                        .hasIntercept(false)
+        LinearRegressionModel regression = MultipleLinearRegressionModel.builder().from(this.regression).hasIntercept(false)
                                                                         .build();
         double[] expected = {11.76188};
-        assertArrayEquals(expected, arrayFrom(regression.beta()), 1E-4);
-    }
-
-    @Test
-    public void whenInterceptDirectlyGivenThenResultsEquivalent() {
-        List<Double> ones = listFrom(DoubleFunctions.fill(47, 1.0));
-        List<List<Double>> predictors = Arrays.asList(ones, time);
-        LinearRegressionModel multipleRegression = MultipleLinearRegressionModel.builder()
-                                                                                .from(this.regression)
-                                                                                .hasIntercept(false)
-                                                                                .predictors(predictors)
-                                                                                .build();
-        assertThat(multipleRegression.beta(), is(this.regression.beta()));
-        multipleRegression = MultipleLinearRegressionModel.builder()
-                                                          .from(this.regression)
-                                                          .hasIntercept(false)
-                                                          .predictor(ones)
-                                                          .build();
-        double[] actual = arrayFrom(multipleRegression.beta());
-        double[] expected = arrayFrom(this.regression.beta());
-        Arrays.sort(actual);
-        Arrays.sort(expected);
-        assertArrayEquals(expected, actual, 1E-8);
+        assertArrayEquals(expected, regression.beta(), 1E-4);
     }
 
     @Test
@@ -116,26 +95,36 @@ public class LinearRegressionModelSpec {
     }
 
     @Test
-    public void equalsContract() {
+    public void whenInterceptDirectlyGivenThenResultsEquivalent() {
+        double[] ones = DoubleFunctions.fill(47, 1.0);
+        LinearRegressionModel multipleRegression = MultipleLinearRegressionModel.builder()
+                                                                                .from(this.regression)
+                                                                                .hasIntercept(false)
+                                                                                .predictors(ones, time)
+                                                                                .build();
+        assertThat(multipleRegression.beta(), is(this.regression.beta()));
+    }
 
-        MultipleLinearRegressionModel model1 = this.regression.withHasIntercept(!hasIntercept);
-        MultipleLinearRegressionModel model2 = this.regression
-                .withPredictor(Range.inclusiveRange(1961, 2007, 1.0).asList());
-        MultipleLinearRegressionModel model3 = this.regression.withResponse(TestData.livestock.demean().asList());
+    @Test
+    public void equalsContract() {
+        MultipleLinearRegressionModel other = this.regression.withHasIntercept(!hasIntercept);
+        MultipleLinearRegressionModel other2 = this.regression
+                .withPredictors(Range.inclusiveRange(1961, 2007, 1.0).asArray());
+        MultipleLinearRegressionModel other3 = this.regression.withResponse(TestData.livestock.demean().asArray());
         new EqualsTester()
-                .addEqualityGroup(regression, MultipleLinearRegressionModel.builder().from(regression).build())
-                .addEqualityGroup(model1, MultipleLinearRegressionModel.builder().from(model1).build())
-                .addEqualityGroup(model2, MultipleLinearRegressionModel.builder().from(model2).build())
-                .addEqualityGroup(model3, MultipleLinearRegressionModel.builder().from(model3).build())
+                .addEqualityGroup(this.regression, MultipleLinearRegressionModel.builder().from(this.regression).build())
+                .addEqualityGroup(other, MultipleLinearRegressionModel.builder().from(other).build())
+                .addEqualityGroup(other2, MultipleLinearRegressionModel.builder().from(other2).build())
+                .addEqualityGroup(other3, MultipleLinearRegressionModel.builder().from(other3).build())
                 .testEquals();
     }
 
-    private List<Double> getFittedValues() {
-        return Arrays.asList(222.702218, 227.58561, 232.469001, 237.352393, 242.235784, 247.119176, 252.002567,
-                             256.885959, 261.76935, 266.652742, 271.536133, 276.419525, 281.302916, 286.186308, 291.069699,
-                             295.953091, 300.836482, 305.719874, 310.603265, 315.486657, 320.370048, 325.25344, 330.136831,
-                             335.020223, 339.903614, 344.787006, 349.670397, 354.553788, 359.43718, 364.320571, 369.203963,
-                             374.087354, 378.970746, 383.854137, 388.737529, 393.62092, 398.504312, 403.387703, 408.271095,
-                             413.154486, 418.037878, 422.921269, 427.804661, 432.688052, 437.571444, 442.454835, 447.338227);
+    private double[] getFittedValues() {
+        return new double[]{222.702218, 227.58561, 232.469001, 237.352393, 242.235784, 247.119176, 252.002567,
+                256.885959, 261.76935, 266.652742, 271.536133, 276.419525, 281.302916, 286.186308, 291.069699,
+                295.953091, 300.836482, 305.719874, 310.603265, 315.486657, 320.370048, 325.25344, 330.136831,
+                335.020223, 339.903614, 344.787006, 349.670397, 354.553788, 359.43718, 364.320571, 369.203963,
+                374.087354, 378.970746, 383.854137, 388.737529, 393.62092, 398.504312, 403.387703, 408.271095,
+                413.154486, 418.037878, 422.921269, 427.804661, 432.688052, 437.571444, 442.454835, 447.338227};
     }
 }

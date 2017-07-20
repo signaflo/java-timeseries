@@ -24,6 +24,7 @@
 package timeseries.models;
 
 import com.google.common.primitives.Doubles;
+import math.stats.distributions.StudentsT;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -32,12 +33,11 @@ import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
 import org.knowm.xchart.style.Styler.ChartTheme;
 import org.knowm.xchart.style.markers.Circle;
 import org.knowm.xchart.style.markers.None;
-import math.stats.distributions.StudentsT;
 import timeseries.TimeSeries;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -130,8 +130,8 @@ public final class MeanForecast implements Forecast {
     public void plotForecast() {
         new Thread(() -> {
             final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
-            for (Temporal dateTime : forecast.observationTimes()) {
-                xAxis.add(Date.from(dateTime.toInstant()));
+            for (Temporal observationPeriod : forecast.observationTimes()) {
+                xAxis.add(Date.from(Instant.from(observationPeriod)));
             }
 
             List<Double> errorList = Doubles.asList(fcstErrors.asArray());
@@ -163,11 +163,11 @@ public final class MeanForecast implements Forecast {
         new Thread(() -> {
             final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
             final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().size());
-            for (OffsetDateTime dateTime : model.timeSeries().observationTimes()) {
-                xAxisObs.add(Date.from(dateTime.toInstant()));
+            for (Temporal observationPeriod : model.timeSeries().observationTimes()) {
+                xAxisObs.add(Date.from(Instant.from(observationPeriod)));
             }
-            for (OffsetDateTime dateTime : forecast.observationTimes()) {
-                xAxis.add(Date.from(dateTime.toInstant()));
+            for (Temporal observationPeriod : forecast.observationTimes()) {
+                xAxis.add(Date.from(Instant.from(observationPeriod)));
             }
 
             List<Double> errorList = Doubles.asList(fcstErrors.asArray());

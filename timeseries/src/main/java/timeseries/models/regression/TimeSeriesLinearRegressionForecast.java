@@ -22,17 +22,15 @@
  * Jacob Rachiele
  */
 
-package timeseries.models.regression.primitive;
+package timeseries.models.regression;
 
 import data.DoubleFunctions;
 import data.Range;
-import data.regression.primitive.LinearRegressionPrediction;
+import data.regression.LinearRegressionPrediction;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
 import math.linear.doubles.Vector;
-
-import static timeseries.models.regression.primitive.TimeSeriesLinearRegressionModel.getSeasonalRegressors;
 
 @EqualsAndHashCode @ToString
 public class TimeSeriesLinearRegressionForecast implements LinearRegressionPrediction {
@@ -69,7 +67,7 @@ public class TimeSeriesLinearRegressionForecast implements LinearRegressionPredi
         }
         if (model.seasonal().include()) {
             int periodOffset = model.response().length % seasonalFrequency;
-            double[][] seasonalMatrix = getSeasonalRegressors(steps, seasonalFrequency, periodOffset);
+            double[][] seasonalMatrix = TimeSeriesLinearRegressionModel.getSeasonalRegressors(steps, seasonalFrequency, periodOffset);
             for (int i = 0; i < seasonalMatrix.length; i++) {
                 designMatrix[i + intercept + timeTrend] = seasonalMatrix[i];
             }
