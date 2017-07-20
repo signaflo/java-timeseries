@@ -46,6 +46,7 @@ import timeseries.operators.LagPolynomial;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.OffsetDateTime;
+import java.time.temporal.Temporal;
 import java.util.Arrays;
 
 import static data.DoubleFunctions.combine;
@@ -430,9 +431,9 @@ final class ArimaModel implements Arima {
         final int n = observations.size();
         double[] fcst = fcst(steps);
         TimePeriod timePeriod = observations.timePeriod();
-        final OffsetDateTime startTime = observations.observationTimes()
-                                                     .get(n - 1)
-                                                     .plus(timePeriod.periodLength() *
+        final Temporal startTime = observations.observationTimes()
+                                               .get(n - 1)
+                                               .plus(timePeriod.periodLength() *
                                                            timePeriod.timeUnit().unitLength(),
                                                            timePeriod.timeUnit().temporalUnit());
         return TimeSeries.from(timePeriod, startTime, fcst);
