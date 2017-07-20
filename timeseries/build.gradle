@@ -37,6 +37,6 @@ artifacts {
 }
 
 dependencies {
-    implementation project(':math')
+    api project(':math')
     implementation 'org.apache.commons:commons-csv:1.4'
 }
