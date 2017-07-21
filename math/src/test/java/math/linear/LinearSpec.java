@@ -22,8 +22,11 @@
  * Jacob Rachiele
  */
 
-package math;
+package math.linear;
 
+import math.Rational;
+import math.Real;
+import math.linear.*;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -34,8 +37,8 @@ public class LinearSpec {
     @Test
     public void testLinear() {
         Collection<LinearTerm<Real>> realTerms1 = Arrays.asList(LinearTerm.from(1, Real.from(1.0)),
-                                                               LinearTerm.from(2, Real.from(2.0)),
-                                                               LinearTerm.from(3, Real.from(2.0)));
+                                                                LinearTerm.from(2, Real.from(2.0)),
+                                                                LinearTerm.from(3, Real.from(2.0)));
         Collection<LinearTerm<Real>> realTerms2 = Arrays.asList(LinearTerm.from(1, Real.from(1.0)),
                                                                 LinearTerm.from(2, Real.from(3.0)),
                                                                 LinearTerm.from(3, Real.from(3.0)));
@@ -65,8 +68,8 @@ public class LinearSpec {
     @Test
     public void testRationalSystem() {
         Collection<LinearTerm<Rational>> rationalTerms1 = Arrays.asList(LinearTerm.from(1, Rational.from(7, 15)),
-                                                                LinearTerm.from(2, Rational.from(6, 15)),
-                                                                LinearTerm.from(3, Rational.from(2, 15)));
+                                                                        LinearTerm.from(2, Rational.from(6, 15)),
+                                                                        LinearTerm.from(3, Rational.from(2, 15)));
         Collection<LinearTerm<Rational>> rationalTerms2 = Arrays.asList(LinearTerm.from(1, Rational.from(6, 15)),
                                                                 LinearTerm.from(2, Rational.from(4, 15)),
                                                                 LinearTerm.from(3, Rational.from(5, 15)));

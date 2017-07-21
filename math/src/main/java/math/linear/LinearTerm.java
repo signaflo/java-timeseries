@@ -22,7 +22,9 @@
  * Jacob Rachiele
  */
 
-package math;
+package math.linear;
+
+import math.FieldElement;
 
 public class LinearTerm<T extends FieldElement<T>> {
 

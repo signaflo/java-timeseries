@@ -22,7 +22,9 @@
  * Jacob Rachiele
  */
 
-package math;
+package math.linear;
+
+import math.FieldElement;
 
 import java.util.ArrayList;
 import java.util.List;
