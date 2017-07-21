@@ -216,7 +216,7 @@ final class ArimaModel implements Arima {
         if (order.drift.include()) {
             matrix[order.constant.asInt()] = Range.inclusiveRange(1, size).asArray();
         }
-        return new Matrix(matrix, Matrix.Order.COLUMN_MAJOR);
+        return Matrix.create(matrix, Matrix.StorageMode.BY_COLUMM);
     }
 
     private Matrix getForecastRegressionMatrix(int steps, ArimaOrder order) {
@@ -228,12 +228,12 @@ final class ArimaModel implements Arima {
             int startTime = this.observations.size() + 1;
             matrix[order.constant.asInt()] = Range.inclusiveRange(startTime, startTime + steps).asArray();
         }
-        return new Matrix(matrix, Matrix.Order.COLUMN_MAJOR);
+        return Matrix.create(matrix, Matrix.StorageMode.BY_COLUMM);
     }
 
     private LinearRegressionModel getLinearRegression(TimeSeries differencedSeries, Matrix designMatrix) {
         double[][] diffedMatrix = new double[designMatrix.ncol()][];
-        double[][] designMatrixTwoD = designMatrix.data2D(Matrix.Order.COLUMN_MAJOR);
+        double[][] designMatrixTwoD = designMatrix.data2D(Matrix.StorageMode.BY_COLUMM);
         for (int i = 0; i < diffedMatrix.length; i++) {
             diffedMatrix[i] = TimeSeries.difference(designMatrixTwoD[i], order.d);
         }
@@ -244,7 +244,7 @@ final class ArimaModel implements Arima {
         regressionBuilder.response(differencedSeries);
         regressionBuilder.hasIntercept(TimeSeriesLinearRegressionModel.Intercept.EXCLUDE);
         regressionBuilder.timeTrend(TimeSeriesLinearRegressionModel.TimeTrend.EXCLUDE);
-        regressionBuilder.externalRegressors(new Matrix(diffedMatrix, Matrix.Order.COLUMN_MAJOR));
+        regressionBuilder.externalRegressors(Matrix.create(diffedMatrix, Matrix.StorageMode.BY_COLUMM));
         return regressionBuilder.build();
     }
 

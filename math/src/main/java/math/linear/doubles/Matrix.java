@@ -32,8 +32,8 @@ import java.util.Arrays;
  */
 public final class Matrix {
 
-    public enum Order {
-        ROW_MAJOR, COLUMN_MAJOR
+    public enum StorageMode {
+        BY_ROW, BY_COLUMM
     }
 
     private final int nrow;
@@ -59,14 +59,6 @@ public final class Matrix {
         this.data = data.clone();
     }
 
-    public int nrow() {
-        return this.nrow;
-    }
-
-    public int ncol() {
-        return this.ncol;
-    }
-
     /**
      * Create a new matrix with the given dimensions filled with the supplied value.
      *
@@ -74,7 +66,7 @@ public final class Matrix {
      * @param ncol  the number of columns for the matrix.
      * @param value the data point to fill the matrix with.
      */
-    public Matrix(final int nrow, final int ncol, final double value) {
+    Matrix(final int nrow, final int ncol, final double value) {
         this.nrow = nrow;
         this.ncol = ncol;
         this.data = new double[nrow * ncol];
@@ -86,16 +78,16 @@ public final class Matrix {
     /**
      * Create a new matrix from the given two-dimensional array of data.
      *
-     * @param matrixData the two-dimensional array of data constituting the matrix.
-     * @param order      the storage order of the elements in the matrix data.
+     * @param matrixData  the two-dimensional array of data constituting the matrix.
+     * @param storageMode the storage mode of the elements in the matrix data.
      */
-    public Matrix(final double[][] matrixData, Order order) {
+    Matrix(final double[][] matrixData, StorageMode storageMode) {
         if (matrixData.length == 0) {
             //throw new IllegalArgumentException("The matrix data cannot be empty.");
             this.ncol = 0;
             this.nrow = 0;
             this.data = new double[0];
-        } else if (order == Order.COLUMN_MAJOR) {
+        } else if (storageMode == StorageMode.BY_COLUMM) {
             this.ncol = matrixData.length;
             this.nrow = matrixData[0].length;
             this.data = new double[ncol * nrow];
@@ -123,8 +115,40 @@ public final class Matrix {
      * @param data the data in row-major order.
      * @return a new matrix with the supplied data and dimensions.
      */
-    public static Matrix create(final int nrow, final int ncol, final double[] data) {
+    public static Matrix create(final int nrow, final int ncol, final double... data) {
         return new Matrix(nrow, ncol, data);
+    }
+
+    /**
+     * Create a new matrix with the given dimensions filled with the supplied value.
+     *
+     * @param nrow  the number of rows for the matrix.
+     * @param ncol  the number of columns for the matrix.
+     * @param value the data point to fill the matrix with.
+     * @return a new matrix with the given dimensions filled with the provided value.
+     */
+    public static Matrix fill(final int nrow, final int ncol, final double value) {
+        return new Matrix(nrow, ncol, value);
+    }
+
+    /**
+     * Create a new matrix from the given two-dimensional array of data.
+     *
+     * @param matrixData  the two-dimensional array of data constituting the matrix.
+     * @param storageMode the storage mode of the elements in the matrix data.
+     * @return a new matrix with the given data and storage mode.
+     */
+    public static Matrix create(final double[][] matrixData, StorageMode storageMode) {
+        return new Matrix(matrixData, storageMode);
+    }
+
+
+    public int nrow() {
+        return this.nrow;
+    }
+
+    public int ncol() {
+        return this.ncol;
     }
 
     /**
@@ -268,6 +292,10 @@ public final class Matrix {
         return diag;
     }
 
+    public double get(int i, int j) {
+        return this.data[i * ncol + j];
+    }
+
     /**
      * Obtain the array of data underlying this matrix in row-major order.
      *
@@ -280,11 +308,11 @@ public final class Matrix {
     /**
      * Obtain the data in this matrix as a two-dimensional array.
      *
-     * @param order the storage order of the elements in the matrix data.
+     * @param storageMode the storage mode of the elements in the matrix data.
      * @return the data in this matrix as a two-dimensional array.
      */
-    public double[][] data2D(Order order) {
-        if (order == Order.ROW_MAJOR) {
+    public double[][] data2D(StorageMode storageMode) {
+        if (storageMode == StorageMode.BY_ROW) {
             return data2DRowMajor();
         }
         return data2DColumnMajor();
@@ -312,7 +340,7 @@ public final class Matrix {
     public String toString() {
         String newLine = System.lineSeparator();
         StringBuilder representation = new StringBuilder();
-        double[][] twoD = data2D(Order.ROW_MAJOR);
+        double[][] twoD = data2D(StorageMode.BY_ROW);
         for (int i = 0; i < this.nrow; i++) {
             representation.append(Arrays.toString(twoD[i])).append(newLine);
         }

@@ -254,7 +254,7 @@ public final class TimeSeriesLinearRegressionModel implements LinearRegressionMo
          * @return this builder.
          */
         public Builder externalRegressors(@NonNull Matrix predictors) {
-            externalRegressors(predictors.data2D(Matrix.Order.COLUMN_MAJOR));
+            externalRegressors(predictors.data2D(Matrix.StorageMode.BY_COLUMM));
             return this;
         }
 
