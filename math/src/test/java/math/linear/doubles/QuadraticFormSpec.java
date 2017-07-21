@@ -43,7 +43,7 @@ public class QuadraticFormSpec {
     public void whenMultiplyThreeByThreeThenCorrectResult() {
         double[][] data = {{2.0, 8.0, 14.0}, {4.0, 10.0, 16.0}, {6.0, 12.0, 18.0}};
         a = Vector.from(1.0, 3.0, 5.0);
-        X = Matrix.create(data, Matrix.StorageMode.BY_COLUMM);
+        X = Matrix.create(data, Matrix.Order.COLUMN_MAJOR);
         Q = new QuadraticForm(a, X);
         assertThat(Q.multiply(), is(1098.0));
     }

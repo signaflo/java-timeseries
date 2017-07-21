@@ -28,6 +28,7 @@ package data.regression;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
+import math.linear.doubles.QuadraticForm;
 import math.linear.doubles.Vector;
 
 @EqualsAndHashCode @ToString
@@ -40,16 +41,15 @@ public class MultipleLinearRegressionPrediction implements LinearRegressionPredi
     MultipleLinearRegressionPrediction(MultipleLinearRegressionModel model, double[][] newPredictors) {
         this.model = model;
         this.XtXinv = model.XtXInv();
-        Matrix predictionMatrix = Matrix.create(newPredictors, Matrix.StorageMode.BY_COLUMM);
+        Matrix predictionMatrix = Matrix.create(newPredictors, Matrix.Order.COLUMN_MAJOR);
         Vector beta = Vector.from(model.beta());
         this.predictedValues = predictionMatrix.times(beta).elements();
     }
 
     double standardErrorFit(double[] newPredictor) {
-        Matrix x0 = Matrix.create(newPredictor.length, 1, newPredictor);
-        Matrix x0t = x0.transpose();
-        Matrix XtXInv = Matrix.create(this.XtXinv, Matrix.StorageMode.BY_ROW);
-        double product = x0t.times(XtXInv).times(x0).data()[0];
+        Vector x0 = Vector.from(newPredictor);
+        Matrix XtXInv = Matrix.create(this.XtXinv, Matrix.Order.ROW_MAJOR);
+        double product = new QuadraticForm(x0, XtXInv).multiply();
         return Math.sqrt(model.sigma2() * product);
 
     }

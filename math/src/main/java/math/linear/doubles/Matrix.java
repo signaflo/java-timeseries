@@ -32,13 +32,14 @@ import java.util.Arrays;
  */
 public final class Matrix {
 
-    public enum StorageMode {
-        BY_ROW, BY_COLUMM
+    public enum Order {
+        ROW_MAJOR, COLUMN_MAJOR
     }
 
     private final int nrow;
     private final int ncol;
     private final double[] data;
+    private final Order order;
 
     /**
      * Create a new matrix with the supplied data and dimensions. The data is assumed to be in row-major order.
@@ -57,6 +58,7 @@ public final class Matrix {
         this.nrow = nrow;
         this.ncol = ncol;
         this.data = data.clone();
+        this.order = Order.ROW_MAJOR;
     }
 
     /**
@@ -73,21 +75,23 @@ public final class Matrix {
         for (int i = 0; i < data.length; i++) {
             this.data[i] = value;
         }
+        this.order = Order.ROW_MAJOR;
     }
 
     /**
      * Create a new matrix from the given two-dimensional array of data.
      *
      * @param matrixData  the two-dimensional array of data constituting the matrix.
-     * @param storageMode the storage mode of the elements in the matrix data.
+     * @param order the storage order of the elements in the supplied two dimensional array.
      */
-    Matrix(final double[][] matrixData, StorageMode storageMode) {
+    Matrix(final double[][] matrixData, Order order) {
+        this.order = order;
         if (matrixData.length == 0) {
             //throw new IllegalArgumentException("The matrix data cannot be empty.");
             this.ncol = 0;
             this.nrow = 0;
             this.data = new double[0];
-        } else if (storageMode == StorageMode.BY_COLUMM) {
+        } else if (order == Order.COLUMN_MAJOR) {
             this.ncol = matrixData.length;
             this.nrow = matrixData[0].length;
             this.data = new double[ncol * nrow];
@@ -132,21 +136,54 @@ public final class Matrix {
     }
 
     /**
+     * Create a new matrix from the given two-dimensional array of data, assuming that the
+     * data is stored by row. If the data is instead stored by column, then specify that
+     * by supplying {@link Order#COLUMN_MAJOR} as the second argument to this method.
+     *
+     * @param matrixData  the two-dimensional array of data constituting the matrix.
+     * @return a new matrix with the given data.
+     */
+    public static Matrix create(final double[][] matrixData) {
+        return new Matrix(matrixData, Order.ROW_MAJOR);
+    }
+
+    /**
      * Create a new matrix from the given two-dimensional array of data.
      *
      * @param matrixData  the two-dimensional array of data constituting the matrix.
-     * @param storageMode the storage mode of the elements in the matrix data.
-     * @return a new matrix with the given data and storage mode.
+     * @param order the storage order of the elements in the matrix data.
+     * @return a new matrix with the given data and order.
      */
-    public static Matrix create(final double[][] matrixData, StorageMode storageMode) {
-        return new Matrix(matrixData, storageMode);
+    public static Matrix create(final double[][] matrixData, Order order) {
+        return new Matrix(matrixData, order);
     }
 
 
+    /**
+     * Get the element at row i, column j.
+     *
+     * @param i the element's row location.
+     * @param j the element's column location.
+     * @return the element at row i, column j.
+     */
+    public double get(int i, int j) {
+        return this.data[i * ncol + j];
+    }
+
+    /**
+     * Retrieve the number of rows of this matrix.
+     *
+     * @return the number of rows of this matrix.
+     */
     public int nrow() {
         return this.nrow;
     }
 
+    /**
+     * Retrieve the number of columns of this matrix.
+     *
+     * @return the number of columns of this matrix.
+     */
     public int ncol() {
         return this.ncol;
     }
@@ -292,10 +329,6 @@ public final class Matrix {
         return diag;
     }
 
-    public double get(int i, int j) {
-        return this.data[i * ncol + j];
-    }
-
     /**
      * Obtain the array of data underlying this matrix in row-major order.
      *
@@ -308,11 +341,23 @@ public final class Matrix {
     /**
      * Obtain the data in this matrix as a two-dimensional array.
      *
-     * @param storageMode the storage mode of the elements in the matrix data.
+     * @param order the storage order of the elements in the matrix data.
      * @return the data in this matrix as a two-dimensional array.
      */
-    public double[][] data2D(StorageMode storageMode) {
-        if (storageMode == StorageMode.BY_ROW) {
+    public double[][] data2D(Order order) {
+        if (order == Order.ROW_MAJOR) {
+            return data2DRowMajor();
+        }
+        return data2DColumnMajor();
+    }
+
+    /**
+     * Obtain the data in this matrix as a two-dimensional array.
+     *
+     * @return the data in this matrix as a two-dimensional array.
+     */
+    public double[][] data2D() {
+        if (this.order == Order.ROW_MAJOR) {
             return data2DRowMajor();
         }
         return data2DColumnMajor();
@@ -339,8 +384,8 @@ public final class Matrix {
     @Override
     public String toString() {
         String newLine = System.lineSeparator();
-        StringBuilder representation = new StringBuilder();
-        double[][] twoD = data2D(StorageMode.BY_ROW);
+        StringBuilder representation = new StringBuilder(newLine);
+        double[][] twoD = data2D(Order.ROW_MAJOR);
         for (int i = 0; i < this.nrow; i++) {
             representation.append(Arrays.toString(twoD[i])).append(newLine);
         }
