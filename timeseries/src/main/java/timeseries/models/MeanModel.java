@@ -27,7 +27,6 @@ import data.DoubleFunctions;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import java.time.OffsetDateTime;
-import java.time.temporal.Temporal;
 
 /**
  * A time series model that assumes no trend or seasonal factors are present, and that puts as much weight
@@ -59,8 +58,8 @@ public final class MeanModel implements Model {
         TimePeriod timePeriod = timeSeries.timePeriod();
 
         final double[] forecasted = DoubleFunctions.fill(steps, this.mean);
-        final Temporal startTime = timeSeries.observationTimes().get(n - 1)
-                                             .plus(timePeriod.periodLength() * timePeriod.timeUnit().unitLength(),
+        final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
+                                                   .plus(timePeriod.periodLength() * timePeriod.timeUnit().unitLength(),
                                                          timePeriod.timeUnit().temporalUnit());
         return TimeSeries.from(timePeriod, startTime, forecasted);
     }

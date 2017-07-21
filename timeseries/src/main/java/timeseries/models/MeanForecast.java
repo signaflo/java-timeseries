@@ -38,7 +38,6 @@ import timeseries.TimeSeries;
 import javax.swing.*;
 import java.awt.*;
 import java.time.OffsetDateTime;
-import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -130,7 +129,7 @@ public final class MeanForecast implements Forecast {
     public void plotForecast() {
         new Thread(() -> {
             final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
-            for (Temporal dateTime : forecast.observationTimes()) {
+            for (OffsetDateTime dateTime : forecast.observationTimes()) {
                 xAxis.add(Date.from(dateTime.toInstant()));
             }
 
