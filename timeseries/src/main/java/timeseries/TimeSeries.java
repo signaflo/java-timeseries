@@ -605,7 +605,7 @@ public final class TimeSeries implements DataSet {
      *              time series.
      * @return a slice of this time series from start (inclusive) to end (inclusive).
      */
-    public final TimeSeries slice(final Temporal start, final Temporal end) {
+    public final TimeSeries slice(final OffsetDateTime start, final OffsetDateTime end) {
         final int startIdx = this.observationTimeIndex.get(start);
         final int endIdx = this.observationTimeIndex.get(end);
         final double[] sliced = new double[endIdx - startIdx + 1];
