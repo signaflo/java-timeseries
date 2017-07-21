@@ -38,8 +38,7 @@ import timeseries.TimeSeries;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.Instant;
-import java.time.temporal.Temporal;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -86,8 +85,8 @@ public class Plots {
     public static void plot(final TimeSeries timeSeries, final String title, final String seriesName) {
         new Thread(() -> {
             final List<Date> xAxis = new ArrayList<>(timeSeries.observationTimes().size());
-            for (Temporal observationPeriod : timeSeries.observationTimes()) {
-                xAxis.add(Date.from(Instant.from(observationPeriod)));
+            for (OffsetDateTime dateTime : timeSeries.observationTimes()) {
+                xAxis.add(Date.from(dateTime.toInstant()));
             }
             List<Double> seriesList = Doubles.asList(round(timeSeries.asArray(), 2));
             final XYChart chart = new XYChartBuilder().theme(Styler.ChartTheme.GGPlot2)

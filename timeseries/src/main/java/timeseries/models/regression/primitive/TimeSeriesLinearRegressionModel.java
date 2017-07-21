@@ -22,11 +22,11 @@
  * Jacob Rachiele
  */
 
-package timeseries.models.regression;
+package timeseries.models.regression.primitive;
 
 import data.Range;
-import data.regression.LinearRegressionModel;
-import data.regression.MultipleLinearRegressionModel;
+import data.regression.primitive.LinearRegressionModel;
+import data.regression.primitive.MultipleLinearRegressionModel;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;

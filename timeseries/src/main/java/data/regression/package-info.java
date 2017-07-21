@@ -1,4 +1,4 @@
 /**
- * Linear regression models that use primitive data types.
+ * Linear regression models.
  */
 package data.regression;

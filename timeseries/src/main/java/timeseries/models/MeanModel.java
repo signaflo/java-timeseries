@@ -26,7 +26,7 @@ package timeseries.models;
 import data.DoubleFunctions;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
-
+import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
 
 /**

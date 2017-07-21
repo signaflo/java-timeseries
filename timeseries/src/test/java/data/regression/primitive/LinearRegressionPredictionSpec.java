@@ -22,12 +22,7 @@
  * Jacob Rachiele
  */
 
-package data.regression;
+package data.regression.primitive;
 
-import java.util.List;
-
-public interface LinearRegressionPrediction {
-
-    List<Double> predictedValues();
-
+public class LinearRegressionPredictionSpec {
 }

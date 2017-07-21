@@ -21,10 +21,7 @@
  *
  * Jacob Rachiele
  */
-
-package data.regression;
-
-import java.util.List;
+package data.regression.primitive;
 
 /**
  * A linear regression model.
@@ -36,42 +33,49 @@ public interface LinearRegressionModel {
      *
      * @return the prediction variables.
      */
-    List<List<Double>> predictors();
+    double[][] predictors();
+
+    /**
+     * Get the model's design matrix.
+     *
+     * @return the model's design matrix.
+     */
+    double[][] designMatrix();
 
     /**
      * Get the response variable.
      *
      * @return the response variable.
      */
-    List<Double> response();
+    double[] response();
 
     /**
      * Get the estimated coefficients.
      *
      * @return the estimated coefficients.
      */
-    List<Double> beta();
+    double[] beta();
 
     /**
      * Get the standard errors of the estimated coefficients.
      *
      * @return the standard errors of the estimated coefficients.
      */
-    List<Double> standardErrors();
+    double[] standardErrors();
 
     /**
      * Get the model fitted values.
      *
      * @return the model fitted values.
      */
-    List<Double> fitted();
+    double[] fitted();
 
     /**
      * Get the model residuals.
      *
      * @return the model residuals.
      */
-    List<Double> residuals();
+    double[] residuals();
 
     /**
      * Get the model error variance estimate.

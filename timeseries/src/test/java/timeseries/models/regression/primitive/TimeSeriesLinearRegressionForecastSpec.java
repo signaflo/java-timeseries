@@ -22,11 +22,14 @@
  * Jacob Rachiele
  */
 
-package timeseries.models.regression;
+package timeseries.models.regression.primitive;
 
 import org.junit.Test;
 import timeseries.TestData;
 import timeseries.TimeSeries;
+import timeseries.models.regression.primitive.TimeSeriesLinearRegressionModel.Seasonal;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.assertArrayEquals;
 
@@ -39,8 +42,7 @@ public class TimeSeriesLinearRegressionForecastSpec {
         TimeSeries debitcards = TestData.debitcards.timeSlice(1, 145);
         TimeSeriesLinearRegressionModel.Builder tslmBuilder = TimeSeriesLinearRegressionModel.builder()
                                                                                              .response(debitcards)
-                                                                                             .seasonal(
-                                                                                                     TimeSeriesLinearRegressionModel.Seasonal.INCLUDE);
+                                                                                             .seasonal(Seasonal.INCLUDE);
         TimeSeriesLinearRegressionModel regression = tslmBuilder.build();
         TimeSeriesLinearRegressionForecast forecast = TimeSeriesLinearRegressionForecast.forecast(regression, 13);
         assertArrayEquals(expected, forecast.predictedValues(), 1E-4);
@@ -53,8 +55,7 @@ public class TimeSeriesLinearRegressionForecastSpec {
         TimeSeries debitcards = TestData.debitcards.timeSlice(1, 156);
         TimeSeriesLinearRegressionModel.Builder tslmBuilder = TimeSeriesLinearRegressionModel.builder()
                                                                                              .response(debitcards)
-                                                                                             .seasonal(
-                                                                                                     TimeSeriesLinearRegressionModel.Seasonal.INCLUDE);
+                                                                                             .seasonal(Seasonal.INCLUDE);
         TimeSeriesLinearRegressionModel regression = tslmBuilder.build();
         TimeSeriesLinearRegressionForecast forecast = TimeSeriesLinearRegressionForecast.forecast(regression, 13);
         assertArrayEquals(expected, forecast.predictedValues(), 1E-4);
@@ -67,8 +68,7 @@ public class TimeSeriesLinearRegressionForecastSpec {
         TimeSeries debitcards = TestData.debitcards.timeSlice(1, 150);
         TimeSeriesLinearRegressionModel.Builder tslmBuilder = TimeSeriesLinearRegressionModel.builder()
                                                                                              .response(debitcards)
-                                                                                             .seasonal(
-                                                                                                     TimeSeriesLinearRegressionModel.Seasonal.INCLUDE);
+                                                                                             .seasonal(Seasonal.INCLUDE);
         TimeSeriesLinearRegressionModel regression = tslmBuilder.build();
         TimeSeriesLinearRegressionForecast forecast = TimeSeriesLinearRegressionForecast.forecast(regression, 13);
         assertArrayEquals(expected, forecast.predictedValues(), 1E-4);
