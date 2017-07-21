@@ -37,13 +37,14 @@ import math.stats.Statistics;
 import static data.DoubleFunctions.*;
 
 /**
- * A linear regression model using primitive data types, with support for both single and multiple prediction variables.
+ * X linear regression model using primitive data types, with support for both single and multiple prediction variables.
  * This implementation is immutable and thread-safe.
  */
 @EqualsAndHashCode @ToString
 public final class MultipleLinearRegressionModel implements LinearRegressionModel {
 
     private final double[][] predictors;
+    private final double[][] XtXInv;
     private final double[] response;
     private final double[] beta;
     private final double[] standardErrors;
@@ -57,6 +58,14 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
         this.response = builder.response;
         this.hasIntercept = builder.hasIntercept;
         MatrixFormulation matrixFormulation = new MatrixFormulation();
+        DenseMatrix64F XtXInv = matrixFormulation.XtXInv.copy();
+        int dim = XtXInv.getNumCols();
+        this.XtXInv = new double[dim][dim];
+        for (int i = 0; i < dim; i++) {
+            for (int j = 0; j < dim; j++) {
+                this.XtXInv[i][j] = XtXInv.get(i, j);
+            }
+        }
         this.beta = matrixFormulation.getBetaEstimates();
         this.standardErrors = matrixFormulation.getBetaStandardErrors(this.beta.length);
         this.fitted = matrixFormulation.computeFittedValues();
@@ -84,6 +93,14 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
             return copy;
         }
         return predictors();
+    }
+
+    public double[][] XtXInv() {
+        double[][] copy = new double[this.XtXInv.length][];
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] = this.XtXInv[i].clone();
+        }
+        return copy;
     }
 
     @Override
@@ -162,7 +179,7 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
     }
 
     /**
-     * A builder for a primitive multiple linear regression model.
+     * X builder for a primitive multiple linear regression model.
      */
     public static final class Builder {
 
@@ -208,9 +225,9 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
 
     private class MatrixFormulation {
 
-        private final DenseMatrix64F A; // The design matrix.
-        private final DenseMatrix64F At; // The transpose of A.
-        private final DenseMatrix64F AtAInv; // The inverse of At times A.
+        private final DenseMatrix64F X; // The design matrix.
+        private final DenseMatrix64F Xt; // The transpose of X.
+        private final DenseMatrix64F XtXInv; // The inverse of Xt times X.
         private final DenseMatrix64F b; // The parameter estimate vector.
         private final DenseMatrix64F y; // The response vector.
         private final double[] fitted;
@@ -218,13 +235,13 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
         private final double sigma2;
         private final DenseMatrix64F covarianceMatrix;
 
-        MatrixFormulation() {
+        private MatrixFormulation() {
             int numRows = response.length;
             int numCols = predictors.length + ((hasIntercept) ? 1 : 0);
-            this.A = createMatrixA(numRows, numCols);
-            this.At = new DenseMatrix64F(numCols, numRows);
-            CommonOps.transpose(A, At);
-            this.AtAInv = new DenseMatrix64F(numCols, numCols);
+            this.X = createMatrixA(numRows, numCols);
+            this.Xt = new DenseMatrix64F(numCols, numRows);
+            CommonOps.transpose(X, Xt);
+            this.XtXInv = new DenseMatrix64F(numCols, numCols);
             this.b = new DenseMatrix64F(numCols, 1);
             this.y = new DenseMatrix64F(numRows, 1);
             solveSystem(numRows, numCols);
@@ -232,13 +249,13 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
             this.residuals = computeResiduals();
             this.sigma2 = estimateSigma2(numCols);
             this.covarianceMatrix = new DenseMatrix64F(numCols, numCols);
-            CommonOps.scale(sigma2, AtAInv, covarianceMatrix);
+            CommonOps.scale(sigma2, XtXInv, covarianceMatrix);
         }
 
         private void solveSystem(int numRows, int numCols) {
             LinearSolver<DenseMatrix64F> qrSolver = LinearSolverFactory.qr(numRows, numCols);
             QRDecomposition<DenseMatrix64F> decomposition = qrSolver.getDecomposition();
-            qrSolver.setA(A);
+            qrSolver.setA(X);
             y.setData(response);
             qrSolver.solve(this.y, this.b);
             DenseMatrix64F R = decomposition.getR(null, true);
@@ -246,7 +263,7 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
             linearSolver.setA(R);
             DenseMatrix64F Rinverse = new DenseMatrix64F(numCols, numCols);
             linearSolver.invert(Rinverse); // stores solver's solution inside of Rinverse.
-            CommonOps.multOuter(Rinverse, this.AtAInv);
+            CommonOps.multOuter(Rinverse, this.XtXInv);
         }
 
         private DenseMatrix64F createMatrixA(int numRows, int numCols) {
@@ -265,7 +282,7 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
 
         private double[] computeFittedValues() {
             D1Matrix64F fitted = new DenseMatrix64F(response.length, 1);
-            MatrixVectorMult.mult(A, b, fitted);
+            MatrixVectorMult.mult(X, b, fitted);
             return fitted.getData();
         }
 

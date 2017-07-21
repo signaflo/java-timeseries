@@ -29,18 +29,31 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
 import math.linear.doubles.Vector;
+import math.stats.distributions.Distribution;
+import math.stats.distributions.StudentsT;
 
 @EqualsAndHashCode @ToString
 public class MultipleLinearRegressionPrediction implements LinearRegressionPrediction{
 
     private final LinearRegressionModel model;
+    private final double[][] XtXinv;
     private final double[] predictedValues;
 
-    MultipleLinearRegressionPrediction(LinearRegressionModel model, double[][] newPredictors) {
+    MultipleLinearRegressionPrediction(MultipleLinearRegressionModel model, double[][] newPredictors) {
         this.model = model;
+        this.XtXinv = model.XtXInv();
         Matrix predictionMatrix = new Matrix(newPredictors, Matrix.Order.COLUMN_MAJOR);
         Vector beta = Vector.from(model.beta());
         this.predictedValues = predictionMatrix.times(beta).elements();
+    }
+
+    double standardErrorFit(double[] newPredictor) {
+        Matrix x0 = Matrix.create(newPredictor.length, 1, newPredictor);
+        Matrix x0t = x0.transpose();
+        Matrix XtXInv = new Matrix(this.XtXinv, Matrix.Order.ROW_MAJOR);
+        double product = x0t.times(XtXInv).times(x0).data()[0];
+        return Math.sqrt(model.sigma2() * product);
+
     }
 
     private double[][] copy(double[][] values) {
