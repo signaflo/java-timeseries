@@ -5,8 +5,9 @@
 /target/
 .gradle/
 .settings/
-/gradle.properties
+/*/gradle.properties
 /.gitignore
 .idea/
 /classes/
 /_config.yml
+*/build/

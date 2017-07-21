@@ -2,6 +2,28 @@ Java Time Series
 ===============
 Time series analysis in Java.
 
+## IMPORTANT NOTICE
+
+Major API changes have been made with release 0.3. The first and most obvious
+is that the single java-timeseries project has been split up into two
+seperate modules -- math and timeseries. The timeseries module contains
+the time series data types, models, and forecasts. The math module
+contains much of the lower-level supporting structure and is likely to
+be of less interest to library users.
+
+The arima package has undergone a lot of refactoring and some structural
+changes. One critical change worth noting is that the arima classes now
+have the concept of a drift term, and differentiate between the mean
+and the drift in certain special cases. If clarification is needed, don't
+hesitate to create an issue for discussion.
+
+For this release, time series linear regression model and forecast classes
+have been added. However, these are unlikely to be very useful on their
+own at this time, at least for forecasting purposes. The best you can
+get out of them currently is a point forecast. For the next release,
+the time series linear regression forecast class will implement the Forecast
+interface, which will make it much more useful. 
+ 
 Features
 -------
 * Seasonal ARIMA models.
@@ -13,19 +35,22 @@ Features
 
 Using
 ------
+Please note that this library is still in early development stages. 
+Major API changes are expected in the near future.
+
 #### Maven
 
 ```groovy
 <dependency>
     <groupId>com.github.jrachiele</groupId>
-    <artifactId>java-timeseries</artifactId>
-    <version>0.2.1</version>
+    <artifactId>timeseries</artifactId>
+    <version>0.3</version>
 </dependency>
 ```
 
 #### Gradle
 ```groovy
-compile 'com.github.jrachiele:java-timeseries:0.2.1'
+compile 'com.github.jrachiele:timeseries:0.3'
 ```
 
 Credits

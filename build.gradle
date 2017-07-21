@@ -1,18 +1,4 @@
 apply plugin: 'java-library'
-apply plugin: 'jacoco'
-apply plugin: 'maven'
-apply plugin: 'signing'
-apply plugin: 'com.github.johnrengelman.shadow'
-
-group = "com.github.jrachiele"
-version = "0.3-SNAPSHOT"
-
-ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
-
-signing {
-    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
-}
 
 compileJava {
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
@@ -20,10 +6,6 @@ compileJava {
 
 compileTestJava {
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-}
-
-repositories {
-    mavenCentral()
 }
 
 buildscript {
@@ -39,10 +21,6 @@ buildscript {
   }
 }
 
-shadowJar {
-    configurations = [project.configurations.getByName("runtimeClasspath")]
-}
-
 //sourceSets {
 //    apt {
 //        java {
@@ -51,91 +29,89 @@ shadowJar {
 //    }
 //}
 
-task generateJavadoc(type: Javadoc) {
-  source = sourceSets.main.allJava // + sourceSets.apt.allJava
-  classpath = sourceSets.main.compileClasspath // + sourceSets.apt.compileClasspath
-  options.memberLevel = JavadocMemberLevel.PUBLIC
-  options {
-    links "https://docs.oracle.com/javase/8/docs/api/"
-            //"https://google.github.io/guava/releases/21.0/api/docs"
-  }
+allprojects {
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'maven'
+    apply plugin: 'signing'
+    apply plugin: 'jacoco'
 
-task javadocJar(type: Jar, dependsOn: generateJavadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
+    ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
-dependencies {
-
-    //apt 'org.immutables:value:2.4.4'
-    //compileOnly 'org.immutables:value:2.4.4:annotations'
-    compileOnly 'org.projectlombok:lombok:1.16.14'
-
-    implementation 'org.apache.commons:commons-csv:1.4'
-    implementation 'com.github.haifengl:smile-core:1.3.0'
-    implementation 'com.google.guava:guava:21.0'
-    implementation 'org.knowm.xchart:xchart:3.2.2'
-    implementation 'org.ejml:all:0.30'
-    implementation 'org.slf4j:slf4j-api:1.7.25'
-
-    testImplementation 'com.google.guava:guava-testlib:21.0'
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.hamcrest:hamcrest-library:1.3'
-    testRuntimeOnly 'org.slf4j:slf4j-nop:1.7.25'
-}
-
-uploadArchives {
+    signing {
+        required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.archives
+    }
     repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+        jcenter()
+    }
 
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
 
-            pom.project {
-                name 'com.github.jrachiele:java-timeseries'
-                packaging 'jar'
-                // optionally artifactId can be defined here
-                description 'Time Series Analysis in Java'
-                url 'https://github.com/jrachiele/java-timeseries'
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
 
-                scm {
-                    connection 'scm:git:git://github.com/jrachiele/java-timeseries.git'
-                    developerConnection 'scm:git:ssh://github.com/jrachiele/java-timeseries.git'
+                pom.project {
+                    packaging 'jar'
+                    // optionally artifactId can be defined here
+                    description 'Time Series Analysis in Java'
                     url 'https://github.com/jrachiele/java-timeseries'
-                }
 
-                licenses {
-                    license {
-                        name 'MIT License'
-                        url 'https://opensource.org/licenses/MIT'
+                    scm {
+                        connection 'scm:git:git://github.com/jrachiele/java-timeseries.git'
+                        developerConnection 'scm:git:ssh://github.com/jrachiele/java-timeseries.git'
+                        url 'https://github.com/jrachiele/java-timeseries'
                     }
-                }
 
-                developers {
-                    developer {
-                        name 'Jacob Rachiele'
-                        email 'jrachiele@utexas.edu'
+                    licenses {
+                        license {
+                            name 'MIT License'
+                            url 'https://opensource.org/licenses/MIT'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            name 'Jacob Rachiele'
+                            email 'jrachiele@utexas.edu'
+                        }
                     }
                 }
             }
         }
+    }
+
+    shadowJar {
+        configurations = [project.configurations.getByName("runtimeClasspath")]
+        archiveName = "signal.jar"
+    }
+
+    dependencies {
+
+        //apt 'org.immutables:value:2.4.4'
+        //compileOnly 'org.immutables:value:2.4.4:annotations'
+        compileOnly 'org.projectlombok:lombok:1.16.14'
+
+        implementation 'com.google.guava:guava:21.0'
+        implementation 'org.ejml:all:0.30'
+        implementation 'org.knowm.xchart:xchart:3.2.2'
+        implementation 'org.slf4j:slf4j-api:1.7.25'
+
+        testImplementation 'com.google.guava:guava-testlib:21.0'
+        testImplementation 'junit:junit:4.12'
+        testImplementation 'org.hamcrest:hamcrest-library:1.3'
+        testRuntimeOnly 'org.slf4j:slf4j-nop:1.7.25'
     }
 }
 
