@@ -22,37 +22,7 @@
  * Jacob Rachiele
  */
 
-package data.regression.primitive;
+package data.regression;
 
-
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import math.linear.doubles.Matrix;
-import math.linear.doubles.Vector;
-
-@EqualsAndHashCode @ToString
-public class MultipleLinearRegressionPrediction implements LinearRegressionPrediction{
-
-    private final LinearRegressionModel model;
-    private final double[] predictedValues;
-
-    MultipleLinearRegressionPrediction(LinearRegressionModel model, double[][] newPredictors) {
-        this.model = model;
-        Matrix predictionMatrix = new Matrix(newPredictors, Matrix.Order.COLUMN_MAJOR);
-        Vector beta = Vector.from(model.beta());
-        this.predictedValues = predictionMatrix.times(beta).elements();
-    }
-
-    private double[][] copy(double[][] values) {
-        double[][] copied = new double[values.length][];
-        for (int i = 0; i < values.length; i++) {
-            copied[i] = values[i].clone();
-        }
-        return copied;
-    }
-
-    @Override
-    public double[] predictedValues() {
-        return this.predictedValues.clone();
-    }
+public class LinearRegressionPredictionSpec {
 }

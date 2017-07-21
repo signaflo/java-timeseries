@@ -24,7 +24,7 @@
 package timeseries.models.arima;
 
 import data.Range;
-import data.regression.primitive.LinearRegressionModel;
+import data.regression.LinearRegressionModel;
 import lombok.EqualsAndHashCode;
 import timeseries.models.arima.ArimaKalmanFilter.KalmanOutput;
 
@@ -40,7 +40,7 @@ import org.ejml.interfaces.decomposition.EigenDecomposition;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.models.Forecast;
-import timeseries.models.regression.primitive.TimeSeriesLinearRegressionModel;
+import timeseries.models.regression.TimeSeriesLinearRegressionModel;
 import timeseries.operators.LagPolynomial;
 
 import java.text.DecimalFormat;
