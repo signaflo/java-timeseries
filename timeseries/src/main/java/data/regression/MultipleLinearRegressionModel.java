@@ -37,7 +37,7 @@ import math.stats.Statistics;
 import static data.DoubleFunctions.*;
 
 /**
- * X linear regression model using primitive data types, with support for both single and multiple prediction variables.
+ * A linear regression model using primitive data types, with support for multiple prediction variables.
  * This implementation is immutable and thread-safe.
  */
 @EqualsAndHashCode @ToString
@@ -58,19 +58,24 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
         this.response = builder.response;
         this.hasIntercept = builder.hasIntercept;
         MatrixFormulation matrixFormulation = new MatrixFormulation();
-        DenseMatrix64F XtXInv = matrixFormulation.XtXInv.copy();
-        int dim = XtXInv.getNumCols();
-        this.XtXInv = new double[dim][dim];
-        for (int i = 0; i < dim; i++) {
-            for (int j = 0; j < dim; j++) {
-                this.XtXInv[i][j] = XtXInv.get(i, j);
-            }
-        }
+        this.XtXInv = getXtXInverse(matrixFormulation);
         this.beta = matrixFormulation.getBetaEstimates();
         this.standardErrors = matrixFormulation.getBetaStandardErrors(this.beta.length);
         this.fitted = matrixFormulation.computeFittedValues();
         this.residuals = matrixFormulation.getResiduals();
         this.sigma2 = matrixFormulation.getSigma2();
+    }
+
+    private double[][] getXtXInverse(MatrixFormulation matrixFormulation) {
+        DenseMatrix64F XtXInvMatrix = matrixFormulation.XtXInv.copy();
+        int dim = XtXInvMatrix.getNumCols();
+        double[][] XtXInvArray = new double[dim][dim];
+        for (int i = 0; i < dim; i++) {
+            for (int j = 0; j < dim; j++) {
+                XtXInvArray[i][j] = XtXInvMatrix.get(i, j);
+            }
+        }
+        return XtXInvArray;
     }
 
     @Override
@@ -95,7 +100,7 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
         return predictors();
     }
 
-    public double[][] XtXInv() {
+    double[][] XtXInverse() {
         double[][] copy = new double[this.XtXInv.length][];
         for (int i = 0; i < copy.length; i++) {
             copy[i] = this.XtXInv[i].clone();

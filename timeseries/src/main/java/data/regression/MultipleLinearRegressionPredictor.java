@@ -25,45 +25,59 @@
 package data.regression;
 
 
+import data.DoubleFunctions;
+import data.Pair;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
 import math.linear.doubles.QuadraticForm;
 import math.linear.doubles.Vector;
+import math.stats.distributions.Distribution;
+import math.stats.distributions.StudentsT;
 
 @EqualsAndHashCode @ToString
-public class MultipleLinearRegressionPrediction implements LinearRegressionPrediction{
+public class MultipleLinearRegressionPredictor implements LinearRegressionPredictor{
 
     private final LinearRegressionModel model;
-    private final double[][] XtXinv;
-    private final double[] predictedValues;
+    private final double[][] XtXInverse;
+    private final int degreesOfFreedom;
 
-    MultipleLinearRegressionPrediction(MultipleLinearRegressionModel model, double[][] newPredictors) {
+    MultipleLinearRegressionPredictor(MultipleLinearRegressionModel model) {
         this.model = model;
-        this.XtXinv = model.XtXInv();
-        Matrix predictionMatrix = Matrix.create(newPredictors, Matrix.Order.BY_COLUMN);
-        Vector beta = Vector.from(model.beta());
-        this.predictedValues = predictionMatrix.times(beta).elements();
+        this.XtXInverse = model.XtXInverse();
+        this.degreesOfFreedom = model.response().length - model.designMatrix().length;
     }
 
-    double standardErrorFit(double[] newPredictor) {
+    double standardErrorFit(double... newPredictor) {
         Vector x0 = Vector.from(newPredictor);
-        Matrix XtXInv = Matrix.create(this.XtXinv, Matrix.Order.BY_ROW);
+        Matrix XtXInv = Matrix.create(this.XtXInverse, Matrix.Order.BY_ROW);
         double product = new QuadraticForm(x0, XtXInv).multiply();
         return Math.sqrt(model.sigma2() * product);
-
     }
 
-    private double[][] copy(double[][] values) {
-        double[][] copied = new double[values.length][];
-        for (int i = 0; i < values.length; i++) {
-            copied[i] = values[i].clone();
-        }
-        return copied;
+    Pair<Double, Double> confidenceInterval(double alpha, double... predictor) {
+        double[] newData = predictorWithIntercept(predictor);
+        Distribution T = new StudentsT(this.degreesOfFreedom);
+        double tValue = T.quantile(1 - (alpha / 2.0));
+        double predicted = predict(predictor);
+        double seFit = standardErrorFit(newData);
+        double lowerValue = predicted - tValue * seFit;
+        double upperValue = predicted + tValue * seFit;
+        return Pair.newPair(lowerValue, upperValue);
     }
 
     @Override
-    public double[] predictedValues() {
-        return this.predictedValues.clone();
+    public double predict(double... newData) {
+        double[] data = predictorWithIntercept(newData);
+        Vector predictors = Vector.from(data);
+        return predictors.dotProduct(Vector.from(model.beta()));
+    }
+
+    private double[] predictorWithIntercept(double... newData) {
+        if (model.hasIntercept()) {
+            return DoubleFunctions.push(1.0, newData);
+        } else {
+            return newData.clone();
+        }
     }
 }

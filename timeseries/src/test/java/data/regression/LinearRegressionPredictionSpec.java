@@ -24,5 +24,38 @@
 
 package data.regression;
 
+import data.Pair;
+import org.junit.Test;
+import timeseries.TestData;
+
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+
 public class LinearRegressionPredictionSpec {
+
+    double[] mtcars_mpg = TestData.mtcars_mpg.clone();
+    double[] mtcars_hp = TestData.mtcars_hp.clone();
+    double[] mtcars_wt = TestData.mtcars_wt.clone();
+    double[][] predictors = {mtcars_hp, mtcars_wt};
+    MultipleLinearRegressionModel model = MultipleLinearRegressionModel.builder()
+                                                               .response(mtcars_mpg)
+                                                               .predictors(predictors)
+                                                               .build();
+    MultipleLinearRegressionPredictor predictor = new MultipleLinearRegressionPredictor(model);
+
+    @Test
+    public void whenPredictNewDataThenValueCorrect() {
+        double[] newData = {300.0, 4.05};
+        double predicted = predictor.predict(newData);
+        double expected = 11.99017;
+        assertThat(predicted, is(closeTo(expected, 1E-4)));
+    }
+
+    @Test
+    public void whenConfidenceIntervalThenCorrectPair() {
+        double[] newData = {300.0, 4.05};
+        Pair<Double, Double> confidenceInterval = predictor.confidenceInterval(0.05, newData);
+        assertThat(confidenceInterval.first, is(closeTo(9.533121, 1E-4)));
+        assertThat(confidenceInterval.second, is(closeTo(14.44722, 1E-4)));
+    }
 }

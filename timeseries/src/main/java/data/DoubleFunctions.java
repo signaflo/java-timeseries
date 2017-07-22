@@ -88,6 +88,13 @@ public final class DoubleFunctions {
         return newArray;
     }
 
+    public static double[] push(double value, double[] original) {
+        double[] newArray = new double[original.length + 1];
+        newArray[0] = value;
+        System.arraycopy(original, 0, newArray, 1, original.length);
+        return newArray;
+    }
+
     /**
      * Create a new primitive double array from the given collection of numbers.
      *

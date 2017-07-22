@@ -1,0 +1,47 @@
+package data;
+
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+
+@EqualsAndHashCode
+public final class Pair<T extends Comparable<T>, S extends Comparable<S>>
+        implements Comparable<Pair<T, S>> {
+
+    public final T first;
+    public final S second;
+
+    static Pair<Integer, Integer> intPair(Integer first, Integer second) {
+        return new Pair<>(first, second);
+    }
+
+    public static <T extends Comparable<T>, S extends Comparable<S>> Pair<T, S> newPair(T first, S second) {
+        return new Pair<>(first, second);
+    }
+
+    private Pair(@NonNull T first, @NonNull S second) {
+        this.first = first;
+        this.second = second;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + first.toString() + ", " + second.toString() + ")";
+    }
+
+    /**
+     * Compare this pair to another pair for lexicographic ordering.
+     * The algorithm was adapted from the top answer <a target="_blank" href=
+     * "https://stackoverflow.com/questions/5292303/how-does-tuple-comparison-work-in-python">here.</a>
+     *
+     * @param otherPair the pair to compare this one to.
+     * @return an integer value satisfying the {@link Comparable#compareTo(Object)} contract.
+     */
+    @Override
+    public int compareTo(Pair<T, S> otherPair) {
+        int result = this.first.compareTo(otherPair.first);
+        if (result != 0) {
+            return result;
+        }
+        return this.second.compareTo(otherPair.second);
+    }
+}
