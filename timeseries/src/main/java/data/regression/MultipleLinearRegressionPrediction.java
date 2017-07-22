@@ -41,14 +41,14 @@ public class MultipleLinearRegressionPrediction implements LinearRegressionPredi
     MultipleLinearRegressionPrediction(MultipleLinearRegressionModel model, double[][] newPredictors) {
         this.model = model;
         this.XtXinv = model.XtXInv();
-        Matrix predictionMatrix = Matrix.create(newPredictors, Matrix.Order.COLUMN_MAJOR);
+        Matrix predictionMatrix = Matrix.create(newPredictors, Matrix.Order.BY_COLUMN);
         Vector beta = Vector.from(model.beta());
         this.predictedValues = predictionMatrix.times(beta).elements();
     }
 
     double standardErrorFit(double[] newPredictor) {
         Vector x0 = Vector.from(newPredictor);
-        Matrix XtXInv = Matrix.create(this.XtXinv, Matrix.Order.ROW_MAJOR);
+        Matrix XtXInv = Matrix.create(this.XtXinv, Matrix.Order.BY_ROW);
         double product = new QuadraticForm(x0, XtXInv).multiply();
         return Math.sqrt(model.sigma2() * product);
 

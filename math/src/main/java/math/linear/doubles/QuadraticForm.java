@@ -24,6 +24,10 @@
 
 package math.linear.doubles;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+@EqualsAndHashCode @ToString
 public class QuadraticForm {
 
     private final Vector a;

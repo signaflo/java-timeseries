@@ -32,8 +32,23 @@ import java.util.Arrays;
  */
 public final class Matrix {
 
+    /**
+     * <p>
+     *     The storage order of the two-dimensional array representation of a matrix.
+     * </p>
+     *
+     * <p>
+     *     Note that the enclosing Matrix class always stores its data internally as a one-dimensional
+     *     array in <a target="_blank" href="https://en.wikipedia.org/wiki/Row-_and_column-major_order">
+     *     row-major order</a>. However, it accepts two-dimensional arrays in constructors, returns a two-dimensional
+     *     array view of itself, and uses the two-dimensional representation in its toString method. For these reasons,
+     *     it needs to know whether the data in the two-dimensional array representation is stored row-by-row or
+     *     column-by-column. In other words, it needs to know whether the data in the outer array is to viewed
+     *     as an array of row vectors or an array of column vectors.
+     * </p>
+     */
     public enum Order {
-        ROW_MAJOR, COLUMN_MAJOR
+        BY_ROW, BY_COLUMN
     }
 
     private final int nrow;
@@ -58,7 +73,7 @@ public final class Matrix {
         this.nrow = nrow;
         this.ncol = ncol;
         this.data = data.clone();
-        this.order = Order.ROW_MAJOR;
+        this.order = Order.BY_ROW;
     }
 
     /**
@@ -75,7 +90,7 @@ public final class Matrix {
         for (int i = 0; i < data.length; i++) {
             this.data[i] = value;
         }
-        this.order = Order.ROW_MAJOR;
+        this.order = Order.BY_ROW;
     }
 
     /**
@@ -91,7 +106,7 @@ public final class Matrix {
             this.ncol = 0;
             this.nrow = 0;
             this.data = new double[0];
-        } else if (order == Order.COLUMN_MAJOR) {
+        } else if (order == Order.BY_COLUMN) {
             this.ncol = matrixData.length;
             this.nrow = matrixData[0].length;
             this.data = new double[ncol * nrow];
@@ -138,13 +153,13 @@ public final class Matrix {
     /**
      * Create a new matrix from the given two-dimensional array of data, assuming that the
      * data is stored by row. If the data is instead stored by column, then specify that
-     * by supplying {@link Order#COLUMN_MAJOR} as the second argument to this method.
+     * by supplying {@link Order#BY_COLUMN} as the second argument to this method.
      *
      * @param matrixData  the two-dimensional array of data constituting the matrix.
      * @return a new matrix with the given data.
      */
     public static Matrix create(final double[][] matrixData) {
-        return new Matrix(matrixData, Order.ROW_MAJOR);
+        return new Matrix(matrixData, Order.BY_ROW);
     }
 
     /**
@@ -306,13 +321,13 @@ public final class Matrix {
      * @return the transpose of this matrix.
      */
     public Matrix transpose() {
-        final double[] tData = new double[this.data.length];
+        final double[] transposedData = new double[this.data.length];
         for (int i = 0; i < this.nrow; i++) {
             for (int j = 0; j < this.ncol; j++) {
-                tData[i + j * this.nrow] = this.data[j + i * ncol];
+                transposedData[i + j * this.nrow] = this.data[j + i * ncol];
             }
         }
-        return new Matrix(this.ncol, this.nrow, tData);
+        return new Matrix(this.ncol, this.nrow, transposedData);
     }
 
     /**
@@ -345,7 +360,7 @@ public final class Matrix {
      * @return the data in this matrix as a two-dimensional array.
      */
     public double[][] data2D(Order order) {
-        if (order == Order.ROW_MAJOR) {
+        if (order == Order.BY_ROW) {
             return data2DRowMajor();
         }
         return data2DColumnMajor();
@@ -357,7 +372,7 @@ public final class Matrix {
      * @return the data in this matrix as a two-dimensional array.
      */
     public double[][] data2D() {
-        if (this.order == Order.ROW_MAJOR) {
+        if (this.order == Order.BY_ROW) {
             return data2DRowMajor();
         }
         return data2DColumnMajor();
@@ -385,7 +400,7 @@ public final class Matrix {
     public String toString() {
         String newLine = System.lineSeparator();
         StringBuilder representation = new StringBuilder(newLine);
-        double[][] twoD = data2D(Order.ROW_MAJOR);
+        double[][] twoD = data2D(Order.BY_ROW);
         for (int i = 0; i < this.nrow; i++) {
             representation.append(Arrays.toString(twoD[i])).append(newLine);
         }
@@ -443,6 +458,50 @@ public final class Matrix {
          * @return the builder with the value set at the given coordinates.
          */
         public IdentityBuilder set(final int i, final int j, final double value) {
+            this.data[i * n + j] = value;
+            return this;
+        }
+
+        /**
+         * Create a new matrix using the data in this builder.
+         *
+         * @return a new matrix from this builder.
+         */
+        public Matrix build() {
+            return new Matrix(n, n, data);
+        }
+    }
+
+    /**
+     * A class that allows one to start with a zero matrix, then set specific elements before creating
+     * an immutable Matrix.
+     *
+     * @author Jacob Rachiele
+     */
+    public static final class Builder {
+
+        final int n;
+        final double[] data;
+
+        /**
+         * Create a new builder with the given dimension.
+         *
+         * @param n the dimension of the matrix.
+         */
+        public Builder(final int n) {
+            this.n = n;
+            this.data = new double[n * n];
+        }
+
+        /**
+         * Set the matrix at the given coordinates to the provided value and return the builder.
+         *
+         * @param i     the row to set the value at.
+         * @param j     the column to set the value at.
+         * @param value the value to set.
+         * @return the builder with the value set at the given coordinates.
+         */
+        public Builder set(final int i, final int j, final double value) {
             this.data[i * n + j] = value;
             return this;
         }
