@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.*;
 public class QuadraticFormSpec {
 
     Vector a = Vector.from(1.0, 3.0);
-    Matrix X = Matrix.create(2, 2, 2.0, 4.0, 6.0, 8.0);
+    MatrixOneD X = MatrixOneD.create(2, 2, 2.0, 4.0, 6.0, 8.0);
     QuadraticForm Q = new QuadraticForm(a, X);
 
     @Test
@@ -43,7 +43,7 @@ public class QuadraticFormSpec {
     public void whenMultiplyThreeByThreeThenCorrectResult() {
         double[][] data = {{2.0, 8.0, 14.0}, {4.0, 10.0, 16.0}, {6.0, 12.0, 18.0}};
         a = Vector.from(1.0, 3.0, 5.0);
-        X = Matrix.create(data, Matrix.Order.BY_COLUMN);
+        X = MatrixOneD.create(data, MatrixOneD.Order.BY_COLUMN);
         Q = new QuadraticForm(a, X);
         assertThat(Q.multiply(), is(1098.0));
     }

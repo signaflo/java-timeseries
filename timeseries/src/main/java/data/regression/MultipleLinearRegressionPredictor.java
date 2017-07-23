@@ -30,12 +30,11 @@ import data.Pair;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
+import math.linear.doubles.MatrixOneD;
 import math.linear.doubles.QuadraticForm;
 import math.linear.doubles.Vector;
 import math.stats.distributions.Distribution;
 import math.stats.distributions.StudentsT;
-
-import java.util.Iterator;
 
 @EqualsAndHashCode @ToString
 public class MultipleLinearRegressionPredictor implements LinearRegressionPredictor{
@@ -46,7 +45,7 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
 
     MultipleLinearRegressionPredictor(MultipleLinearRegressionModel model) {
         this.model = model;
-        this.XtXInverse = Matrix.create(model.XtXInverse());
+        this.XtXInverse = MatrixOneD.create(model.XtXInverse());
         this.degreesOfFreedom = model.response().length - model.designMatrix().length;
     }
 
@@ -65,12 +64,11 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
     }
 
     Pair<Double, Double> confidenceInterval(double alpha, Vector predictor) {
-        Vector newData = predictorWithIntercept(predictor);
         Distribution T = new StudentsT(this.degreesOfFreedom);
         double tValue = T.quantile(1 - (alpha / 2.0));
         // send in predictor instead of newData since predict method also updates for intercept.
         double predicted = predict(predictor);
-        double seFit = standardErrorFit(newData);
+        double seFit = standardErrorFit(predictor);
         double lowerValue = predicted - tValue * seFit;
         double upperValue = predicted + tValue * seFit;
         return Pair.newPair(lowerValue, upperValue);

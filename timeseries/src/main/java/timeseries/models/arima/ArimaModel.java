@@ -26,10 +26,11 @@ package timeseries.models.arima;
 import data.Range;
 import data.regression.LinearRegressionModel;
 import lombok.EqualsAndHashCode;
+import math.linear.doubles.Matrix;
+import math.linear.doubles.MatrixOneD;
 import timeseries.models.arima.ArimaKalmanFilter.KalmanOutput;
 
 import data.DoubleFunctions;
-import math.linear.doubles.Matrix;
 import math.linear.doubles.Vector;
 import math.function.AbstractMultivariateFunction;
 import math.optim.BFGS;
@@ -93,7 +94,7 @@ final class ArimaModel implements Arima {
         this.differencedSeries = observations.difference(1, order.d).difference(seasonalFrequency, order.D);
 
         final Vector initParams;
-        final Matrix initHessian;
+        final MatrixOneD initHessian;
         ArimaParameters parameters = ArimaParameters.initializePars(order.p, order.q, order.P, order.Q);
         Matrix regressionMatrix = getRegressionMatrix(observations.size(), order);
         if (regression == null) {
@@ -216,7 +217,7 @@ final class ArimaModel implements Arima {
         if (order.drift.include()) {
             matrix[order.constant.asInt()] = Range.inclusiveRange(1, size).asArray();
         }
-        return Matrix.create(matrix, Matrix.Order.BY_COLUMN);
+        return MatrixOneD.create(matrix, MatrixOneD.Order.BY_COLUMN);
     }
 
     private Matrix getForecastRegressionMatrix(int steps, ArimaOrder order) {
@@ -228,12 +229,12 @@ final class ArimaModel implements Arima {
             int startTime = this.observations.size() + 1;
             matrix[order.constant.asInt()] = Range.inclusiveRange(startTime, startTime + steps).asArray();
         }
-        return Matrix.create(matrix, Matrix.Order.BY_COLUMN);
+        return MatrixOneD.create(matrix, MatrixOneD.Order.BY_COLUMN);
     }
 
     private LinearRegressionModel getLinearRegression(TimeSeries differencedSeries, Matrix designMatrix) {
         double[][] diffedMatrix = new double[designMatrix.ncol()][];
-        double[][] designMatrixTwoD = designMatrix.data2D(Matrix.Order.BY_COLUMN);
+        double[][] designMatrixTwoD = designMatrix.data2D(MatrixOneD.Order.BY_COLUMN);
         for (int i = 0; i < diffedMatrix.length; i++) {
             diffedMatrix[i] = TimeSeries.difference(designMatrixTwoD[i], order.d);
         }
@@ -244,7 +245,7 @@ final class ArimaModel implements Arima {
         regressionBuilder.response(differencedSeries);
         regressionBuilder.hasIntercept(TimeSeriesLinearRegressionModel.Intercept.EXCLUDE);
         regressionBuilder.timeTrend(TimeSeriesLinearRegressionModel.TimeTrend.EXCLUDE);
-        regressionBuilder.externalRegressors(Matrix.create(diffedMatrix, Matrix.Order.BY_COLUMN));
+        regressionBuilder.externalRegressors(MatrixOneD.create(diffedMatrix, MatrixOneD.Order.BY_COLUMN));
         return regressionBuilder.build();
     }
 
@@ -473,8 +474,8 @@ final class ArimaModel implements Arima {
         return integrated;
     }
 
-    private Matrix getInitialHessian(final int n) {
-        return new Matrix.IdentityBuilder(n).build();
+    private MatrixOneD getInitialHessian(final int n) {
+        return new MatrixOneD.IdentityBuilder(n).build();
 //    if (order.constant == 1) {
 //      final double meanParScale = 10 * observations.stdDeviation() / Math.sqrt(observations.n());
 //      return builder.set(n - 1, n - 1, 1.0).build();
@@ -482,9 +483,9 @@ final class ArimaModel implements Arima {
 //    return builder.build();
     }
 
-    private Matrix getInitialHessian(final ArimaModel model) {
+    private MatrixOneD getInitialHessian(final ArimaModel model) {
         double[] stdErrors = model.stdErrors;
-        Matrix.IdentityBuilder builder = new Matrix.IdentityBuilder(stdErrors.length);
+        MatrixOneD.IdentityBuilder builder = new MatrixOneD.IdentityBuilder(stdErrors.length);
         for (int i = 0; i < stdErrors.length; i++) {
             builder.set(i, i, stdErrors[i] * stdErrors[i] * observations.size());
         }

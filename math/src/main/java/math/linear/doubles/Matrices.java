@@ -24,7 +24,7 @@
 package math.linear.doubles;
 
 /**
- * Static methods for creating Matrix objects.
+ * Static methods for creating MatrixOneD objects.
  *
  * @author jrachiele
  */
@@ -39,12 +39,12 @@ public final class Matrices {
      * @param n the dimension of the identity matrix.
      * @return a new identity matrix with the given dimension.
      */
-    public static Matrix identity(final int n) {
+    public static MatrixOneD identity(final int n) {
         final double[] data = new double[n * n];
         for (int i = 0; i < n; i++) {
             data[i * n + i] = 1.0;
         }
-        return new Matrix(n, n, data);
+        return new MatrixOneD(n, n, data);
     }
 
 }

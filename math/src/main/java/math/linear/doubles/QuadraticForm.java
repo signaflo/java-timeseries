@@ -33,7 +33,7 @@ public final class QuadraticForm {
     private final Vector a;
     private final Matrix X;
 
-    public QuadraticForm(Vector a, Matrix X) {
+    public QuadraticForm(Vector a, MatrixOneD X) {
         validateArguments(a, X);
         this.a = a;
         this.X = X;
@@ -50,12 +50,12 @@ public final class QuadraticForm {
         return result;
     }
 
-    private void validateArguments(Vector a, Matrix X) {
+    private void validateArguments(Vector a, MatrixOneD X) {
         if (!X.isSquare()) {
-            throw new IllegalArgumentException("The Matrix must be square.");
+            throw new IllegalArgumentException("The MatrixOneD must be square.");
         }
         if (a.size() != X.nrow()) {
-            throw new IllegalArgumentException("The number of Matrix rows must be the same" +
+            throw new IllegalArgumentException("The number of MatrixOneD rows must be the same" +
                                                " as the size of the vector.");
         }
     }

@@ -30,6 +30,7 @@ import data.regression.LinearRegressionPrediction;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
+import math.linear.doubles.MatrixOneD;
 import math.linear.doubles.Vector;
 
 @EqualsAndHashCode @ToString
@@ -72,7 +73,7 @@ public class TimeSeriesLinearRegressionForecast implements LinearRegressionPredi
                 designMatrix[i + intercept + timeTrend] = seasonalMatrix[i];
             }
         }
-        return Matrix.create(designMatrix, Matrix.Order.BY_COLUMN);
+        return MatrixOneD.create(designMatrix, MatrixOneD.Order.BY_COLUMN);
     }
 
     @Override

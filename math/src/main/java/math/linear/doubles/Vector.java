@@ -26,7 +26,6 @@ package math.linear.doubles;
 import math.stats.Statistics;
 
 import java.util.Arrays;
-import java.util.function.DoubleFunction;
 
 /**
  * An immutable and thread-safe implementation of a real-valued vector backed by an array of primitive doubles.
@@ -173,7 +172,7 @@ public final class Vector {
                 product[i * other.elements.length + j] = elements[i] * other.elements[j];
             }
         }
-        return new Matrix(elements.length, other.elements.length, product);
+        return new MatrixOneD(elements.length, other.elements.length, product);
 
     }
 
