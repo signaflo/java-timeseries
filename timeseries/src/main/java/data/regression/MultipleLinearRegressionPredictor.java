@@ -35,30 +35,40 @@ import math.linear.doubles.Vector;
 import math.stats.distributions.Distribution;
 import math.stats.distributions.StudentsT;
 
+import java.util.Iterator;
+
 @EqualsAndHashCode @ToString
 public class MultipleLinearRegressionPredictor implements LinearRegressionPredictor{
 
     private final LinearRegressionModel model;
-    private final double[][] XtXInverse;
+    private final Matrix XtXInverse;
     private final int degreesOfFreedom;
 
     MultipleLinearRegressionPredictor(MultipleLinearRegressionModel model) {
         this.model = model;
-        this.XtXInverse = model.XtXInverse();
+        this.XtXInverse = Matrix.create(model.XtXInverse());
         this.degreesOfFreedom = model.response().length - model.designMatrix().length;
     }
 
-    double standardErrorFit(double... newPredictor) {
-        Vector x0 = Vector.from(newPredictor);
-        Matrix XtXInv = Matrix.create(this.XtXInverse, Matrix.Order.BY_ROW);
-        double product = new QuadraticForm(x0, XtXInv).multiply();
+    double standardErrorFit(Vector newPredictor) {
+        Vector predictorWithIntercept = predictorWithIntercept(newPredictor);
+        double product = QuadraticForm.multiply(predictorWithIntercept, XtXInverse);
         return Math.sqrt(model.sigma2() * product);
     }
 
-    Pair<Double, Double> confidenceInterval(double alpha, double... predictor) {
-        double[] newData = predictorWithIntercept(predictor);
+    Vector standardErrorFit(Matrix newPredictors) {
+        double[] seFit = new double[newPredictors.nrow()];
+        for (int i = 0; i < seFit.length; i++) {
+            seFit[i] = standardErrorFit(newPredictors.getRow(i));
+        }
+        return Vector.from(seFit);
+    }
+
+    Pair<Double, Double> confidenceInterval(double alpha, Vector predictor) {
+        Vector newData = predictorWithIntercept(predictor);
         Distribution T = new StudentsT(this.degreesOfFreedom);
         double tValue = T.quantile(1 - (alpha / 2.0));
+        // send in predictor instead of newData since predict method also updates for intercept.
         double predicted = predict(predictor);
         double seFit = standardErrorFit(newData);
         double lowerValue = predicted - tValue * seFit;
@@ -67,17 +77,38 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
     }
 
     @Override
-    public double predict(double... newData) {
-        double[] data = predictorWithIntercept(newData);
-        Vector predictors = Vector.from(data);
-        return predictors.dotProduct(Vector.from(model.beta()));
+    public double predict(Vector newData) {
+        Vector data = predictorWithIntercept(newData);
+        return data.dotProduct(Vector.from(model.beta()));
     }
 
-    private double[] predictorWithIntercept(double... newData) {
+    public Vector predict(Matrix newData) {
+        Vector beta = Vector.from(model.beta());
+        Matrix predictionMatrix = predictorsWithIntercept(newData);
+        return predictionMatrix.times(beta);
+    }
+
+    private Vector predictorWithIntercept(Vector newData) {
         if (model.hasIntercept()) {
-            return DoubleFunctions.push(1.0, newData);
+            return newData.push(1.0);
         } else {
-            return newData.clone();
+            return newData;
         }
     }
+
+    private Matrix predictorsWithIntercept(Matrix newData) {
+        if (model.hasIntercept()) {
+            double[] ones = DoubleFunctions.fill(newData.nrow(), 1.0);
+            return newData.push(ones, false);
+        }
+        return newData;
+    }
+
+//    private double[][] copy(double[][] values) {
+//        double[][] copied = new double[values.length][];
+//        for (int i = 0; i < values.length; i++) {
+//            copied[i] = values[i].clone();
+//        }
+//        return copied;
+//    }
 }

@@ -95,6 +95,15 @@ public final class DoubleFunctions {
         return newArray;
     }
 
+    public static double[][] push(double[] values, double[][] original) {
+        double[][] newArrays = new double[original.length + 1][];
+        newArrays[0] = values.clone();
+        for (int i = 0; i < original.length; i++) {
+            newArrays[i + 1] = original[i].clone();
+        }
+        return newArrays;
+    }
+
     /**
      * Create a new primitive double array from the given collection of numbers.
      *

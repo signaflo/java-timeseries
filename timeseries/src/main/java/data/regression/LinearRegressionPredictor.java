@@ -1,5 +1,7 @@
 package data.regression;
 
+import math.linear.doubles.Vector;
+
 /**
  * [Insert class description]
  *
@@ -8,5 +10,5 @@ package data.regression;
  */
 public interface LinearRegressionPredictor {
 
-    double predict(double[] newData);
+    double predict(Vector newData);
 }

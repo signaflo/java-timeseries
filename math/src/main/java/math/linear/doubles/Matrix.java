@@ -24,6 +24,7 @@
 package math.linear.doubles;
 
 import java.util.Arrays;
+import java.util.function.DoubleFunction;
 
 /**
  * An immutable and thread-safe implementation of a real-valued matrix.
@@ -48,7 +49,15 @@ public final class Matrix {
      * </p>
      */
     public enum Order {
-        BY_ROW, BY_COLUMN
+        BY_ROW, BY_COLUMN;
+
+        Order opposite() {
+            if (this == BY_COLUMN) {
+                return BY_ROW;
+            } else {
+                return BY_COLUMN;
+            }
+        }
     }
 
     private final int nrow;
@@ -158,7 +167,7 @@ public final class Matrix {
      * @param matrixData  the two-dimensional array of data constituting the matrix.
      * @return a new matrix with the given data.
      */
-    public static Matrix create(final double[][] matrixData) {
+    public static Matrix create(final double[]... matrixData) {
         return new Matrix(matrixData, Order.BY_ROW);
     }
 
@@ -328,6 +337,50 @@ public final class Matrix {
             }
         }
         return new Matrix(this.ncol, this.nrow, transposedData);
+    }
+
+    public Vector getRow(int i) {
+        double[] row = new double[this.ncol];
+        int offset = this.ncol * i;
+        System.arraycopy(this.data, offset, row, 0, row.length);
+        return Vector.from(row);
+    }
+
+    public Vector getColumn(int j) {
+        double[] col = new double[this.nrow];
+        for (int i = 0; i < col.length; i++) {
+            col[i] = this.data[i * this.ncol + j];
+        }
+        return Vector.from(col);
+    }
+
+    public Matrix push(double[] newData, boolean byRow) {
+        if (byRow) {
+            return rowPush(newData);
+        } else {
+            return columnPush(newData);
+        }
+    }
+
+    private Matrix columnPush(double[] newData) {
+        double[][] thisData = data2D(Order.BY_COLUMN);
+        double[][] newMatrix = new double[this.nrow + 1][];
+        newMatrix[0] = newData.clone();
+        for (int i = 1; i < newMatrix.length; i++) {
+            newMatrix[i] = thisData[i - 1].clone();
+        }
+        return new Matrix(newMatrix, Order.BY_COLUMN);
+    }
+
+    private Matrix rowPush(double[] newData) {
+        if (newData.length != this.ncol) {
+            throw new IllegalArgumentException("The number of elements of the new row must match the " +
+                                               "number of columns of the matrix.");
+        }
+        double[] newMatrix = new double[newData.length + this.data.length];
+        System.arraycopy(newData, 0, newMatrix, 0, newData.length);
+        System.arraycopy(this.data, 0, newMatrix, newData.length, this.data.length);
+        return new Matrix(this.nrow + 1, this.ncol, newMatrix);
     }
 
     /**

@@ -28,7 +28,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @EqualsAndHashCode @ToString
-public class QuadraticForm {
+public final class QuadraticForm {
 
     private final Vector a;
     private final Matrix X;
@@ -37,6 +37,17 @@ public class QuadraticForm {
         validateArguments(a, X);
         this.a = a;
         this.X = X;
+    }
+
+    public static double multiply(Vector a, Matrix X) {
+        int n = a.size();
+        double result = 0.0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                result += a.at(i) * a.at(j) * X.get(i, j);
+            }
+        }
+        return result;
     }
 
     private void validateArguments(Vector a, Matrix X) {
@@ -50,13 +61,6 @@ public class QuadraticForm {
     }
 
     public double multiply() {
-        int n = a.size();
-        double result = 0.0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                    result += a.at(i) * a.at(j) * X.get(i, j);
-            }
-        }
-        return result;
+        return multiply(this.a, this.X);
     }
 }

@@ -26,6 +26,7 @@ package math.linear.doubles;
 import math.stats.Statistics;
 
 import java.util.Arrays;
+import java.util.function.DoubleFunction;
 
 /**
  * An immutable and thread-safe implementation of a real-valued vector backed by an array of primitive doubles.
@@ -209,6 +210,13 @@ public final class Vector {
      */
     public double sumOfSquares() {
         return Statistics.sumOfSquared(elements);
+    }
+
+    public Vector push(double element) {
+        double[] newElements = new double[this.elements.length + 1];
+        newElements[0] = element;
+        System.arraycopy(this.elements, 0, newElements, 1, this.elements.length);
+        return new Vector(newElements);
     }
 
     @Override
