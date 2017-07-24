@@ -406,17 +406,20 @@ final class MatrixOneD implements Matrix {
      */
     static final class ZeroBuilder implements MatrixBuilder {
 
+        final int m;
         final int n;
         final double[] data;
 
         /**
-         * Create a new builder with the given dimension.
+         * Create a new builder with the given dimensions.
          *
+         * @param m the number of rows of the matrix.
          * @param n the dimension of the matrix.
          */
-        ZeroBuilder(final int n) {
+        ZeroBuilder(final int m, final int n) {
+            this.m = m;
             this.n = n;
-            this.data = new double[n * n];
+            this.data = new double[m * n];
         }
 
         @Override
@@ -427,7 +430,7 @@ final class MatrixOneD implements Matrix {
 
         @Override
         public Matrix build() {
-            return new MatrixOneD(n, n, data);
+            return new MatrixOneD(m, n, data);
         }
     }
 }

@@ -198,12 +198,25 @@ public interface Matrix {
         BY_ROW, BY_COLUMN
     }
 
+    /**
+     * Create a new builder for a square matrix of size n with ones on the diagonal.
+     *
+     * @param n the dimension of the matrix.
+     * @return a new builder for a square matrix of size n with ones on the diagonal.
+     */
     static MatrixBuilder identityBuilder(final int n) {
         return new MatrixOneD.IdentityBuilder(n);
     }
 
-    static MatrixBuilder builder(final int n) {
-        return new MatrixOneD.ZeroBuilder(n);
+    /**
+     * Create a new builder for an m by n matrix with all elements initially set to zero.
+     *
+     * @param m the number of rows of the matrix.
+     * @param n the the number of columns of the matrix.
+     * @return a new builder with all elements initially set to zero.
+     */
+    static MatrixBuilder builder(final int m, int n) {
+        return new MatrixOneD.ZeroBuilder(m, n);
     }
 
 }
