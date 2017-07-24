@@ -119,7 +119,7 @@ public final class MatrixSpec {
 
     @Test
     public void whenIdentityBuilderThenCorrectMatrixBuilt() {
-        final Matrix.IdentityBuilder builder = new Matrix.IdentityBuilder(3);
+        final MatrixOneD.IdentityBuilder builder = new MatrixOneD.IdentityBuilder(3);
         final Matrix matrix = builder.set(1, 2, 3.0).set(1, 0, 4.5).build();
         final double[][] expectedResult = new double[][]{{1.0, 0.0, 0.0}, {4.5, 1.0, 3.0}, {0.0, 0.0, 1.0}};
         assertThat(matrix.data2D(Matrix.Order.BY_ROW), is(expectedResult));

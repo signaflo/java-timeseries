@@ -199,90 +199,11 @@ public interface Matrix {
     }
 
     static MatrixBuilder identityBuilder(final int n) {
-        return new IdentityBuilder(n);
+        return new MatrixOneD.IdentityBuilder(n);
     }
 
     static MatrixBuilder builder(final int n) {
-        return new Builder(n);
+        return new MatrixOneD.ZeroBuilder(n);
     }
 
-    /**
-     * A class that allows one to start with an identity matrix, then set specific elements before creating
-     * an immutable matrix.
-     *
-     * @author Jacob Rachiele
-     */
-    final class IdentityBuilder implements MatrixBuilder {
-
-        final int n;
-        final double[] data;
-
-        /**
-         * Create a new builder with the given dimension.
-         *
-         * @param n the dimension of the matrix.
-         */
-        IdentityBuilder(final int n) {
-            this.n = n;
-            this.data = new double[n * n];
-            for (int i = 0; i < n; i++) {
-                this.data[i * n + i] = 1.0;
-            }
-        }
-
-        /**
-         * Set the matrix at the given coordinates to the provided value and return the builder.
-         *
-         * @param i     the row to set the value at.
-         * @param j     the column to set the value at.
-         * @param value the value to set.
-         * @return the builder with the value set at the given coordinates.
-         */
-        public IdentityBuilder set(final int i, final int j, final double value) {
-            this.data[i * n + j] = value;
-            return this;
-        }
-
-        /**
-         * Create a new matrix using the data in this builder.
-         *
-         * @return a new matrix from this builder.
-         */
-        public Matrix build() {
-            return new MatrixOneD(n, n, data);
-        }
-    }
-
-    /**
-     * A class that allows one to start with a zero matrix, then set specific elements before creating
-     * an immutable matrix.
-     *
-     * @author Jacob Rachiele
-     */
-    final class Builder implements MatrixBuilder {
-
-        final int n;
-        final double[] data;
-
-        /**
-         * Create a new builder with the given dimension.
-         *
-         * @param n the dimension of the matrix.
-         */
-        Builder(final int n) {
-            this.n = n;
-            this.data = new double[n * n];
-        }
-
-        @Override
-        public Builder set(final int i, final int j, final double value) {
-            this.data[i * n + j] = value;
-            return this;
-        }
-
-        @Override
-        public Matrix build() {
-            return new MatrixOneD(n, n, data);
-        }
-    }
 }
