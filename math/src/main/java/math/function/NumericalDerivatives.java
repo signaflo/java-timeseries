@@ -89,7 +89,7 @@ public final class NumericalDerivatives {
     }
 
     public static Vector forwardDifferenceGradient(final MultivariateFunction f, final Vector point, final double h,
-                                                   final double functionValue) {
+                                                          final double functionValue) {
         double[] newPoints = point.elements().clone();
         final double[] partials = new double[point.size()];
         for (int i = 0; i < partials.length; i++) {

@@ -1,12 +1,73 @@
 package math.linear.doubles;
 
 /**
- * [Insert class description]
+ * A real-valued matrix.
  *
  * @author Jacob Rachiele
  *         Jul. 23, 2017
  */
 public interface Matrix {
+    /**
+     * Create a new matrix with the supplied data and dimensions. The data is assumed to be in row-major order.
+     *
+     * @param nrow the number of rows for the matrix.
+     * @param ncol the number of columns for the matrix.
+     * @param data the data in row-major order.
+     * @return a new matrix with the supplied data and dimensions.
+     */
+    static Matrix create(final int nrow, final int ncol, final double... data) {
+        return new MatrixOneD(nrow, ncol, data);
+    }
+
+    /**
+     * Create a new matrix with the given dimensions filled with the supplied value.
+     *
+     * @param nrow  the number of rows for the matrix.
+     * @param ncol  the number of columns for the matrix.
+     * @param value the data point to fill the matrix with.
+     * @return a new matrix with the given dimensions filled with the provided value.
+     */
+    static Matrix fill(final int nrow, final int ncol, final double value) {
+        return new MatrixOneD(nrow, ncol, value);
+    }
+
+    /**
+     * Create a new matrix from the given two-dimensional array of data, assuming that the
+     * data is stored by row. If the data is instead stored by column, then specify that
+     * by supplying {@link Order#BY_COLUMN} as the second argument to this method.
+     *
+     * @param matrixData  the two-dimensional array of data constituting the matrix.
+     * @return a new matrix with the given data.
+     */
+    static Matrix create(final double[]... matrixData) {
+        return new MatrixOneD(matrixData, Order.BY_ROW);
+    }
+
+    /**
+     * Create a new matrix from the given two-dimensional array of data.
+     *
+     * @param matrixData  the two-dimensional array of data constituting the matrix.
+     * @param order the storage order of the elements in the matrix data.
+     * @return a new matrix with the given data and order.
+     */
+    static Matrix create(final double[][] matrixData, Order order) {
+        return new MatrixOneD(matrixData, order);
+    }
+
+    /**
+     * Create a new identity matrix with the given dimension.
+     *
+     * @param n the dimension of the identity matrix.
+     * @return a new identity matrix with the given dimension.
+     */
+    static Matrix identity(final int n) {
+        final double[] data = new double[n * n];
+        for (int i = 0; i < n; i++) {
+            data[i * n + i] = 1.0;
+        }
+        return new MatrixOneD(n, n, data);
+    }
+
     /**
      * Get the element at row i, column j.
      *
@@ -36,7 +97,7 @@ public interface Matrix {
      * @param other the matrix to add to this one.
      * @return this matrix added to the other matrix.
      */
-    MatrixOneD plus(MatrixOneD other);
+    Matrix plus(Matrix other);
 
     /**
      * Multiply this matrix by the given matrix and return the resulting product.
@@ -44,7 +105,7 @@ public interface Matrix {
      * @param other the matrix to multiply by.
      * @return the product of this matrix with the given matrix.
      */
-    Matrix times(MatrixOneD other);
+    Matrix times(Matrix other);
 
     /**
      * Multiply this matrix by the given vector and return the resulting transformation.
@@ -60,7 +121,7 @@ public interface Matrix {
      * @param c the value to scale this matrix by.
      * @return this matrix scaled by the given value.
      */
-    MatrixOneD scaledBy(double c);
+    Matrix scaledBy(double c);
 
     /**
      * Subtract the given matrix from this matrix and return the resulting difference.
@@ -68,7 +129,14 @@ public interface Matrix {
      * @param other the matrix to subtract from this one.
      * @return the difference of this matrix and the given matrix.
      */
-    MatrixOneD minus(MatrixOneD other);
+    Matrix minus(Matrix other);
+
+    /**
+     * Returns true if the matrix is square and false otherwise.
+     *
+     * @return true if the matrix is square and false otherwise.
+     */
+    boolean isSquare();
 
     /**
      * Transpose this matrix and return the resulting transposition.
@@ -88,7 +156,6 @@ public interface Matrix {
      *
      * @return the elements on the diagonal of this matrix.
      */
-    @SuppressWarnings("ManualArrayCopy")
     double[] diagonal();
 
     /**
@@ -104,7 +171,7 @@ public interface Matrix {
      * @param order the storage order of the elements in the matrix data.
      * @return the data in this matrix as a two-dimensional array.
      */
-    double[][] data2D(MatrixOneD.Order order);
+    double[][] data2D(Matrix.Order order);
 
     /**
      * Obtain the data in this matrix as a two-dimensional array.
@@ -112,4 +179,110 @@ public interface Matrix {
      * @return the data in this matrix as a two-dimensional array.
      */
     double[][] data2D();
+
+    /**
+     * <p>
+     *     The storage order of the two-dimensional array representation of a matrix.
+     * </p>
+     *
+     * <p>
+     *     Note that a matrix implementation class may store its data internally as a one-dimensional
+     *     array. However, it may also accept two-dimensional arrays in constructors, return a two-dimensional
+     *     array view of itself, or use the two-dimensional representation in its toString method. For these reasons,
+     *     it needs to know whether the data in the two-dimensional array representation is stored row-by-row or
+     *     column-by-column. In other words, it needs to know whether the data in the outer array is to viewed
+     *     as an array of row vectors or an array of column vectors.
+     * </p>
+     */
+    enum Order {
+        BY_ROW, BY_COLUMN
+    }
+
+    static MatrixBuilder identityBuilder(final int n) {
+        return new IdentityBuilder(n);
+    }
+
+    static MatrixBuilder builder(final int n) {
+        return new Builder(n);
+    }
+
+    /**
+     * A class that allows one to start with an identity matrix, then set specific elements before creating
+     * an immutable matrix.
+     *
+     * @author Jacob Rachiele
+     */
+    final class IdentityBuilder implements MatrixBuilder {
+
+        final int n;
+        final double[] data;
+
+        /**
+         * Create a new builder with the given dimension.
+         *
+         * @param n the dimension of the matrix.
+         */
+        IdentityBuilder(final int n) {
+            this.n = n;
+            this.data = new double[n * n];
+            for (int i = 0; i < n; i++) {
+                this.data[i * n + i] = 1.0;
+            }
+        }
+
+        /**
+         * Set the matrix at the given coordinates to the provided value and return the builder.
+         *
+         * @param i     the row to set the value at.
+         * @param j     the column to set the value at.
+         * @param value the value to set.
+         * @return the builder with the value set at the given coordinates.
+         */
+        public IdentityBuilder set(final int i, final int j, final double value) {
+            this.data[i * n + j] = value;
+            return this;
+        }
+
+        /**
+         * Create a new matrix using the data in this builder.
+         *
+         * @return a new matrix from this builder.
+         */
+        public Matrix build() {
+            return new MatrixOneD(n, n, data);
+        }
+    }
+
+    /**
+     * A class that allows one to start with a zero matrix, then set specific elements before creating
+     * an immutable matrix.
+     *
+     * @author Jacob Rachiele
+     */
+    final class Builder implements MatrixBuilder {
+
+        final int n;
+        final double[] data;
+
+        /**
+         * Create a new builder with the given dimension.
+         *
+         * @param n the dimension of the matrix.
+         */
+        Builder(final int n) {
+            this.n = n;
+            this.data = new double[n * n];
+        }
+
+        @Override
+        public Builder set(final int i, final int j, final double value) {
+            this.data[i * n + j] = value;
+            return this;
+        }
+
+        @Override
+        public Matrix build() {
+            return new MatrixOneD(n, n, data);
+        }
+    }
 }

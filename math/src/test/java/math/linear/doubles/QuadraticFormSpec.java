@@ -30,21 +30,23 @@ import static org.hamcrest.Matchers.*;
 
 public class QuadraticFormSpec {
 
-    Vector a = Vector.from(1.0, 3.0);
-    MatrixOneD X = MatrixOneD.create(2, 2, 2.0, 4.0, 6.0, 8.0);
-    QuadraticForm Q = new QuadraticForm(a, X);
+    private Vector x = Vector.from(1.0, 3.0);
+    private Matrix A = Matrix.create(2, 2, 2.0, 4.0, 6.0, 8.0);
+    private QuadraticForm Q = new QuadraticForm(x, A);
 
     @Test
     public void whenMultiplyTwoByTwoThenCorrectResult() {
         assertThat(Q.multiply(), is(104.0));
+        assertThat(QuadraticForm.multiply(x, A), is(104.0));
     }
 
     @Test
     public void whenMultiplyThreeByThreeThenCorrectResult() {
         double[][] data = {{2.0, 8.0, 14.0}, {4.0, 10.0, 16.0}, {6.0, 12.0, 18.0}};
-        a = Vector.from(1.0, 3.0, 5.0);
-        X = MatrixOneD.create(data, MatrixOneD.Order.BY_COLUMN);
-        Q = new QuadraticForm(a, X);
+        x = Vector.from(1.0, 3.0, 5.0);
+        A = Matrix.create(data, Matrix.Order.BY_COLUMN);
+        Q = new QuadraticForm(x, A);
         assertThat(Q.multiply(), is(1098.0));
+        assertThat(QuadraticForm.multiply(x, A), is(1098.0));
     }
 }

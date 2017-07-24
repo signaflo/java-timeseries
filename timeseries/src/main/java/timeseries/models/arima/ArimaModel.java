@@ -27,7 +27,7 @@ import data.Range;
 import data.regression.LinearRegressionModel;
 import lombok.EqualsAndHashCode;
 import math.linear.doubles.Matrix;
-import math.linear.doubles.MatrixOneD;
+import math.linear.doubles.MatrixBuilder;
 import timeseries.models.arima.ArimaKalmanFilter.KalmanOutput;
 
 import data.DoubleFunctions;
@@ -94,7 +94,7 @@ final class ArimaModel implements Arima {
         this.differencedSeries = observations.difference(1, order.d).difference(seasonalFrequency, order.D);
 
         final Vector initParams;
-        final MatrixOneD initHessian;
+        final Matrix initHessian;
         ArimaParameters parameters = ArimaParameters.initializePars(order.p, order.q, order.P, order.Q);
         Matrix regressionMatrix = getRegressionMatrix(observations.size(), order);
         if (regression == null) {
@@ -118,10 +118,10 @@ final class ArimaModel implements Arima {
             parameters.setDriftParScale(driftParScale);
             //parameters.setMean(firstModel.coefficients().mean());
             //parameters.setDrift(firstModel.coefficients().drift());
-            initParams = new Vector(parameters.getAllScaled(order));
+            initParams = Vector.from(parameters.getAllScaled(order));
             initHessian = getInitialHessian(firstModel);
         } else {
-            initParams = new Vector(parameters.getAllScaled(order));
+            initParams = Vector.from(parameters.getAllScaled(order));
             initHessian = getInitialHessian(initParams.size());
         }
 
@@ -217,7 +217,7 @@ final class ArimaModel implements Arima {
         if (order.drift.include()) {
             matrix[order.constant.asInt()] = Range.inclusiveRange(1, size).asArray();
         }
-        return MatrixOneD.create(matrix, MatrixOneD.Order.BY_COLUMN);
+        return Matrix.create(matrix, Matrix.Order.BY_COLUMN);
     }
 
     private Matrix getForecastRegressionMatrix(int steps, ArimaOrder order) {
@@ -229,12 +229,12 @@ final class ArimaModel implements Arima {
             int startTime = this.observations.size() + 1;
             matrix[order.constant.asInt()] = Range.inclusiveRange(startTime, startTime + steps).asArray();
         }
-        return MatrixOneD.create(matrix, MatrixOneD.Order.BY_COLUMN);
+        return Matrix.create(matrix, Matrix.Order.BY_COLUMN);
     }
 
     private LinearRegressionModel getLinearRegression(TimeSeries differencedSeries, Matrix designMatrix) {
         double[][] diffedMatrix = new double[designMatrix.ncol()][];
-        double[][] designMatrixTwoD = designMatrix.data2D(MatrixOneD.Order.BY_COLUMN);
+        double[][] designMatrixTwoD = designMatrix.data2D(Matrix.Order.BY_COLUMN);
         for (int i = 0; i < diffedMatrix.length; i++) {
             diffedMatrix[i] = TimeSeries.difference(designMatrixTwoD[i], order.d);
         }
@@ -245,7 +245,7 @@ final class ArimaModel implements Arima {
         regressionBuilder.response(differencedSeries);
         regressionBuilder.hasIntercept(TimeSeriesLinearRegressionModel.Intercept.EXCLUDE);
         regressionBuilder.timeTrend(TimeSeriesLinearRegressionModel.TimeTrend.EXCLUDE);
-        regressionBuilder.externalRegressors(MatrixOneD.create(diffedMatrix, MatrixOneD.Order.BY_COLUMN));
+        regressionBuilder.externalRegressors(Matrix.create(diffedMatrix, Matrix.Order.BY_COLUMN));
         return regressionBuilder.build();
     }
 
@@ -474,8 +474,8 @@ final class ArimaModel implements Arima {
         return integrated;
     }
 
-    private MatrixOneD getInitialHessian(final int n) {
-        return new MatrixOneD.IdentityBuilder(n).build();
+    private Matrix getInitialHessian(final int n) {
+        return Matrix.identity(n);
 //    if (order.constant == 1) {
 //      final double meanParScale = 10 * observations.stdDeviation() / Math.sqrt(observations.n());
 //      return builder.set(n - 1, n - 1, 1.0).build();
@@ -483,9 +483,9 @@ final class ArimaModel implements Arima {
 //    return builder.build();
     }
 
-    private MatrixOneD getInitialHessian(final ArimaModel model) {
+    private Matrix getInitialHessian(final ArimaModel model) {
         double[] stdErrors = model.stdErrors;
-        MatrixOneD.IdentityBuilder builder = new MatrixOneD.IdentityBuilder(stdErrors.length);
+        MatrixBuilder builder = Matrix.identityBuilder(stdErrors.length);
         for (int i = 0; i < stdErrors.length; i++) {
             builder.set(i, i, stdErrors[i] * stdErrors[i] * observations.size());
         }

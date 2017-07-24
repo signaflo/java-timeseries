@@ -30,7 +30,6 @@ import data.Pair;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
-import math.linear.doubles.MatrixOneD;
 import math.linear.doubles.QuadraticForm;
 import math.linear.doubles.Vector;
 import math.stats.distributions.Distribution;
@@ -45,7 +44,7 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
 
     MultipleLinearRegressionPredictor(MultipleLinearRegressionModel model) {
         this.model = model;
-        this.XtXInverse = MatrixOneD.create(model.XtXInverse());
+        this.XtXInverse = Matrix.create(model.XtXInverse());
         this.degreesOfFreedom = model.response().length - model.designMatrix().length;
     }
 

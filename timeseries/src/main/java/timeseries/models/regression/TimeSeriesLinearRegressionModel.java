@@ -31,7 +31,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
-import math.linear.doubles.MatrixOneD;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 
@@ -255,7 +254,7 @@ public final class TimeSeriesLinearRegressionModel implements LinearRegressionMo
          * @return this builder.
          */
         public Builder externalRegressors(@NonNull Matrix predictors) {
-            externalRegressors(predictors.data2D(MatrixOneD.Order.BY_COLUMN));
+            externalRegressors(predictors.data2D(Matrix.Order.BY_COLUMN));
             return this;
         }
 

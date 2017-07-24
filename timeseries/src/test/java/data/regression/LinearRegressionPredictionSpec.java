@@ -26,7 +26,6 @@ package data.regression;
 
 import data.Pair;
 import math.linear.doubles.Matrix;
-import math.linear.doubles.MatrixOneD;
 import math.linear.doubles.Vector;
 import org.junit.Test;
 import timeseries.TestData;
@@ -53,7 +52,7 @@ public class LinearRegressionPredictionSpec {
         double expected = 11.99017;
         assertThat(predicted, is(closeTo(expected, 1E-4)));
         double[][] predictors = {{300.0, 4.05}, {320.0, 3.9}};
-        Matrix predictionMatrix = MatrixOneD.create(predictors, MatrixOneD.Order.BY_ROW);
+        Matrix predictionMatrix = Matrix.create(predictors, Matrix.Order.BY_ROW);
         Vector result = predictor.predict(predictionMatrix);
         Vector seFit = predictor.standardErrorFit(predictionMatrix);
         System.out.println(result);

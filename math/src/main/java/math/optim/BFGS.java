@@ -23,9 +23,7 @@
  */
 package math.optim;
 
-import math.linear.doubles.Matrices;
 import math.linear.doubles.Matrix;
-import math.linear.doubles.MatrixOneD;
 import math.linear.doubles.Vector;
 import math.function.AbstractMultivariateFunction;
 
@@ -44,13 +42,13 @@ public final class BFGS {
     private static final double STEP_REDUCTION_FACTOR = 0.2;
     //private static final double c2 = 0.9;
 
-    private final MatrixOneD identity;
+    private final Matrix identity;
     private Vector iterate; // The point at which to evaluate the target function.
     private double functionValue; // The latest value of the target function.
     private double rho; // Defined as 1 divided by the dot product of y and s.
     private Vector s; // The difference between successive iterates.
     private Vector y; // The difference between successive gradients.
-    private MatrixOneD H; // The inverse Hessian approximation.
+    private Matrix H; // The inverse Hessian approximation.
 
     /**
      * Create a new BFGS object and run the algorithm with the supplied information.
@@ -62,7 +60,7 @@ public final class BFGS {
      */
     public BFGS(final AbstractMultivariateFunction f, final Vector startingPoint, final double gradientTolerance,
                 final double functionChangeTolerance) {
-        this(f, startingPoint, gradientTolerance, functionChangeTolerance, Matrices.identity(startingPoint.size()));
+        this(f, startingPoint, gradientTolerance, functionChangeTolerance, Matrix.identity(startingPoint.size()));
     }
 
     /**
@@ -75,8 +73,8 @@ public final class BFGS {
      * @param initialHessian          The initial guess for the inverse Hessian approximation.
      */
     public BFGS(final AbstractMultivariateFunction f, final Vector startingPoint, final double gradientNormTolerance,
-                final double relativeChangeTolerance, final MatrixOneD initialHessian) {
-        this.identity = Matrices.identity(startingPoint.size());
+                final double relativeChangeTolerance, final Matrix initialHessian) {
+        this.identity = Matrix.identity(startingPoint.size());
         this.H = initialHessian;
         this.iterate = startingPoint;
         int k = 0;
@@ -189,10 +187,10 @@ public final class BFGS {
 ////    return lineSearch.search();
 //  }
 
-    private MatrixOneD updateHessian() {
+    private Matrix updateHessian() {
         Matrix a = identity.minus(s.outerProduct(y).scaledBy(rho));
-        MatrixOneD b = identity.minus(y.outerProduct(s).scaledBy(rho));
-        MatrixOneD c = s.outerProduct(s).scaledBy(rho);
+        Matrix b = identity.minus(y.outerProduct(s).scaledBy(rho));
+        Matrix c = s.outerProduct(s).scaledBy(rho);
         return a.times(H).times(b).plus(c);
     }
 

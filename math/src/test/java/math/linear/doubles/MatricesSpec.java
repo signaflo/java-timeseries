@@ -33,7 +33,7 @@ public class MatricesSpec {
 
   @Test
   public void whenIdentityMatrixCalledCorrectDataSet() {
-    Matrix eye = Matrices.identity(3);
+    Matrix eye = Matrix.identity(3);
     double[] expected = new double[] {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
     assertThat(eye.data(), is(equalTo(expected)));
   }

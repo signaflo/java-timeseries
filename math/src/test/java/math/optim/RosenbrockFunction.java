@@ -2,6 +2,7 @@ package math.optim;
 
 
 import static java.lang.Math.pow;
+
 import math.linear.doubles.Vector;
 import math.function.AbstractMultivariateFunction;
 
@@ -26,7 +27,7 @@ public final class RosenbrockFunction extends AbstractMultivariateFunction {
     final double y = point.at(1);
     final double gx = -400 * x * (y - x * x) - 2 * (1 - x);
     final double gy = 200 * (y - x * x);
-    return new Vector(gx, gy);
+    return Vector.from(gx, gy);
   }
 
 }

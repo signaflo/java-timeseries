@@ -27,40 +27,46 @@ package math.linear.doubles;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+/**
+ * Represents a quadratic form (see <a target="_blank" href="http://cs229.stanford.edu/section/cs229-linalg.pdf">
+ * section 3.11 here</a>). Note that an object of this class may be constructed with any square
+ * matrix, not just a symmetric one.
+ */
 @EqualsAndHashCode @ToString
 public final class QuadraticForm {
 
-    private final Vector a;
-    private final Matrix X;
+    private final Vector x;
+    private final Matrix A;
 
-    public QuadraticForm(Vector a, MatrixOneD X) {
-        validateArguments(a, X);
-        this.a = a;
-        this.X = X;
+    public QuadraticForm(Vector x, Matrix A) {
+        validateArguments(x, A);
+        this.x = x;
+        this.A = A;
     }
 
-    public static double multiply(Vector a, Matrix X) {
-        int n = a.size();
+    public static double multiply(Vector x, Matrix A) {
+        validateArguments(x, A);
+        int n = x.size();
         double result = 0.0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                result += a.at(i) * a.at(j) * X.get(i, j);
+                result += x.at(i) * x.at(j) * A.get(i, j);
             }
         }
         return result;
     }
 
-    private void validateArguments(Vector a, MatrixOneD X) {
-        if (!X.isSquare()) {
-            throw new IllegalArgumentException("The MatrixOneD must be square.");
+    private static void validateArguments(Vector x, Matrix A) {
+        if (!A.isSquare()) {
+            throw new IllegalArgumentException("The matrix must be square.");
         }
-        if (a.size() != X.nrow()) {
-            throw new IllegalArgumentException("The number of MatrixOneD rows must be the same" +
+        if (x.size() != A.nrow()) {
+            throw new IllegalArgumentException("The number of matrix rows must be the same" +
                                                " as the size of the vector.");
         }
     }
 
     public double multiply() {
-        return multiply(this.a, this.X);
+        return multiply(this.x, this.A);
     }
 }
