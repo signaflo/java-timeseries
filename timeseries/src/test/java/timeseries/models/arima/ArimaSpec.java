@@ -24,7 +24,7 @@
 
 package timeseries.models.arima;
 
-import data.DoubleFunctions;
+import math.operations.DoubleFunctions;
 import timeseries.TestData;
 import org.junit.Rule;
 import org.junit.Test;

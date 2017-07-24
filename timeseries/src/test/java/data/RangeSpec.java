@@ -25,6 +25,7 @@
 package data;
 
 import com.google.common.testing.EqualsTester;
+import math.operations.DoubleFunctions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

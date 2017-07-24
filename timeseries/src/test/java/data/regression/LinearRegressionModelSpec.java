@@ -25,7 +25,7 @@
 package data.regression;
 
 import com.google.common.testing.EqualsTester;
-import data.DoubleFunctions;
+import math.operations.DoubleFunctions;
 import data.Range;
 import math.operations.Operators;
 import timeseries.TestData;

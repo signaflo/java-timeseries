@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static data.DoubleFunctions.round;
+import static math.operations.DoubleFunctions.round;
 
 /**
  * Static methods for producing plots.

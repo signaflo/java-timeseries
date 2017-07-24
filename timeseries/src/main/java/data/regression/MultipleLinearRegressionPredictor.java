@@ -25,7 +25,7 @@
 package data.regression;
 
 
-import data.DoubleFunctions;
+import math.operations.DoubleFunctions;
 import data.Pair;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -95,7 +95,7 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
 
     private Matrix predictorsWithIntercept(Matrix newData) {
         if (model.hasIntercept()) {
-            double[] ones = DoubleFunctions.fill(newData.nrow(), 1.0);
+            Vector ones = Vector.ones(newData.nrow());
             return newData.push(ones, false);
         }
         return newData;

@@ -145,11 +145,30 @@ public interface Matrix {
      */
     Matrix transpose();
 
+    /**
+     * Get the ith row of the matrix.
+     *
+     * @param i the row index, where indexing begins at 0.
+     * @return the ith row of the matrix.
+     */
     Vector getRow(int i);
 
+    /**
+     * Get the jth column of the matrix.
+     *
+     * @param j the column index, where indexing begins at 0.
+     * @return the jth column of the matrix.
+     */
     Vector getColumn(int j);
 
-    Matrix push(double[] newData, boolean byRow);
+    /**
+     * Push the provided vector to the top or front of this matrix, shifting all other vectors down or to the right.
+     *
+     * @param newData the new vector of data.
+     * @param isRow whether the provided vector is a row vector or not.
+     * @return a matrix with the given vector pushed to the top or front of this matrix.
+     */
+    Matrix push(Vector newData, boolean isRow);
 
     /**
      * Retrieve the elements on the diagonal of this matrix.

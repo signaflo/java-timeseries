@@ -1,5 +1,7 @@
 package math.linear.doubles;
 
+import math.operations.DoubleFunctions;
+
 /**
  * A mathematical vector.
  *
@@ -7,6 +9,10 @@ package math.linear.doubles;
  * Jul. 23, 2017
  */
 public interface Vector {
+
+    static Vector ones(int n) {
+        return new GenericVector(DoubleFunctions.fill(n, 1.0));
+    }
     /**
      * Create a new vector from the given elements.
      *

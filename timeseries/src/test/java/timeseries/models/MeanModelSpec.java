@@ -24,7 +24,7 @@
 
 package timeseries.models;
 
-import data.DoubleFunctions;
+import math.operations.DoubleFunctions;
 import org.hamcrest.MatcherAssert;
 import timeseries.TestData;
 import org.junit.Rule;

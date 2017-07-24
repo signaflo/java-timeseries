@@ -24,7 +24,7 @@
 
 package timeseries.models.arima;
 
-import data.DoubleFunctions;
+import math.operations.DoubleFunctions;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import math.stats.distributions.Distribution;

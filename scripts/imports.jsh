@@ -17,7 +17,7 @@ import timeseries.models.*;
 import timeseries.models.arima.*;
 import data.regression.*;
 
-import static data.DoubleFunctions.*;
+import static math.operations.DoubleFunctions.*;
 import static math.operations.Operators.*;
 import static data.visualization.Plots.*;
 import static timeseries.TestData.*;

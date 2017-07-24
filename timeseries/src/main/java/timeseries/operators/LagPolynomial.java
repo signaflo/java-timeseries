@@ -23,7 +23,7 @@
  */
 package timeseries.operators;
 
-import data.DoubleFunctions;
+import math.operations.DoubleFunctions;
 import timeseries.TimeSeries;
 
 import java.time.OffsetDateTime;

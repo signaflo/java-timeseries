@@ -238,32 +238,36 @@ final class MatrixOneD implements Matrix {
     }
 
     @Override
-    public Matrix push(double[] newData, boolean byRow) {
-        if (byRow) {
+    public Matrix push(Vector newData, boolean isRow) {
+        if (isRow) {
             return rowPush(newData);
         } else {
             return columnPush(newData);
         }
     }
 
-    private Matrix columnPush(double[] newData) {
+    private Matrix columnPush(Vector newData) {
+        if (newData.size() != this.nrow) {
+            throw new IllegalArgumentException("The number of elements of the new column must match the " +
+                                               "number of rows of the matrix.");
+        }
         double[][] thisData = data2D(Order.BY_COLUMN);
         double[][] newMatrix = new double[this.nrow + 1][];
-        newMatrix[0] = newData.clone();
+        newMatrix[0] = newData.elements();
         for (int i = 1; i < newMatrix.length; i++) {
             newMatrix[i] = thisData[i - 1].clone();
         }
         return new MatrixOneD(newMatrix, Order.BY_COLUMN);
     }
 
-    private Matrix rowPush(double[] newData) {
-        if (newData.length != this.ncol) {
+    private Matrix rowPush(Vector newData) {
+        if (newData.size() != this.ncol) {
             throw new IllegalArgumentException("The number of elements of the new row must match the " +
                                                "number of columns of the matrix.");
         }
-        double[] newMatrix = new double[newData.length + this.data.length];
-        System.arraycopy(newData, 0, newMatrix, 0, newData.length);
-        System.arraycopy(this.data, 0, newMatrix, newData.length, this.data.length);
+        double[] newMatrix = new double[newData.size() + this.data.length];
+        System.arraycopy(newData.elements(), 0, newMatrix, 0, newData.size());
+        System.arraycopy(this.data, 0, newMatrix, newData.size(), this.data.length);
         return new MatrixOneD(this.nrow + 1, this.ncol, newMatrix);
     }
 

@@ -25,7 +25,7 @@ package timeseries;
 
 import data.DataSet;
 import data.DoubleDataSet;
-import data.DoubleFunctions;
+import math.operations.DoubleFunctions;
 import math.operations.Operators;
 
 import java.text.DecimalFormat;

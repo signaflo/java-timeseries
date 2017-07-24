@@ -28,8 +28,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
 
-import static data.DoubleFunctions.append;
-import static data.DoubleFunctions.combine;
+import static math.operations.DoubleFunctions.append;
+import static math.operations.DoubleFunctions.combine;
 import static math.stats.Statistics.sumOf;
 
 /**

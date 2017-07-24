@@ -30,7 +30,7 @@ import math.linear.doubles.Matrix;
 import math.linear.doubles.MatrixBuilder;
 import timeseries.models.arima.ArimaKalmanFilter.KalmanOutput;
 
-import data.DoubleFunctions;
+import math.operations.DoubleFunctions;
 import math.linear.doubles.Vector;
 import math.function.AbstractMultivariateFunction;
 import math.optim.BFGS;
@@ -49,9 +49,9 @@ import java.text.NumberFormat;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 
-import static data.DoubleFunctions.combine;
-import static data.DoubleFunctions.fill;
-import static data.DoubleFunctions.slice;
+import static math.operations.DoubleFunctions.combine;
+import static math.operations.DoubleFunctions.fill;
+import static math.operations.DoubleFunctions.slice;
 import static math.operations.Operators.differenceOf;
 import static math.operations.Operators.scale;
 import static java.lang.Math.*;

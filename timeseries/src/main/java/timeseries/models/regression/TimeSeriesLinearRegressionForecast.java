@@ -24,7 +24,7 @@
 
 package timeseries.models.regression;
 
-import data.DoubleFunctions;
+import math.operations.DoubleFunctions;
 import data.Range;
 import data.regression.LinearRegressionPrediction;
 import lombok.EqualsAndHashCode;

@@ -34,7 +34,7 @@ import org.ejml.interfaces.linsol.LinearSolver;
 import org.ejml.ops.CommonOps;
 import math.stats.Statistics;
 
-import static data.DoubleFunctions.*;
+import static math.operations.DoubleFunctions.*;
 
 /**
  * A linear regression model using primitive data types, with support for multiple prediction variables.

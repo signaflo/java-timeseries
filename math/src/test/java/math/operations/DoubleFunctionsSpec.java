@@ -22,17 +22,16 @@
  * Jacob Rachiele
  */
 
-package data;
+package math.operations;
 
+import math.operations.DoubleFunctions;
 import math.stats.Statistics;
 import org.junit.Test;
-import timeseries.TestData;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static data.DoubleFunctions.*;
+import static math.operations.DoubleFunctions.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -74,7 +73,7 @@ public class DoubleFunctionsSpec {
         double[] original = {2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0};
         int[] indices = {1, 4, 6};
         double[] expected = {4.0, 32.0, 128.0};
-        assertThat(arrayFrom(original, indices), is(expected));
+        assertThat(DoubleFunctions.arrayFrom(original, indices), is(expected));
     }
 
     @Test
@@ -109,13 +108,13 @@ public class DoubleFunctionsSpec {
 
     @Test
     public void whenDataMeanRemovedThenResultMeanZero() {
-        double[] data = TestData.internetTraffic.asArray();
+        double[] data = debitcardData;
         assertThat(Statistics.meanOf(demean(data)), is(closeTo(0.0, 1E-10)));
     }
 
     @Test
     public void whenBoxCoxThenTransformationApplied() {
-        double[] data = TestData.debitcards.asArray();
+        double[] data = debitcardData;
         double[] transformed = boxCox(data, 0.5);
         assertThat(Statistics.meanOf(transformed), is(closeTo(244.1229, 1E-4)));
         assertThat(Statistics.stdDeviationOf(transformed), is(closeTo(38.60176, 1E-4)));
@@ -123,7 +122,7 @@ public class DoubleFunctionsSpec {
 
     @Test
     public void whenInvBoxCoxThenTransformationUnapplied() {
-        double[] transformed = boxCox(TestData.debitcards.asArray(), 0.5);
+        double[] transformed = boxCox(debitcardData, 0.5);
         double[] original = inverseBoxCox(transformed, 0.5);
         assertThat(Statistics.meanOf(original), is(closeTo(15514.25641, 1E-4)));
         assertThat(Statistics.stdDeviationOf(original), is(closeTo(4688.38717, 1E-4)));
@@ -131,7 +130,7 @@ public class DoubleFunctionsSpec {
 
     @Test
     public void whenNegativeOfThenNegativeTaken() {
-        double[] data = TestData.debitcards.asArray();
+        double[] data = debitcardData;
         double[] neg = negativeOf(data);
         assertThat(Statistics.meanOf(neg), is(closeTo(-15514.25641, 1E-4)));
         assertThat(Statistics.stdDeviationOf(neg), is(closeTo(4688.38717, 1E-4)));
@@ -162,4 +161,29 @@ public class DoubleFunctionsSpec {
         assertThat(DoubleFunctions.twoDArrayFrom(list2d), is(primitive2d));
     }
 
+    private double[] debitcardData = {7204, 7335, 7812, 7413, 9136, 8725, 8751,
+            9609, 8601, 8930, 8835, 11688, 8078, 7892,
+            8151, 8738, 9416, 9533, 9943, 10859, 8789,
+            9960, 9619, 12900, 8620, 8401, 8546, 10004,
+            10675, 10115, 11206, 11555, 10453, 10421, 9950,
+            13975, 9315, 9366, 9910, 10302, 11371, 11857,
+            12387, 12421, 12073, 11963, 10666, 15613,
+            10586, 10558, 12064, 11899, 12077, 13918,
+            13611, 14132, 13509, 13152, 13993, 18203,
+            14262, 13024, 14062, 14718, 16544, 16732,
+            16230, 18126, 16016, 15601, 15394, 20439,
+            14991, 14908, 17459, 14501, 18271, 17963,
+            17026, 18111, 15989, 16735, 15949, 20216,
+            16198, 15060, 16168, 16376, 18403, 19113,
+            19303, 20560, 16621, 18788, 17970, 22464,
+            16658, 16214, 16043, 16418, 17644, 17705,
+            18107, 17975, 17598, 17658, 15750, 22414,
+            16065, 15467, 16297, 16530, 18410, 20274,
+            21311, 20991, 18305, 17832, 18223, 23987,
+            15964, 16606, 19216, 16419, 19638, 19773,
+            21052, 22011, 19039, 17893, 19276, 25167,
+            16699, 16619, 17851, 18160, 22032, 21395,
+            22217, 24565, 21095, 20114, 19931, 26120,
+            18580, 18492, 19724, 20123, 22582, 22595,
+            23379, 24920, 20325, 22038, 20988, 26675};
 }

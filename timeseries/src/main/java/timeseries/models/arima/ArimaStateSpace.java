@@ -1,6 +1,6 @@
 package timeseries.models.arima;
 
-import static data.DoubleFunctions.combine;
+import static math.operations.DoubleFunctions.combine;
 
 final class ArimaStateSpace {
 
