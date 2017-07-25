@@ -12,6 +12,9 @@ import java.util.stream.*
 import java.time.*;
 
 import math.stats.distributions.*;
+import math.linear.doubles.*;
+import math.linear.doubles.Vector;
+
 import timeseries.*;
 import timeseries.models.*;
 import timeseries.models.arima.*;

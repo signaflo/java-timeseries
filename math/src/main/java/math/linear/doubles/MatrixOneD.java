@@ -387,6 +387,8 @@ final class MatrixOneD implements Matrix {
          */
         @Override
         public IdentityBuilder set(final int i, final int j, final double value) {
+            ZeroBuilder.validateRow(i, this.n);
+            ZeroBuilder.validateColumn(j, this.n);
             this.data[i * n + j] = value;
             return this;
         }
@@ -400,6 +402,25 @@ final class MatrixOneD implements Matrix {
         public Matrix build() {
             return new MatrixOneD(n, n, data);
         }
+
+        @Override
+        public IdentityBuilder setRow(final int i, final Vector row) {
+            ZeroBuilder.validateRow(i, this.n);
+            ZeroBuilder.validateSize(i, this.n, row);
+            System.arraycopy(row.elements(), 0, this.data, i * n, n);
+            return this;
+        }
+
+        @Override
+        public IdentityBuilder setColumn(final int j, final Vector column) {
+            ZeroBuilder.validateColumn(j, this.n);
+            ZeroBuilder.validateSize(j, this.n, column);
+            for (int i = 0; i < this.n; i++) {
+                this.data[i * n + j] = column.at(i);
+            }
+            return this;
+        }
+
     }
 
     /**
@@ -428,13 +449,62 @@ final class MatrixOneD implements Matrix {
 
         @Override
         public ZeroBuilder set(final int i, final int j, final double value) {
+            validateRow(i, this.m);
+            validateColumn(j, this.n);
             this.data[i * n + j] = value;
+            return this;
+        }
+
+        @Override
+        public ZeroBuilder setRow(final int i, final Vector row) {
+            validateRow(i, this.m);
+            validateSize(i, this.n, row);
+            System.arraycopy(row.elements(), 0, this.data, i * n, n);
+            return this;
+        }
+
+        @Override
+        public ZeroBuilder setColumn(final int j, final Vector column) {
+            validateColumn(j, this.n);
+            validateSize(j, this.m, column);
+            for (int i = 0; i < this.m; i++) {
+                this.data[i * n + j] = column.at(i);
+            }
             return this;
         }
 
         @Override
         public Matrix build() {
             return new MatrixOneD(m, n, data);
+        }
+
+        static void validateRow(int i, int m) {
+            if (i >= m) {
+                throw new IllegalArgumentException("The row index must be less than the number of rows, " +
+                                                   "but the index, " + i + ", is greater than or equal to " + m);
+            }
+            if (i < 0) {
+                throw new IllegalArgumentException("The row index must be greater than or equal to zero, " +
+                                                   "but was " + i);
+            }
+        }
+
+        static void validateColumn(int i, int n) {
+            if (i >= n) {
+                throw new IllegalArgumentException("The column index must be less than the number of columns, " +
+                                                   "but the index, " + i + ", is greater than or equal to " + n);
+            }
+            if (i < 0) {
+                throw new IllegalArgumentException("The column index must be greater than or equal to zero, " +
+                                                   "but was " + i);
+            }
+        }
+
+        static void validateSize(int i, int n, Vector vector) {
+            if (vector.size() != n) {
+                throw new IllegalArgumentException("The vector must have " + n + " elements, " +
+                                                   "but had " + vector.size());
+            }
         }
     }
 }

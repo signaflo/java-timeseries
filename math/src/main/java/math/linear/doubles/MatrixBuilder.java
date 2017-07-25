@@ -17,6 +17,10 @@ public interface MatrixBuilder {
      */
     MatrixBuilder set(int i, int j, double value);
 
+    MatrixBuilder setRow(int i, Vector row);
+
+    MatrixBuilder setColumn(int j, Vector column);
+
     /**
      * Create a new matrix using the data in this builder.
      *
