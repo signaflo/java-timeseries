@@ -24,10 +24,8 @@
 
 package data.regression;
 
-
-import math.operations.DoubleFunctions;
 import data.Pair;
-import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
 import math.linear.doubles.QuadraticForm;
@@ -35,14 +33,14 @@ import math.linear.doubles.Vector;
 import math.stats.distributions.Distribution;
 import math.stats.distributions.StudentsT;
 
-@EqualsAndHashCode @ToString
-public class MultipleLinearRegressionPredictor implements LinearRegressionPredictor{
+@ToString
+public class MultipleLinearRegressionPredictor implements LinearRegressionPredictor {
 
     private final LinearRegressionModel model;
     private final Matrix XtXInverse;
     private final int degreesOfFreedom;
 
-    MultipleLinearRegressionPredictor(MultipleLinearRegressionModel model) {
+    MultipleLinearRegressionPredictor(@NonNull MultipleLinearRegressionModel model) {
         this.model = model;
         this.XtXInverse = Matrix.create(model.XtXInverse());
         this.degreesOfFreedom = model.response().length - model.designMatrix().length;
@@ -99,6 +97,26 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
             return newData.push(ones, false);
         }
         return newData;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MultipleLinearRegressionPredictor predictor = (MultipleLinearRegressionPredictor) o;
+
+        if (degreesOfFreedom != predictor.degreesOfFreedom) return false;
+        if (!model.equals(predictor.model)) return false;
+        return XtXInverse.equals(predictor.XtXInverse);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = model.hashCode();
+        result = 31 * result + XtXInverse.hashCode();
+        result = 31 * result + degreesOfFreedom;
+        return result;
     }
 
 //    private double[][] copy(double[][] values) {

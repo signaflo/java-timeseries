@@ -35,8 +35,8 @@ import static org.hamcrest.Matchers.not;
 
 public final class MatrixSpec {
 
-    private MatrixOneD A;
-    private MatrixOneD B;
+    private Matrix A;
+    private Matrix B;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -61,7 +61,7 @@ public final class MatrixSpec {
 
     @Test
     public void whenMatrixSumWithInvalidDimensionsException() {
-        B = new MatrixOneD(2, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5);
+        B = Matrix.create(2, 3, 5.0, 9.0, 2.0, 5.0, 3.5, 7.5);
         exception.expect(IllegalArgumentException.class);
         A.plus(B);
     }

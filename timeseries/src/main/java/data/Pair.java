@@ -3,7 +3,6 @@ package data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
-@EqualsAndHashCode
 public final class Pair<T extends Comparable<T>, S extends Comparable<S>>
         implements Comparable<Pair<T, S>> {
 
@@ -23,11 +22,6 @@ public final class Pair<T extends Comparable<T>, S extends Comparable<S>>
         this.second = second;
     }
 
-    @Override
-    public String toString() {
-        return "(" + first.toString() + ", " + second.toString() + ")";
-    }
-
     /**
      * Compare this pair to another pair for lexicographic ordering.
      * The algorithm was adapted from the top answer <a target="_blank" href=
@@ -44,4 +38,27 @@ public final class Pair<T extends Comparable<T>, S extends Comparable<S>>
         }
         return this.second.compareTo(otherPair.second);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Pair<?, ?> pair = (Pair<?, ?>) o;
+
+        return first.equals(pair.first) && second.equals(pair.second);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = first.hashCode();
+        result = 31 * result + second.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + first.toString() + ", " + second.toString() + ")";
+    }
+
 }

@@ -200,18 +200,7 @@ public interface Matrix {
     double[][] data2D();
 
     /**
-     * <p>
-     *     The storage order of the two-dimensional array representation of a matrix.
-     * </p>
-     *
-     * <p>
-     *     Note that a matrix implementation class may store its data internally as a one-dimensional
-     *     array. However, it may also accept two-dimensional arrays in constructors, return a two-dimensional
-     *     array view of itself, or use the two-dimensional representation in its toString method. For these reasons,
-     *     it needs to know whether the data in the two-dimensional array representation is stored row-by-row or
-     *     column-by-column. In other words, it needs to know whether the data in the outer array is to viewed
-     *     as an array of row vectors or an array of column vectors.
-     * </p>
+     * The storage order of the two-dimensional array representation of a matrix.
      */
     enum Order {
         BY_ROW, BY_COLUMN

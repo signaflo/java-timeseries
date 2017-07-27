@@ -24,26 +24,30 @@
 
 package data.regression;
 
+import com.google.common.testing.EqualsTester;
 import data.Pair;
+import data.Range;
 import math.linear.doubles.Matrix;
 import math.linear.doubles.Vector;
+import math.operations.DoubleFunctions;
 import org.junit.Test;
 import timeseries.TestData;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertArrayEquals;
 
 public class LinearRegressionPredictionSpec {
 
-    double[] mtcars_mpg = TestData.mtcars_mpg.clone();
-    double[] mtcars_hp = TestData.mtcars_hp.clone();
-    double[] mtcars_wt = TestData.mtcars_wt.clone();
-    double[][] predictors = {mtcars_hp, mtcars_wt};
-    MultipleLinearRegressionModel model = MultipleLinearRegressionModel.builder()
-                                                               .response(mtcars_mpg)
-                                                               .predictors(predictors)
-                                                               .build();
-    MultipleLinearRegressionPredictor predictor = new MultipleLinearRegressionPredictor(model);
+    private double[] mtcars_mpg = TestData.mtcars_mpg.clone();
+    private double[] mtcars_hp = TestData.mtcars_hp.clone();
+    private double[] mtcars_wt = TestData.mtcars_wt.clone();
+    private double[][] predictors = {mtcars_hp, mtcars_wt};
+    private MultipleLinearRegressionModel regression = MultipleLinearRegressionModel.builder()
+                                                                                    .response(mtcars_mpg)
+                                                                                    .predictors(predictors)
+                                                                                    .build();
+    private MultipleLinearRegressionPredictor predictor = new MultipleLinearRegressionPredictor(regression);
 
     @Test
     public void whenPredictNewDataThenValueCorrect() {
@@ -55,8 +59,10 @@ public class LinearRegressionPredictionSpec {
         Matrix predictionMatrix = Matrix.create(predictors, Matrix.Order.BY_ROW);
         Vector result = predictor.predict(predictionMatrix);
         Vector seFit = predictor.standardErrorFit(predictionMatrix);
-        System.out.println(result);
-        System.out.println(seFit);
+        double[] expectedPrediction = {11.99017, 11.93639};
+        double[] expectedSeFit = {1.20136, 1.39828};
+        assertArrayEquals(expectedPrediction, result.elements(), 1E-4);
+        assertArrayEquals(expectedSeFit, seFit.elements(), 1E-4);
     }
 
     @Test
@@ -65,5 +71,22 @@ public class LinearRegressionPredictionSpec {
         Pair<Double, Double> confidenceInterval = predictor.confidenceInterval(0.05, Vector.from(newData));
         assertThat(confidenceInterval.first, is(closeTo(9.533121, 1E-4)));
         assertThat(confidenceInterval.second, is(closeTo(14.44722, 1E-4)));
+    }
+
+    @Test
+    public void equalsContract() {
+        MultipleLinearRegressionModel other1 = this.regression.withHasIntercept(false);
+        MultipleLinearRegressionModel other2 = this.regression.withPredictors(DoubleFunctions.boxCox(mtcars_hp, 0.0));
+        MultipleLinearRegressionModel other3 = this.regression.withResponse(
+                DoubleFunctions.boxCox(TestData.mtcars_mpg, 0.0));
+        MultipleLinearRegressionPredictor predictor1 = new MultipleLinearRegressionPredictor(other1);
+        MultipleLinearRegressionPredictor predictor2 = new MultipleLinearRegressionPredictor(other2);
+        MultipleLinearRegressionPredictor predictor3 = new MultipleLinearRegressionPredictor(other3);
+        new EqualsTester()
+                .addEqualityGroup(this.predictor, new MultipleLinearRegressionPredictor(this.regression))
+                .addEqualityGroup(predictor1, new MultipleLinearRegressionPredictor(other1))
+                .addEqualityGroup(predictor2, new MultipleLinearRegressionPredictor(other2))
+                .addEqualityGroup(predictor3, new MultipleLinearRegressionPredictor(other3))
+                .testEquals();
     }
 }
