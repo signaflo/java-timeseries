@@ -252,7 +252,7 @@ final class MatrixOneD implements Matrix {
                                                "number of rows of the matrix.");
         }
         double[][] thisData = data2D(Order.BY_COLUMN);
-        double[][] newMatrix = new double[this.nrow + 1][];
+        double[][] newMatrix = new double[this.ncol + 1][];
         newMatrix[0] = newData.elements();
         for (int i = 1; i < newMatrix.length; i++) {
             newMatrix[i] = thisData[i - 1].clone();

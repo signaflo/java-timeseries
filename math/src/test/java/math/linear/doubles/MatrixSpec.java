@@ -97,7 +97,9 @@ public final class MatrixSpec {
     public void whenMatrixSumComputedThenSumIsAccurate() {
         final Matrix sum = A.plus(B);
         final double[] expectedResult = new double[]{9.0, 11.0, 3.5, 7.5, 4.5, 10.5};
-        assertThat(sum.data(), is(expectedResult));
+        Matrix C = Matrix.create(3, 2, expectedResult);
+        assertThat(sum, is(C));
+        assertThat(C.minus(B),is(A));
     }
 
     @Test
@@ -165,7 +167,7 @@ public final class MatrixSpec {
         expected = new MatrixOneD(2, 2, data);
         assertThat(A.transpose(), is(expected));
         double[][] twoD = {{1.0, 2.5}, {10.0, 5.0}};
-        A = new MatrixOneD(twoD, Matrix.Order.BY_ROW);
+        A = Matrix.create(twoD);
         assertThat(A.transpose(), is(expected));
         A = new MatrixOneD(twoD, Matrix.Order.BY_COLUMN);
     }
@@ -175,6 +177,16 @@ public final class MatrixSpec {
         A = new MatrixOneD(2, 2, 1.0, 2.5, 10.0, 5.0);
         assertThat(A.isSquare(), is(true));
         assertThat(B.isSquare(), is(false));
+    }
+
+    @Test
+    public void whenGetRowThenCorrectRow() {
+        assertThat(A.getRow(0), is(Vector.from(4.0, 2.0)));
+    }
+
+    @Test
+    public void whenGetColumnThenCorrectColumn() {
+        assertThat(A.getColumn(0), is(Vector.from(4.0, 1.5, 1.0)));
     }
 
     @Test
@@ -190,6 +202,69 @@ public final class MatrixSpec {
         A = new MatrixOneD(data, Matrix.Order.BY_COLUMN);
         assertThat(A.get(0, 1), is(2.5));
         assertThat(A.get(1, 0), is(10.0));
+    }
+
+    @Test
+    public void whenIdentityBuilderThenIdentityMatrixReturned() {
+        double[][] identity = {{1.0, 0.0}, {0.0, 1.0}};
+        Matrix expected = Matrix.create(identity);
+        Matrix idMatrix = Matrix.identityBuilder(2).build();
+        assertThat(idMatrix, is(expected));
+    }
+
+    @Test
+    public void whenBuilderThenAllZeros() {
+        double[][] zeros = {{0.0, 0.0}, {0.0, 0.0}};
+        Matrix expected = Matrix.create(zeros);
+        Matrix zeroMatrix = Matrix.builder(2, 2).build();
+        assertThat(zeroMatrix, is(expected));
+    }
+
+    @Test
+    public void whenGetDiagonalThenDiagonalElementsReturned() {
+        double[] expected = new double[] {4.0, 2.5};
+        assertThat(A.diagonal(), is(expected));
+    }
+
+    @Test
+    public void whenRowPushThenNewMatrixWithNewRowAtTop() {
+        Matrix expected = new MatrixOneD(4, 2, 7.5, 0.5, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
+        Matrix rowPushed = A.push(Vector.from(7.5, 0.5), true);
+        assertThat(rowPushed, is(expected));
+    }
+
+    @Test
+    public void whenColumnPushThenNewMatrixNewColumnToLeft() {
+        double[] newColumn = {6.0, 9.0, 4.5};
+        Matrix expected = new MatrixOneD(new double[][] {newColumn, {4.0, 1.5, 1.0}, {2.0, 2.5, 3.0}},
+                                         Matrix.Order.BY_COLUMN);
+        Matrix columnPushed = A.push(Vector.from(newColumn), false);
+        assertThat(columnPushed, is(expected));
+    }
+
+    @Test
+    public void whenData2DByColumnThenExpectedTwoDArray() {
+        double[][] expected = {{4.0, 2.0}, {1.5, 2.5}, {1.0, 3.0}};
+        assertThat(A.data2D(), is(expected));
+        expected = new double[][] {{4.0, 1.5, 1.0}, { 2.0, 2.5, 3.0}};
+        assertThat(A.data2D(Matrix.Order.BY_COLUMN), is(expected));
+        A = Matrix.create(expected, Matrix.Order.BY_COLUMN);
+        assertThat(A.data2D(), is(expected));
+    }
+
+    @Test
+    public void whenSymmetricPartThenCorrectSymmetricMatrixReturned() {
+        MatrixOneD X = (MatrixOneD)Matrix.identityBuilder(2)
+                  .set(0, 1, 3.5)
+                  .set(1, 0, -2.0)
+                  .set(1, 1, 7.0)
+                  .build();
+        Matrix symmetricPart = Matrix.identityBuilder(2)
+                                     .set(0, 1, 0.75)
+                                     .set(1, 0, 0.75)
+                                     .set(1, 1, 7.0)
+                                     .build();
+        assertThat(X.getSymmetricPart(), is(symmetricPart));
     }
 
     @Test
