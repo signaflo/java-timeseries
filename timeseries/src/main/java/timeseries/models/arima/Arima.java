@@ -24,6 +24,7 @@
 
 package timeseries.models.arima;
 
+import lombok.NonNull;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.models.Forecast;
@@ -42,7 +43,7 @@ public interface Arima extends Model {
      *
      * @return a new ARIMA model from the given observations and model order.
      */
-    static Arima model(TimeSeries observations, ArimaOrder order) {
+    static Arima model(@NonNull TimeSeries observations, @NonNull ArimaOrder order) {
         return new ArimaModel(observations, order, TimePeriod.oneYear(), FittingStrategy.CSSML);
     }
 
@@ -58,7 +59,7 @@ public interface Arima extends Model {
      *
      * @return a new ARIMA model from the given observations, model order, and seasonal cycle.
      */
-    static Arima model(TimeSeries observations, ArimaOrder order, TimePeriod seasonalCycle) {
+    static Arima model(@NonNull TimeSeries observations, @NonNull ArimaOrder order, @NonNull TimePeriod seasonalCycle) {
         return new ArimaModel(observations, order, seasonalCycle, FittingStrategy.CSSML);
     }
 
@@ -74,7 +75,8 @@ public interface Arima extends Model {
      *
      * @return a new ARIMA model from the given observations, model order, and fitting strategy.
      */
-    static Arima model(TimeSeries observations, ArimaOrder order, FittingStrategy fittingStrategy) {
+    static Arima model(@NonNull TimeSeries observations, @NonNull ArimaOrder order,
+                       @NonNull FittingStrategy fittingStrategy) {
         return new ArimaModel(observations, order, TimePeriod.oneYear(), fittingStrategy);
     }
 
@@ -92,8 +94,8 @@ public interface Arima extends Model {
      *
      * @return a new ARIMA model from the given observations, model order, seasonal cycle, and fitting strategy.
      */
-    static Arima model(TimeSeries observations, ArimaOrder order, TimePeriod seasonalCycle,
-                            FittingStrategy fittingStrategy) {
+    static Arima model(@NonNull TimeSeries observations, @NonNull ArimaOrder order, @NonNull TimePeriod seasonalCycle,
+                            @NonNull FittingStrategy fittingStrategy) {
         return new ArimaModel(observations, order, seasonalCycle, fittingStrategy);
     }
 
@@ -109,7 +111,8 @@ public interface Arima extends Model {
      *
      * @return a new ARIMA model from the given observations, model coefficients, and fitting strategy.
      */
-    static Arima model(TimeSeries observations, ArimaCoefficients coeffs, FittingStrategy fittingStrategy) {
+    static Arima model(@NonNull TimeSeries observations, @NonNull ArimaCoefficients coeffs,
+                       @NonNull FittingStrategy fittingStrategy) {
         return new ArimaModel(observations, coeffs, TimePeriod.oneYear(), fittingStrategy);
     }
 
@@ -125,7 +128,8 @@ public interface Arima extends Model {
      *
      * @return a new ARIMA model from the given observations, model coefficients, and seasonal cycle.
      */
-    static Arima model(TimeSeries observations, ArimaCoefficients coeffs, TimePeriod seasonalCycle) {
+    static Arima model(@NonNull TimeSeries observations, @NonNull ArimaCoefficients coeffs,
+                       @NonNull TimePeriod seasonalCycle) {
         return new ArimaModel(observations, coeffs, seasonalCycle, FittingStrategy.CSSML);
     }
 
@@ -143,8 +147,8 @@ public interface Arima extends Model {
      *
      * @return a new ARIMA model from the given observations, model coefficients, seasonal cycle, and fitting strategy.
      */
-    static Arima model(TimeSeries observations, ArimaCoefficients coeffs, TimePeriod seasonalCycle,
-                            FittingStrategy fittingStrategy) {
+    static Arima model(@NonNull TimeSeries observations, @NonNull ArimaCoefficients coeffs,
+                       @NonNull TimePeriod seasonalCycle, @NonNull FittingStrategy fittingStrategy) {
         return new ArimaModel(observations, coeffs, seasonalCycle, fittingStrategy);
     }
 

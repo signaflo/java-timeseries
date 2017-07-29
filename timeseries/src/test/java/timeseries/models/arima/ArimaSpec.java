@@ -153,6 +153,56 @@ public class ArimaSpec {
     }
 
     @Test
+    public void whenNullObservationsThenNPE() {
+        ArimaOrder order = ArimaOrder.order(0, 1, 0);
+        exception.expect(NullPointerException.class);
+        Arima.model(null, order);
+    }
+
+    @Test
+    public void whenNullObservationsThenNPE2() {
+        ArimaOrder order = ArimaOrder.order(0, 1, 0);
+        Arima.FittingStrategy fittingStrategy = Arima.FittingStrategy.CSSML;
+        exception.expect(NullPointerException.class);
+        Arima.model(null, order, fittingStrategy);
+    }
+
+    @Test
+    public void whenNullObservationsThenNPE3() {
+        ArimaOrder order = ArimaOrder.order(0, 1, 0);
+        TimePeriod period = TimePeriod.oneYear();
+        exception.expect(NullPointerException.class);
+        Arima.model(null, order, period);
+    }
+
+    @Test
+    public void whenNullObservationsThenNPE4() {
+        ArimaOrder order = ArimaOrder.order(0, 1, 0);
+        TimePeriod period = TimePeriod.oneYear();
+        Arima.FittingStrategy fittingStrategy = Arima.FittingStrategy.CSSML;
+        exception.expect(NullPointerException.class);
+        Arima.model(null, order, period, fittingStrategy);
+    }
+
+    @Test
+    public void whenNullObservationsThenNPE5() {
+        ArimaOrder order = ArimaOrder.order(0, 1, 0);
+        ArimaCoefficients coefficients = ArimaCoefficients.newBuilder().build();
+        Arima.FittingStrategy fittingStrategy = Arima.FittingStrategy.CSSML;
+        exception.expect(NullPointerException.class);
+        Arima.model(null, coefficients, fittingStrategy);
+    }
+
+    @Test
+    public void whenNullObservationsThenNPE6() {
+        ArimaOrder order = ArimaOrder.order(0, 1, 0);
+        ArimaCoefficients coefficients = ArimaCoefficients.newBuilder().build();
+        TimePeriod period = TimePeriod.oneYear();
+        exception.expect(NullPointerException.class);
+        Arima.model(null, coefficients, period);
+    }
+
+    @Test
     public void testEqualsAndHashCode() {
         TimeSeries series = TestData.livestock;
         ArimaOrder order = ArimaOrder.order(1, 1, 1);

@@ -62,7 +62,6 @@ import static math.stats.Statistics.sumOfSquared;
  *
  * @author Jacob Rachiele
  */
-@EqualsAndHashCode
 final class ArimaModel implements Arima {
 
     private static final double EPSILON = Math.ulp(1.0);
@@ -314,74 +313,74 @@ final class ArimaModel implements Arima {
         return scale(finalPolynomial.parameters(), -1.0);
     }
 
-    private static boolean isInvertible(double[] ma) {
-        if (ma.length > 0) {
-            double[] maCoeffs = new double[ma.length + 1];
-            maCoeffs[0] = 1.0;
-            System.arraycopy(ma, 0, maCoeffs, 1, ma.length);
-            final double[] roots = roots(maCoeffs);
-            for (double root : roots) {
-                if (root <= 1.0) return false;
-            }
-            return true;
-        }
-        return true;
-    }
-
-    private static boolean isStationary(double[] ar) {
-        if (ar.length > 0) {
-            double[] arCoeffs = new double[ar.length + 1];
-            arCoeffs[0] = 1.0;
-            for (int i = 0; i < ar.length; i++) {
-                arCoeffs[i + 1] = -ar[i];
-            }
-            final double[] roots = roots(arCoeffs);
-            for (double root : roots) {
-                if (root <= 1.0) return false;
-            }
-            return true;
-        }
-        // If ar.length == 0 then it is stationary.
-        return true;
-    }
-
-    private static double[] roots(double[] arCoeffs) {
-        final Complex64F[] complexRoots = findRoots(arCoeffs);
-        final double[] absoluteRoots = new double[complexRoots.length];
-        for (int i = 0; i < complexRoots.length; i++) {
-            absoluteRoots[i] = complexRoots[i].getMagnitude();
-        }
-        return absoluteRoots;
-    }
-
-    // Source: https://stackoverflow.com/questions/13805644/finding-roots-of-polynomial-in-java
-    private static Complex64F[] findRoots(double... coefficients) {
-        int N = coefficients.length - 1;
-
-        // Construct the companion matrix. This is a square N x N matrix.
-        final DenseMatrix64F c = new DenseMatrix64F(N, N);
-
-        double a = coefficients[N];
-        for (int i = 0; i < N; i++) {
-            c.set(i, N - 1, -coefficients[i] / a);
-        }
-        for (int i = 1; i < N; i++) {
-            c.set(i, i - 1, 1);
-        }
-
-        // Use generalized eigenvalue decomposition to find the roots.
-        EigenDecomposition<DenseMatrix64F> evd = DecompositionFactory.eig(N, false);
-
-        evd.decompose(c);
-
-        final Complex64F[] roots = new Complex64F[N];
-
-        for (int i = 0; i < N; i++) {
-            roots[i] = evd.getEigenvalue(i);
-        }
-
-        return roots;
-    }
+//    private static boolean isInvertible(double[] ma) {
+//        if (ma.length > 0) {
+//            double[] maCoeffs = new double[ma.length + 1];
+//            maCoeffs[0] = 1.0;
+//            System.arraycopy(ma, 0, maCoeffs, 1, ma.length);
+//            final double[] roots = roots(maCoeffs);
+//            for (double root : roots) {
+//                if (root <= 1.0) return false;
+//            }
+//            return true;
+//        }
+//        return true;
+//    }
+//
+//    private static boolean isStationary(double[] ar) {
+//        if (ar.length > 0) {
+//            double[] arCoeffs = new double[ar.length + 1];
+//            arCoeffs[0] = 1.0;
+//            for (int i = 0; i < ar.length; i++) {
+//                arCoeffs[i + 1] = -ar[i];
+//            }
+//            final double[] roots = roots(arCoeffs);
+//            for (double root : roots) {
+//                if (root <= 1.0) return false;
+//            }
+//            return true;
+//        }
+//        // If ar.length == 0 then it is stationary.
+//        return true;
+//    }
+//
+//    private static double[] roots(double[] arCoeffs) {
+//        final Complex64F[] complexRoots = findRoots(arCoeffs);
+//        final double[] absoluteRoots = new double[complexRoots.length];
+//        for (int i = 0; i < complexRoots.length; i++) {
+//            absoluteRoots[i] = complexRoots[i].getMagnitude();
+//        }
+//        return absoluteRoots;
+//    }
+//
+//    // Source: https://stackoverflow.com/questions/13805644/finding-roots-of-polynomial-in-java
+//    private static Complex64F[] findRoots(double... coefficients) {
+//        int N = coefficients.length - 1;
+//
+//        // Construct the companion matrix. This is a square N x N matrix.
+//        final DenseMatrix64F c = new DenseMatrix64F(N, N);
+//
+//        double a = coefficients[N];
+//        for (int i = 0; i < N; i++) {
+//            c.set(i, N - 1, -coefficients[i] / a);
+//        }
+//        for (int i = 1; i < N; i++) {
+//            c.set(i, i - 1, 1);
+//        }
+//
+//        // Use generalized eigenvalue decomposition to find the roots.
+//        EigenDecomposition<DenseMatrix64F> evd = DecompositionFactory.eig(N, false);
+//
+//        evd.decompose(c);
+//
+//        final Complex64F[] roots = new Complex64F[N];
+//
+//        for (int i = 0; i < N; i++) {
+//            roots[i] = evd.getEigenvalue(i);
+//        }
+//
+//        return roots;
+//    }
 
     /**
      * Compute point forecasts for the given number of steps ahead and return the result in a primitive array.
@@ -462,17 +461,17 @@ final class ArimaModel implements Arima {
      * sides and rearrange terms to obtain Y_t = Y_t - diffedSeries_t + ArmaProcess_t. Thus, our in-sample estimate of
      * Y_t, the "integrated" series, is Y_t(hat) = Y_t - diffedSeries_t + fittedArmaProcess_t.
      */
-    private double[] integrate(final double[] fitted) {
-        final int offset = this.order.d + this.order.D * this.seasonalFrequency;
-        final double[] integrated = new double[this.observations.size()];
-        for (int t = 0; t < offset; t++) {
-            integrated[t] = observations.at(t);
-        }
-        for (int t = offset; t < observations.size(); t++) {
-            integrated[t] = observations.at(t) - differencedSeries.at(t - offset) + fitted[t - offset];
-        }
-        return integrated;
-    }
+//    private double[] integrate(final double[] fitted) {
+//        final int offset = this.order.d + this.order.D * this.seasonalFrequency;
+//        final double[] integrated = new double[this.observations.size()];
+//        for (int t = 0; t < offset; t++) {
+//            integrated[t] = observations.at(t);
+//        }
+//        for (int t = offset; t < observations.size(); t++) {
+//            integrated[t] = observations.at(t) - differencedSeries.at(t - offset) + fitted[t - offset];
+//        }
+//        return integrated;
+//    }
 
     private Matrix getInitialHessian(final int n) {
         return Matrix.identity(n);
@@ -492,14 +491,14 @@ final class ArimaModel implements Arima {
         return builder.build();
     }
 
-    private double[] getInitialParameters(final ArimaParameters parameters) {
-        // Set initial constant to the mean and all other parameters to zero.
-        double[] initParams = new double[order.sumARMA() + order.constant.asInt() + order.drift.asInt()];
-        if (order.constant.include() && abs(parameters.getMeanParScale()) > EPSILON) {
-            initParams[initParams.length - 1] = parameters.getMean() / parameters.getMeanParScale();
-        }
-        return initParams;
-    }
+//    private double[] getInitialParameters(final ArimaParameters parameters) {
+//        // Set initial constant to the mean and all other parameters to zero.
+//        double[] initParams = new double[order.sumARMA() + order.constant.asInt() + order.drift.asInt()];
+//        if (order.constant.include() && abs(parameters.getMeanParScale()) > EPSILON) {
+//            initParams[initParams.length - 1] = parameters.getMean() / parameters.getMeanParScale();
+//        }
+//        return initParams;
+//    }
 
     private double[] getSarCoeffs(final Vector optimizedParams) {
         final double[] sarCoeffs = new double[order.P];
@@ -595,6 +594,34 @@ final class ArimaModel implements Arima {
         String newLine = System.lineSeparator();
         return newLine + order + newLine + modelInfo + newLine + arimaCoefficients +
                newLine + newLine + "fit using " + fittingStrategy;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ArimaModel that = (ArimaModel) o;
+
+        if (seasonalFrequency != that.seasonalFrequency) return false;
+        if (!observations.equals(that.observations)) return false;
+        if (!order.equals(that.order)) return false;
+        if (!modelInfo.equals(that.modelInfo)) return false;
+        if (!arimaCoefficients.equals(that.arimaCoefficients)) return false;
+        if (fittingStrategy != that.fittingStrategy) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = observations.hashCode();
+        result = 31 * result + order.hashCode();
+        result = 31 * result + modelInfo.hashCode();
+        result = 31 * result + arimaCoefficients.hashCode();
+        result = 31 * result + fittingStrategy.hashCode();
+        result = 31 * result + seasonalFrequency;
+        return result;
     }
 
     /**
