@@ -31,7 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class UniformDistributionSpec {
+public class UniformSpec {
 
     private static final double EPSILON = Math.ulp(1.0);
     private double a = -2.5;
@@ -74,5 +74,20 @@ public class UniformDistributionSpec {
     public void whenQuantileWithProbGreaterThanOneThenIllegalArgument() {
         exception.expect(IllegalArgumentException.class);
         uniform.quantile(1.01);
+    }
+
+    @Test
+    public void testEqualsAndHashCode() {
+        Uniform uniform2 = new Uniform(a, b);
+        Uniform uniform3 = new Uniform(-a, b);
+        Uniform uniform4 = new Uniform(a, 2 * b);
+        assertThat(uniform, is(uniform));
+        assertThat(uniform, is(uniform2));
+        assertThat(uniform.hashCode(), is(uniform2.hashCode()));
+        assertThat(uniform2, is(not(uniform3)));
+        assertThat(uniform2, is(not(uniform4)));
+        assertThat(uniform2, is(not(nullValue())));
+        assertThat(uniform2, is(not(new Object())));
+
     }
 }

@@ -32,6 +32,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+
 public class FieldMatrixSpec {
 
     private Complex c1 = new Complex(3, 5);
@@ -55,8 +58,18 @@ public class FieldMatrixSpec {
     }
 
     @Test
-    public void testMatrixCreation() {
+    public void testEqualsAndHashCode() {
         FieldMatrix<Complex> matrix = new FieldMatrix<>(Arrays.asList(vec1, vec2));
+        FieldMatrix<Complex> matrix2 = new FieldMatrix<>(Arrays.asList(vec1, vec2));
+        FieldMatrix<Complex> matrix3 = new FieldMatrix<>(Arrays.asList(vec2, vec1));
+        assertThat(matrix, is(matrix));
+        assertThat(matrix, is(matrix2));
+        assertThat(matrix.hashCode(), is(matrix2.hashCode()));
+        assertThat(matrix, is(not(matrix3)));
+        Object nullValue = null;
+        assertThat(matrix, is(not(nullValue)));
+        assertThat(matrix, is(not(new Object())));
+
 
     }
 }

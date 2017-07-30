@@ -176,6 +176,13 @@ public class RealSpec {
         assertThat(interval.doesntContain(10.0000001), is(true));
     }
 
+
+    @Test
+    public void whenRealArrayFromDoubleArrayThenCorrectArrayCreated() {
+        Real[] expected = {a, b};
+        double[] data = {a.asDouble(), b.asDouble()};
+        assertThat(Reals.arrayFrom(data), is(expected));
+    }
     @Test
     public void testEqualsAndHashCode() {
         Real c = Real.from(3.0);

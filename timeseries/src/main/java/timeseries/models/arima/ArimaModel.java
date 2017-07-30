@@ -25,7 +25,6 @@ package timeseries.models.arima;
 
 import data.Range;
 import data.regression.LinearRegressionModel;
-import lombok.EqualsAndHashCode;
 import math.linear.doubles.Matrix;
 import math.linear.doubles.MatrixBuilder;
 import timeseries.models.arima.ArimaKalmanFilter.KalmanOutput;
@@ -34,10 +33,6 @@ import math.operations.DoubleFunctions;
 import math.linear.doubles.Vector;
 import math.function.AbstractMultivariateFunction;
 import math.optim.BFGS;
-import org.ejml.data.Complex64F;
-import org.ejml.data.DenseMatrix64F;
-import org.ejml.factory.DecompositionFactory;
-import org.ejml.interfaces.decomposition.EigenDecomposition;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.models.Forecast;
@@ -216,7 +211,7 @@ final class ArimaModel implements Arima {
         if (order.drift.include()) {
             matrix[order.constant.asInt()] = Range.inclusiveRange(1, size).asArray();
         }
-        return Matrix.create(matrix, Matrix.Order.BY_COLUMN);
+        return Matrix.create(Matrix.Order.BY_COLUMN, matrix);
     }
 
     private Matrix getForecastRegressionMatrix(int steps, ArimaOrder order) {
@@ -228,7 +223,7 @@ final class ArimaModel implements Arima {
             int startTime = this.observations.size() + 1;
             matrix[order.constant.asInt()] = Range.inclusiveRange(startTime, startTime + steps).asArray();
         }
-        return Matrix.create(matrix, Matrix.Order.BY_COLUMN);
+        return Matrix.create(Matrix.Order.BY_COLUMN, matrix);
     }
 
     private LinearRegressionModel getLinearRegression(TimeSeries differencedSeries, Matrix designMatrix) {
@@ -244,7 +239,7 @@ final class ArimaModel implements Arima {
         regressionBuilder.response(differencedSeries);
         regressionBuilder.hasIntercept(TimeSeriesLinearRegressionModel.Intercept.EXCLUDE);
         regressionBuilder.timeTrend(TimeSeriesLinearRegressionModel.TimeTrend.EXCLUDE);
-        regressionBuilder.externalRegressors(Matrix.create(diffedMatrix, Matrix.Order.BY_COLUMN));
+        regressionBuilder.externalRegressors(Matrix.create(Matrix.Order.BY_COLUMN, diffedMatrix));
         return regressionBuilder.build();
     }
 

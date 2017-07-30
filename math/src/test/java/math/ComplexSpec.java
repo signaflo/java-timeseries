@@ -116,14 +116,15 @@ public class ComplexSpec {
     @Test
     public void whenSqrtComputedThenResultCorrect() {
         Complex c1 = new Complex(3, 5);
-        assertThat(c1.sqrt(), is(equalTo(new Complex(2.101303392521568, 1.189737764140758))));
+        assertThat(c1.complexSqrt(), is(equalTo(new Complex(2.101303392521568, 1.189737764140758))));
+        assertThat(c1.sqrt(), is(c1.complexSqrt()));
     }
 
     @Test
     public void whenSqrtWithNegativeRealComputedThenResultCorrect() {
         Complex c1 = new Complex(-3.0, 1.5);
         Complex expected = new Complex(0.4207742662340964, 1.782428394950227);
-        MatcherAssert.assertThat(c1.sqrt().abs() - expected.abs(), is(lessThan(EPSILON)));
+        MatcherAssert.assertThat(c1.complexSqrt().abs() - expected.abs(), is(lessThan(EPSILON)));
     }
 
     @Test

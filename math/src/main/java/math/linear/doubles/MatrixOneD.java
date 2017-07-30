@@ -77,10 +77,10 @@ final class MatrixOneD implements Matrix {
     /**
      * Create a new matrix from the given two-dimensional array of data.
      *
-     * @param matrixData  the two-dimensional array of data constituting the matrix.
      * @param order the storage order of the elements in the supplied two dimensional array.
+     * @param matrixData  the two-dimensional array of data constituting the matrix.
      */
-    MatrixOneD(final double[][] matrixData, Order order) {
+    MatrixOneD(Order order, final double[]... matrixData) {
         this.order = order;
         if (matrixData.length == 0) {
             //throw new IllegalArgumentException("The matrix data cannot be empty.");
@@ -257,7 +257,7 @@ final class MatrixOneD implements Matrix {
         for (int i = 1; i < newMatrix.length; i++) {
             newMatrix[i] = thisData[i - 1].clone();
         }
-        return new MatrixOneD(newMatrix, Order.BY_COLUMN);
+        return new MatrixOneD(Order.BY_COLUMN, newMatrix);
     }
 
     private Matrix rowPush(Vector newData) {

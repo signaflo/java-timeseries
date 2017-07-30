@@ -78,6 +78,24 @@ public final class Rational implements FieldElement<Rational> {
         return new Rational((int)top, (int)bottom);
     }
 
+//    @SuppressWarnings("unchecked")
+//    @Override
+//    public <N extends FieldElement<N>> N sqrt(Class<N> clazz) {
+//        if (clazz.equals(Rational.class)) {
+//            return (N)this.sqrt();
+//        } else if (clazz.equals(Real.class)) {
+//            return (N)this.realSqrt();
+//        } else if (clazz.equals(Complex.class)){
+//            return (N)this.complexSqrt();
+//        }
+//        throw new IllegalStateException("No square root of the given class type could be computed.");
+//    }
+
+    @Override
+    public Complex complexSqrt() {
+        return new Complex(this.p / (double) this.q).complexSqrt();
+    }
+
     @Override
     public Rational conjugate() {
         return this;

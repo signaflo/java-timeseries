@@ -32,11 +32,11 @@ public class QuadraticFormSpec {
 
     private Vector x = Vector.from(1.0, 3.0);
     private Matrix A = Matrix.create(2, 2, 2.0, 4.0, 6.0, 8.0);
-    private QuadraticForm Q = new QuadraticForm(x, A);
+    private QuadraticForm q = new QuadraticForm(x, A);
 
     @Test
     public void whenMultiplyTwoByTwoThenCorrectResult() {
-        assertThat(Q.multiply(), is(104.0));
+        assertThat(q.multiply(), is(104.0));
         assertThat(QuadraticForm.multiply(x, A), is(104.0));
     }
 
@@ -44,9 +44,21 @@ public class QuadraticFormSpec {
     public void whenMultiplyThreeByThreeThenCorrectResult() {
         double[][] data = {{2.0, 8.0, 14.0}, {4.0, 10.0, 16.0}, {6.0, 12.0, 18.0}};
         x = Vector.from(1.0, 3.0, 5.0);
-        A = Matrix.create(data, Matrix.Order.BY_COLUMN);
-        Q = new QuadraticForm(x, A);
-        assertThat(Q.multiply(), is(1098.0));
+        A = Matrix.create(Matrix.Order.BY_COLUMN, data);
+        q = new QuadraticForm(x, A);
+        assertThat(q.multiply(), is(1098.0));
         assertThat(QuadraticForm.multiply(x, A), is(1098.0));
+    }
+
+    @Test
+    public void testEqualsAndHashCode() {
+        double[][] data = {{2.0, 8.0, 14.0}, {4.0, 10.0, 16.0}, {6.0, 12.0, 18.0}};
+        Vector y = Vector.from(1.0, 3.0, 5.0);
+        Matrix B = Matrix.create(Matrix.Order.BY_COLUMN, data);
+        QuadraticForm r = new QuadraticForm(y, B);
+        QuadraticForm s = new QuadraticForm(x, A);
+        assertThat(q, is(s));
+        assertThat(q.hashCode(), is(s.hashCode()));
+        assertThat(r, is(not(s)));
     }
 }

@@ -107,6 +107,13 @@ public class DoubleFunctionsSpec {
     }
 
     @Test
+    public void whenListFromArrayThenCorrectList() {
+        double[] data = arrayFrom(1.0, 4.0, 9.0, 16.0);
+        List<Double> expected = Arrays.asList(1.0, 4.0, 9.0, 16.0);
+        assertThat(DoubleFunctions.listFrom(data), is(expected));
+    }
+
+    @Test
     public void whenDataMeanRemovedThenResultMeanZero() {
         double[] data = debitcardData;
         assertThat(Statistics.meanOf(demean(data)), is(closeTo(0.0, 1E-10)));
@@ -159,6 +166,22 @@ public class DoubleFunctionsSpec {
         double[][] primitive2d = new double[][] {new double[] {1.0, 3.0}, new double[] {2.0, 4.0}};
         assertThat(DoubleFunctions.twoDListFrom(primitive2d), is(list2d));
         assertThat(DoubleFunctions.twoDArrayFrom(list2d), is(primitive2d));
+    }
+
+    @Test
+    public void whenPushToArrayThenNewValueAtFront() {
+        double[] data = {2.0, 3.0};
+        double[] expected = {1.0, 2.0, 3.0};
+        assertThat(DoubleFunctions.push(1.0, data), is(expected));
+    }
+
+    @Test
+    public void whenPushTo2DArrayThenNewArrayAtFront() {
+        double[][] primitive2d = {new double[] {1.0, 3.0}, new double[] {2.0, 4.0}};
+        double[] newArray = {5.0, 7.0};
+        double[][] expected = {newArray, primitive2d[0], primitive2d[1]};
+        assertThat(DoubleFunctions.push(newArray, primitive2d), is(expected));
+
     }
 
     private double[] debitcardData = {7204, 7335, 7812, 7413, 9136, 8725, 8751,

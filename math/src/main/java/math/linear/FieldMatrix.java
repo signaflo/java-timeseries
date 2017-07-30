@@ -33,12 +33,27 @@ import math.FieldElement;
 
 import java.util.List;
 
-@EqualsAndHashCode @ToString
+@ToString
 final class FieldMatrix<T extends FieldElement<T>> {
 
     private final List<FieldVector<T>> columns;
 
     FieldMatrix(final List<FieldVector<T>> columns) {
         this.columns = ImmutableList.copyOf(columns);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FieldMatrix<?> that = (FieldMatrix<?>) o;
+
+        return columns.equals(that.columns);
+    }
+
+    @Override
+    public int hashCode() {
+        return columns.hashCode();
     }
 }

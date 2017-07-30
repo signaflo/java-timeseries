@@ -148,7 +148,7 @@ public final class Complex implements FieldElement<Complex> {
     }
 
     @Override
-    public Complex sqrt() {
+    public Complex complexSqrt() {
         if (this.real < EPSILON && Math.abs(this.im) < EPSILON) {
             return new Complex(0.0, Math.sqrt(abs()));
         }
@@ -158,6 +158,11 @@ public final class Complex implements FieldElement<Complex> {
         final double r = abs();
         final Complex zr = this.plus(r);
         return zr.dividedBy(zr.abs()).times(Math.sqrt(r));
+    }
+
+    @Override
+    public Complex sqrt() {
+        return complexSqrt();
     }
 
     /**

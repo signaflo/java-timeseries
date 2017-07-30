@@ -27,7 +27,7 @@ package math.stats.distributions;
 import lombok.EqualsAndHashCode;
 import smile.math.Random;
 
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "random")
 public final class Uniform implements Distribution {
 
     private final double a;

@@ -10,6 +10,12 @@ import math.operations.DoubleFunctions;
  */
 public interface Vector {
 
+    /**
+     * Create a new vector of ones with the given size.
+     *
+     * @param n the size of the new vector.
+     * @return a new vector of ones with the given size.
+     */
     static Vector ones(int n) {
         return new GenericVector(DoubleFunctions.fill(n, 1.0));
     }
@@ -114,5 +120,11 @@ public interface Vector {
      */
     double sumOfSquares();
 
-    Vector push(double element);
+    /**
+     * Push the provided value to the front of this vector and return the resulting vector.
+     *
+     * @param value the value to push to the front of the vector.
+     * @return a vector with the provided value pushed to the front of this vector.
+     */
+    Vector push(double value);
 }

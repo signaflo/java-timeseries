@@ -26,7 +26,6 @@ package data.regression;
 
 import com.google.common.testing.EqualsTester;
 import data.Pair;
-import data.Range;
 import math.linear.doubles.Matrix;
 import math.linear.doubles.Vector;
 import math.operations.DoubleFunctions;
@@ -56,7 +55,7 @@ public class LinearRegressionPredictionSpec {
         double expected = 11.99017;
         assertThat(predicted, is(closeTo(expected, 1E-4)));
         double[][] predictors = {{300.0, 4.05}, {320.0, 3.9}};
-        Matrix predictionMatrix = Matrix.create(predictors, Matrix.Order.BY_ROW);
+        Matrix predictionMatrix = Matrix.create(Matrix.Order.BY_ROW, predictors);
         Vector result = predictor.predict(predictionMatrix);
         Vector seFit = predictor.standardErrorFit(predictionMatrix);
         double[] expectedPrediction = {11.99017, 11.93639};

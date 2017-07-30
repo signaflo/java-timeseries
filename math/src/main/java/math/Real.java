@@ -100,14 +100,6 @@ public final class Real implements FieldElement<Real> {
         return Real.from(this.value * other.value);
     }
 
-    /**
-     * Computes and returns the square root of this number if the number is non-negative, and throws
-     * an IllegalStateException otherwise. If there is potential for this real number to be negative, then
-     * {@link #complexSqrt()} should be used instead.
-     *
-     * @return the square root of this number if the number is non-negative, otherwise an IllegalStateException.
-     * @throws IllegalStateException if this real number is less than zero.
-     */
     @Override
     public Real sqrt() {
         if (this.value < 0.0) {
@@ -116,10 +108,11 @@ public final class Real implements FieldElement<Real> {
         return Real.from(Math.sqrt(this.value));
     }
 
+    @Override
     public Complex complexSqrt() {
         if (this.value < 0.0) {
             Complex c = new Complex(this.value);
-            return c.sqrt();
+            return c.complexSqrt();
         }
         return new Complex(Math.sqrt(this.value));
     }

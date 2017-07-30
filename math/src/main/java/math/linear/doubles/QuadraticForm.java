@@ -26,13 +26,14 @@ package math.linear.doubles;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import math.operations.Validate;
 
 /**
  * Represents a quadratic form (see <a target="_blank" href="http://cs229.stanford.edu/section/cs229-linalg.pdf">
  * section 3.11 here</a>). Note that an object of this class may be constructed with any square
  * matrix, not just a symmetric one.
  */
-@EqualsAndHashCode @ToString
+@ToString
 public final class QuadraticForm {
 
     private final Vector x;
@@ -57,6 +58,8 @@ public final class QuadraticForm {
     }
 
     private static void validateArguments(Vector x, Matrix A) {
+        Validate.argumentsNotNull(x.getClass(), x);
+        Validate.argumentsNotNull(A.getClass(), A);
         if (!A.isSquare()) {
             throw new IllegalArgumentException("The matrix must be square.");
         }
@@ -66,7 +69,30 @@ public final class QuadraticForm {
         }
     }
 
+    /**
+     * Compute <em>x</em><sup>T</sup><em>A</em><em>x</em> and return the resulting value.
+     *
+     * @return the result of <em>x</em><sup>T</sup><em>A</em><em>x</em>.
+     */
     public double multiply() {
         return multiply(this.x, this.A);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        QuadraticForm that = (QuadraticForm) o;
+
+        if (!x.equals(that.x)) return false;
+        return A.equals(that.A);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = x.hashCode();
+        result = 31 * result + A.hashCode();
+        return result;
     }
 }

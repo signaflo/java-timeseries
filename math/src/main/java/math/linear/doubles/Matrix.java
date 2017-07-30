@@ -40,18 +40,18 @@ public interface Matrix {
      * @return a new matrix with the given data.
      */
     static Matrix create(final double[]... matrixData) {
-        return new MatrixOneD(matrixData, Order.BY_ROW);
+        return new MatrixOneD(Order.BY_ROW, matrixData);
     }
 
     /**
      * Create a new matrix from the given two-dimensional array of data.
      *
-     * @param matrixData  the two-dimensional array of data constituting the matrix.
      * @param order the storage order of the elements in the matrix data.
+     * @param matrixData  the two-dimensional array of data constituting the matrix.
      * @return a new matrix with the given data and order.
      */
-    static Matrix create(final double[][] matrixData, Order order) {
-        return new MatrixOneD(matrixData, order);
+    static Matrix create(Order order, final double[]... matrixData) {
+        return new MatrixOneD(order, matrixData);
     }
 
     /**

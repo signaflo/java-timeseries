@@ -47,6 +47,12 @@ public class RationalSpec {
     }
 
     @Test
+    public void whenDivideByZeroThenArithmeticException() {
+        exception.expect(ArithmeticException.class);
+        r1.dividedBy(Rational.from(0, 3));
+    }
+
+    @Test
     public void whenDivisionByRationalThenResultCorrect() {
         Rational expected = Rational.from(27, 28);
         assertThat(r1.dividedBy(r2), is(expected));
@@ -97,6 +103,7 @@ public class RationalSpec {
     public void whenSqrtThenResultCorrect() {
         r1 = Rational.from(9, 16);
         assertThat(r1.sqrt(), is(Rational.from(3, 4)));
+        assertThat(r1.complexSqrt(), is(new Complex(0.75)));
     }
 
     @Test
@@ -113,11 +120,12 @@ public class RationalSpec {
     @Test
     public void testHashCodeAndEquals() {
         Rational r4 = Rational.from(36, 48);
-        Real real = Real.from(3.0/4.0);
-        assertThat(r1.equals(r4), is(true));
+        assertThat(r1, is(r1));
+        assertThat(r1, is(r4));
         assertThat(r1.hashCode(), is(r4.hashCode()));
-        assertThat(r1.hashCode(), is(not(r2.hashCode())));
-        assertThat(r1.equals(real), is(false));
-        assertThat(r4.hashCode(), is(not(real.hashCode())));
+        assertThat(r1, is(not(r2)));
+        assertThat(r1, is(not(new Object())));
+        Object nullValue = null;
+        assertThat(r1, is(not(nullValue)));
     }
 }

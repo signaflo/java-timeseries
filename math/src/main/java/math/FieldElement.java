@@ -58,11 +58,27 @@ public interface FieldElement<T> extends Comparable<T> {
 
     /**
      *
-     * The square root operation applied to this element.
+     * The square root operation applied to this element, returning a complex number. If the field this
+     * element belongs to is not part of the complex number hierarchy, then implementations may throw
+     * an {@link IllegalStateException}
      *
      * @return the square root of this element.
+     * @throws IllegalStateException if the field this element belongs to is not part of the complex hierarchy.
+     */
+    Complex complexSqrt();
+
+    /**
+     * Computes and returns the square root of this number as long as the square root is of the same
+     * type (i.e., belongs to the same field) as this number.
+     * If the return type is not guaranteed to be of the same type as this number, then
+     * {@link #complexSqrt()} should be used instead.
+     *
+     * @return the square root of this number if the square root is of the same type.
+     * @throws IllegalStateException if the square root is not of the same type as this number.
      */
     T sqrt();
+
+//    <N extends FieldElement<N>> N sqrt(Class<N> clazz);
 
     /**
      * Compute and return the conjugate of this element.

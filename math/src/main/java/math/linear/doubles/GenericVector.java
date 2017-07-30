@@ -150,9 +150,9 @@ final class GenericVector implements Vector {
     }
 
     @Override
-    public Vector push(double element) {
+    public Vector push(double value) {
         double[] newElements = new double[this.elements.length + 1];
-        newElements[0] = element;
+        newElements[0] = value;
         System.arraycopy(this.elements, 0, newElements, 1, this.elements.length);
         return new GenericVector(newElements);
     }

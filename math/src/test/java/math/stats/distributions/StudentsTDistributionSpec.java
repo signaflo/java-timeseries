@@ -51,14 +51,11 @@ public class StudentsTDistributionSpec {
         Distribution t2 = new StudentsT(20);
         Distribution t3 = new StudentsT(5);
         assertThat(t, is(t));
-        MatcherAssert.assertThat(t, is(not(t2)));
-        MatcherAssert.assertThat(t2, is(not(t)));
-        assertThat(t.hashCode(), is(not(t2.hashCode())));
         assertThat(t.hashCode(), is(t3.hashCode()));
         assertThat(t, is(t3));
-        t3 = null;
-        MatcherAssert.assertThat(t, is(not(t3)));
-        String string = "";
-        MatcherAssert.assertThat(t, is(not(string)));
+        assertThat(t, is(not(t2)));
+        assertThat(t2, is(not(t)));
+        assertThat(t, is(not(nullValue())));
+        assertThat(t, is(not(new Object())));
     }
 }
