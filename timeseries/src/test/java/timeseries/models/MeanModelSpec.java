@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import timeseries.TimeSeries;
 import timeseries.TimeUnit;
+import timeseries.Ts;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -45,8 +46,14 @@ public class MeanModelSpec {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private final TimeSeries series = TestData.ausbeer;
-    private final MeanModel meanModel = new MeanModel(series);
+    private TimeSeries series = TestData.ausbeer;
+    private MeanModel meanModel = new MeanModel(series);
+
+    @Test
+    public void whenConstructedWithNullSeriesThenNPE() {
+        exception.expect(NullPointerException.class);
+        new MeanModel(null);
+    }
 
     @Test
     public void whenStepsLessThanOneThenIllegalArgumentException() {
@@ -61,6 +68,24 @@ public class MeanModelSpec {
     }
 
     @Test
+    public void whenMeanModelThenCorrectResiduals() {
+        double[] x = new double[] {1.0, 2.0, 3.0};
+        series = Ts.newAnnualSeries(x);
+        meanModel = new MeanModel(series);
+        double[] expectedResiduals = new double[] {-1.0, 0.0, 1.0};
+        assertArrayEquals(expectedResiduals, meanModel.residuals().asArray(), 1E-15);
+    }
+
+    @Test
+    public void whenMeanModelThenCorrectFit() {
+        double[] x = new double[] {1.0, 2.0, 3.0};
+        series = Ts.newAnnualSeries(x);
+        meanModel = new MeanModel(series);
+        double[] expectedFit = new double[] {2.0, 2.0, 2.0};
+        assertArrayEquals(expectedFit, meanModel.fittedSeries().asArray(), 1E-15);
+    }
+
+    @Test
     public void whenAlphaGreaterThanOneThenIllegalArgumentException() {
         exception.expect(IllegalArgumentException.class);
         new MeanForecast(meanModel, 5, 1.01);
@@ -72,6 +97,8 @@ public class MeanModelSpec {
         TimeSeries pointForecast = meanModel.pointForecast(h);
         double[] expected = DoubleFunctions.fill(h, series.mean());
         assertArrayEquals(expected, pointForecast.asArray(), 1E-2);
+        MeanForecast forecast = new MeanForecast(meanModel, 6, 0.05);
+        assertArrayEquals(expected, forecast.forecast().asArray(), 1E-2);
     }
 
     @Test

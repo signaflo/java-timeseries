@@ -23,6 +23,7 @@
  */
 package timeseries.models;
 
+import lombok.NonNull;
 import math.operations.DoubleFunctions;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
@@ -40,7 +41,7 @@ public final class MeanModel implements Model {
     private final TimeSeries fittedSeries;
     private final double mean;
 
-    public MeanModel(final TimeSeries observed) {
+    public MeanModel(@NonNull final TimeSeries observed) {
         this.timeSeries = observed;
         this.mean = this.timeSeries.mean();
         this.fittedSeries = TimeSeries.from(observed.timePeriod(), observed.observationTimes().get(0),
@@ -92,16 +93,16 @@ public final class MeanModel implements Model {
         MeanModel meanModel = (MeanModel) o;
 
         if (Double.compare(meanModel.mean, mean) != 0) return false;
-        if (timeSeries != null ? !timeSeries.equals(meanModel.timeSeries) : meanModel.timeSeries != null) return false;
-        return fittedSeries != null ? fittedSeries.equals(meanModel.fittedSeries) : meanModel.fittedSeries == null;
+        if (!timeSeries.equals(meanModel.timeSeries)) return false;
+        return fittedSeries.equals(meanModel.fittedSeries);
     }
 
     @Override
     public int hashCode() {
         int result;
         long temp;
-        result = timeSeries != null ? timeSeries.hashCode() : 0;
-        result = 31 * result + (fittedSeries != null ? fittedSeries.hashCode() : 0);
+        result = timeSeries.hashCode();
+        result = 31 * result + fittedSeries.hashCode();
         temp = Double.doubleToLongBits(mean);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;

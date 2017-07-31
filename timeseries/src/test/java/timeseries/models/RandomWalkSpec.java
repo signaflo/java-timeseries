@@ -76,6 +76,12 @@ public class RandomWalkSpec {
         TimeSeries series = TestData.sydneyAir;
         RandomWalk model = new RandomWalk(series);
         assertThat(model.pointForecast(1).asArray()[0], is(series.at(series.size() - 1)));
+        double[] expected = new double[6];
+        for (int i = 0; i < expected.length; i++) {
+            expected[i] = series.at(series.size() - 1);
+        }
+        RandomWalkForecast forecast = new RandomWalkForecast(model, 6, 0.05);
+        assertArrayEquals(expected, forecast.forecast().asArray(), 1E-4);
     }
 
     @Test

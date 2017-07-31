@@ -83,7 +83,7 @@ public class Plots {
      * @param seriesName the name of the series to display.
      */
     public static void plot(final TimeSeries timeSeries, final String title, final String seriesName) {
-        new Thread(() -> {
+        Thread plotThread = new Thread(() -> {
             final List<Date> xAxis = new ArrayList<>(timeSeries.observationTimes().size());
             for (OffsetDateTime dateTime : timeSeries.observationTimes()) {
                 xAxis.add(Date.from(dateTime.toInstant()));
@@ -104,7 +104,8 @@ public class Plots {
             frame.add(panel);
             frame.pack();
             frame.setVisible(true);
-        }).start();
+        });
+        plotThread.start();
     }
 
     /**
@@ -113,7 +114,7 @@ public class Plots {
      * @param timeSeries the series to plot.
      * @param k the maximum lag to include in the acf plot.
      */
-    public final void plotAcf(TimeSeries timeSeries, final int k) {
+    public static void plotAcf(TimeSeries timeSeries, final int k) {
         final double[] acf = timeSeries.autoCorrelationUpToLag(k);
         final double[] lags = new double[k + 1];
         for (int i = 1; i < lags.length; i++) {
@@ -130,7 +131,7 @@ public class Plots {
             lowerLine[i] = lower;
         }
 
-        new Thread(() -> {
+        Thread plotThread = new Thread(() -> {
             XYChart chart = new XYChartBuilder().theme(Styler.ChartTheme.GGPlot2)
                                                 .height(800)
                                                 .width(1200)
@@ -156,7 +157,8 @@ public class Plots {
             frame.add(panel);
             frame.pack();
             frame.setVisible(true);
-        }).run();
+        });
+        plotThread.start();
     }
 
     /**
@@ -166,7 +168,7 @@ public class Plots {
      * @param dataSet the data set to plot.
      */
     public static void plot(final DataSet dataSet) {
-        new Thread(() -> {
+        Thread plotThread = new Thread(() -> {
             final double[] indices = new double[dataSet.size()];
             for (int i = 0; i < indices.length; i++) {
                 indices[i] = i;
@@ -182,7 +184,8 @@ public class Plots {
             frame.add(panel);
             frame.pack();
             frame.setVisible(true);
-        }).run();
+        });
+        plotThread.start();
     }
 
     /**
@@ -193,7 +196,7 @@ public class Plots {
      * @param secondDataSet the data set to plot against the first data set.
      */
     public static void plot(final DataSet firstDataSet, final DataSet secondDataSet) {
-        new Thread(() -> {
+        Thread plotThread = new Thread(() -> {
             XYChart chart = new XYChartBuilder().theme(Styler.ChartTheme.GGPlot2)
                                                 .height(600)
                                                 .width(800)
@@ -210,6 +213,9 @@ public class Plots {
             frame.add(panel);
             frame.pack();
             frame.setVisible(true);
-        }).run();
+        });
+        plotThread.start();
     }
+
+
 }
