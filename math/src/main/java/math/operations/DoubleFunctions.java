@@ -75,6 +75,28 @@ public final class DoubleFunctions {
     }
 
     /**
+     * Create a new array by combining the elements of the input arrays in the order given.
+     *
+     * @param twoDArrays the arrays to combine.
+     * @return a new array formed by combining the elements of the input arrays.
+     */
+    public static double[][] combine(double[][]... twoDArrays) {
+        int newArrayLength = 0;
+        for (double[][] twoDArray : twoDArrays) {
+            newArrayLength += twoDArray.length;
+        }
+        double[][] newArray = new double[newArrayLength][];
+        int i = 0;
+        for (double[][] twoDArray : twoDArrays) {
+            for (double[] array : twoDArray) {
+                newArray[i] = array.clone();
+                i++;
+            }
+        }
+        return newArray;
+    }
+
+    /**
      * Append the given value to the end of the original array, and return the result in a new array.
      *
      * @param original the array to be appended.
@@ -354,5 +376,13 @@ public final class DoubleFunctions {
             negative[i] = -data[i];
         }
         return negative;
+    }
+
+    public static double[][] copy(double[][] values) {
+        double[][] copied = new double[values.length][];
+        for (int i = 0; i < values.length; i++) {
+            copied[i] = values[i].clone();
+        }
+        return copied;
     }
 }

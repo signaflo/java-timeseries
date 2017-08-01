@@ -25,6 +25,7 @@ package data.regression;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import math.operations.DoubleFunctions;
 import org.ejml.alg.dense.mult.MatrixVectorMult;
 import org.ejml.data.D1Matrix64F;
 import org.ejml.data.DenseMatrix64F;
@@ -199,7 +200,7 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
          * @return this builder.
          */
         public final Builder from(LinearRegressionModel regression) {
-            this.predictors = regression.predictors().clone();
+            this.predictors = copy(regression.predictors());
             this.response = regression.response().clone();
             this.hasIntercept = regression.hasIntercept();
             return this;

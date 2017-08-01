@@ -118,12 +118,4 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
         result = 31 * result + degreesOfFreedom;
         return result;
     }
-
-//    private double[][] copy(double[][] values) {
-//        double[][] copied = new double[values.length][];
-//        for (int i = 0; i < values.length; i++) {
-//            copied[i] = values[i].clone();
-//        }
-//        return copied;
-//    }
 }

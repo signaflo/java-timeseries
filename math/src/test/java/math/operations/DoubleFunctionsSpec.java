@@ -69,6 +69,15 @@ public class DoubleFunctionsSpec {
     }
 
     @Test
+    public void whenCombineTwoDArraysThenCorrectTwoDArrayReturned() {
+        double[][] twoDArray1 = {{1.0, 3.0}, {2.0, 4.0}};
+        double[][] twoDArray2 = {{5.0, 7.0}, {6.0, 8.0}, {0.0, 9.0}};
+        double[][] expected = {{1.0, 3.0}, {2.0, 4.0}, {5.0, 7.0}, {6.0, 8.0}, {0.0, 9.0}};
+        double[][] combined = combine(twoDArray1, twoDArray2);
+        assertThat(combined, is(expected));
+    }
+
+    @Test
     public void whenNewArrayFromIndicesThenCorrectValuesExtracted() {
         double[] original = {2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0};
         int[] indices = {1, 4, 6};
