@@ -28,34 +28,18 @@ import lombok.NonNull;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @ToString
-public final class RowMatrix {
-
-    enum VectorType {
-        ROW,
-        COLUMN
-    }
+final class RowMatrix implements Matrix2 {
 
     private final List<Vector> rowVectors;
     private final int nrow;
     private final int ncol;
 
-    static RowMatrix fromRowVectors(List<Vector> rowVectors) {
-        return new RowMatrix(rowVectors);
-    }
-
-    static RowMatrix fromColumnVectors(List<Vector> columnVectors) {
-        return new RowMatrix(VectorType.COLUMN, columnVectors);
-    }
-
-    RowMatrix(@NonNull List<Vector> rowVectors) {
-        this(VectorType.ROW, rowVectors);
-    }
-
-    RowMatrix(@NonNull VectorType vectorType, @NonNull List<Vector> vectors) {
-        this.rowVectors = getRowVectorsByType(vectorType, vectors);
+    RowMatrix(@NonNull List<Vector> vectors) {
+        this.rowVectors = new ArrayList<>(vectors);
         this.nrow = this.rowVectors.size();
         if (this.nrow > 0) {
             this.ncol = rowVectors.get(0).size();
@@ -71,19 +55,21 @@ public final class RowMatrix {
         this.ncol = ncol;
     }
 
-    private List<Vector> getRowVectorsByType(VectorType vectorType, List<Vector> vectors) {
-        switch (vectorType) {
-            case ROW: default:
-                return vectors;
-            case COLUMN:
-                return columnsToRows(vectors);
+    RowMatrix(int nrow, int ncol, @NonNull List<Vector> vectors) {
+        if (nrow != vectors.size()) {
+            throw new IllegalArgumentException("The number of rows must equal the number of vectors.");
         }
+        this.nrow = nrow;
+        this.ncol = ncol;
+        this.rowVectors = new ArrayList<>(vectors);
     }
 
+    @Override
     public List<Vector> getRows() {
         return new ArrayList<>(rowVectors);
     }
 
+    @Override
     public List<Vector> getColumns() {
         List<Vector> columns = new ArrayList<>(this.ncol);
         if (this.rowVectors.isEmpty()) {
@@ -99,32 +85,53 @@ public final class RowMatrix {
         return columns;
     }
 
+    @Override
     public int nrow() {
         return this.nrow;
     }
 
+    @Override
     public int ncol() {
         return this.ncol;
     }
 
-    RowMatrix times(RowMatrix other) {
-        if (this.ncol != other.nrow) {
+    @Override
+    public Matrix2 times(Matrix2 other) {
+        if (this.ncol != other.nrow()) {
             throw new IllegalArgumentException("The number of columns of this matrix must equal the " +
                                                "number of rows of the other matrix.");
+        }
+        if (this.nrow == 0 || other.ncol() == 0) {
+            // return an empty matrix with correct dimensions
+            return new RowMatrix(this.nrow, other.ncol());
+        }
+        if (this.ncol == 0) {
+            // At this point we know that this matrix and the other matrix are empty with a non-zero
+            // number of rows and columns respectively.
+            return filledMatrixFromEmptyMatrices(this.nrow, other.ncol());
         }
         List<Vector> otherColumns = other.getColumns();
         List<Vector> newRows = new ArrayList<>(this.nrow);
         for (int i = 0; i < this.nrow; i++) {
-            double[] newRowElements = new double[other.ncol];
-            for (int j = 0; j < other.ncol; j++) {
+            double[] newRowElements = new double[other.ncol()];
+            for (int j = 0; j < otherColumns.size(); j++) {
                 newRowElements[j] = this.rowVectors.get(i).dotProduct(otherColumns.get(j));
             }
             newRows.add(Vector.from(newRowElements));
         }
-        return new RowMatrix(newRows);
+        return new RowMatrix(this.nrow, other.ncol(), newRows);
     }
 
-    Vector times(Vector vector) {
+    private Matrix2 filledMatrixFromEmptyMatrices(int nrow, int ncol) {
+        List<Vector> rows = new ArrayList<>(nrow);
+        for (int i = 0; i < nrow; i++) {
+            rows.add(Vector.zeros(ncol));
+        }
+        return new RowMatrix(rows);
+    }
+
+    @Override
+    public Vector times(Vector vector) {
         if (vector.size() != this.ncol) {
             throw new IllegalArgumentException("The number of elements of the given vector must equal " +
                                                "the number of columns of this matrix.");
@@ -136,121 +143,43 @@ public final class RowMatrix {
         return Vector.from(newVectorElements);
     }
 
-    private List<Vector> columnsToRows(List<Vector> columnVectors) {
-        final int nrow = columnVectors.get(0).size();
-        final int ncol = columnVectors.size();
-        List<Vector> rowVectors = new ArrayList<>(nrow);
-        for (int i = 0; i < nrow; i++) {
-            double[] rowElements = new double[ncol];
-            for (int j = 0; j < ncol; j++) {
-                rowElements[j] = columnVectors.get(j).at(i);
-            }
-            rowVectors.add(Vector.from(rowElements));
-        }
-        return rowVectors;
-    }
+//    private List<Vector> columnsToRows(List<Vector> columnVectors) {
+//        final int nrow = columnVectors.get(0).size();
+//        final int ncol = columnVectors.size();
+//        List<Vector> rowVectors = new ArrayList<>(nrow);
+//        for (int i = 0; i < nrow; i++) {
+//            double[] rowElements = new double[ncol];
+//            for (int j = 0; j < ncol; j++) {
+//                rowElements[j] = columnVectors.get(j).at(i);
+//            }
+//            rowVectors.add(Vector.from(rowElements));
+//        }
+//        return rowVectors;
+//    }
 
+    // Equals and hashCode are a bit different than what you would normally see since a
+    // ColumnMatrix and RowMatrix should be equal if they have the same mathematical structure.
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null ||
+            !Arrays.equals(o.getClass().getInterfaces(), this.getClass().getInterfaces())) return false;
 
-        RowMatrix rowMatrix = (RowMatrix) o;
+        Matrix2 matrix2 = (Matrix2) o;
 
-        if (nrow != rowMatrix.nrow) return false;
-        if (ncol != rowMatrix.ncol) return false;
-        if (!rowVectors.equals(rowMatrix.rowVectors)) return false;
+        if (nrow != matrix2.nrow()) return false;
+        if (ncol != matrix2.ncol()) return false;
+        if (!rowVectors.equals(matrix2.getRows())) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = rowVectors.hashCode();
+        int result = getColumns().hashCode();
         result = 31 * result + nrow;
         result = 31 * result + ncol;
         return result;
     }
 
-    public static RowBuilder rowBuilder(int nrow) {
-        return new RowBuilder(nrow);
-    }
-
-    public static ColumnBuilder columnBuilder(int ncol) {
-        return new ColumnBuilder(ncol);
-    }
-
-    public static class RowBuilder {
-
-        private List<Vector> rows;
-
-        private RowBuilder() {
-            this.rows = new ArrayList<>();
-        }
-
-        private RowBuilder(final int nrow) {
-            this.rows = new ArrayList<>(nrow);
-        }
-
-        RowBuilder addRow(Vector vector) {
-            this.rows.add(vector);
-            return this;
-        }
-
-        RowBuilder addRow(double... vector) {
-            this.rows.add(Vector.from(vector));
-            return this;
-        }
-
-        RowBuilder setRow(int i, double... vector) {
-            this.rows.set(i, Vector.from(vector));
-            return this;
-        }
-
-        RowBuilder setRow(int i, Vector vector) {
-            this.rows.set(i, vector);
-            return this;
-        }
-
-        RowMatrix build() {
-            return new RowMatrix(rows);
-        }
-    }
-
-    public static class ColumnBuilder {
-
-        private List<Vector> columns;
-
-        private ColumnBuilder() {
-            this.columns = new ArrayList<>();
-        }
-
-        private ColumnBuilder(final int ncol) {
-            this.columns = new ArrayList<>(ncol);
-        }
-
-        ColumnBuilder addColumn(Vector vector) {
-            this.columns.add(vector);
-            return this;
-        }
-
-        ColumnBuilder setColumn(int j, Vector vector) {
-            this.columns.set(j, vector);
-            return this;
-        }
-
-        ColumnBuilder addColumn(double... vector) {
-            this.columns.add(Vector.from(vector));
-            return this;
-        }
-
-        ColumnBuilder setColumn(int j, double... vector) {
-            this.columns.set(j, Vector.from(vector));
-            return this;
-        }
-
-        RowMatrix build() {
-            return new RowMatrix(VectorType.COLUMN, this.columns);
-        }
-    }
 }

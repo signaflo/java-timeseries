@@ -19,6 +19,10 @@ public interface Vector {
     static Vector ones(int n) {
         return new GenericVector(DoubleFunctions.fill(n, 1.0));
     }
+
+    static Vector zeros(int n) {
+        return new GenericVector(DoubleFunctions.fill(n, 0.0));
+    }
     /**
      * Create a new vector from the given elements.
      *
