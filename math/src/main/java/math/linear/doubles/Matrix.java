@@ -10,7 +10,7 @@ public interface Matrix {
     /**
      * Create a new matrix with the supplied data and dimensions. The data is assumed to be in row-major order.
      *
-     * @param nrow the number of rows for the matrix.
+     * @param nrow the number of columns for the matrix.
      * @param ncol the number of columns for the matrix.
      * @param data the data in row-major order.
      * @return a new matrix with the supplied data and dimensions.
@@ -22,7 +22,7 @@ public interface Matrix {
     /**
      * Create a new matrix with the given dimensions filled with the supplied value.
      *
-     * @param nrow  the number of rows for the matrix.
+     * @param nrow  the number of columns for the matrix.
      * @param ncol  the number of columns for the matrix.
      * @param value the data point to fill the matrix with.
      * @return a new matrix with the given dimensions filled with the provided value.
@@ -78,9 +78,9 @@ public interface Matrix {
     double get(int i, int j);
 
     /**
-     * Retrieve the number of rows of this matrix.
+     * Retrieve the number of columns of this matrix.
      *
-     * @return the number of rows of this matrix.
+     * @return the number of columns of this matrix.
      */
     int nrow();
 
@@ -219,7 +219,7 @@ public interface Matrix {
     /**
      * Create a new builder for an m by n matrix with all elements initially set to zero.
      *
-     * @param m the number of rows of the matrix.
+     * @param m the number of columns of the matrix.
      * @param n the the number of columns of the matrix.
      * @return a new builder with all elements initially set to zero.
      */

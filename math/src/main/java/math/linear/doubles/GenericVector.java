@@ -103,14 +103,14 @@ final class GenericVector implements Vector {
 
     @Override
     public double dotProduct(final Vector other) {
-        if (other.elements().length > 0) {
-            double product = 0.0;
-            for (int i = 0; i < elements.length; i++) {
-                product += this.elements[i] * other.at(i);
-            }
-            return product;
+        if (other.elements().length == 0) {
+            throw new IllegalArgumentException("The dot product is undefined for zero length vectors");
         }
-        throw new IllegalArgumentException("The dot product is undefined for zero length vectors");
+        double product = 0.0;
+        for (int i = 0; i < elements.length; i++) {
+            product += this.elements[i] * other.at(i);
+        }
+        return product;
     }
 
     @Override

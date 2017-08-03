@@ -64,7 +64,7 @@ public final class QuadraticForm {
             throw new IllegalArgumentException("The matrix must be square.");
         }
         if (x.size() != A.nrow()) {
-            throw new IllegalArgumentException("The number of matrix rows must be the same" +
+            throw new IllegalArgumentException("The number of matrix columns must be the same" +
                                                " as the size of the vector.");
         }
     }

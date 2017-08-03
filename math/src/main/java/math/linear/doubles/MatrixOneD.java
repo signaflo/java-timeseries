@@ -40,7 +40,7 @@ final class MatrixOneD implements Matrix {
     /**
      * Create a new matrix with the supplied data and dimensions. The data is assumed to be in row-major order.
      *
-     * @param nrow the number of rows for the matrix.
+     * @param nrow the number of columns for the matrix.
      * @param ncol the number of columns for the matrix.
      * @param data the data in row-major order.
      */
@@ -48,7 +48,7 @@ final class MatrixOneD implements Matrix {
         if (nrow * ncol != data.length) {
             throw new IllegalArgumentException(
                     "The dimensions do not match the amount of data provided. " + "There were " + data.length +
-                    " data points provided but the number of rows and columns " + "were " + nrow + " and " + ncol +
+                    " data points provided but the number of columns and columns " + "were " + nrow + " and " + ncol +
                     " respectively.");
         }
         this.nrow = nrow;
@@ -60,7 +60,7 @@ final class MatrixOneD implements Matrix {
     /**
      * Create a new matrix with the given dimensions filled with the supplied value.
      *
-     * @param nrow  the number of rows for the matrix.
+     * @param nrow  the number of columns for the matrix.
      * @param ncol  the number of columns for the matrix.
      * @param value the data point to fill the matrix with.
      */
@@ -145,8 +145,8 @@ final class MatrixOneD implements Matrix {
     public MatrixOneD times(final Matrix other) {
         if (this.ncol != other.nrow()) {
             throw new IllegalArgumentException(
-                    "The columns of this matrix must equal the rows of the other matrix. " + "This matrix has " +
-                    this.ncol + " columns and the other matrix has " + other.nrow() + " rows.");
+                    "The columns of this matrix must equal the columns of the other matrix. " + "This matrix has " +
+                    this.ncol + " columns and the other matrix has " + other.nrow() + " columns.");
         }
         final double[] product = new double[this.nrow * other.ncol()];
         final double[] otherData = other.data();
@@ -165,8 +165,8 @@ final class MatrixOneD implements Matrix {
         double[] elements = vector.elements();
         if (this.ncol != elements.length) {
             throw new IllegalArgumentException(
-                    "The columns of this matrix must equal the rows of the vector. " + "This matrix has " + this.ncol +
-                    " columns and the vector has " + elements.length + " rows.");
+                    "The columns of this matrix must equal the columns of the vector. " + "This matrix has " + this.ncol +
+                    " columns and the vector has " + elements.length + " columns.");
         }
         final double[] product = new double[this.nrow];
         for (int i = 0; i < this.nrow; i++) {
@@ -249,7 +249,7 @@ final class MatrixOneD implements Matrix {
     private Matrix columnPush(Vector newData) {
         if (newData.size() != this.nrow) {
             throw new IllegalArgumentException("The number of elements of the new column must match the " +
-                                               "number of rows of the matrix.");
+                                               "number of columns of the matrix.");
         }
         double[][] thisData = data2D(Order.BY_COLUMN);
         double[][] newMatrix = new double[this.ncol + 1][];
@@ -438,7 +438,7 @@ final class MatrixOneD implements Matrix {
         /**
          * Create a new builder with the given dimensions.
          *
-         * @param m the number of rows of the matrix.
+         * @param m the number of columns of the matrix.
          * @param n the dimension of the matrix.
          */
         ZeroBuilder(final int m, final int n) {
@@ -480,7 +480,7 @@ final class MatrixOneD implements Matrix {
 
         static void validateRow(int i, int m) {
             if (i >= m) {
-                throw new IllegalArgumentException("The row index must be less than the number of rows, " +
+                throw new IllegalArgumentException("The row index must be less than the number of columns, " +
                                                    "but the index, " + i + ", is greater than or equal to " + m);
             }
             if (i < 0) {
