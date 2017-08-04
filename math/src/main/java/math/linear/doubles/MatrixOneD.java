@@ -35,7 +35,7 @@ final class MatrixOneD implements Matrix {
     private final int nrow;
     private final int ncol;
     private final double[] data;
-    private final Order order;
+    private final Layout layout;
 
     /**
      * Create a new matrix with the supplied data and dimensions. The data is assumed to be in row-major order.
@@ -54,7 +54,7 @@ final class MatrixOneD implements Matrix {
         this.nrow = nrow;
         this.ncol = ncol;
         this.data = data.clone();
-        this.order = Order.BY_ROW;
+        this.layout = Layout.BY_ROW;
     }
 
     /**
@@ -71,23 +71,23 @@ final class MatrixOneD implements Matrix {
         for (int i = 0; i < data.length; i++) {
             this.data[i] = value;
         }
-        this.order = Order.BY_ROW;
+        this.layout = Layout.BY_ROW;
     }
 
     /**
      * Create a new matrix from the given two-dimensional array of data.
      *
-     * @param order the storage order of the elements in the supplied two dimensional array.
+     * @param layout the layout of the elements in the supplied two dimensional array.
      * @param matrixData  the two-dimensional array of data constituting the matrix.
      */
-    MatrixOneD(Order order, final double[]... matrixData) {
-        this.order = order;
+    MatrixOneD(Layout layout, final double[]... matrixData) {
+        this.layout = layout;
         if (matrixData.length == 0) {
             //throw new IllegalArgumentException("The matrix data cannot be empty.");
             this.ncol = 0;
             this.nrow = 0;
             this.data = new double[0];
-        } else if (order == Order.BY_COLUMN) {
+        } else if (layout == Layout.BY_COLUMN) {
             this.ncol = matrixData.length;
             this.nrow = matrixData[0].length;
             this.data = new double[ncol * nrow];
@@ -238,29 +238,22 @@ final class MatrixOneD implements Matrix {
     }
 
     @Override
-    public Matrix push(Vector newData, boolean isRow) {
-        if (isRow) {
-            return rowPush(newData);
-        } else {
-            return columnPush(newData);
-        }
-    }
-
-    private Matrix columnPush(Vector newData) {
+    public Matrix pushColumn(Vector newData) {
         if (newData.size() != this.nrow) {
             throw new IllegalArgumentException("The number of elements of the new column must match the " +
                                                "number of columns of the matrix.");
         }
-        double[][] thisData = data2D(Order.BY_COLUMN);
+        double[][] thisData = data2D(Layout.BY_COLUMN);
         double[][] newMatrix = new double[this.ncol + 1][];
         newMatrix[0] = newData.elements();
         for (int i = 1; i < newMatrix.length; i++) {
             newMatrix[i] = thisData[i - 1].clone();
         }
-        return new MatrixOneD(Order.BY_COLUMN, newMatrix);
+        return new MatrixOneD(Layout.BY_COLUMN, newMatrix);
     }
 
-    private Matrix rowPush(Vector newData) {
+    @Override
+    public Matrix pushRow(Vector newData) {
         if (newData.size() != this.ncol) {
             throw new IllegalArgumentException("The number of elements of the new row must match the " +
                                                "number of columns of the matrix.");
@@ -287,8 +280,8 @@ final class MatrixOneD implements Matrix {
     }
 
     @Override
-    public double[][] data2D(Order order) {
-        if (order == Order.BY_ROW) {
+    public double[][] data2D(Layout layout) {
+        if (layout == Layout.BY_ROW) {
             return data2DRowMajor();
         }
         return data2DColumnMajor();
@@ -296,7 +289,7 @@ final class MatrixOneD implements Matrix {
 
     @Override
     public double[][] data2D() {
-        if (this.order == Order.BY_ROW) {
+        if (this.layout == Layout.BY_ROW) {
             return data2DRowMajor();
         }
         return data2DColumnMajor();
@@ -328,7 +321,7 @@ final class MatrixOneD implements Matrix {
     public String toString() {
         String newLine = System.lineSeparator();
         StringBuilder representation = new StringBuilder(newLine);
-        double[][] twoD = data2D(Order.BY_ROW);
+        double[][] twoD = data2D(Layout.BY_ROW);
         for (int i = 0; i < this.nrow; i++) {
             representation.append(Arrays.toString(twoD[i])).append(newLine);
         }

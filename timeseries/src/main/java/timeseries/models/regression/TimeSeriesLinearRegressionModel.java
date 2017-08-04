@@ -27,7 +27,6 @@ package timeseries.models.regression;
 import data.Range;
 import data.regression.LinearRegressionModel;
 import data.regression.MultipleLinearRegressionModel;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
@@ -288,7 +287,7 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
          * @return this builder.
          */
         public Builder externalRegressors(@NonNull Matrix regressors) {
-            externalRegressors(regressors.data2D(Matrix.Order.BY_COLUMN));
+            externalRegressors(regressors.data2D(Matrix.Layout.BY_COLUMN));
             return this;
         }
 

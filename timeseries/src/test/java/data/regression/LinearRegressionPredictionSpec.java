@@ -55,7 +55,7 @@ public class LinearRegressionPredictionSpec {
         double expected = 11.99017;
         assertThat(predicted, is(closeTo(expected, 1E-4)));
         double[][] predictors = {{300.0, 4.05}, {320.0, 3.9}};
-        Matrix predictionMatrix = Matrix.create(Matrix.Order.BY_ROW, predictors);
+        Matrix predictionMatrix = Matrix.create(Matrix.Layout.BY_ROW, predictors);
         Vector result = predictor.predict(predictionMatrix);
         Vector seFit = predictor.standardErrorFit(predictionMatrix);
         double[] expectedPrediction = {11.99017, 11.93639};

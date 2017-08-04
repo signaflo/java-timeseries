@@ -94,7 +94,7 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
     private Matrix predictorsWithIntercept(Matrix newData) {
         if (model.hasIntercept()) {
             Vector ones = Vector.ones(newData.nrow());
-            return newData.push(ones, false);
+            return newData.pushColumn(ones);
         }
         return newData;
     }

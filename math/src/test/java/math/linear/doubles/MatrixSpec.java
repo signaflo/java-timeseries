@@ -126,7 +126,7 @@ public final class MatrixSpec {
                                      .setColumn(0, Vector.from(7.5, 4.5, 9.0))
                                      .setRow(2, Vector.from(3.5, 2.5, 0.5)).build();
         final double[][] expectedResult = new double[][]{{7.5, 0.0, 0.0}, {4.5, 1.0, 3.0}, {3.5, 2.5, 0.5}};
-        assertThat(matrix.data2D(Matrix.Order.BY_ROW), is(expectedResult));
+        assertThat(matrix.data2D(Matrix.Layout.BY_ROW), is(expectedResult));
     }
 
     @Test
@@ -136,26 +136,26 @@ public final class MatrixSpec {
                                      .setColumn(0, Vector.from(7.5, 4.5, 9.0))
                                      .setRow(2, Vector.from(3.5, 2.5, 0.5)).build();
         final double[][] expectedResult = new double[][]{{7.5, 0.0, 0.0}, {4.5, 0.0, 3.0}, {3.5, 2.5, 0.5}};
-        assertThat(matrix.data2D(Matrix.Order.BY_ROW), is(expectedResult));
+        assertThat(matrix.data2D(Matrix.Layout.BY_ROW), is(expectedResult));
     }
 
     @Test
     public void whenGetData2DThenCorrectTwoDArray() {
         double[][] expected = {{4.0, 2.0}, {1.5, 2.5}, {1.0, 3.0}};
-        assertThat(A.data2D(Matrix.Order.BY_ROW), is(expected));
+        assertThat(A.data2D(Matrix.Layout.BY_ROW), is(expected));
     }
 
     @Test
     public void whenFillConstructorThenCorrectMatrix() {
         final double[][] expectedResult = new double[][]{{3.0, 3.0}, {3.0, 3.0}, {3.0, 3.0}};
-        assertThat(Matrix.fill(3, 2, 3.0).data2D(Matrix.Order.BY_ROW), is(expectedResult));
+        assertThat(Matrix.fill(3, 2, 3.0).data2D(Matrix.Layout.BY_ROW), is(expectedResult));
     }
 
     @Test
     public void whenTwoDimConstructorThenCorrectMatrix() {
         Matrix expectedResult = new MatrixOneD(2, 3, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
         double[][] data = new double[][]{{4.0, 2.0, 1.5}, {2.5, 1.0, 3.0}};
-        assertThat(Matrix.create(Matrix.Order.BY_ROW, data), is(expectedResult));
+        assertThat(Matrix.create(Matrix.Layout.BY_ROW, data), is(expectedResult));
     }
 
     @Test
@@ -163,7 +163,7 @@ public final class MatrixSpec {
         double[] m = new double[]{4.0, 2.0, 1.5, 2.5, 1.0, 3.0};
         Matrix expectedResult = Matrix.create(2, 3, m);
         double[][] data = new double[][]{{4.0, 2.0, 1.5}, {2.5, 1.0, 3.0}};
-        assertThat(Matrix.create(Matrix.Order.BY_ROW, data), is(expectedResult));
+        assertThat(Matrix.create(Matrix.Layout.BY_ROW, data), is(expectedResult));
     }
 
     @Test
@@ -181,7 +181,7 @@ public final class MatrixSpec {
         double[][] twoD = {{1.0, 2.5}, {10.0, 5.0}};
         A = Matrix.create(twoD);
         assertThat(A.transpose(), is(expected));
-        A = new MatrixOneD(Matrix.Order.BY_COLUMN, twoD);
+        A = new MatrixOneD(Matrix.Layout.BY_COLUMN, twoD);
     }
 
     @Test
@@ -207,11 +207,11 @@ public final class MatrixSpec {
         assertThat(A.get(1, 1), is(5.0));
         assertThat(A.get(0, 1), is(2.5));
         double[][] data = {{1.0, 2.5}, {10.0, 5.0}};
-        A = new MatrixOneD(Matrix.Order.BY_ROW, data);
+        A = new MatrixOneD(Matrix.Layout.BY_ROW, data);
         assertThat(A.get(0, 1), is(2.5));
         assertThat(A.get(1, 0),is(10.0));
         data = new double[][] {{1.0, 10.0}, {2.5, 5.0}};
-        A = new MatrixOneD(Matrix.Order.BY_COLUMN, data);
+        A = new MatrixOneD(Matrix.Layout.BY_COLUMN, data);
         assertThat(A.get(0, 1), is(2.5));
         assertThat(A.get(1, 0), is(10.0));
     }
@@ -241,16 +241,16 @@ public final class MatrixSpec {
     @Test
     public void whenRowPushThenNewMatrixWithNewRowAtTop() {
         Matrix expected = new MatrixOneD(4, 2, 7.5, 0.5, 4.0, 2.0, 1.5, 2.5, 1.0, 3.0);
-        Matrix rowPushed = A.push(Vector.from(7.5, 0.5), true);
+        Matrix rowPushed = A.pushRow(Vector.from(7.5, 0.5));
         assertThat(rowPushed, is(expected));
     }
 
     @Test
     public void whenColumnPushThenNewMatrixNewColumnToLeft() {
         double[] newColumn = {6.0, 9.0, 4.5};
-        Matrix expected = new MatrixOneD(Matrix.Order.BY_COLUMN,
+        Matrix expected = new MatrixOneD(Matrix.Layout.BY_COLUMN,
                                          new double[][] {newColumn, {4.0, 1.5, 1.0}, {2.0, 2.5, 3.0}});
-        Matrix columnPushed = A.push(Vector.from(newColumn), false);
+        Matrix columnPushed = A.pushColumn(Vector.from(newColumn));
         assertThat(columnPushed, is(expected));
     }
 
@@ -259,8 +259,8 @@ public final class MatrixSpec {
         double[][] expected = {{4.0, 2.0}, {1.5, 2.5}, {1.0, 3.0}};
         assertThat(A.data2D(), is(expected));
         expected = new double[][] {{4.0, 1.5, 1.0}, { 2.0, 2.5, 3.0}};
-        assertThat(A.data2D(Matrix.Order.BY_COLUMN), is(expected));
-        A = Matrix.create(Matrix.Order.BY_COLUMN, expected);
+        assertThat(A.data2D(Matrix.Layout.BY_COLUMN), is(expected));
+        A = Matrix.create(Matrix.Layout.BY_COLUMN, expected);
         assertThat(A.data2D(), is(expected));
     }
 

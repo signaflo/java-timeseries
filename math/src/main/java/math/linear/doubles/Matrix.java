@@ -4,13 +4,13 @@ package math.linear.doubles;
  * A real-valued matrix.
  *
  * @author Jacob Rachiele
- *         Jul. 23, 2017
+ * Jul. 23, 2017
  */
 public interface Matrix {
     /**
      * Create a new matrix with the supplied data and dimensions. The data is assumed to be in row-major order.
      *
-     * @param nrow the number of columns for the matrix.
+     * @param nrow the number of rows for the matrix.
      * @param ncol the number of columns for the matrix.
      * @param data the data in row-major order.
      * @return a new matrix with the supplied data and dimensions.
@@ -22,7 +22,7 @@ public interface Matrix {
     /**
      * Create a new matrix with the given dimensions filled with the supplied value.
      *
-     * @param nrow  the number of columns for the matrix.
+     * @param nrow  the number of rows for the matrix.
      * @param ncol  the number of columns for the matrix.
      * @param value the data point to fill the matrix with.
      * @return a new matrix with the given dimensions filled with the provided value.
@@ -33,25 +33,25 @@ public interface Matrix {
 
     /**
      * Create a new matrix from the given two-dimensional array of data, assuming that the
-     * data is stored by row. If the data is instead stored by column, then specify that
-     * by supplying {@link Order#BY_COLUMN} as the second argument to this method.
+     * data is laid out by row. If the data is instead laid out by column, then specify that
+     * by supplying {@link Layout#BY_COLUMN} as the second argument to this method.
      *
-     * @param matrixData  the two-dimensional array of data constituting the matrix.
+     * @param matrixData the two-dimensional array of data constituting the matrix.
      * @return a new matrix with the given data.
      */
     static Matrix create(final double[]... matrixData) {
-        return new MatrixOneD(Order.BY_ROW, matrixData);
+        return new MatrixOneD(Layout.BY_ROW, matrixData);
     }
 
     /**
      * Create a new matrix from the given two-dimensional array of data.
      *
-     * @param order the storage order of the elements in the matrix data.
-     * @param matrixData  the two-dimensional array of data constituting the matrix.
-     * @return a new matrix with the given data and order.
+     * @param layout     the layout of the elements in the matrix data.
+     * @param matrixData the two-dimensional array of data constituting the matrix.
+     * @return a new matrix with the given data and layout.
      */
-    static Matrix create(Order order, final double[]... matrixData) {
-        return new MatrixOneD(order, matrixData);
+    static Matrix create(Layout layout, final double[]... matrixData) {
+        return new MatrixOneD(layout, matrixData);
     }
 
     /**
@@ -78,9 +78,9 @@ public interface Matrix {
     double get(int i, int j);
 
     /**
-     * Retrieve the number of columns of this matrix.
+     * Retrieve the number of rows of this matrix.
      *
-     * @return the number of columns of this matrix.
+     * @return the number of rows of this matrix.
      */
     int nrow();
 
@@ -162,13 +162,20 @@ public interface Matrix {
     Vector getColumn(int j);
 
     /**
-     * Push the provided vector to the top or front of this matrix, shifting all other vectors down or to the right.
+     * Push the provided vector to the top of this matrix, shifting all other vectors down.
      *
      * @param newData the new vector of data.
-     * @param isRow whether the provided vector is a row vector or not.
-     * @return a matrix with the given vector pushed to the top or front of this matrix.
+     * @return a matrix with the given vector pushed to the top of this matrix.
      */
-    Matrix push(Vector newData, boolean isRow);
+    Matrix pushRow(Vector newData);
+
+    /**
+     * Push the provided vector to the front of this matrix, shifting all other vectors to the right.
+     *
+     * @param newData the new vector of data.
+     * @return a matrix with the given vector pushed to the front of this matrix.
+     */
+    Matrix pushColumn(Vector newData);
 
     /**
      * Retrieve the elements on the diagonal of this matrix.
@@ -187,10 +194,10 @@ public interface Matrix {
     /**
      * Obtain the data in this matrix as a two-dimensional array.
      *
-     * @param order the storage order of the elements in the matrix data.
+     * @param layout the layout of the elements in the matrix data.
      * @return the data in this matrix as a two-dimensional array.
      */
-    double[][] data2D(Matrix.Order order);
+    double[][] data2D(Layout layout);
 
     /**
      * Obtain the data in this matrix as a two-dimensional array.
@@ -200,9 +207,11 @@ public interface Matrix {
     double[][] data2D();
 
     /**
-     * The storage order of the two-dimensional array representation of a matrix.
+     * Specifies the layout of the two-dimensional array representation of a matrix. In other words, this
+     * specifies whether the outer part of the two-dimensional array is a sequence of row vectors or a sequence
+     * of column vectors.
      */
-    enum Order {
+    enum Layout {
         BY_ROW, BY_COLUMN
     }
 

@@ -44,7 +44,7 @@ public class QuadraticFormSpec {
     public void whenMultiplyThreeByThreeThenCorrectResult() {
         double[][] data = {{2.0, 8.0, 14.0}, {4.0, 10.0, 16.0}, {6.0, 12.0, 18.0}};
         x = Vector.from(1.0, 3.0, 5.0);
-        A = Matrix.create(Matrix.Order.BY_COLUMN, data);
+        A = Matrix.create(Matrix.Layout.BY_COLUMN, data);
         q = new QuadraticForm(x, A);
         assertThat(q.multiply(), is(1098.0));
         assertThat(QuadraticForm.multiply(x, A), is(1098.0));
@@ -54,7 +54,7 @@ public class QuadraticFormSpec {
     public void testEqualsAndHashCode() {
         double[][] data = {{2.0, 8.0, 14.0}, {4.0, 10.0, 16.0}, {6.0, 12.0, 18.0}};
         Vector y = Vector.from(1.0, 3.0, 5.0);
-        Matrix B = Matrix.create(Matrix.Order.BY_COLUMN, data);
+        Matrix B = Matrix.create(Matrix.Layout.BY_COLUMN, data);
         QuadraticForm r = new QuadraticForm(y, B);
         QuadraticForm s = new QuadraticForm(x, A);
         assertThat(q, is(s));

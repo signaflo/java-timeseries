@@ -72,7 +72,7 @@ public class TimeSeriesLinearRegressionForecast implements LinearRegressionPredi
                 designMatrix[i + intercept + timeTrend] = seasonalMatrix[i];
             }
         }
-        return Matrix.create(Matrix.Order.BY_COLUMN, designMatrix);
+        return Matrix.create(Matrix.Layout.BY_COLUMN, designMatrix);
     }
 
     @Override
