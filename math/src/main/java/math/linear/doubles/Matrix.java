@@ -166,6 +166,8 @@ public interface Matrix {
      *
      * @param newData the new vector of data.
      * @return a matrix with the given vector pushed to the top of this matrix.
+     *
+     * @throws IllegalArgumentException if size of the given vector does not equal the number of columns of this matrix.
      */
     Matrix pushRow(Vector newData);
 
@@ -174,6 +176,8 @@ public interface Matrix {
      *
      * @param newData the new vector of data.
      * @return a matrix with the given vector pushed to the front of this matrix.
+     *
+     * @throws IllegalArgumentException if size of the given vector does not equal the number of rows of this matrix.
      */
     Matrix pushColumn(Vector newData);
 

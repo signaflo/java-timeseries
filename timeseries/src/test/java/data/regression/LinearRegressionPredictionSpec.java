@@ -73,6 +73,14 @@ public class LinearRegressionPredictionSpec {
     }
 
     @Test
+    public void whenPredictionIntervalThenCorrectPair() {
+        double[] newData = {300.0, 4.05};
+        Pair<Double, Double> predictionInterval = predictor.predictionInterval(0.05, Vector.from(newData));
+        assertThat(predictionInterval.first, is(closeTo(6.144591, 1E-4)));
+        assertThat(predictionInterval.second, is(closeTo(17.83575, 1E-4)));
+    }
+
+    @Test
     public void equalsContract() {
         MultipleLinearRegressionModel other1 = this.regression.withHasIntercept(false);
         MultipleLinearRegressionModel other2 = this.regression.withPredictors(DoubleFunctions.boxCox(mtcars_hp, 0.0));

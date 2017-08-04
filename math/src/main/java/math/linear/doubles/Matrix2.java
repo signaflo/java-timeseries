@@ -10,7 +10,7 @@ import java.util.List;
  * @author Jacob Rachiele
  * Aug. 02, 2017
  */
-public interface Matrix2 {
+interface Matrix2 {
 
     /**
      * Get a new row builder. The builder's initial storage capacity will be

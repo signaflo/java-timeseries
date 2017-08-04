@@ -66,8 +66,21 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
         // send in predictor instead of newData since predict method also updates for intercept.
         double predicted = predict(predictor);
         double seFit = standardErrorFit(predictor);
-        double lowerValue = predicted - tValue * seFit;
-        double upperValue = predicted + tValue * seFit;
+        return getInterval(predicted, tValue, seFit);
+    }
+
+    Pair<Double, Double> predictionInterval(double alpha, Vector predictor) {
+        Distribution T = new StudentsT(this.degreesOfFreedom);
+        double tValue = T.quantile(1 - (alpha / 2.0));
+        double predicted = predict(predictor);
+        double seFit = standardErrorFit(predictor);
+        double standardError = Math.sqrt(model.sigma2() + seFit * seFit);
+        return getInterval(predicted, tValue, standardError);
+    }
+
+    private Pair<Double, Double> getInterval(double sampleEstimate, double tValue, double standardError) {
+        double lowerValue = sampleEstimate - tValue * standardError;
+        double upperValue = sampleEstimate + tValue * standardError;
         return Pair.newPair(lowerValue, upperValue);
     }
 
