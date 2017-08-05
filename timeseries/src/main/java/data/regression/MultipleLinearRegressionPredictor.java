@@ -34,7 +34,7 @@ import math.stats.distributions.Distribution;
 import math.stats.distributions.StudentsT;
 
 @ToString
-public class MultipleLinearRegressionPredictor implements LinearRegressionPredictor {
+class MultipleLinearRegressionPredictor implements LinearRegressionPredictor {
 
     private final LinearRegressionModel model;
     private final Matrix XtXInverse;
@@ -85,8 +85,8 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
     }
 
     @Override
-    public double predict(Vector newData) {
-        Vector data = predictorWithIntercept(newData);
+    public double predict(Vector observation) {
+        Vector data = predictorWithIntercept(observation);
         return data.dotProduct(Vector.from(model.beta()));
     }
 
@@ -117,18 +117,15 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        MultipleLinearRegressionPredictor predictor = (MultipleLinearRegressionPredictor) o;
+        MultipleLinearRegressionPredictor that = (MultipleLinearRegressionPredictor) o;
 
-        if (degreesOfFreedom != predictor.degreesOfFreedom) return false;
-        if (!model.equals(predictor.model)) return false;
-        return XtXInverse.equals(predictor.XtXInverse);
+        if (!model.equals(that.model)) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = model.hashCode();
-        result = 31 * result + XtXInverse.hashCode();
-        result = 31 * result + degreesOfFreedom;
-        return result;
+        return model.hashCode();
     }
 }

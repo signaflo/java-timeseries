@@ -14,6 +14,9 @@ public interface Matrix {
      * @param ncol the number of columns for the matrix.
      * @param data the data in row-major order.
      * @return a new matrix with the supplied data and dimensions.
+     *
+     * @throws IllegalArgumentException if the length of the data array does not equal the given number of rows
+     * multiplied by the given number of columns.
      */
     static Matrix create(final int nrow, final int ncol, final double... data) {
         return new MatrixOneD(nrow, ncol, data);
@@ -96,6 +99,9 @@ public interface Matrix {
      *
      * @param other the matrix to add to this one.
      * @return this matrix added to the other matrix.
+     *
+     * @throws IllegalArgumentException if the dimensions of this matrix do not
+     * match the dimensions of the given matrix.
      */
     Matrix plus(Matrix other);
 
@@ -104,6 +110,9 @@ public interface Matrix {
      *
      * @param other the matrix to multiply by.
      * @return the product of this matrix with the given matrix.
+     *
+     * @throws IllegalArgumentException if the number of columns of this matrix does not
+     * equal the number of rows of the given matrix.
      */
     Matrix times(Matrix other);
 
@@ -112,6 +121,9 @@ public interface Matrix {
      *
      * @param vector the vector to multiply.
      * @return the given vector multiplied by this matrix.
+     *
+     * @throws IllegalArgumentException if the number of columns of this matrix does not
+     * equal the size of the given vector.
      */
     Vector times(Vector vector);
 
@@ -128,6 +140,9 @@ public interface Matrix {
      *
      * @param other the matrix to subtract from this one.
      * @return the difference of this matrix and the given matrix.
+     *
+     * @throws IllegalArgumentException if the dimensions of this matrix do not
+     * match the dimensions of the given matrix.
      */
     Matrix minus(Matrix other);
 

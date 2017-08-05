@@ -20,6 +20,12 @@ public interface Vector {
         return new GenericVector(DoubleFunctions.fill(n, 1.0));
     }
 
+    /**
+     * Create a new vector of zeros with the given size.
+     *
+     * @param n the size of the new vector.
+     * @return a new vector of zeros with the given size.
+     */
     static Vector zeros(int n) {
         return new GenericVector(DoubleFunctions.fill(n, 0.0));
     }
@@ -88,10 +94,10 @@ public interface Vector {
     Vector scaledBy(double alpha);
 
     /**
-     * Compute and return the dot product of this vector with the given vector.
+     * Compute and return the dot product of this vector and the given vector.
      *
      * @param other the vector to take the dot product with.
-     * @return the dot product of this vector with the given vector.
+     * @return the dot product of this vector and the given vector.
      */
     double dotProduct(Vector other);
 
@@ -99,7 +105,7 @@ public interface Vector {
      * Compute and return the outer product of this vector and the given vector.
      *
      * @param other the vector to compute the outer product of this vector with.
-     * @return the outer product of this vector with the given vector.
+     * @return the outer product of this vector and the given vector.
      */
     Matrix outerProduct(Vector other);
 

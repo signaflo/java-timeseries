@@ -45,6 +45,13 @@ public final class QuadraticForm {
         this.A = A;
     }
 
+    /**
+     * Compute <em>x</em><sup>T</sup><em>A</em><em>x</em> and return the resulting value.
+     *
+     * @param x the vector component of the quadratic form.
+     * @param A the matrix component of the quadratic form.
+     * @return the result of <em>x</em><sup>T</sup><em>A</em><em>x</em>.
+     */
     public static double multiply(Vector x, Matrix A) {
         validateArguments(x, A);
         int n = x.size();
