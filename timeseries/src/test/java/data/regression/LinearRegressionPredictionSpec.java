@@ -25,12 +25,14 @@
 package data.regression;
 
 import com.google.common.testing.EqualsTester;
-import data.Pair;
+import data.DoublePair;
 import math.linear.doubles.Matrix;
 import math.linear.doubles.Vector;
 import math.operations.DoubleFunctions;
 import org.junit.Test;
 import timeseries.TestData;
+
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -51,33 +53,37 @@ public class LinearRegressionPredictionSpec {
     @Test
     public void whenPredictNewDataThenValueCorrect() {
         double[] newData = {300.0, 4.05};
-        double predicted = predictor.predict(Vector.from(newData));
+        double predicted = predictor.predict(Vector.from(newData)).estimate();
         double expected = 11.99017;
         assertThat(predicted, is(closeTo(expected, 1E-4)));
         double[][] predictors = {{300.0, 4.05}, {320.0, 3.9}};
         Matrix predictionMatrix = Matrix.create(Matrix.Layout.BY_ROW, predictors);
-        Vector result = predictor.predict(predictionMatrix);
-        Vector seFit = predictor.standardErrorFit(predictionMatrix);
+        List<LinearRegressionPrediction> result = predictor.predict(predictionMatrix);
         double[] expectedPrediction = {11.99017, 11.93639};
         double[] expectedSeFit = {1.20136, 1.39828};
-        assertArrayEquals(expectedPrediction, result.elements(), 1E-4);
-        assertArrayEquals(expectedSeFit, seFit.elements(), 1E-4);
+        for (int i = 0; i < expectedPrediction.length; i++) {
+            LinearRegressionPrediction prediction = result.get(i);
+            assertThat(prediction.estimate(), is(closeTo(expectedPrediction[i], 1E-4)));
+            assertThat(prediction.fitStandardError(), is(closeTo(expectedSeFit[i], 1E-4)));
+        }
     }
 
     @Test
     public void whenConfidenceIntervalThenCorrectPair() {
-        double[] newData = {300.0, 4.05};
-        Pair<Double, Double> confidenceInterval = predictor.confidenceInterval(0.05, Vector.from(newData));
-        assertThat(confidenceInterval.first, is(closeTo(9.533121, 1E-4)));
-        assertThat(confidenceInterval.second, is(closeTo(14.44722, 1E-4)));
+        Vector newData = Vector.from(300.0, 4.05);
+        double estimate = predictor.estimate(newData);
+        DoublePair confidenceInterval = predictor.confidenceInterval(0.05, newData, estimate);
+        assertThat(confidenceInterval.first(), is(closeTo(9.533121, 1E-4)));
+        assertThat(confidenceInterval.second(), is(closeTo(14.44722, 1E-4)));
     }
 
     @Test
     public void whenPredictionIntervalThenCorrectPair() {
-        double[] newData = {300.0, 4.05};
-        Pair<Double, Double> predictionInterval = predictor.predictionInterval(0.05, Vector.from(newData));
-        assertThat(predictionInterval.first, is(closeTo(6.144591, 1E-4)));
-        assertThat(predictionInterval.second, is(closeTo(17.83575, 1E-4)));
+        Vector newData = Vector.from(300.0, 4.05);
+        double estimate = predictor.estimate(newData);
+        DoublePair predictionInterval = predictor.predictionInterval(0.05, newData, estimate);
+        assertThat(predictionInterval.first(), is(closeTo(6.144591, 1E-4)));
+        assertThat(predictionInterval.second(), is(closeTo(17.83575, 1E-4)));
     }
 
     @Test

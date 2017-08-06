@@ -1,6 +1,5 @@
 package data;
 
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 public final class Pair<T extends Comparable<T>, S extends Comparable<S>>

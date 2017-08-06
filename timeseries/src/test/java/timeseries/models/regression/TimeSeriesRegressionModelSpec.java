@@ -27,8 +27,6 @@ package timeseries.models.regression;
 import com.google.common.testing.EqualsTester;
 import data.Range;
 import math.operations.DoubleFunctions;
-import math.operations.Operators;
-import math.stats.Statistics;
 import org.junit.Test;
 import timeseries.TestData;
 import timeseries.TimeSeries;
@@ -38,21 +36,21 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
-public class TimeSeriesLinearRegressionModelSpec {
+public class TimeSeriesRegressionModelSpec {
 
     private TimeSeries livestock = TestData.livestock;
     private TimeSeriesLinearRegression model =
-            TimeSeriesLinearRegressionModel.builder()
-                                           .response(livestock)
-                                           .build();
+            TimeSeriesRegressionModel.builder()
+                                     .response(livestock)
+                                     .build();
 
     @Test
     public void whenTSLRFitThenBetaCorrect() {
         TimeSeries debitcards = TestData.debitcards.timeSlice(1, 156);
-        TimeSeriesLinearRegressionModel.Builder tslmBuilder =
-                TimeSeriesLinearRegressionModel.builder()
-                                               .response(debitcards)
-                                               .seasonal(TimeSeriesLinearRegressionModel.Seasonal.INCLUDE);
+        TimeSeriesRegressionModel.Builder tslmBuilder =
+                TimeSeriesRegressionModel.builder()
+                                         .response(debitcards)
+                                         .seasonal(TimeSeriesRegressionModel.Seasonal.INCLUDE);
         TimeSeriesLinearRegression regression = tslmBuilder.build();
         double[] expected = {6568.304945, 92.552198, -344.706044, 590.510989, 367.035714, 2166.637363, 2343.239011,
                 2621.840659, 3399.442308, 1197.505495, 1310.491758, 868.631868, 5646.618132};
@@ -96,24 +94,24 @@ public class TimeSeriesLinearRegressionModelSpec {
 
     @Test
     public void equalsContract() {
-        TimeSeriesLinearRegression otherModel = TimeSeriesLinearRegressionModel.builder().from(model).build();
+        TimeSeriesLinearRegression otherModel = TimeSeriesRegressionModel.builder().from(model).build();
         TimeSeriesLinearRegression modelA =
-                TimeSeriesLinearRegressionModel.builder()
-                                               .response(livestock)
-                                               .hasIntercept(TimeSeriesLinearRegressionModel.Intercept.EXCLUDE)
-                                               .build();
-        TimeSeriesLinearRegression modelB = TimeSeriesLinearRegressionModel.builder().from(modelA).build();
+                TimeSeriesRegressionModel.builder()
+                                         .response(livestock)
+                                         .hasIntercept(TimeSeriesRegressionModel.Intercept.EXCLUDE)
+                                         .build();
+        TimeSeriesLinearRegression modelB = TimeSeriesRegressionModel.builder().from(modelA).build();
         TimeSeriesLinearRegression model2A =
-                TimeSeriesLinearRegressionModel.builder()
-                                               .response(livestock)
-                                               .timeTrend(TimeSeriesLinearRegressionModel.TimeTrend.EXCLUDE)
-                                               .build();
-        TimeSeriesLinearRegression model2B = TimeSeriesLinearRegressionModel.builder().from(model2A).build();
+                TimeSeriesRegressionModel.builder()
+                                         .response(livestock)
+                                         .timeTrend(TimeSeriesRegressionModel.TimeTrend.EXCLUDE)
+                                         .build();
+        TimeSeriesLinearRegression model2B = TimeSeriesRegressionModel.builder().from(model2A).build();
         TimeSeriesLinearRegression model3A =
-                TimeSeriesLinearRegressionModel.builder()
-                                               .response(livestock.demean())
-                                               .build();
-        TimeSeriesLinearRegression model3B = TimeSeriesLinearRegressionModel.builder().from(model3A).build();
+                TimeSeriesRegressionModel.builder()
+                                         .response(livestock.demean())
+                                         .build();
+        TimeSeriesLinearRegression model3B = TimeSeriesRegressionModel.builder().from(model3A).build();
         new EqualsTester()
                 .addEqualityGroup(model, otherModel)
                 .addEqualityGroup(modelA, modelB)

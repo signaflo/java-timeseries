@@ -1,9 +1,12 @@
 package data.regression;
 
+import math.linear.doubles.Matrix;
 import math.linear.doubles.Vector;
 
+import java.util.List;
+
 /**
- * An agent with the ability to predict new observations using linear regression models.
+ * An agent with the ability to predict new observations using a linear regression model.
  *
  * @author Jacob Rachiele
  *         Jul. 22, 2017
@@ -16,5 +19,7 @@ public interface LinearRegressionPredictor {
      * @param observation the new observation data.
      * @return the prediction of the response.
      */
-    double predict(Vector observation);
+    LinearRegressionPrediction predict(Vector observation);
+
+    List<LinearRegressionPrediction> predict(Matrix observations);
 }

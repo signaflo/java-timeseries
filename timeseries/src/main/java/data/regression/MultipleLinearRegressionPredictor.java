@@ -24,7 +24,7 @@
 
 package data.regression;
 
-import data.Pair;
+import data.DoublePair;
 import lombok.NonNull;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
@@ -32,6 +32,9 @@ import math.linear.doubles.QuadraticForm;
 import math.linear.doubles.Vector;
 import math.stats.distributions.Distribution;
 import math.stats.distributions.StudentsT;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @ToString
 class MultipleLinearRegressionPredictor implements LinearRegressionPredictor {
@@ -46,54 +49,79 @@ class MultipleLinearRegressionPredictor implements LinearRegressionPredictor {
         this.degreesOfFreedom = model.response().length - model.designMatrix().length;
     }
 
-    double standardErrorFit(Vector newPredictor) {
-        Vector predictorWithIntercept = predictorWithIntercept(newPredictor);
+    double standardErrorFit(Vector predictor) {
+        Vector predictorWithIntercept = predictorWithIntercept(predictor);
         double product = QuadraticForm.multiply(predictorWithIntercept, XtXInverse);
         return Math.sqrt(model.sigma2() * product);
     }
 
-    Vector standardErrorFit(Matrix newPredictors) {
-        double[] seFit = new double[newPredictors.nrow()];
+    Vector standardErrorFit(Matrix predictors) {
+        double[] seFit = new double[predictors.nrow()];
         for (int i = 0; i < seFit.length; i++) {
-            seFit[i] = standardErrorFit(newPredictors.getRow(i));
+            seFit[i] = standardErrorFit(predictors.getRow(i));
         }
         return Vector.from(seFit);
     }
 
-    Pair<Double, Double> confidenceInterval(double alpha, Vector predictor) {
+    DoublePair confidenceInterval(double alpha, Vector predictor, double estimate) {
         Distribution T = new StudentsT(this.degreesOfFreedom);
         double tValue = T.quantile(1 - (alpha / 2.0));
         // send in predictor instead of newData since predict method also updates for intercept.
-        double predicted = predict(predictor);
         double seFit = standardErrorFit(predictor);
-        return getInterval(predicted, tValue, seFit);
+        return getInterval(estimate, tValue, seFit);
     }
 
-    Pair<Double, Double> predictionInterval(double alpha, Vector predictor) {
+    DoublePair predictionInterval(double alpha, Vector predictor, double estimate) {
         Distribution T = new StudentsT(this.degreesOfFreedom);
         double tValue = T.quantile(1 - (alpha / 2.0));
-        double predicted = predict(predictor);
         double seFit = standardErrorFit(predictor);
         double standardError = Math.sqrt(model.sigma2() + seFit * seFit);
-        return getInterval(predicted, tValue, standardError);
+        return getInterval(estimate, tValue, standardError);
     }
 
-    private Pair<Double, Double> getInterval(double sampleEstimate, double tValue, double standardError) {
+//    List<DoublePair> confidenceInterval(double alpha, Matrix predictors) {
+//        List<DoublePair> interval = new ArrayList<>(predictors.nrow());
+//        for (int i = 0; i < predictors.nrow(); i++) {
+//            interval.add(confidenceInterval(alpha, predictors.getRow(i)));
+//        }
+//        return interval;
+//    }
+//
+//    List<DoublePair> predictionInterval(double alpha, Matrix predictors) {
+//        List<DoublePair> interval = new ArrayList<>(predictors.nrow());
+//        for (int i = 0; i < predictors.nrow(); i++) {
+//            interval.add(predictionInterval(alpha, predictors.getRow(i)));
+//        }
+//        return interval;
+//    }
+
+    private DoublePair getInterval(double sampleEstimate, double tValue, double standardError) {
         double lowerValue = sampleEstimate - tValue * standardError;
         double upperValue = sampleEstimate + tValue * standardError;
-        return Pair.newPair(lowerValue, upperValue);
+        return new DoublePair(lowerValue, upperValue);
     }
 
     @Override
-    public double predict(Vector observation) {
-        Vector data = predictorWithIntercept(observation);
+    public LinearRegressionPrediction predict(Vector observation) {
+        double defaultAlpha = 0.05;
+        double estimate = estimate(observation);
+        double seFit = standardErrorFit(observation);
+        DoublePair confidenceInterval = confidenceInterval(defaultAlpha, observation, estimate);
+        DoublePair predictionInterval = predictionInterval(defaultAlpha, observation, estimate);
+        return new MultipleLinearRegressionPrediction(estimate, seFit, confidenceInterval, predictionInterval);
+    }
+
+    double estimate(Vector data) {
+        data = predictorWithIntercept(data);
         return data.dotProduct(Vector.from(model.beta()));
     }
 
-    public Vector predict(Matrix newData) {
-        Vector beta = Vector.from(model.beta());
-        Matrix predictionMatrix = predictorsWithIntercept(newData);
-        return predictionMatrix.times(beta);
+    public List<LinearRegressionPrediction> predict(Matrix newData) {
+        List<LinearRegressionPrediction> predictions = new ArrayList<>(newData.nrow());
+        for (int i = 0; i < newData.nrow(); i++) {
+            predictions.add(predict(newData.getRow(i)));
+        }
+        return predictions;
     }
 
     private Vector predictorWithIntercept(Vector newData) {

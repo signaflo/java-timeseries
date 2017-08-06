@@ -1,7 +1,7 @@
 package math.operations;
 
 /**
- * [Insert class description]
+ * Validation methods.
  *
  * @author Jacob Rachiele
  * Jul. 29, 2017

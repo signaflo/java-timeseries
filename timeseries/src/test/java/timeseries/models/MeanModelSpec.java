@@ -120,8 +120,8 @@ public class MeanModelSpec {
         MeanForecast forecast = new MeanForecast(meanModel, 6, 0.05);
         double[] lowerValues = {243.129289, 243.129289, 243.129289, 243.129289, 243.129289, 243.129289};
         double[] upperValues = {586.775924, 586.775924, 586.775924, 586.775924, 586.775924, 586.775924};
-        assertArrayEquals(lowerValues, forecast.lowerPredictionValues().asArray(), 1E-2);
-        assertArrayEquals(upperValues, forecast.upperPredictionValues().asArray(), 1E-2);
+        assertArrayEquals(lowerValues, forecast.lowerPredictionInterval().asArray(), 1E-2);
+        assertArrayEquals(upperValues, forecast.upperPredictionInterval().asArray(), 1E-2);
         assertArrayEquals(lowerValues, forecast.computeLowerPredictionBounds(6, 0.05).asArray(), 1E-2);
         assertArrayEquals(upperValues, forecast.computeUpperPredictionBounds(6, 0.05).asArray(), 1E-2);
     }

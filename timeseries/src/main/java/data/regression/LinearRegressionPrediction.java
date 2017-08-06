@@ -24,8 +24,14 @@
 
 package data.regression;
 
-public interface LinearRegressionPrediction {
+import data.DoublePair;
 
-    double[] predictedValues();
+public interface LinearRegressionPrediction extends Prediction {
+
+    double fitStandardError();
+
+    DoublePair confidenceInterval();
+
+    DoublePair predictionInterval();
 
 }

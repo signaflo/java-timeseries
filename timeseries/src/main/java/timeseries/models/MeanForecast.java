@@ -80,12 +80,12 @@ public final class MeanForecast implements Forecast {
     }
 
     @Override
-    public TimeSeries upperPredictionValues() {
+    public TimeSeries upperPredictionInterval() {
         return this.upperValues;
     }
 
     @Override
-    public TimeSeries lowerPredictionValues() {
+    public TimeSeries lowerPredictionInterval() {
         return this.lowerValues;
     }
 

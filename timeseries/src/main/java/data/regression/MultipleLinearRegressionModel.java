@@ -38,7 +38,7 @@ import math.stats.Statistics;
 import static math.operations.DoubleFunctions.*;
 
 /**
- * A linear regression model using primitive data types, with support for multiple prediction variables.
+ * A linear regression model with support for multiple prediction variables.
  * This implementation is immutable and thread-safe.
  */
 @EqualsAndHashCode @ToString
@@ -185,7 +185,7 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
     }
 
     /**
-     * X builder for a primitive multiple linear regression model.
+     * A builder for a multiple linear regression model.
      */
     public static final class Builder {
 
@@ -293,11 +293,11 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
         }
 
         private double[] computeResiduals() {
-            double[] resid = new double[fitted.length];
-            for (int i = 0; i < resid.length; i++) {
-                resid[i] = (response[i] - fitted[i]);
+            double[] residuals = new double[fitted.length];
+            for (int i = 0; i < residuals.length; i++) {
+                residuals[i] = (response[i] - fitted[i]);
             }
-            return resid;
+            return residuals;
         }
 
         private double[] getResiduals() {

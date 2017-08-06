@@ -30,19 +30,19 @@ import timeseries.TimeSeries;
 
 import static org.junit.Assert.assertArrayEquals;
 
-public class TimeSeriesLinearRegressionForecastSpec {
+public class TimeSeriesRegressionForecastSpec {
 
     @Test
     public void whenForecastWithPeriodOffsetOfOneThenCorrectValues() {
         double[] expected = {19943.587, 20954.337, 20779.2537, 22624.1704, 22914.6704, 23251.4204, 24065.6704,
                 22163.4204, 22243.337, 21952.4204, 26754.9204, 21210.6578, 21070.1645};
         TimeSeries debitcards = TestData.debitcards.timeSlice(1, 145);
-        TimeSeriesLinearRegressionModel.Builder tslmBuilder = TimeSeriesLinearRegressionModel.builder()
-                                                                                             .response(debitcards)
-                                                                                             .seasonal(
-                                                                                                     TimeSeriesLinearRegressionModel.Seasonal.INCLUDE);
-        TimeSeriesLinearRegressionModel regression = tslmBuilder.build();
-        TimeSeriesLinearRegressionForecast forecast = TimeSeriesLinearRegressionForecast.forecast(regression, 13);
+        TimeSeriesRegressionModel.Builder tslmBuilder = TimeSeriesRegressionModel.builder()
+                                                                                 .response(debitcards)
+                                                                                 .seasonal(
+                                                                                         TimeSeriesRegressionModel.Seasonal.INCLUDE);
+        TimeSeriesRegressionModel regression = tslmBuilder.build();
+        TimeSeriesRegressionForecast forecast = TimeSeriesRegressionForecast.forecast(regression, 13);
         assertArrayEquals(expected, forecast.predictedValues(), 1E-4);
     }
 
@@ -51,12 +51,12 @@ public class TimeSeriesLinearRegressionForecastSpec {
         double[] expected = {21099, 20846.8462, 21874.6154, 21743.6923, 23635.8462, 23905, 24276.1538, 25146.3077,
                 23036.9231, 23242.4615, 22893.1538, 27763.6923, 22209.6264};
         TimeSeries debitcards = TestData.debitcards.timeSlice(1, 156);
-        TimeSeriesLinearRegressionModel.Builder tslmBuilder = TimeSeriesLinearRegressionModel.builder()
-                                                                                             .response(debitcards)
-                                                                                             .seasonal(
-                                                                                                     TimeSeriesLinearRegressionModel.Seasonal.INCLUDE);
-        TimeSeriesLinearRegressionModel regression = tslmBuilder.build();
-        TimeSeriesLinearRegressionForecast forecast = TimeSeriesLinearRegressionForecast.forecast(regression, 13);
+        TimeSeriesRegressionModel.Builder tslmBuilder = TimeSeriesRegressionModel.builder()
+                                                                                 .response(debitcards)
+                                                                                 .seasonal(
+                                                                                         TimeSeriesRegressionModel.Seasonal.INCLUDE);
+        TimeSeriesRegressionModel regression = tslmBuilder.build();
+        TimeSeriesRegressionForecast forecast = TimeSeriesRegressionForecast.forecast(regression, 13);
         assertArrayEquals(expected, forecast.predictedValues(), 1E-4);
     }
 
@@ -65,12 +65,12 @@ public class TimeSeriesLinearRegressionForecastSpec {
         double[] expected = {23177.42, 23991.67, 22089.42, 22169.3367, 21878.42, 26680.92, 21130.9651, 20878.8113,
                 21906.5805, 21775.6574, 23667.8113, 23936.9651, 24292.6128};
         TimeSeries debitcards = TestData.debitcards.timeSlice(1, 150);
-        TimeSeriesLinearRegressionModel.Builder tslmBuilder = TimeSeriesLinearRegressionModel.builder()
-                                                                                             .response(debitcards)
-                                                                                             .seasonal(
-                                                                                                     TimeSeriesLinearRegressionModel.Seasonal.INCLUDE);
-        TimeSeriesLinearRegressionModel regression = tslmBuilder.build();
-        TimeSeriesLinearRegressionForecast forecast = TimeSeriesLinearRegressionForecast.forecast(regression, 13);
+        TimeSeriesRegressionModel.Builder tslmBuilder = TimeSeriesRegressionModel.builder()
+                                                                                 .response(debitcards)
+                                                                                 .seasonal(
+                                                                                         TimeSeriesRegressionModel.Seasonal.INCLUDE);
+        TimeSeriesRegressionModel regression = tslmBuilder.build();
+        TimeSeriesRegressionForecast forecast = TimeSeriesRegressionForecast.forecast(regression, 13);
         assertArrayEquals(expected, forecast.predictedValues(), 1E-4);
     }
 }

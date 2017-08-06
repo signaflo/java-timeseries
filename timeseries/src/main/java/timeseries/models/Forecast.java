@@ -37,14 +37,14 @@ public interface Forecast {
      *
      * @return the upper end points of the prediction interval.
      */
-    TimeSeries upperPredictionValues();
+    TimeSeries upperPredictionInterval();
 
     /**
      * Get the lower end points of the prediction interval.
      *
      * @return the lower end points of the prediction interval.
      */
-    TimeSeries lowerPredictionValues();
+    TimeSeries lowerPredictionInterval();
 
     /**
      * Compute the upper end points of a prediction interval with the given number of forecast steps and the provided

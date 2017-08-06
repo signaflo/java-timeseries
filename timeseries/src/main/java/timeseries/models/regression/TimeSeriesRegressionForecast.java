@@ -24,32 +24,32 @@
 
 package timeseries.models.regression;
 
+import data.regression.MultiValuePrediction;
 import math.operations.DoubleFunctions;
 import data.Range;
-import data.regression.LinearRegressionPrediction;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
 import math.linear.doubles.Vector;
 
 @EqualsAndHashCode @ToString
-public class TimeSeriesLinearRegressionForecast implements LinearRegressionPrediction {
+public class TimeSeriesRegressionForecast implements MultiValuePrediction {
 
-    private final TimeSeriesLinearRegressionModel model;
+    private final TimeSeriesRegressionModel model;
     private final double[] predictedValues;
 
-    private TimeSeriesLinearRegressionForecast(TimeSeriesLinearRegressionModel model, int steps) {
+    private TimeSeriesRegressionForecast(TimeSeriesRegressionModel model, int steps) {
         this.model = model;
         Vector beta = Vector.from(model.beta());
         Matrix X = getPredictionMatrix(model, steps);
         this.predictedValues = X.times(beta).elements();
     }
 
-    public static TimeSeriesLinearRegressionForecast forecast(TimeSeriesLinearRegressionModel model, int steps) {
-        return new TimeSeriesLinearRegressionForecast(model, steps);
+    public static TimeSeriesRegressionForecast forecast(TimeSeriesRegressionModel model, int steps) {
+        return new TimeSeriesRegressionForecast(model, steps);
     }
 
-    private Matrix getPredictionMatrix(TimeSeriesLinearRegressionModel model, int steps) {
+    private Matrix getPredictionMatrix(TimeSeriesRegressionModel model, int steps) {
         int intercept = model.intercept().asInt();
         int timeTrend = model.timeTrend().asInt();
         int seasonal = model.seasonal().asInt();
@@ -67,7 +67,7 @@ public class TimeSeriesLinearRegressionForecast implements LinearRegressionPredi
         }
         if (model.seasonal().include()) {
             int periodOffset = model.response().length % seasonalFrequency;
-            double[][] seasonalMatrix = TimeSeriesLinearRegressionModel.getSeasonalRegressors(steps, seasonalFrequency, periodOffset);
+            double[][] seasonalMatrix = TimeSeriesRegressionModel.getSeasonalRegressors(steps, seasonalFrequency, periodOffset);
             for (int i = 0; i < seasonalMatrix.length; i++) {
                 designMatrix[i + intercept + timeTrend] = seasonalMatrix[i];
             }

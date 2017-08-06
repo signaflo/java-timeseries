@@ -42,7 +42,7 @@ import static math.operations.DoubleFunctions.copy;
  * A linear regression model for time series data.
  */
 @ToString
-public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRegression {
+public final class TimeSeriesRegressionModel implements TimeSeriesLinearRegression {
 
     private final LinearRegressionModel regression;
     private final TimeSeries timeSeries;
@@ -52,7 +52,7 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
     private final Seasonal seasonal;
     private final double[][] externalRegressors;
 
-    TimeSeriesLinearRegressionModel(Builder timeSeriesRegressionBuilder) {
+    TimeSeriesRegressionModel(Builder timeSeriesRegressionBuilder) {
         this.timeSeries = timeSeriesRegressionBuilder.response;
         this.seasonalCycle = timeSeriesRegressionBuilder.seasonalCycle;
         this.externalRegressors = timeSeriesRegressionBuilder.externalRegressors;
@@ -143,7 +143,7 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
         return (int) this.timeSeries.timePeriod().frequencyPer(this.seasonalCycle);
     }
 
-    public static TimeSeriesLinearRegressionModel.Builder builder() {
+    public static TimeSeriesRegressionModel.Builder builder() {
         return new Builder();
     }
 
@@ -173,7 +173,7 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TimeSeriesLinearRegressionModel that = (TimeSeriesLinearRegressionModel) o;
+        TimeSeriesRegressionModel that = (TimeSeriesRegressionModel) o;
 
         if (!timeSeries.equals(that.timeSeries)) return false;
         if (!seasonalCycle.equals(that.seasonalCycle)) return false;
@@ -350,7 +350,7 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
             return this;
         }
 
-        public TimeSeriesLinearRegressionModel build() {
+        public TimeSeriesRegressionModel build() {
             if (response == null) {
                 throw new IllegalStateException("A time series linear regression model " +
                                                 "must have a non-null response.");
@@ -365,7 +365,7 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
                                                                       periodOffset);
                 this.timeBasedPredictors(seasonalRegressors);
             }
-            return new TimeSeriesLinearRegressionModel(this);
+            return new TimeSeriesRegressionModel(this);
         }
     }
 }

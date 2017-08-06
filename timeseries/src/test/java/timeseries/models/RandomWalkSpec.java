@@ -90,10 +90,10 @@ public class RandomWalkSpec {
         RandomWalkForecast forecast = new RandomWalkForecast(series, 7, 0.05);
         double[] lowerValues = {0.955726, 0.735251, 0.566075, 0.423453, 0.2978, 0.184201, 0.079736};
         double[] upperValues = {2.020274, 2.240749, 2.409925, 2.552547, 2.6782, 2.791799, 2.896264};
-        assertArrayEquals(lowerValues, forecast.lowerPredictionValues().asArray(), 1E-4);
-        assertArrayEquals(upperValues, forecast.upperPredictionValues().asArray(), 1E-4);
-        assertThat(forecast.lowerPredictionValues(), is(forecast.computeLowerPredictionBounds(7, 0.05)));
-        assertThat(forecast.upperPredictionValues(), is(forecast.computeUpperPredictionBounds(7, 0.05)));
+        assertArrayEquals(lowerValues, forecast.lowerPredictionInterval().asArray(), 1E-4);
+        assertArrayEquals(upperValues, forecast.upperPredictionInterval().asArray(), 1E-4);
+        assertThat(forecast.lowerPredictionInterval(), is(forecast.computeLowerPredictionBounds(7, 0.05)));
+        assertThat(forecast.upperPredictionInterval(), is(forecast.computeUpperPredictionBounds(7, 0.05)));
     }
 
     @Test

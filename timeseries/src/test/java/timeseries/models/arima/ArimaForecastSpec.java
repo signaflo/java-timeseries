@@ -50,8 +50,8 @@ public class ArimaForecastSpec {
                 22115.94079, 23456.237366, 19763.2863, 20061.21154, 19606.74272, 25360.633656};
         double[] expectedUpper = {21145.198098, 21152.740005, 22573.24549, 22511.661393, 25377.125821, 25494.596649,
                 26370.627437, 27845.75879, 24283.622371, 24708.68161, 24377.960375, 30252.469485};
-        double[] lower = forecast.lowerPredictionValues().asArray();
-        double[] upper = forecast.upperPredictionValues().asArray();
+        double[] lower = forecast.lowerPredictionInterval().asArray();
+        double[] upper = forecast.upperPredictionInterval().asArray();
         assertArrayEquals(expectedLower, lower, 1E-1);
         assertArrayEquals(expectedUpper, upper, 1E-1);
     }
