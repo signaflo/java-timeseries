@@ -67,7 +67,8 @@ public class TimeSeriesRegressionForecast implements MultiValuePrediction {
         }
         if (model.seasonal().include()) {
             int periodOffset = model.response().length % seasonalFrequency;
-            double[][] seasonalMatrix = TimeSeriesRegressionModel.getSeasonalRegressors(steps, seasonalFrequency, periodOffset);
+            double[][] seasonalMatrix = TimeSeriesLinearRegression
+                    .getSeasonalRegressors(steps, seasonalFrequency, periodOffset);
             for (int i = 0; i < seasonalMatrix.length; i++) {
                 designMatrix[i + intercept + timeTrend] = seasonalMatrix[i];
             }

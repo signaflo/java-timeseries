@@ -71,8 +71,8 @@ public class LinearRegressionPredictionSpec {
     @Test
     public void whenConfidenceIntervalThenCorrectPair() {
         Vector newData = Vector.from(300.0, 4.05);
-        double estimate = predictor.estimate(newData);
-        DoublePair confidenceInterval = predictor.confidenceInterval(0.05, newData, estimate);
+        LinearRegressionPrediction prediction = predictor.predict(newData);
+        DoublePair confidenceInterval = prediction.confidenceInterval();
         assertThat(confidenceInterval.first(), is(closeTo(9.533121, 1E-4)));
         assertThat(confidenceInterval.second(), is(closeTo(14.44722, 1E-4)));
     }
@@ -80,8 +80,8 @@ public class LinearRegressionPredictionSpec {
     @Test
     public void whenPredictionIntervalThenCorrectPair() {
         Vector newData = Vector.from(300.0, 4.05);
-        double estimate = predictor.estimate(newData);
-        DoublePair predictionInterval = predictor.predictionInterval(0.05, newData, estimate);
+        LinearRegressionPrediction prediction = predictor.predict(newData);
+        DoublePair predictionInterval = prediction.predictionInterval();
         assertThat(predictionInterval.first(), is(closeTo(6.144591, 1E-4)));
         assertThat(predictionInterval.second(), is(closeTo(17.83575, 1E-4)));
     }

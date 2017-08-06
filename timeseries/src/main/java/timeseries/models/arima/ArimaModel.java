@@ -36,7 +36,6 @@ import math.optim.BFGS;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.models.Forecast;
-import timeseries.models.regression.TimeSeriesRegressionModel;
 import timeseries.operators.LagPolynomial;
 
 import java.text.DecimalFormat;

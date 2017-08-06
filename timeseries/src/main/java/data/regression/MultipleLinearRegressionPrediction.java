@@ -1,12 +1,11 @@
 package data.regression;
 
 import data.DoublePair;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 /**
- * [Insert class description]
+ * A prediction from a multiple linear regression model.
  *
  * @author Jacob Rachiele
  * Aug. 06, 2017
