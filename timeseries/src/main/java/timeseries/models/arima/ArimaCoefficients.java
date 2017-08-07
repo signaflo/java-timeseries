@@ -133,7 +133,7 @@ public class ArimaCoefficients {
         return maSmaCoeffs;
     }
 
-    static double meanToIntercept(double[] autoRegressiveCoefficients, double mean) {
+    private static double meanToIntercept(double[] autoRegressiveCoefficients, double mean) {
         return mean * (1 - sumOf(autoRegressiveCoefficients));
     }
 
@@ -263,7 +263,7 @@ public class ArimaCoefficients {
      *
      * @return a new builder for a ArimaCoefficients object.
      */
-    public static Builder newBuilder() {
+    public static Builder builder() {
         return new Builder();
     }
 
@@ -412,7 +412,7 @@ public class ArimaCoefficients {
             return this;
         }
 
-/*        public Builder setDrift(double drift) {
+/*        public MultipleLinearRegressionBuilder setDrift(double drift) {
             this.drift = drift;
             return this;
         }*/

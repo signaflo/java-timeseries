@@ -24,6 +24,7 @@
 
 package timeseries.models.regression;
 
+import data.regression.LinearRegressionPrediction;
 import data.regression.MultiValuePrediction;
 import math.operations.DoubleFunctions;
 import data.Range;
@@ -31,53 +32,63 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
 import math.linear.doubles.Vector;
+import timeseries.TimePeriod;
+import timeseries.TimeSeries;
+import timeseries.models.Forecast;
+
+import java.time.OffsetDateTime;
+import java.util.List;
 
 @EqualsAndHashCode @ToString
-public class TimeSeriesRegressionForecast implements MultiValuePrediction {
+public class TimeSeriesRegressionForecast implements Forecast {
 
-    private final TimeSeriesRegressionModel model;
-    private final double[] predictedValues;
+    private final TimeSeriesLinearRegression model;
+    private final TimeSeries observations;
+    private final OffsetDateTime startTime;
+    private final List<LinearRegressionPrediction> predictions;
 
-    private TimeSeriesRegressionForecast(TimeSeriesRegressionModel model, int steps) {
+    private TimeSeriesRegressionForecast(TimeSeriesLinearRegression model, int steps) {
         this.model = model;
-        Vector beta = Vector.from(model.beta());
-        Matrix X = getPredictionMatrix(model, steps);
-        this.predictedValues = X.times(beta).elements();
+        this.observations = model.observations();
+        this.startTime = observations.startTime();
     }
 
-    public static TimeSeriesRegressionForecast forecast(TimeSeriesRegressionModel model, int steps) {
+    public static TimeSeriesRegressionForecast forecast(TimeSeriesLinearRegression model, int steps) {
         return new TimeSeriesRegressionForecast(model, steps);
     }
 
-    private Matrix getPredictionMatrix(TimeSeriesRegressionModel model, int steps) {
-        int intercept = model.intercept().asInt();
-        int timeTrend = model.timeTrend().asInt();
-        int seasonal = model.seasonal().asInt();
-        int seasonalFrequency = model.seasonalFrequency();
-        int ncols = intercept + timeTrend + (seasonalFrequency - 1) * seasonal;
-
-        double[][] designMatrix = new double[ncols][steps];
-        if (model.intercept().include()) {
-            designMatrix[0] = DoubleFunctions.fill(steps, 1.0);
-        }
-        if (model.timeTrend().include()) {
-            int startTime = model.response().length + 1;
-            int endTime = startTime + steps;
-            designMatrix[intercept] = Range.exclusiveRange(startTime, endTime).asArray();
-        }
-        if (model.seasonal().include()) {
-            int periodOffset = model.response().length % seasonalFrequency;
-            double[][] seasonalMatrix = TimeSeriesLinearRegression
-                    .getSeasonalRegressors(steps, seasonalFrequency, periodOffset);
-            for (int i = 0; i < seasonalMatrix.length; i++) {
-                designMatrix[i + intercept + timeTrend] = seasonalMatrix[i];
-            }
-        }
-        return Matrix.create(Matrix.Layout.BY_COLUMN, designMatrix);
+    @Override
+    public TimeSeries upperPredictionInterval() {
+        return null;
     }
 
     @Override
-    public double[] predictedValues() {
-        return this.predictedValues;
+    public TimeSeries lowerPredictionInterval() {
+        return null;
+    }
+
+    @Override
+    public TimeSeries computeUpperPredictionBounds(int steps, double alpha) {
+        return null;
+    }
+
+    @Override
+    public TimeSeries computeLowerPredictionBounds(int steps, double alpha) {
+        return null;
+    }
+
+    @Override
+    public TimeSeries forecast() {
+        return null;
+    }
+
+    @Override
+    public void plot() {
+
+    }
+
+    @Override
+    public void plotForecast() {
+
     }
 }

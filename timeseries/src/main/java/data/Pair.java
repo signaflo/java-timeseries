@@ -2,23 +2,37 @@ package data;
 
 import lombok.NonNull;
 
+/**
+ * Represents a 2-tuple.
+ *
+ * @param <T> the type of the first element.
+ * @param <S> the type of the second element.
+ */
 public final class Pair<T extends Comparable<T>, S extends Comparable<S>>
         implements Comparable<Pair<T, S>> {
 
-    public final T first;
-    public final S second;
+    private final T first;
+    private final S second;
 
     static Pair<Integer, Integer> intPair(Integer first, Integer second) {
         return new Pair<>(first, second);
     }
 
-    public static <T extends Comparable<T>, S extends Comparable<S>> Pair<T, S> newPair(T first, S second) {
+    static <T extends Comparable<T>, S extends Comparable<S>> Pair<T, S> newPair(T first, S second) {
         return new Pair<>(first, second);
     }
 
     private Pair(@NonNull T first, @NonNull S second) {
         this.first = first;
         this.second = second;
+    }
+
+    public T first() {
+        return this.first;
+    }
+
+    public S second() {
+        return this.second;
     }
 
     /**
@@ -30,7 +44,7 @@ public final class Pair<T extends Comparable<T>, S extends Comparable<S>>
      * @return an integer value satisfying the {@link Comparable#compareTo(Object)} contract.
      */
     @Override
-    public int compareTo(Pair<T, S> otherPair) {
+    public int compareTo(@NonNull Pair<T, S> otherPair) {
         int result = this.first.compareTo(otherPair.first);
         if (result != 0) {
             return result;

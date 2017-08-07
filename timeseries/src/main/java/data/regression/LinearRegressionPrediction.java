@@ -26,12 +26,30 @@ package data.regression;
 
 import data.DoublePair;
 
+/**
+ * Prediction from a linear regression model.
+ */
 public interface LinearRegressionPrediction extends Prediction {
 
+    /**
+     * The standard error of fit for this prediction.
+     *
+     * @return the standard error of fit.
+     */
     double fitStandardError();
 
+    /**
+     * The two-sided confidence interval for this prediction.
+     *
+     * @return the two-sided confidence interval.
+     */
     DoublePair confidenceInterval();
 
+    /**
+     * The two-sided prediction interval for this prediction.
+     *
+     * @return the two-sided prediction interval.
+     */
     DoublePair predictionInterval();
 
 }

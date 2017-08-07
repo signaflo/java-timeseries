@@ -3,7 +3,7 @@ package data;
 import lombok.NonNull;
 
 /**
- * [Insert class description]
+ * Represents a 2-tuple of primitive doubles.
  *
  * @author Jacob Rachiele
  * Aug. 05, 2017
@@ -26,6 +26,14 @@ public final class DoublePair implements Comparable<DoublePair> {
         return this.second;
     }
 
+    /**
+     * Compare this pair to another pair for lexicographic ordering.
+     * The algorithm was adapted from the top answer <a target="_blank" href=
+     * "https://stackoverflow.com/questions/5292303/how-does-tuple-comparison-work-in-python">here.</a>
+     *
+     * @param otherPair the pair to compare this one to.
+     * @return an integer value satisfying the {@link Comparable#compareTo(Object)} contract.
+     */
     @Override
     public int compareTo(@NonNull DoublePair otherPair) {
         int result = Double.compare(this.first, otherPair.first);

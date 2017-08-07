@@ -26,21 +26,16 @@ package data.regression;
 /**
  * A linear regression model.
  */
-public interface LinearRegressionModel {
+public interface LinearRegression {
 
     /**
-     * Get the prediction variables.
+     * Create and return a new builder for a linear regression model.
      *
-     * @return the prediction variables.
+     * @return a new builder for a linear regression model.
      */
-    double[][] predictors();
-
-    /**
-     * Get the model's design matrix.
-     *
-     * @return the model's design matrix.
-     */
-    double[][] designMatrix();
+    static RegressionBuilder builder() {
+        return new MultipleLinearRegressionModel.MultipleLinearRegressionBuilder();
+    }
 
     /**
      * Get the response variable.

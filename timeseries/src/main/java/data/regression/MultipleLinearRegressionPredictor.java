@@ -39,7 +39,7 @@ import java.util.List;
 @ToString
 class MultipleLinearRegressionPredictor implements LinearRegressionPredictor {
 
-    private final LinearRegressionModel model;
+    private final LinearRegression model;
     private final Matrix XtXInverse;
     private final int degreesOfFreedom;
 

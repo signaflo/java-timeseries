@@ -45,9 +45,9 @@ public class LinearRegressionPredictionSpec {
     private double[] mtcars_wt = TestData.mtcars_wt.clone();
     private double[][] predictors = {mtcars_hp, mtcars_wt};
     private MultipleLinearRegressionModel regression = MultipleLinearRegressionModel.builder()
-                                                                                    .response(mtcars_mpg)
-                                                                                    .predictors(predictors)
-                                                                                    .build();
+                                                                            .response(mtcars_mpg)
+                                                                            .predictors(predictors)
+                                                                            .build();
     private MultipleLinearRegressionPredictor predictor = new MultipleLinearRegressionPredictor(regression);
 
     @Test

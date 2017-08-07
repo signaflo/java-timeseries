@@ -83,7 +83,7 @@ public class ArimaSpec {
         ArimaOrder order = ArimaOrder.order(1, 1, 1, 1, 1, 1);
         Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.CSSML);
 
-        ArimaCoefficients expected = ArimaCoefficients.newBuilder()
+        ArimaCoefficients expected = ArimaCoefficients.builder()
                                                       .setARCoeffs(-0.1040)
                                                       .setMACoeffs(-0.6214)
                                                       .setSeasonalARCoeffs(0.0051)
@@ -98,7 +98,7 @@ public class ArimaSpec {
     @Test
     public void whenArimaModelForecastThenForecastValuesCorrect() throws Exception {
         TimeSeries series = TestData.livestock;
-        ArimaCoefficients coeffs = ArimaCoefficients.newBuilder().setARCoeffs(0.6480679).setMACoeffs(-0.5035514).
+        ArimaCoefficients coeffs = ArimaCoefficients.builder().setARCoeffs(0.6480679).setMACoeffs(-0.5035514).
                 setDifferences(1).build();
         Arima model = Arima.model(series, coeffs, TimePeriod.oneYear());
         double[] expected = {457.660172, 458.904464, 459.71085, 460.233443, 460.572118, 460.791603, 460.933844,
@@ -109,7 +109,7 @@ public class ArimaSpec {
     @Test
     public void whenArimaModelForecastThenPredictionLevelsAccurate() throws Exception {
         TimeSeries series = TestData.livestock;
-        ArimaCoefficients coeffs = ArimaCoefficients.newBuilder()
+        ArimaCoefficients coeffs = ArimaCoefficients.builder()
                                                     .setARCoeffs(0.6480679 )
                                                     .setMACoeffs(-0.5035514)
                                                     .setDifferences(1)
@@ -130,7 +130,7 @@ public class ArimaSpec {
 
     @Test
     public void whenModelFitThenModelInformationCorrect() {
-        ArimaCoefficients coefficients = ArimaCoefficients.newBuilder()
+        ArimaCoefficients coefficients = ArimaCoefficients.builder()
                                                           .setARCoeffs(-0.5)
                                                           .setMACoeffs(-0.5)
                                                           .setDifferences(1)
@@ -143,7 +143,7 @@ public class ArimaSpec {
 
     @Test
     public void whenModelFitThenCorrectDrift() {
-        ArimaCoefficients coefficients = ArimaCoefficients.newBuilder()
+        ArimaCoefficients coefficients = ArimaCoefficients.builder()
                                                           .setDrift(4.85376578)
                                                           .setARCoeffs(0.01803952)
                                                           .setDifferences(1)
@@ -187,7 +187,7 @@ public class ArimaSpec {
     @Test
     public void whenNullObservationsThenNPE5() {
         ArimaOrder order = ArimaOrder.order(0, 1, 0);
-        ArimaCoefficients coefficients = ArimaCoefficients.newBuilder().build();
+        ArimaCoefficients coefficients = ArimaCoefficients.builder().build();
         Arima.FittingStrategy fittingStrategy = Arima.FittingStrategy.CSSML;
         exception.expect(NullPointerException.class);
         Arima.model(null, coefficients, fittingStrategy);
@@ -196,7 +196,7 @@ public class ArimaSpec {
     @Test
     public void whenNullObservationsThenNPE6() {
         ArimaOrder order = ArimaOrder.order(0, 1, 0);
-        ArimaCoefficients coefficients = ArimaCoefficients.newBuilder().build();
+        ArimaCoefficients coefficients = ArimaCoefficients.builder().build();
         TimePeriod period = TimePeriod.oneYear();
         exception.expect(NullPointerException.class);
         Arima.model(null, coefficients, period);

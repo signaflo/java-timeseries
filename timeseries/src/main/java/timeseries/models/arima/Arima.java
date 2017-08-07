@@ -36,7 +36,8 @@ import timeseries.models.Model;
 public interface Arima extends Model {
     /**
      * Create a new ARIMA model from the given observations and model order. This constructor sets the
-     * model {@link FittingStrategy} to unconditional sum-of-squares and the seasonal cycle to one year.
+     * model {@link FittingStrategy} to conditional sum-of-squares with maximum likelihood
+     * and the seasonal cycle to one year.
      *
      * @param observations the time series of observations.
      * @param order        the order of the ARIMA model.
@@ -49,7 +50,7 @@ public interface Arima extends Model {
 
     /**
      * Create a new ARIMA model from the given observations, model order, and seasonal cycle. This method sets the
-     * model {@link FittingStrategy} to unconditional sum-of-squares.
+     * model {@link FittingStrategy} to conditional sum-of-squares with maximum likelihood.
      *
      * @param observations  the time series of observations.
      * @param order         the order of the ARIMA model.
@@ -118,7 +119,7 @@ public interface Arima extends Model {
 
     /**
      * Create a new ARIMA model from the given observations, model coefficients, and seasonal cycle. This constructor
-     * sets the model {@link FittingStrategy} to conditional sum-of-squares followed by maximum likelihood.
+     * sets the model {@link FittingStrategy} to conditional sum-of-squares with maximum likelihood.
      *
      * @param observations  the time series of observations.
      * @param coeffs        the coefficients of the model.

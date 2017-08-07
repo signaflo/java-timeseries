@@ -25,7 +25,6 @@ package data.regression;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import math.operations.DoubleFunctions;
 import org.ejml.alg.dense.mult.MatrixVectorMult;
 import org.ejml.data.D1Matrix64F;
 import org.ejml.data.DenseMatrix64F;
@@ -42,7 +41,7 @@ import static math.operations.DoubleFunctions.*;
  * This implementation is immutable and thread-safe.
  */
 @EqualsAndHashCode @ToString
-public final class MultipleLinearRegressionModel implements LinearRegressionModel {
+public final class MultipleLinearRegressionModel implements MultipleLinearRegression {
 
     private final double[][] predictors;
     private final double[][] XtXInv;
@@ -54,7 +53,7 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
     private final boolean hasIntercept;
     private final double sigma2;
 
-    private MultipleLinearRegressionModel(Builder builder) {
+    private MultipleLinearRegressionModel(MultipleLinearRegressionBuilder builder) {
         this.predictors = builder.predictors;
         this.response = builder.response;
         this.hasIntercept = builder.hasIntercept;
@@ -79,7 +78,6 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
         return XtXInvArray;
     }
 
-    @Override
     public double[][] predictors() {
         double[][] copy = new double[this.predictors.length][];
         for (int i = 0; i < copy.length; i++) {
@@ -88,8 +86,7 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
         return copy;
     }
 
-    @Override
-    public double[][] designMatrix() {
+    double[][] designMatrix() {
         if (this.hasIntercept) {
             double[][] copy = new double[this.predictors.length + 1][];
             copy[0] = fill(response.length, 1.0);
@@ -144,6 +141,10 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
         return this.hasIntercept;
     }
 
+    public static MultipleLinearRegressionBuilder builder() {
+        return new MultipleLinearRegressionBuilder();
+    }
+
     /**
      * Create a new linear regression model from this one, using the given boolean to determine whether
      * to fit an intercept or not.
@@ -151,8 +152,8 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
      * @param hasIntercept whether or not the new regression should have an intercept.
      * @return a new linear regression model using the given boolean to determine whether to fit an intercept.
      */
-    public MultipleLinearRegressionModel withHasIntercept(boolean hasIntercept) {
-        return new Builder().from(this).hasIntercept(hasIntercept).build();
+    MultipleLinearRegressionModel withHasIntercept(boolean hasIntercept) {
+        return new MultipleLinearRegressionBuilder().from(this).hasIntercept(hasIntercept).build();
     }
 
     /**
@@ -161,8 +162,8 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
      * @param response the response variable of the new regression.
      * @return a new linear regression model with the given response variable in place of the current one.
      */
-    public MultipleLinearRegressionModel withResponse(double[] response) {
-        return new Builder().from(this).response(response).build();
+    MultipleLinearRegressionModel withResponse(double[] response) {
+        return new MultipleLinearRegressionBuilder().from(this).response(response).build();
     }
 
     /**
@@ -171,42 +172,29 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
      * @param predictors The new array of prediction variables to use for the regression.
      * @return a new linear regression model using the given predictors in place of the current ones.
      */
-    public MultipleLinearRegressionModel withPredictors(double[]... predictors) {
-        return new Builder().from(this).predictors(predictors).build();
-    }
-
-    /**
-     * Create and return a new builder for this class.
-     *
-     * @return a new builder for this class.
-     */
-    public static Builder builder() {
-        return new Builder();
+    MultipleLinearRegressionModel withPredictors(double[]... predictors) {
+        return new MultipleLinearRegressionBuilder().from(this).predictors(predictors).build();
     }
 
     /**
      * A builder for a multiple linear regression model.
      */
-    public static final class Builder {
+    public static final class MultipleLinearRegressionBuilder implements MultipleRegressionBuilder {
 
         private double[][] predictors;
         private double[] response;
         private boolean hasIntercept = true;
 
-        /**
-         * Copy the attributes of the given regression object to this builder and return this builder.
-         *
-         * @param regression the object to copy the attributes from.
-         * @return this builder.
-         */
-        public final Builder from(LinearRegressionModel regression) {
+        @Override
+        public final MultipleLinearRegressionBuilder from(MultipleLinearRegression regression) {
             this.predictors = copy(regression.predictors());
             this.response = regression.response().clone();
             this.hasIntercept = regression.hasIntercept();
             return this;
         }
 
-        public Builder predictors(double[]... predictors) {
+        @Override
+        public MultipleLinearRegressionBuilder predictors(double[]... predictors) {
             this.predictors = new double[predictors.length][];
             for (int i = 0; i < predictors.length; i++) {
                 this.predictors[i] = predictors[i].clone();
@@ -214,16 +202,19 @@ public final class MultipleLinearRegressionModel implements LinearRegressionMode
             return this;
         }
 
-        public Builder response(double[] response) {
+        @Override
+        public MultipleLinearRegressionBuilder response(double[] response) {
             this.response = response.clone();
             return this;
         }
 
-        public Builder hasIntercept(boolean hasIntercept) {
+        @Override
+        public MultipleLinearRegressionBuilder hasIntercept(boolean hasIntercept) {
             this.hasIntercept = hasIntercept;
             return this;
         }
 
+        @Override
         public MultipleLinearRegressionModel build() {
             return new MultipleLinearRegressionModel(this);
         }

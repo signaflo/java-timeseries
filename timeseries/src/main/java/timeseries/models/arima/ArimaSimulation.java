@@ -121,7 +121,7 @@ public class ArimaSimulation {
     public static class Builder {
 
         private int defaultSimulationSize = 500;
-        private ArimaCoefficients coefficients = ArimaCoefficients.newBuilder().build();
+        private ArimaCoefficients coefficients = ArimaCoefficients.builder().build();
         private Distribution distribution = new Normal();
         private TimePeriod period = (coefficients.isSeasonal()) ? TimePeriod.oneMonth() : TimePeriod.oneYear();
         private TimePeriod seasonalCycle = TimePeriod.oneYear();

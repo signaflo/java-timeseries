@@ -1,7 +1,5 @@
 package data.regression;
 
-import data.DoublePair;
-
 /**
  * A prediction of an unobserved response.
  *
@@ -11,7 +9,7 @@ import data.DoublePair;
 public interface Prediction {
 
     /**
-     * Get the point estimate.
+     * The point estimate for this prediction.
      *
      * @return the point estimate.
      */

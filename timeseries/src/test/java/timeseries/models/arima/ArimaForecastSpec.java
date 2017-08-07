@@ -37,7 +37,7 @@ public class ArimaForecastSpec {
     public void whenForecastThenCorrectPredictionIntervals() {
         TimeSeries timeSeries = TestData.debitcards;
         Arima.FittingStrategy fittingStrategy = Arima.FittingStrategy.CSSML;
-        ArimaCoefficients coefficients = ArimaCoefficients.newBuilder()
+        ArimaCoefficients coefficients = ArimaCoefficients.builder()
                                                           .setMACoeffs(-0.6760904)
                                                           .setSeasonalMACoeffs(-0.5718134)
                                                           .setDifferences(1)
@@ -60,7 +60,7 @@ public class ArimaForecastSpec {
     public void whenArimaForecastThenForecastValuesCorrect() {
         TimeSeries timeSeries = TestData.debitcards;
         Arima.FittingStrategy fittingStrategy = ArimaModel.FittingStrategy.CSSML;
-        ArimaCoefficients coefficients = ArimaCoefficients.newBuilder()
+        ArimaCoefficients coefficients = ArimaCoefficients.builder()
                                                           .setMACoeffs(-0.6760904)
                                                           .setSeasonalMACoeffs(-0.5718134)
                                                           .setDifferences(1)

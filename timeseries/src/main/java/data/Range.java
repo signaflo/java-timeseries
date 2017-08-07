@@ -30,7 +30,7 @@ public final class Range {
      * @param by   the increment amount.
      * @throws IllegalArgumentException if the <em>by</em> argument is less than or equal to 0.
      */
-    public Range(final double from, final double to, final double by) {
+    Range(final double from, final double to, final double by) {
         if (by <= 0) {
             throw new IllegalArgumentException("The by argument must be positive.");
         }
