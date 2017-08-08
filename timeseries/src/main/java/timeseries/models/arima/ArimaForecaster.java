@@ -26,6 +26,7 @@ package timeseries.models.arima;
 
 import math.stats.distributions.Normal;
 import timeseries.TimeSeries;
+import timeseries.models.Forecast;
 import timeseries.models.Forecaster;
 import timeseries.operators.LagPolynomial;
 
@@ -35,21 +36,12 @@ public class ArimaForecaster implements Forecaster {
 
     private final Arima model;
 
-    ArimaForecaster(Arima model) {
+    public ArimaForecaster(Arima model) {
         this.model = model;
     }
 
-    /**
-     * Create a new pointForecast for the given number of steps ahead using the given ARIMA model with a default
-     * &alpha; significance level of 0.05.
-     *
-     * @param model a fitted ARIMA model.
-     * @param steps the number of time periods ahead to pointForecast.
-     * @return a new pointForecast for the given number of steps ahead using the given ARIMA model with a default
-     * &alpha; significance level of 0.05.
-     */
     @Override
-    public ArimaForecast forecast(int steps, double alpha) {
+    public Forecast forecast(int steps, double alpha) {
         TimeSeries pointForecasts = computePointForecasts(steps);
         TimeSeries lowerValues = computeLowerPredictionBounds(pointForecasts, steps, alpha);
         TimeSeries upperValues = computeUpperPredictionBounds(pointForecasts, steps, alpha);

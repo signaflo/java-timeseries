@@ -1,7 +1,7 @@
 package data.regression;
 
 /**
- * A builder for a regression object.
+ * A builder for a linear regression model.
  *
  * @author Jacob Rachiele
  * Aug. 06, 2017

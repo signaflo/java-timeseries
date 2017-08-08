@@ -24,6 +24,7 @@
 package timeseries.models;
 
 import timeseries.TimeSeries;
+import timeseries.models.arima.Arima;
 
 /**
  * A forecast produced by a time series {@link Model}.

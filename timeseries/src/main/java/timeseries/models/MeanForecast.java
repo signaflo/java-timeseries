@@ -23,26 +23,9 @@
  */
 package timeseries.models;
 
-import com.google.common.primitives.Doubles;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.knowm.xchart.XChartPanel;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.XYSeries;
-import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
-import org.knowm.xchart.style.Styler.ChartTheme;
-import org.knowm.xchart.style.markers.Circle;
-import org.knowm.xchart.style.markers.None;
-import math.stats.distributions.StudentsT;
 import timeseries.TimeSeries;
-
-import javax.swing.*;
-import java.awt.*;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * A mean model forecast.
@@ -50,7 +33,7 @@ import java.util.List;
  * @author Jacob Rachiele
  */
 @EqualsAndHashCode @ToString
-public final class MeanForecast implements Forecast {
+final class MeanForecast implements Forecast {
 
     private final TimeSeries forecast;
     private final TimeSeries upperValues;

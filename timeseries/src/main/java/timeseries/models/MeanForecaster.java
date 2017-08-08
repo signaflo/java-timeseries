@@ -27,7 +27,7 @@ package timeseries.models;
 import math.stats.distributions.StudentsT;
 import timeseries.TimeSeries;
 
-public class MeanForecaster implements Forecaster {
+class MeanForecaster implements Forecaster {
 
     private final Model model;
 

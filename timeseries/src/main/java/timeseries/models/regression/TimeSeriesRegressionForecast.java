@@ -30,7 +30,7 @@ import timeseries.TimeSeries;
 import timeseries.models.Forecast;
 
 @EqualsAndHashCode @ToString
-public class TimeSeriesRegressionForecast implements Forecast {
+class TimeSeriesRegressionForecast implements Forecast {
 
     private final TimeSeries pointForecast;
     private final TimeSeries lowerPredictionInterval;

@@ -25,7 +25,6 @@
 package timeseries.models.regression;
 
 import data.regression.LinearRegressionPrediction;
-import data.regression.LinearRegressionPredictor;
 import data.regression.MultipleLinearRegressionPredictor;
 import math.linear.doubles.Matrix;
 import timeseries.TimeSeries;
@@ -33,14 +32,14 @@ import timeseries.models.Forecaster;
 
 import java.util.List;
 
-public class TimeSeriesRegressionForecaster implements Forecaster {
+class TimeSeriesRegressionForecaster implements Forecaster {
 
     private final TimeSeriesLinearRegressionModel model;
     private final MultipleLinearRegressionPredictor predictor;
 
     TimeSeriesRegressionForecaster(TimeSeriesLinearRegressionModel regression) {
         this.model = regression;
-        this.predictor = new MultipleLinearRegressionPredictor(this.model);
+        this.predictor = MultipleLinearRegressionPredictor.from(this.model);
     }
 
     @Override
@@ -58,7 +57,7 @@ public class TimeSeriesRegressionForecaster implements Forecaster {
         return new TimeSeriesRegressionForecast(forecast, lowerBounds, upperBounds);
     }
 
-    TimeSeries computeLowerPredictionBounds(List<LinearRegressionPrediction> predictions,
+    private TimeSeries computeLowerPredictionBounds(List<LinearRegressionPrediction> predictions,
                                             TimeSeries forecast, int steps) {
         double[] bounds = new double[steps];
         for (int i = 0; i < steps; i++) {
@@ -67,7 +66,7 @@ public class TimeSeriesRegressionForecaster implements Forecaster {
         return TimeSeries.from(forecast.timePeriod(), forecast.startTime(), bounds);
     }
 
-    TimeSeries computeUpperPredictionBounds(List<LinearRegressionPrediction> predictions,
+    private TimeSeries computeUpperPredictionBounds(List<LinearRegressionPrediction> predictions,
                                             TimeSeries forecast, int steps) {
         double[] bounds = new double[steps];
         for (int i = 0; i < steps; i++) {

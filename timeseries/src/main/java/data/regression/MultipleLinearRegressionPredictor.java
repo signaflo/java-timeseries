@@ -25,7 +25,6 @@
 package data.regression;
 
 import data.DoublePair;
-import lombok.NonNull;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
 import math.linear.doubles.QuadraticForm;
@@ -43,10 +42,14 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
     private final Matrix XtXInverse;
     private final int degreesOfFreedom;
 
-    public MultipleLinearRegressionPredictor(@NonNull MultipleLinearRegression model) {
+    private MultipleLinearRegressionPredictor(MultipleLinearRegression model) {
         this.model = model;
         this.XtXInverse = Matrix.create(model.XtXInverse());
         this.degreesOfFreedom = model.response().length - model.designMatrix().length;
+    }
+
+    public static MultipleLinearRegressionPredictor from(MultipleLinearRegression model) {
+        return new MultipleLinearRegressionPredictor(model);
     }
 
     private DoublePair getInterval(double sampleEstimate, double tValue, double standardError) {
@@ -59,12 +62,12 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
     public LinearRegressionPrediction predict(Vector observation, double alpha) {
         double estimate = estimate(predictorWithIntercept(observation));
         double seFit = standardErrorFit(predictorWithIntercept(observation));
-        DoublePair confidenceInterval = confidenceInterval(alpha, observation, estimate);
-        DoublePair predictionInterval = predictionInterval(alpha, observation, estimate);
+        DoublePair confidenceInterval = confidenceInterval(alpha, predictorWithIntercept(observation), estimate);
+        DoublePair predictionInterval = predictionInterval(alpha, predictorWithIntercept(observation), estimate);
         return new MultipleLinearRegressionPrediction(estimate, seFit, confidenceInterval, predictionInterval);
     }
 
-    public LinearRegressionPrediction predictWithIntercept(Vector vector, double alpha) {
+    private LinearRegressionPrediction predictWithIntercept(Vector vector, double alpha) {
         double estimate = estimate(vector);
         double seFit = standardErrorFit(vector);
         DoublePair confidenceInterval = confidenceInterval(alpha, vector, estimate);
@@ -105,6 +108,7 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
         return getInterval(estimate, tValue, standardError);
     }
 
+    @Override
     public List<LinearRegressionPrediction> predict(Matrix newData, double alpha) {
         List<LinearRegressionPrediction> predictions = new ArrayList<>(newData.nrow());
         for (int i = 0; i < newData.nrow(); i++) {

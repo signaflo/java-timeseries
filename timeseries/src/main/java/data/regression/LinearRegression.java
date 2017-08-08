@@ -23,7 +23,6 @@
  */
 package data.regression;
 
-import math.operations.DoubleFunctions;
 import math.operations.Operators;
 
 /**

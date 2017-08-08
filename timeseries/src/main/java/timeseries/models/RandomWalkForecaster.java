@@ -27,15 +27,15 @@ package timeseries.models;
 import math.stats.distributions.Normal;
 import timeseries.TimeSeries;
 
-public class RandomWalkForecaster implements Forecaster {
+class RandomWalkForecaster implements Forecaster {
 
     private final Model model;
 
-    public RandomWalkForecaster(final Model model) {
+    RandomWalkForecaster(final Model model) {
         this.model = model;
     }
 
-    public RandomWalkForecaster(final TimeSeries series) {
+    RandomWalkForecaster(final TimeSeries series) {
         this.model = new RandomWalk(series);
     }
 

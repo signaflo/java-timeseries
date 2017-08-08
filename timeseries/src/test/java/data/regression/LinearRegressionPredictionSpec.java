@@ -48,7 +48,7 @@ public class LinearRegressionPredictionSpec {
                                                                             .response(mtcars_mpg)
                                                                             .predictors(predictors)
                                                                             .build();
-    private MultipleLinearRegressionPredictor predictor = new MultipleLinearRegressionPredictor(regression);
+    private MultipleLinearRegressionPredictor predictor = MultipleLinearRegressionPredictor.from(regression);
 
     @Test
     public void whenPredictNewDataThenValueCorrect() {
@@ -92,14 +92,14 @@ public class LinearRegressionPredictionSpec {
         MultipleLinearRegressionModel other2 = this.regression.withPredictors(DoubleFunctions.boxCox(mtcars_hp, 0.0));
         MultipleLinearRegressionModel other3 = this.regression.withResponse(
                 DoubleFunctions.boxCox(TestData.mtcars_mpg, 0.0));
-        MultipleLinearRegressionPredictor predictor1 = new MultipleLinearRegressionPredictor(other1);
-        MultipleLinearRegressionPredictor predictor2 = new MultipleLinearRegressionPredictor(other2);
-        MultipleLinearRegressionPredictor predictor3 = new MultipleLinearRegressionPredictor(other3);
+        MultipleLinearRegressionPredictor predictor1 = MultipleLinearRegressionPredictor.from(other1);
+        MultipleLinearRegressionPredictor predictor2 = MultipleLinearRegressionPredictor.from(other2);
+        MultipleLinearRegressionPredictor predictor3 = MultipleLinearRegressionPredictor.from(other3);
         new EqualsTester()
-                .addEqualityGroup(this.predictor, new MultipleLinearRegressionPredictor(this.regression))
-                .addEqualityGroup(predictor1, new MultipleLinearRegressionPredictor(other1))
-                .addEqualityGroup(predictor2, new MultipleLinearRegressionPredictor(other2))
-                .addEqualityGroup(predictor3, new MultipleLinearRegressionPredictor(other3))
+                .addEqualityGroup(this.predictor, MultipleLinearRegressionPredictor.from(this.regression))
+                .addEqualityGroup(predictor1, MultipleLinearRegressionPredictor.from(other1))
+                .addEqualityGroup(predictor2, MultipleLinearRegressionPredictor.from(other2))
+                .addEqualityGroup(predictor3, MultipleLinearRegressionPredictor.from(other3))
                 .testEquals();
     }
 }

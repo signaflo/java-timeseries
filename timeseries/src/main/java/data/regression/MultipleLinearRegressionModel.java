@@ -25,6 +25,7 @@ package data.regression;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import math.stats.Statistics;
 import org.ejml.alg.dense.mult.MatrixVectorMult;
 import org.ejml.data.D1Matrix64F;
 import org.ejml.data.DenseMatrix64F;
@@ -32,7 +33,6 @@ import org.ejml.factory.LinearSolverFactory;
 import org.ejml.interfaces.decomposition.QRDecomposition;
 import org.ejml.interfaces.linsol.LinearSolver;
 import org.ejml.ops.CommonOps;
-import math.stats.Statistics;
 
 import static math.operations.DoubleFunctions.*;
 
@@ -182,7 +182,7 @@ public final class MultipleLinearRegressionModel implements MultipleLinearRegres
     /**
      * A builder for a multiple linear regression model.
      */
-    public static final class MultipleLinearRegressionBuilder implements MultipleRegressionBuilder {
+    static final class MultipleLinearRegressionBuilder implements MultipleRegressionBuilder {
 
         private double[][] predictors;
         private double[] response;

@@ -23,37 +23,20 @@
  */
 package timeseries.models;
 
-import com.google.common.primitives.Doubles;
-import org.knowm.xchart.XChartPanel;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.XYSeries;
-import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
-import org.knowm.xchart.style.Styler.ChartTheme;
-import org.knowm.xchart.style.markers.None;
-import math.stats.distributions.Normal;
 import timeseries.TimeSeries;
-
-import javax.swing.*;
-import java.awt.*;
-import java.sql.Time;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * A forecast from a random walk model.
  *
  * @author Jacob Rachiele
  */
-public final class RandomWalkForecast implements Forecast {
+final class RandomWalkForecast implements Forecast {
 
     private final TimeSeries forecast;
     private final TimeSeries upperValues;
     private final TimeSeries lowerValues;
 
-    public RandomWalkForecast(TimeSeries forecast, TimeSeries lowerValues, TimeSeries upperValues) {
+    RandomWalkForecast(TimeSeries forecast, TimeSeries lowerValues, TimeSeries upperValues) {
         this.forecast = forecast;
         this.upperValues = upperValues;
         this.lowerValues = lowerValues;

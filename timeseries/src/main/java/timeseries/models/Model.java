@@ -36,10 +36,6 @@ public interface Model {
 
     /**
      * Produce a time series of point forecasts from this model up to the given number of steps ahead.
-     * <p>
-     * To obtain additional information about the forecast, such as prediction intervals, use the {@link #forecast}
-     * method and the resulting {@link Forecast} object.
-     * </p>
      *
      * @param steps the number of time periods ahead to forecast.
      * @return a time series of point forecasts from this model up to the given number of steps ahead.

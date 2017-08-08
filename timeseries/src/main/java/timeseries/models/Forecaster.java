@@ -29,44 +29,82 @@ import timeseries.TimeSeries;
 public interface Forecaster {
 
     /**
-     * Compute the upper end points of a prediction interval with the given number of forecast steps and the provided
-     * &alpha; significance level.
+     * Compute @return the upper end points of a prediction interval using the given forecast, forecast steps,
+     * and &alpha; significance level.
      *
-     * @param observations
+     * @param forecast the forecasted values.
      * @param steps the number of time periods ahead to forecast.
-     * @param alpha the significance level for the prediction intervals.
-     * @return the upper end points of a prediction interval with the given number of forecast steps and the provided
-     * &alpha; significance level.
+     * @param alpha the significance level for the prediction interval.
+     * @return the upper end points of a prediction interval using the given forecast, forecast steps,
+     * and &alpha; significance level.
      */
-    TimeSeries computeUpperPredictionBounds(TimeSeries observations, int steps, double alpha);
+    TimeSeries computeUpperPredictionBounds(TimeSeries forecast, int steps, double alpha);
 
     /**
-     * Compute the lower end points of a prediction interval with the given number of forecast steps and the provided
-     * &alpha; significance level.
+     * Compute the lower end points of a prediction interval using the given forecast, forecast steps,
+     * and &alpha; significance level.
      *
      *
-     * @param forecast
+     * @param forecast the forecasted values.
      * @param steps the number of time periods ahead to forecast.
-     * @param alpha the significance level for the prediction intervals.
-     * @return the lower end points of a prediction interval with the given number of forecast steps and the provided
-     * &alpha; significance level.
+     * @param alpha the significance level for the prediction interval.
+     * @return the lower end points of a prediction interval using the given forecast, forecast steps,
+     * and &alpha; significance level.
      */
     TimeSeries computeLowerPredictionBounds(TimeSeries forecast, int steps, double alpha);
-
+    /**
+     * Compute the lower end points of a prediction interval with the given number of forecast steps and
+     * &alpha; significance level.
+     *
+     *
+     * @param steps the number of time periods ahead to forecast.
+     * @param alpha the significance level for the prediction interval.
+     * @return the lower end points of a prediction interval with the given number of forecast steps and
+     * &alpha; significance level.
+     */
     default TimeSeries computeLowerPredictionBounds(int steps, double alpha) {
         TimeSeries forecast = this.computePointForecasts(steps);
         return computeLowerPredictionBounds(forecast, steps, alpha);
     }
 
+    /**
+     * Compute the upper end points of a prediction interval with the given number of forecast steps and
+     * &alpha; significance level.
+     *
+     *
+     * @param steps the number of time periods ahead to forecast.
+     * @param alpha the significance level for the prediction interval.
+     * @return the upper end points of a prediction interval with the given number of forecast steps and
+     * &alpha; significance level.
+     */
     default TimeSeries computeUpperPredictionBounds(int steps, double alpha) {
         TimeSeries forecast = this.computePointForecasts(steps);
         return computeUpperPredictionBounds(forecast, steps, alpha);
     }
 
+    /**
+     * Create a new point forecast for the given number of steps ahead.
+     *
+     * @param steps the number of time periods ahead to forecast.
+     * @return a new point forecast for the given number of steps ahead.
+     */
     TimeSeries computePointForecasts(int steps);
 
+    /**
+     * Create a new forecast for the given number of steps ahead with the given &alpha; significance level.
+     *
+     * @param steps the number of time periods ahead to forecast.
+     * @param alpha the significance level for the prediction interval.
+     * @return a new forecast for the given number of steps ahead with the given &alpha; significance level.
+     */
     Forecast forecast(int steps, double alpha);
 
+    /**
+     * Create a new forecast for the given number of steps ahead with a default &alpha; significance level of 0.05.
+     *
+     * @param steps the number of time periods ahead to forecast.
+     * @return a new forecast for the given number of steps ahead with a default &alpha; significance level of 0.05.
+     */
     default Forecast forecast(int steps) {
         return forecast(steps, 0.05);
     }

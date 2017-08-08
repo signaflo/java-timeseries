@@ -1,10 +1,8 @@
 package timeseries.models.regression;
 
-import data.regression.LinearRegression;
 import data.regression.MultipleLinearRegression;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
-import timeseries.models.Model;
 
 /**
  * A linear regression model for time series data.
@@ -25,13 +23,6 @@ public interface TimeSeriesLinearRegression extends MultipleLinearRegression {
     TimePeriod seasonalCycle();
 
     int seasonalFrequency();
-
-    /**
-     * Get the prediction variables.
-     *
-     * @return the prediction variables.
-     */
-    double[][] predictors();
 
     /**
      * Specifies whether a time series regression model has an intercept.

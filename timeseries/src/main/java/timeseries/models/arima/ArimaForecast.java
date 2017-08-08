@@ -23,7 +23,6 @@
  */
 package timeseries.models.arima;
 
-import math.stats.distributions.Normal;
 import timeseries.TimeSeries;
 import timeseries.models.Forecast;
 
@@ -32,7 +31,7 @@ import timeseries.models.Forecast;
  *
  * @author Jacob Rachiele
  */
-public final class ArimaForecast implements Forecast {
+final class ArimaForecast implements Forecast {
 
     private final TimeSeries pointForecast;
     private final TimeSeries lowerValues;

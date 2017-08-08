@@ -1,7 +1,7 @@
 package data.regression;
 
 /**
- * [Insert class description]
+ * A builder for a multiple linear regression model.
  *
  * @author Jacob Rachiele
  * Aug. 07, 2017
