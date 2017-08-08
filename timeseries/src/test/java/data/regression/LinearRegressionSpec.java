@@ -40,7 +40,7 @@ public class LinearRegressionSpec {
     private double[] time = Range.inclusiveRange(1, 47, 1.0).asArray();
     private double[] response = TestData.livestock.asArray();
     private boolean hasIntercept = true;
-    private LinearRegression regression = LinearRegression.builder()
+    private MultipleLinearRegression regression = MultipleLinearRegression.builder()
                                                           .predictors(time)
                                                           .response(response)
                                                           .hasIntercept(hasIntercept)
@@ -107,18 +107,18 @@ public class LinearRegressionSpec {
 
     @Test
     public void equalsContract() {
-        LinearRegression other =
+        MultipleLinearRegression other =
                 LinearRegression.builder()
                                 .predictors(time)
                                 .response(response)
                                 .hasIntercept(!hasIntercept)
                                 .build();
-        LinearRegression other2 = LinearRegression.builder()
+        MultipleLinearRegression other2 = LinearRegression.builder()
                                                   .predictors(Range.inclusiveRange(
                                                                     1961, 2007, 1.0).asArray())
                                                   .response(response)
                                                   .build();
-        LinearRegression other3 = LinearRegression.builder()
+        MultipleLinearRegression other3 = LinearRegression.builder()
                                                   .predictors(time)
                                                   .response(TestData.livestock.demean().asArray())
                                                   .build();

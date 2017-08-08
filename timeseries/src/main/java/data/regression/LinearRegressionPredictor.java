@@ -14,18 +14,41 @@ import java.util.List;
 public interface LinearRegressionPredictor {
 
     /**
-     * Predict a response using the given observation.
+     * Predict a response using the given observation and significance level.
+     *
+     * @param observation the new observation.
+     * @param alpha the significance level.
+     * @return the prediction of the response.
+     */
+    LinearRegressionPrediction predict(Vector observation, double alpha);
+
+    /**
+     * Predict a response using the given observation, with a default significance level of 0.05.
      *
      * @param observation the new observation.
      * @return the prediction of the response.
      */
-    LinearRegressionPrediction predict(Vector observation);
+    default LinearRegressionPrediction predict(Vector observation) {
+        return predict(observation, 0.05);
+    }
 
     /**
      * Predict a series of responses, one for each row in the observations matrix.
      *
      * @param observations the new observations.
+     * @param alpha the significance level.
      * @return a list of predictions, one for each row in the observation matrix.
      */
-    List<LinearRegressionPrediction> predict(Matrix observations);
+    List<LinearRegressionPrediction> predict(Matrix observations, double alpha);
+
+    /**
+     * Predict a series of responses, one for each row in the observations matrix. This method
+     * uses a default significance level of 0.05.
+     *
+     * @param observations the new observations.
+     * @return a list of predictions, one for each row in the observation matrix.
+     */
+    default List<LinearRegressionPrediction> predict(Matrix observations) {
+        return predict(observations, 0.05);
+    }
 }

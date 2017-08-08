@@ -78,6 +78,7 @@ public final class MultipleLinearRegressionModel implements MultipleLinearRegres
         return XtXInvArray;
     }
 
+    @Override
     public double[][] predictors() {
         double[][] copy = new double[this.predictors.length][];
         for (int i = 0; i < copy.length; i++) {
@@ -86,7 +87,8 @@ public final class MultipleLinearRegressionModel implements MultipleLinearRegres
         return copy;
     }
 
-    double[][] designMatrix() {
+    @Override
+    public double[][] designMatrix() {
         if (this.hasIntercept) {
             double[][] copy = new double[this.predictors.length + 1][];
             copy[0] = fill(response.length, 1.0);
@@ -98,7 +100,8 @@ public final class MultipleLinearRegressionModel implements MultipleLinearRegres
         return predictors();
     }
 
-    double[][] XtXInverse() {
+    @Override
+    public double[][] XtXInverse() {
         double[][] copy = new double[this.XtXInv.length][];
         for (int i = 0; i < copy.length; i++) {
             copy[i] = this.XtXInv[i].clone();

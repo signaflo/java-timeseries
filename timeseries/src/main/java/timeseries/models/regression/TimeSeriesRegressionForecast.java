@@ -24,71 +24,38 @@
 
 package timeseries.models.regression;
 
-import data.regression.LinearRegressionPrediction;
-import data.regression.MultiValuePrediction;
-import math.operations.DoubleFunctions;
-import data.Range;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import math.linear.doubles.Matrix;
-import math.linear.doubles.Vector;
-import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.models.Forecast;
-
-import java.time.OffsetDateTime;
-import java.util.List;
 
 @EqualsAndHashCode @ToString
 public class TimeSeriesRegressionForecast implements Forecast {
 
-    private final TimeSeriesLinearRegression model;
-    private final TimeSeries observations;
-    private final OffsetDateTime startTime;
-    private final List<LinearRegressionPrediction> predictions;
+    private final TimeSeries pointForecast;
+    private final TimeSeries lowerPredictionInterval;
+    private final TimeSeries upperPredictionInterval;
 
-    private TimeSeriesRegressionForecast(TimeSeriesLinearRegression model, int steps) {
-        this.model = model;
-        this.observations = model.observations();
-        this.startTime = observations.startTime();
-    }
-
-    public static TimeSeriesRegressionForecast forecast(TimeSeriesLinearRegression model, int steps) {
-        return new TimeSeriesRegressionForecast(model, steps);
+    TimeSeriesRegressionForecast(TimeSeries pointForecast, TimeSeries lowerPredictionInterval,
+                                 TimeSeries upperPredictionInterval) {
+        this.pointForecast = pointForecast;
+        this.lowerPredictionInterval = lowerPredictionInterval;
+        this.upperPredictionInterval = upperPredictionInterval;
     }
 
     @Override
     public TimeSeries upperPredictionInterval() {
-        return null;
+        return this.upperPredictionInterval;
     }
 
     @Override
     public TimeSeries lowerPredictionInterval() {
-        return null;
+        return this.lowerPredictionInterval;
     }
 
     @Override
-    public TimeSeries computeUpperPredictionBounds(int steps, double alpha) {
-        return null;
+    public TimeSeries pointForecast() {
+        return this.pointForecast;
     }
 
-    @Override
-    public TimeSeries computeLowerPredictionBounds(int steps, double alpha) {
-        return null;
-    }
-
-    @Override
-    public TimeSeries forecast() {
-        return null;
-    }
-
-    @Override
-    public void plot() {
-
-    }
-
-    @Override
-    public void plotForecast() {
-
-    }
 }

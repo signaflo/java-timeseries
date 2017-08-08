@@ -434,9 +434,9 @@ final class ArimaModel implements Arima {
         return TimeSeries.from(timePeriod, startTime, fcst);
     }
 
-    @Override
     public Forecast forecast(int steps, double alpha) {
-        return ArimaForecast.forecast(this, steps, alpha);
+        ArimaForecaster forecaster = new ArimaForecaster(this);
+        return forecaster.forecast(steps, alpha);
     }
 
     /**
@@ -445,7 +445,6 @@ final class ArimaModel implements Arima {
      * @param steps the number of time periods ahead to forecast.
      * @return a forecast with 95% prediction intervals for the given number of steps ahead.
      */
-    @Override
     public Forecast forecast(final int steps) {
         final double defaultAlpha = 0.05;
         return forecast(steps, defaultAlpha);
@@ -539,7 +538,7 @@ final class ArimaModel implements Arima {
     }
 
     @Override
-    public TimeSeries residuals() {
+    public TimeSeries predictionErrors() {
         return this.residuals;
     }
 

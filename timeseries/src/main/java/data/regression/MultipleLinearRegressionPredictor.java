@@ -37,13 +37,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ToString
-class MultipleLinearRegressionPredictor implements LinearRegressionPredictor {
+public class MultipleLinearRegressionPredictor implements LinearRegressionPredictor {
 
     private final LinearRegression model;
     private final Matrix XtXInverse;
     private final int degreesOfFreedom;
 
-    MultipleLinearRegressionPredictor(@NonNull MultipleLinearRegressionModel model) {
+    public MultipleLinearRegressionPredictor(@NonNull MultipleLinearRegression model) {
         this.model = model;
         this.XtXInverse = Matrix.create(model.XtXInverse());
         this.degreesOfFreedom = model.response().length - model.designMatrix().length;
@@ -56,17 +56,23 @@ class MultipleLinearRegressionPredictor implements LinearRegressionPredictor {
     }
 
     @Override
-    public LinearRegressionPrediction predict(Vector observation) {
-        double defaultAlpha = 0.05;
-        double estimate = estimate(observation);
-        double seFit = standardErrorFit(observation);
-        DoublePair confidenceInterval = confidenceInterval(defaultAlpha, observation, estimate);
-        DoublePair predictionInterval = predictionInterval(defaultAlpha, observation, estimate);
+    public LinearRegressionPrediction predict(Vector observation, double alpha) {
+        double estimate = estimate(predictorWithIntercept(observation));
+        double seFit = standardErrorFit(predictorWithIntercept(observation));
+        DoublePair confidenceInterval = confidenceInterval(alpha, observation, estimate);
+        DoublePair predictionInterval = predictionInterval(alpha, observation, estimate);
+        return new MultipleLinearRegressionPrediction(estimate, seFit, confidenceInterval, predictionInterval);
+    }
+
+    public LinearRegressionPrediction predictWithIntercept(Vector vector, double alpha) {
+        double estimate = estimate(vector);
+        double seFit = standardErrorFit(vector);
+        DoublePair confidenceInterval = confidenceInterval(alpha, vector, estimate);
+        DoublePair predictionInterval = predictionInterval(alpha, vector, estimate);
         return new MultipleLinearRegressionPrediction(estimate, seFit, confidenceInterval, predictionInterval);
     }
 
     private double estimate(Vector data) {
-        data = predictorWithIntercept(data);
         return data.dotProduct(Vector.from(model.beta()));
     }
 
@@ -79,8 +85,7 @@ class MultipleLinearRegressionPredictor implements LinearRegressionPredictor {
     }
 
     private double standardErrorFit(Vector predictor) {
-        Vector predictorWithIntercept = predictorWithIntercept(predictor);
-        double product = QuadraticForm.multiply(predictorWithIntercept, XtXInverse);
+        double product = QuadraticForm.multiply(predictor, XtXInverse);
         return Math.sqrt(model.sigma2() * product);
     }
 
@@ -100,10 +105,18 @@ class MultipleLinearRegressionPredictor implements LinearRegressionPredictor {
         return getInterval(estimate, tValue, standardError);
     }
 
-    public List<LinearRegressionPrediction> predict(Matrix newData) {
+    public List<LinearRegressionPrediction> predict(Matrix newData, double alpha) {
         List<LinearRegressionPrediction> predictions = new ArrayList<>(newData.nrow());
         for (int i = 0; i < newData.nrow(); i++) {
-            predictions.add(predict(newData.getRow(i)));
+            predictions.add(predict(newData.getRow(i), alpha));
+        }
+        return predictions;
+    }
+
+    public List<LinearRegressionPrediction> predictWithIntercept(Matrix designMatrix, double alpha) {
+        List<LinearRegressionPrediction> predictions = new ArrayList<>(designMatrix.nrow());
+        for (int i = 0; i < designMatrix.nrow(); i++) {
+            predictions.add(predictWithIntercept(designMatrix.getRow(i), alpha));
         }
         return predictions;
     }

@@ -49,11 +49,6 @@ public final class MeanModel implements Model {
     }
 
     @Override
-    public MeanForecast forecast(final int steps, final double alpha) {
-        return new MeanForecast(this, steps, alpha);
-    }
-
-    @Override
     public TimeSeries pointForecast(final int steps) {
         int n = timeSeries.size();
         TimePeriod timePeriod = timeSeries.timePeriod();
@@ -76,7 +71,7 @@ public final class MeanModel implements Model {
     }
 
     @Override
-    public TimeSeries residuals() {
+    public TimeSeries predictionErrors() {
         return this.timeSeries.minus(this.fittedSeries);
     }
 

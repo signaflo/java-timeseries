@@ -243,6 +243,15 @@ public final class TimePeriod {
     }
 
     /**
+     * The length of this time period expressed in terms of its underlying time unit.
+     *
+     * @return the length of this time period expressed in terms of its underlying time unit.
+     */
+    public long unitLength() {
+        return this.periodLength * this.timeUnit.unitLength();
+    }
+
+    /**
      * Compute and return the number of times this time period occurs in the given time period.
      * <p>
      * For example, if this time period is a month and the given time period is half a year, the return value is

@@ -13,4 +13,5 @@ public interface RegressionBuilder {
     RegressionBuilder hasIntercept(boolean hasIntercept);
 
     LinearRegression build();
+
 }

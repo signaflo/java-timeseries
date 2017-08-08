@@ -32,6 +32,7 @@ import org.junit.rules.ExpectedException;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.models.Forecast;
+import timeseries.models.Forecaster;
 import timeseries.models.arima.Arima.Constant;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -115,15 +116,15 @@ public class ArimaSpec {
                                                     .setDifferences(1)
                                                     .build();
         Arima model = Arima.model(series, coeffs, TimePeriod.oneYear(), ArimaModel.FittingStrategy.CSSML);
-        Forecast fcst = model.forecast(10);
+        Forecaster forecaster = new ArimaForecaster(model);
         double[] expectedLower = {432.515957, 420.689242, 410.419267, 401.104152, 392.539282, 384.606261, 377.216432,
                 370.29697, 363.786478, 357.632926
         };
         double[] expectedUpper = {482.804388, 497.119686, 509.002433, 519.362733, 528.604955, 536.976945, 544.651257,
                 551.755082, 558.385054, 564.616037
         };
-        double[] actualLower = fcst.computeLowerPredictionBounds(10, 0.05).asArray();
-        double[] actualUpper = fcst.computeUpperPredictionBounds(10, 0.05).asArray();
+        double[] actualLower = forecaster.computeLowerPredictionBounds(10, 0.05).asArray();
+        double[] actualUpper = forecaster.computeUpperPredictionBounds(10, 0.05).asArray();
         assertArrayEquals(expectedLower, actualLower, 1E-4);
         assertArrayEquals(expectedUpper, actualUpper, 1E-4);
     }

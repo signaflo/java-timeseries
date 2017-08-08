@@ -23,95 +23,32 @@
  */
 package timeseries.models.arima;
 
-import com.google.common.primitives.Doubles;
-import org.knowm.xchart.XChartPanel;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.XYSeries;
-import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
-import org.knowm.xchart.style.Styler.ChartTheme;
-import org.knowm.xchart.style.markers.Circle;
 import math.stats.distributions.Normal;
 import timeseries.TimeSeries;
 import timeseries.models.Forecast;
-import timeseries.operators.LagPolynomial;
-
-import javax.swing.*;
-import java.awt.*;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import static java.lang.Math.sqrt;
 
 /**
- * A forecast for an ARIMA model. This class is immutable and thread-safe.
+ * A pointForecast for an ARIMA model. This class is immutable and thread-safe.
  *
  * @author Jacob Rachiele
  */
 public final class ArimaForecast implements Forecast {
 
-    private final Arima model;
-    private final TimeSeries forecast;
-    private final TimeSeries upperValues;
+    private final TimeSeries pointForecast;
     private final TimeSeries lowerValues;
+    private final TimeSeries upperValues;
     private final double alpha;
-    private final double criticalValue;
-    private final TimeSeries fcstErrors;
 
-    private ArimaForecast(final Arima model, final int steps, final double alpha) {
-        this.model = model;
-        this.forecast = model.pointForecast(steps);
+    ArimaForecast(TimeSeries pointForecast, TimeSeries lowerValues, TimeSeries upperValues, double alpha) {
+        this.pointForecast = pointForecast;
+        this.lowerValues = lowerValues;
+        this.upperValues = upperValues;
         this.alpha = alpha;
-        this.criticalValue = new Normal().quantile(1 - alpha / 2);
-        this.fcstErrors = getFcstErrors(this.criticalValue);
-        this.upperValues = computeUpperPredictionBounds(steps, alpha);
-        this.lowerValues = computeLowerPredictionBounds(steps, alpha);
-    }
-
-    /**
-     * Create a new forecast for the given number of steps ahead using the given ARIMA model and the given
-     * &alpha; significance level.
-     *
-     * @param model a fitted ARIMA model.
-     * @param steps the number of forecast steps.
-     * @param alpha the significance level for the prediction intervals.
-     * @return a new forecast for the given number of steps ahead using the given ARIMA model and the given
-     * &alpha; significance level.
-     */
-    public static ArimaForecast forecast(final Arima model, final int steps, final double alpha) {
-        return new ArimaForecast(model, steps, alpha);
-    }
-
-    /**
-     * Create a new forecast for the given number of steps ahead using the given ARIMA model with a default
-     * &alpha; significance level of 0.05.
-     *
-     * @param model a fitted ARIMA model.
-     * @param steps the number of time periods ahead to forecast.
-     * @return a new forecast for the given number of steps ahead using the given ARIMA model with a default
-     * &alpha; significance level of 0.05.
-     */
-    public static ArimaForecast forecast(final Arima model, final int steps) {
-        return new ArimaForecast(model, steps, 0.05);
-    }
-
-    /**
-     * Create a new 12 step ahead forecast from the given ARIMA model with a default
-     * &alpha; significance level of 0.05.
-     *
-     * @param model a fitted ARIMA model.
-     * @return a new 12 step ahead forecast from the given ARIMA model with a default
-     * &alpha; significance level of 0.05.
-     */
-    public static ArimaForecast forecast(final Arima model) {
-        return new ArimaForecast(model, 12, 0.05);
     }
 
     @Override
-    public TimeSeries forecast() {
-        return this.forecast;
+    public TimeSeries pointForecast() {
+        return this.pointForecast;
     }
 
     @Override
@@ -124,155 +61,88 @@ public final class ArimaForecast implements Forecast {
         return this.lowerValues;
     }
 
-    @Override
-    public TimeSeries computeUpperPredictionBounds(final int steps, final double alpha) {
-        final double criticalValue = new Normal().quantile(1 - alpha / 2);
-        double[] upperPredictionValues = new double[steps];
-        double[] errors = getStdErrors(criticalValue);
-        for (int t = 0; t < steps; t++) {
-            upperPredictionValues[t] = forecast.at(t) + errors[t];
-        }
-        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
-    }
-
-    @Override
-    public TimeSeries computeLowerPredictionBounds(final int steps, final double alpha) {
-        final double criticalValue = new Normal().quantile(alpha / 2);
-        double[] lowerPredictionValues = new double[steps];
-        double[] errors = getStdErrors(criticalValue);
-        for (int t = 0; t < steps; t++) {
-            lowerPredictionValues[t] = forecast.at(t) + errors[t];
-        }
-        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), lowerPredictionValues);
-    }
-
-    private double[] getPsiCoefficients() {
-        final int steps = this.forecast.size();
-        LagPolynomial arPoly = LagPolynomial.autoRegressive(getAllAutoRegressiveCoefficients(model));
-        LagPolynomial diffPoly = LagPolynomial.differences(model.order().d);
-        LagPolynomial seasDiffPoly = LagPolynomial.seasonalDifferences(model.seasonalFrequency(), model.order().D);
-        double[] phi = diffPoly.times(seasDiffPoly).times(arPoly).inverseParams();
-        double[] theta = getAllMovingAverageCoefficients(model);
-        final double[] psi = new double[steps];
-        psi[0] = 1.0;
-        System.arraycopy(theta, 0, psi, 1, Math.min(steps - 1, theta.length));
-        for (int j = 1; j < psi.length; j++) {
-            for (int i = 0; i < Math.min(j, phi.length); i++) {
-                psi[j] += psi[j - i - 1] * phi[i];
-            }
-        }
-        return psi;
-    }
-
-    private double[] getAllAutoRegressiveCoefficients(Arima model) {
-        ArimaCoefficients coefficients = model.coefficients();
-        return ArimaCoefficients.expandArCoefficients(coefficients.arCoeffs(),
-                                                      coefficients.seasonalARCoeffs(),
-                                                      model.seasonalFrequency());
-    }
-
-    private double[] getAllMovingAverageCoefficients(Arima model) {
-        ArimaCoefficients coefficients = model.coefficients();
-        return ArimaCoefficients.expandMaCoefficients(coefficients.maCoeffs(),
-                                                      coefficients.seasonalMACoeffs(),
-                                                      model.seasonalFrequency());
-    }
-
-    private TimeSeries getFcstErrors(final double criticalValue) {
-        double[] errors = getStdErrors(criticalValue);
-        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
-    }
-
-    private double[] getStdErrors(final double criticalValue) {
-        double[] psiCoeffs = getPsiCoefficients();
-        double[] stdErrors = new double[this.forecast.size()];
-        double sigma = sqrt(model.sigma2());
-        double sd;
-        double psiWeightSum = 0.0;
-        for (int i = 0; i < stdErrors.length; i++) {
-            psiWeightSum += psiCoeffs[i] * psiCoeffs[i];
-            sd = sigma * sqrt(psiWeightSum);
-            stdErrors[i] = criticalValue * sd;
-        }
-        return stdErrors;
-    }
 
     //********** Plots **********//
-    @Override
-    public void plot() {
-        new Thread(() -> {
-            final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
-            final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().size());
-            for (OffsetDateTime dateTime : model.timeSeries().observationTimes()) {
-                xAxisObs.add(Date.from(dateTime.toInstant()));
-            }
-            for (OffsetDateTime dateTime : forecast.observationTimes()) {
-                xAxis.add(Date.from(dateTime.toInstant()));
-            }
-
-            List<Double> errorList = Doubles.asList(fcstErrors.asArray());
-            List<Double> seriesList = Doubles.asList(model.timeSeries().asArray());
-            List<Double> forecastList = Doubles.asList(forecast.asArray());
-            final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
-                                                      .title("ARIMA Forecast").build();
-
-            XYSeries observationSeries = chart.addSeries("Past", xAxisObs, seriesList);
-            XYSeries forecastSeries = chart.addSeries("Future", xAxis, forecastList, errorList);
-
-            observationSeries.setMarker(new Circle());
-            observationSeries.setMarkerColor(Color.DARK_GRAY);
-            forecastSeries.setMarker(new Circle());
-            forecastSeries.setMarkerColor(Color.BLUE);
-
-            observationSeries.setLineWidth(1.0f);
-            forecastSeries.setLineWidth(1.0f);
-
-            chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.RED);
-            observationSeries.setLineColor(Color.DARK_GRAY);
-            forecastSeries.setLineColor(Color.BLUE);
-
-            JPanel panel = new XChartPanel<>(chart);
-            JFrame frame = new JFrame("ARIMA Forecast");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(panel);
-            frame.pack();
-            frame.setVisible(true);
-        }).start();
-    }
-
-    @Override
-    public void plotForecast() {
-        new Thread(() -> {
-            final List<Date> xAxis = new ArrayList<>(forecast.observationTimes().size());
-            for (OffsetDateTime dateTime : forecast.observationTimes()) {
-                xAxis.add(Date.from(dateTime.toInstant()));
-            }
-
-            List<Double> errorList = Doubles.asList(fcstErrors.asArray());
-            List<Double> forecastList = Doubles.asList(forecast.asArray());
-            final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
-                                                      .title("ARIMA Forecast").build();
-
-            chart.setXAxisTitle("Time");
-            chart.setYAxisTitle("Forecast Values");
-            chart.getStyler().setAxisTitleFont(new Font("Arial", Font.PLAIN, 14));
-            chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.RED)
-                 .setChartFontColor(new Color(112, 112, 112));
-
-            XYSeries forecastSeries = chart.addSeries("Forecast", xAxis, forecastList, errorList);
-            forecastSeries.setMarker(new Circle());
-            forecastSeries.setMarkerColor(Color.BLUE);
-            forecastSeries.setLineWidth(1.0f);
-            forecastSeries.setLineColor(Color.BLUE);
-
-            JPanel panel = new XChartPanel<>(chart);
-            JFrame frame = new JFrame("ARIMA Forecast");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(panel);
-            frame.pack();
-            frame.setVisible(true);
-        }).start();
-    }
+//    private TimeSeries getFcstErrors(TimeSeries forecast, final double criticalValue) {
+//        double[] errors = getStdErrors(forecast, criticalValue);
+//        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
+//    }
+//
+//    @Override
+//    public void plot() {
+//        new Thread(() -> {
+//            final List<Date> xAxis = new ArrayList<>(pointForecast.observationTimes().size());
+//            final List<Date> xAxisObs = new ArrayList<>(model.timeSeries().size());
+//            for (OffsetDateTime dateTime : model.timeSeries().observationTimes()) {
+//                xAxisObs.add(Date.from(dateTime.toInstant()));
+//            }
+//            for (OffsetDateTime dateTime : pointForecast.observationTimes()) {
+//                xAxis.add(Date.from(dateTime.toInstant()));
+//            }
+//
+//            List<Double> errorList = Doubles.asList(fcstErrors.asArray());
+//            List<Double> seriesList = Doubles.asList(model.timeSeries().asArray());
+//            List<Double> forecastList = Doubles.asList(pointForecast.asArray());
+//            final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(800).width(1200)
+//                                                      .title("ARIMA Forecast").build();
+//
+//            XYSeries observationSeries = chart.addSeries("Past", xAxisObs, seriesList);
+//            XYSeries forecastSeries = chart.addSeries("Future", xAxis, forecastList, errorList);
+//
+//            observationSeries.setMarker(new Circle());
+//            observationSeries.setMarkerColor(Color.DARK_GRAY);
+//            forecastSeries.setMarker(new Circle());
+//            forecastSeries.setMarkerColor(Color.BLUE);
+//
+//            observationSeries.setLineWidth(1.0f);
+//            forecastSeries.setLineWidth(1.0f);
+//
+//            chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.RED);
+//            observationSeries.setLineColor(Color.DARK_GRAY);
+//            forecastSeries.setLineColor(Color.BLUE);
+//
+//            JPanel panel = new XChartPanel<>(chart);
+//            JFrame frame = new JFrame("ARIMA Forecast");
+//            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//            frame.add(panel);
+//            frame.pack();
+//            frame.setVisible(true);
+//        }).start();
+//    }
+//
+//    @Override
+//    public void plotForecast() {
+//        new Thread(() -> {
+//            final List<Date> xAxis = new ArrayList<>(pointForecast.observationTimes().size());
+//            for (OffsetDateTime dateTime : pointForecast.observationTimes()) {
+//                xAxis.add(Date.from(dateTime.toInstant()));
+//            }
+//
+//            List<Double> errorList = Doubles.asList(fcstErrors.asArray());
+//            List<Double> forecastList = Doubles.asList(pointForecast.asArray());
+//            final XYChart chart = new XYChartBuilder().theme(ChartTheme.GGPlot2).height(600).width(800)
+//                                                      .title("ARIMA Forecast").build();
+//
+//            chart.setXAxisTitle("Time");
+//            chart.setYAxisTitle("Forecast Values");
+//            chart.getStyler().setAxisTitleFont(new Font("Arial", Font.PLAIN, 14));
+//            chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line).setErrorBarsColor(Color.RED)
+//                 .setChartFontColor(new Color(112, 112, 112));
+//
+//            XYSeries forecastSeries = chart.addSeries("Forecast", xAxis, forecastList, errorList);
+//            forecastSeries.setMarker(new Circle());
+//            forecastSeries.setMarkerColor(Color.BLUE);
+//            forecastSeries.setLineWidth(1.0f);
+//            forecastSeries.setLineColor(Color.BLUE);
+//
+//            JPanel panel = new XChartPanel<>(chart);
+//            JFrame frame = new JFrame("ARIMA Forecast");
+//            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//            frame.add(panel);
+//            frame.pack();
+//            frame.setVisible(true);
+//        }).start();
+//    }
     //********** Plots **********//
 
     @Override
@@ -290,10 +160,10 @@ public final class ArimaForecast implements Forecast {
                .append(newLine)
                .append(String.format("%-70.70s", " -------------------------------------------------------------- "))
                .append(newLine);
-        for (int i = 0; i < this.forecast.size(); i++) {
-            builder.append(String.format("%-18.18s", "| " + forecast.observationTimes().get(i).toLocalDateTime()))
+        for (int i = 0; i < this.pointForecast.size(); i++) {
+            builder.append(String.format("%-18.18s", "| " + pointForecast.observationTimes().get(i).toLocalDateTime()))
                    .append("  ")
-                   .append(String.format("%-13.13s", "| " +  Double.toString(forecast.at(i))))
+                   .append(String.format("%-13.13s", "| " +  Double.toString(pointForecast.at(i))))
                    .append("  ")
                    .append(String.format("%-13.13s", "| " + Double.toString(this.lowerValues.at(i))))
                    .append("  ")
@@ -302,37 +172,5 @@ public final class ArimaForecast implements Forecast {
                    .append(newLine);
         }
         return builder.toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ArimaForecast that = (ArimaForecast) o;
-
-        if (Double.compare(that.alpha, alpha) != 0) return false;
-        if (Double.compare(that.criticalValue, criticalValue) != 0) return false;
-        if (!model.equals(that.model)) return false;
-        if (!forecast.equals(that.forecast)) return false;
-        if (!upperValues.equals(that.upperValues)) return false;
-        if (!lowerValues.equals(that.lowerValues)) return false;
-        return fcstErrors.equals(that.fcstErrors);
-    }
-
-    @Override
-    public int hashCode() {
-        int result;
-        long temp;
-        result = model.hashCode();
-        result = 31 * result + forecast.hashCode();
-        result = 31 * result + upperValues.hashCode();
-        result = 31 * result + lowerValues.hashCode();
-        temp = Double.doubleToLongBits(alpha);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(criticalValue);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + fcstErrors.hashCode();
-        return result;
     }
 }

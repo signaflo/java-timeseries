@@ -68,7 +68,7 @@ public class RandomWalkSpec {
     public void whenForecastThenNotNullReturned() {
         TimeSeries series = TestData.sydneyAir;
         RandomWalk model = new RandomWalk(series);
-        assertThat(model.forecast(1), is(not(nullValue())));
+        assertThat(model.pointForecast(1), is(not(nullValue())));
     }
 
     @Test
@@ -80,20 +80,23 @@ public class RandomWalkSpec {
         for (int i = 0; i < expected.length; i++) {
             expected[i] = series.at(series.size() - 1);
         }
-        RandomWalkForecast forecast = new RandomWalkForecast(model, 6, 0.05);
-        assertArrayEquals(expected, forecast.forecast().asArray(), 1E-4);
+        RandomWalkForecaster forecaster = new RandomWalkForecaster(model);
+        assertArrayEquals(expected, forecaster.computePointForecasts(6).asArray(), 1E-4);
     }
 
     @Test
     public void whenForecastThenPredictionIntervalCorrect() {
         TimeSeries series = TestData.sydneyAir;
-        RandomWalkForecast forecast = new RandomWalkForecast(series, 7, 0.05);
+        RandomWalkForecaster forecaster = new RandomWalkForecaster(series);
+        RandomWalkForecast forecast = forecaster.forecast(7, 0.05);
         double[] lowerValues = {0.955726, 0.735251, 0.566075, 0.423453, 0.2978, 0.184201, 0.079736};
         double[] upperValues = {2.020274, 2.240749, 2.409925, 2.552547, 2.6782, 2.791799, 2.896264};
         assertArrayEquals(lowerValues, forecast.lowerPredictionInterval().asArray(), 1E-4);
         assertArrayEquals(upperValues, forecast.upperPredictionInterval().asArray(), 1E-4);
-        assertThat(forecast.lowerPredictionInterval(), is(forecast.computeLowerPredictionBounds(7, 0.05)));
-        assertThat(forecast.upperPredictionInterval(), is(forecast.computeUpperPredictionBounds(7, 0.05)));
+        assertThat(forecast.lowerPredictionInterval(), is(forecaster.computeLowerPredictionBounds(
+                forecast.pointForecast(), 7, 0.05)));
+        assertThat(forecast.upperPredictionInterval(), is(forecaster.computeUpperPredictionBounds(
+                forecast.pointForecast(), 7, 0.05)));
     }
 
     @Test

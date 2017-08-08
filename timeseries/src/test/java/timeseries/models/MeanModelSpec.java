@@ -56,24 +56,12 @@ public class MeanModelSpec {
     }
 
     @Test
-    public void whenStepsLessThanOneThenIllegalArgumentException() {
-        exception.expect(IllegalArgumentException.class);
-        new MeanForecast(meanModel, 0, 0.05);
-    }
-
-    @Test
-    public void whenAlphaLessThanZeroThenIllegalArgumentException() {
-        exception.expect(IllegalArgumentException.class);
-        new MeanForecast(meanModel, 5, -0.1);
-    }
-
-    @Test
     public void whenMeanModelThenCorrectResiduals() {
         double[] x = new double[] {1.0, 2.0, 3.0};
         series = Ts.newAnnualSeries(x);
         meanModel = new MeanModel(series);
         double[] expectedResiduals = new double[] {-1.0, 0.0, 1.0};
-        assertArrayEquals(expectedResiduals, meanModel.residuals().asArray(), 1E-15);
+        assertArrayEquals(expectedResiduals, meanModel.predictionErrors().asArray(), 1E-15);
     }
 
     @Test
@@ -86,19 +74,14 @@ public class MeanModelSpec {
     }
 
     @Test
-    public void whenAlphaGreaterThanOneThenIllegalArgumentException() {
-        exception.expect(IllegalArgumentException.class);
-        new MeanForecast(meanModel, 5, 1.01);
-    }
-
-    @Test
     public void whenMeanForecastComputedForecastValuesCorrect() {
         int h = 6;
         TimeSeries pointForecast = meanModel.pointForecast(h);
         double[] expected = DoubleFunctions.fill(h, series.mean());
         assertArrayEquals(expected, pointForecast.asArray(), 1E-2);
-        MeanForecast forecast = new MeanForecast(meanModel, 6, 0.05);
-        assertArrayEquals(expected, forecast.forecast().asArray(), 1E-2);
+        MeanForecaster forecaster = new MeanForecaster(meanModel);
+        Forecast forecast = forecaster.forecast(h, 0.05);
+        assertArrayEquals(expected, forecast.pointForecast().asArray(), 1E-2);
     }
 
     @Test
@@ -117,55 +100,16 @@ public class MeanModelSpec {
 
     @Test
     public void whenMeanForecastThenPredictionIntervalsCorrect() {
-        MeanForecast forecast = new MeanForecast(meanModel, 6, 0.05);
+        MeanForecaster forecaster = new MeanForecaster(meanModel);
+        MeanForecast forecast = forecaster.forecast(6, 0.05);
         double[] lowerValues = {243.129289, 243.129289, 243.129289, 243.129289, 243.129289, 243.129289};
         double[] upperValues = {586.775924, 586.775924, 586.775924, 586.775924, 586.775924, 586.775924};
         assertArrayEquals(lowerValues, forecast.lowerPredictionInterval().asArray(), 1E-2);
         assertArrayEquals(upperValues, forecast.upperPredictionInterval().asArray(), 1E-2);
-        assertArrayEquals(lowerValues, forecast.computeLowerPredictionBounds(6, 0.05).asArray(), 1E-2);
-        assertArrayEquals(upperValues, forecast.computeUpperPredictionBounds(6, 0.05).asArray(), 1E-2);
-    }
-
-    @Test
-    public void whenLowerBoundsStepsLessThanOneThenIllegalArgument() {
-        MeanForecast forecast = new MeanForecast(meanModel, 6, 0.05);
-        exception.expect(IllegalArgumentException.class);
-        forecast.computeLowerPredictionBounds(0, 0.05);
-    }
-
-    @Test
-    public void whenUpperBoundsStepsLessThanOneThenIllegalArgument() {
-        MeanForecast forecast = new MeanForecast(meanModel, 6, 0.05);
-        exception.expect(IllegalArgumentException.class);
-        forecast.computeUpperPredictionBounds(0, 0.05);
-    }
-
-    @Test
-    public void whenLowerBoundsAlphaLessThanZeroThenIllegalArgument() {
-        MeanForecast forecast = new MeanForecast(meanModel);
-        exception.expect(IllegalArgumentException.class);
-        forecast.computeLowerPredictionBounds(6, -0.05);
-    }
-
-    @Test
-    public void whenUpperBoundsAlphaLessThanZeroThenIllegalArgument() {
-        MeanForecast forecast = new MeanForecast(meanModel);
-        exception.expect(IllegalArgumentException.class);
-        forecast.computeUpperPredictionBounds(6, -0.05);
-    }
-
-    @Test
-    public void whenLowerBoundsAlphaGreaterThanOneThenIllegalArgument() {
-        MeanForecast forecast = new MeanForecast(meanModel);
-        exception.expect(IllegalArgumentException.class);
-        forecast.computeLowerPredictionBounds(6, 1.05);
-    }
-
-    @Test
-    public void whenUpperBoundsAlphaGreaterThanOneThenIllegalArgument() {
-        MeanForecast forecast = new MeanForecast(meanModel);
-        exception.expect(IllegalArgumentException.class);
-        forecast.computeUpperPredictionBounds(6, 1.05);
+        assertArrayEquals(lowerValues, forecaster.computeLowerPredictionBounds(
+                forecast.pointForecast(),6, 0.05).asArray(), 1E-2);
+        assertArrayEquals(upperValues, forecaster.computeUpperPredictionBounds(
+                forecast.pointForecast(), 6, 0.05).asArray(), 1E-2);
     }
 
     @Test

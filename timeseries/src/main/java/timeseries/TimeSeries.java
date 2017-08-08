@@ -84,7 +84,7 @@ public final class TimeSeries implements DataSet {
         }
 
         for (int i = 1; i < series.length; i++) {
-            dateTime = dateTimes.get(i - 1).plus(totalPeriodLength(timePeriod), timePeriod.timeUnit().temporalUnit());
+            dateTime = dateTimes.get(i - 1).plus(timePeriod.unitLength(), timePeriod.timeUnit().temporalUnit());
             dateTimes.add(dateTime);
             dateTimeIndex.put(dateTime, i);
         }
@@ -104,9 +104,7 @@ public final class TimeSeries implements DataSet {
         dateTimeIndex.put(startTime, 0);
         OffsetDateTime dateTime;
         for (int i = 1; i < series.length; i++) {
-            dateTime = dateTimes.get(i - 1)
-                                .plus(timePeriod.periodLength() * timePeriod.timeUnit().unitLength(),
-                                      timePeriod.timeUnit().temporalUnit());
+            dateTime = dateTimes.get(i - 1).plus(timePeriod.unitLength(), timePeriod.timeUnit().temporalUnit());
             dateTimes.add(dateTime);
             dateTimeIndex.put(dateTime, i);
         }
@@ -611,11 +609,6 @@ public final class TimeSeries implements DataSet {
         System.arraycopy(series, start - 1, sliced, 0, end - start + 1);
         final List<OffsetDateTime> obsTimes = this.observationTimes.subList(start - 1, end);
         return new TimeSeries(this.timePeriod, obsTimes, sliced);
-    }
-
-    // Helper method to get the total period length for the provided time period.
-    private long totalPeriodLength(final TimePeriod timePeriod) {
-        return timePeriod.timeUnit().unitLength() * timePeriod.periodLength();
     }
 
     /**

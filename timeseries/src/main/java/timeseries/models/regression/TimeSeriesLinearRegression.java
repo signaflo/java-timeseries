@@ -1,8 +1,10 @@
 package timeseries.models.regression;
 
 import data.regression.LinearRegression;
+import data.regression.MultipleLinearRegression;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
+import timeseries.models.Model;
 
 /**
  * A linear regression model for time series data.
@@ -10,7 +12,7 @@ import timeseries.TimeSeries;
  * @author Jacob Rachiele
  * Aug. 01, 2017
  */
-public interface TimeSeriesLinearRegression extends LinearRegression {
+public interface TimeSeriesLinearRegression extends MultipleLinearRegression {
 
     TimeSeries observations();
 

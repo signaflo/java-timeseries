@@ -25,15 +25,17 @@
 package timeseries.models.regression;
 
 import data.Range;
-import data.regression.LinearRegression;
-import data.regression.RegressionBuilder;
+import data.regression.*;
 import lombok.NonNull;
 import lombok.ToString;
 import math.linear.doubles.Matrix;
+import math.linear.doubles.Vector;
 import math.operations.DoubleFunctions;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
+import timeseries.models.Model;
 
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 
 import static math.operations.DoubleFunctions.copy;
@@ -42,9 +44,9 @@ import static math.operations.DoubleFunctions.copy;
  * A linear regression model for time series data.
  */
 @ToString
-public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRegression {
+public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRegression, Model {
 
-    private final git LinearRegression regression;
+    private final MultipleLinearRegression regression;
     private final TimeSeries timeSeries;
     private final TimePeriod seasonalCycle;
     private final Intercept intercept;
@@ -58,7 +60,7 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
         this.externalRegressors = timeSeriesRegressionBuilder.externalRegressors;
         double[][] allPredictors = DoubleFunctions.combine(timeSeriesRegressionBuilder.timeBasedPredictors,
                                                            timeSeriesRegressionBuilder.externalRegressors);
-        RegressionBuilder regressionBuilder = LinearRegression.builder();
+        MultipleRegressionBuilder regressionBuilder = MultipleLinearRegressionModel.builder();
         regressionBuilder.hasIntercept(timeSeriesRegressionBuilder.intercept.include())
                          .predictors(allPredictors)
                          .response(timeSeries.asArray());
@@ -71,6 +73,16 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
     @Override
     public double[][] predictors() {
         return copy(this.externalRegressors);
+    }
+
+    @Override
+    public double[][] XtXInverse() {
+        return this.regression.XtXInverse();
+    }
+
+    @Override
+    public double[][] designMatrix() {
+        return this.regression.designMatrix();
     }
 
     @Override
@@ -94,8 +106,23 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
     }
 
     @Override
-    public double[] residuals() {
-        return regression.residuals();
+    public TimeSeries pointForecast(int steps) {
+        Matrix predictionMatrix = getPredictionMatrix(steps);
+        double[] forecasts = predictionMatrix.times(Vector.from(beta())).elements();
+        TimePeriod timePeriod = timeSeries.timePeriod();
+        OffsetDateTime sampleEnd = this.timeSeries.observationTimes().get(timeSeries.size() - 1);
+        OffsetDateTime startTime = sampleEnd.plus(timePeriod.unitLength(), timePeriod.timeUnit().temporalUnit());
+        return TimeSeries.from(timePeriod, startTime, forecasts);
+    }
+
+    @Override
+    public TimeSeries timeSeries() {
+        return this.observations();
+    }
+
+    @Override
+    public TimeSeries fittedSeries() {
+        return null;
     }
 
     @Override
@@ -109,13 +136,13 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
     }
 
     @Override
-    public TimeSeries observations() {
-        return this.timeSeries;
+    public TimePeriod seasonalCycle() {
+        return this.seasonalCycle;
     }
 
     @Override
-    public TimePeriod seasonalCycle() {
-        return this.seasonalCycle;
+    public TimeSeries observations() {
+        return this.timeSeries;
     }
 
     @Override
@@ -161,6 +188,32 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
             seasonalRegressors[i] = getIthSeasonalRegressor(nrows, startRow, seasonalFrequency);
         }
         return seasonalRegressors;
+    }
+
+    Matrix getPredictionMatrix(int steps) {
+        int intercept = this.intercept().asInt();
+        int timeTrend = this.timeTrend().asInt();
+        int seasonal = this.seasonal().asInt();
+        int seasonalFrequency = this.seasonalFrequency();
+        int ncols = intercept + timeTrend + (seasonalFrequency - 1) * seasonal;
+
+        double[][] designMatrix = new double[ncols][steps];
+        if (this.intercept().include()) {
+            designMatrix[0] = DoubleFunctions.fill(steps, 1.0);
+        }
+        if (this.timeTrend().include()) {
+            int startTime = this.response().length + 1;
+            int endTime = startTime + steps;
+            designMatrix[intercept] = Range.exclusiveRange(startTime, endTime).asArray();
+        }
+        if (this.seasonal().include()) {
+            int periodOffset = this.response().length % seasonalFrequency;
+            double[][] seasonalMatrix = getSeasonalRegressors(steps, seasonalFrequency, periodOffset);
+            for (int i = 0; i < seasonalMatrix.length; i++) {
+                designMatrix[i + intercept + timeTrend] = seasonalMatrix[i];
+            }
+        }
+        return Matrix.create(Matrix.Layout.BY_COLUMN, designMatrix);
     }
 
     @Override

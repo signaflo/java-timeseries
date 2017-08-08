@@ -16,5 +16,14 @@ public interface MultipleRegressionBuilder extends RegressionBuilder {
      */
     MultipleRegressionBuilder from(MultipleLinearRegression regression);
 
+    @Override
+    MultipleRegressionBuilder hasIntercept(boolean hasIntercept);
+
+    @Override
+    MultipleRegressionBuilder response(double... response);
+
     MultipleRegressionBuilder predictors(double[]... predictors);
+
+    @Override
+    MultipleLinearRegression build();
 }

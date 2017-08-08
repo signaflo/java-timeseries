@@ -130,11 +130,6 @@ public final class RandomWalk implements Model {
     }
 
     @Override
-    public RandomWalkForecast forecast(final int steps, final double alpha) {
-        return new RandomWalkForecast(this, steps, alpha);
-    }
-
-    @Override
     public TimeSeries timeSeries() {
         return this.timeSeries;
     }
@@ -145,7 +140,7 @@ public final class RandomWalk implements Model {
     }
 
     @Override
-    public TimeSeries residuals() {
+    public TimeSeries predictionErrors() {
         return this.residuals;
     }
 

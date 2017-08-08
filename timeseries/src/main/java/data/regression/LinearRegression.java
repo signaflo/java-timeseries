@@ -23,6 +23,9 @@
  */
 package data.regression;
 
+import math.operations.DoubleFunctions;
+import math.operations.Operators;
+
 /**
  * A linear regression model.
  */
@@ -33,7 +36,7 @@ public interface LinearRegression {
      *
      * @return a new builder for a linear regression model.
      */
-    static RegressionBuilder builder() {
+    static MultipleRegressionBuilder builder() {
         return new MultipleLinearRegressionModel.MultipleLinearRegressionBuilder();
     }
 
@@ -70,7 +73,9 @@ public interface LinearRegression {
      *
      * @return the model residuals.
      */
-    double[] residuals();
+    default double[] residuals() {
+        return Operators.differenceOf(response(), fitted());
+    }
 
     /**
      * Get the model error variance estimate.
