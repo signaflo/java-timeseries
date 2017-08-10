@@ -6,7 +6,7 @@ import math.linear.doubles.Vector;
 import java.util.List;
 
 /**
- * A predictor that uses linear regression models to make predictions.
+ * A predictor that uses linear regression model to make predictions.
  *
  * @author Jacob Rachiele
  *         Jul. 22, 2017

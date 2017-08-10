@@ -31,7 +31,7 @@ import java.util.Arrays;
 
 /**
  * Represents a polynomial in the lag operator. See <a target="_blank" href="https://goo.gl/1eLYnF"> Harvey's
- * Forecasting, structural time series models and the Kalman filter</a>, (1989, equation 2.1.3), or
+ * Forecasting, structural time series model and the Kalman filter</a>, (1989, equation 2.1.3), or
  * <a target="_blank" href="https://en.wikipedia.org/wiki/Lag_operator#Lag_polynomials"> the wiki entry</a>. The
  * polynomial is taken in the lag operator, but is algebraically equivalent to a real or complex polynomial.
  *

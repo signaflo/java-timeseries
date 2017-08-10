@@ -16,14 +16,14 @@ import math.linear.doubles.*;
 import math.linear.doubles.Vector;
 
 import timeseries.*;
-import timeseries.models.*;
-import timeseries.models.arima.*;
+import timeseries.model.*;
+import timeseries.model.arima.*;
 import data.regression.*;
 
 import static math.operations.DoubleFunctions.*;
 import static math.operations.Operators.*;
 import static data.visualization.Plots.*;
 import static timeseries.TestData.*;
-import static timeseries.models.arima.Arima.*;
-import static timeseries.models.arima.ArimaOrder.*;
+import static timeseries.model.arima.Arima.*;
+import static timeseries.model.arima.ArimaOrder.*;
 import static math.stats.Statistics.*;
