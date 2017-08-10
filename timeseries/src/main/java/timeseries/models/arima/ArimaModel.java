@@ -75,8 +75,8 @@ final class ArimaModel implements Arima {
     private final double[] maSmaCoeffs;
     private final double[] stdErrors;
 
-    ArimaModel(final TimeSeries observations, final ArimaOrder order, final TimePeriod seasonalCycle,
-               final FittingStrategy fittingStrategy) {
+    ArimaModel(TimeSeries observations, ArimaOrder order, TimePeriod seasonalCycle,
+               FittingStrategy fittingStrategy) {
         this(observations, order, seasonalCycle, fittingStrategy, null);
     }
 
@@ -384,7 +384,6 @@ final class ArimaModel implements Arima {
      * @param steps the number of time periods ahead to forecast.
      * @return point forecasts for the given number of steps ahead.
      */
-    @Override
     public double[] fcst(final int steps) {
         final int d = order.d;
         final int D = order.D;
@@ -435,7 +434,7 @@ final class ArimaModel implements Arima {
     }
 
     public Forecast forecast(int steps, double alpha) {
-        ArimaForecaster forecaster = new ArimaForecaster(this);
+        ArimaForecaster forecaster = ArimaForecaster.from(this);
         return forecaster.forecast(steps, alpha);
     }
 

@@ -29,7 +29,7 @@ import timeseries.TimeSeries;
 public interface Forecaster {
 
     /**
-     * Compute @return the upper end points of a prediction interval using the given forecast, forecast steps,
+     * Compute the upper end points of a prediction interval using the given forecast, forecast steps,
      * and &alpha; significance level.
      *
      * @param forecast the forecasted values.

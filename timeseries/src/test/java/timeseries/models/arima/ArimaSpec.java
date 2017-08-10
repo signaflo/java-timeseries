@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
-import timeseries.models.Forecast;
 import timeseries.models.Forecaster;
 import timeseries.models.arima.Arima.Constant;
 
@@ -104,7 +103,7 @@ public class ArimaSpec {
         Arima model = Arima.model(series, coeffs, TimePeriod.oneYear());
         double[] expected = {457.660172, 458.904464, 459.71085, 460.233443, 460.572118, 460.791603, 460.933844,
                 461.026026, 461.085766, 461.124482};
-        assertArrayEquals(expected, model.fcst(10), 1E-4);
+        assertArrayEquals(expected, model.pointForecast(10).asArray(), 1E-4);
     }
 
     @Test
@@ -116,7 +115,7 @@ public class ArimaSpec {
                                                     .setDifferences(1)
                                                     .build();
         Arima model = Arima.model(series, coeffs, TimePeriod.oneYear(), ArimaModel.FittingStrategy.CSSML);
-        Forecaster forecaster = new ArimaForecaster(model);
+        Forecaster forecaster = ArimaForecaster.from(model);
         double[] expectedLower = {432.515957, 420.689242, 410.419267, 401.104152, 392.539282, 384.606261, 377.216432,
                 370.29697, 363.786478, 357.632926
         };

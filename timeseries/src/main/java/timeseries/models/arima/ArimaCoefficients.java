@@ -65,9 +65,9 @@ public class ArimaCoefficients {
      * @param D         the seasonal degree of differencing.
      * @param mean      the process mean.
      */
-    ArimaCoefficients(final double[] arCoeffs, final double[] maCoeffs, final double[] sarCoeffs,
-                      final double[] smaCoeffs, final int d, final int D, final double mean,
-                      final double drift, final int seasonalFrequency) {
+    ArimaCoefficients(double[] arCoeffs, double[] maCoeffs, double[] sarCoeffs,
+                      double[] smaCoeffs, int d, int D, double mean,
+                      double drift, int seasonalFrequency) {
         this.arCoeffs = arCoeffs.clone();
         this.maCoeffs = maCoeffs.clone();
         this.sarCoeffs = sarCoeffs.clone();

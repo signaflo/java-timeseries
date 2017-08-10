@@ -153,8 +153,6 @@ public interface Arima extends Model {
         return new ArimaModel(observations, coeffs, seasonalCycle, fittingStrategy);
     }
 
-    double[] fcst(int steps);
-
     @Override
     TimeSeries pointForecast(int steps);
 
@@ -177,9 +175,9 @@ public interface Arima extends Model {
     int seasonalFrequency();
 
     /**
-     * Get the standard errors of the model parameters.
+     * Get the standard errors of the model coefficients.
      *
-     * @return the standard errors of the model parameters.
+     * @return the standard errors of the model coefficients.
      */
     double[] stdErrors();
 
@@ -198,9 +196,9 @@ public interface Arima extends Model {
     ArimaOrder order();
 
     /**
-     * Get the natural logarithm of the likelihood of the model parameters given the data.
+     * Get the natural logarithm of the likelihood of the model given the data.
      *
-     * @return the natural logarithm of the likelihood of the model parameters given the data.
+     * @return the natural logarithm of the likelihood of the model given the data.
      */
     double logLikelihood();
 

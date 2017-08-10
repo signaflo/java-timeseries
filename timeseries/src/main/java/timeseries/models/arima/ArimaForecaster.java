@@ -32,12 +32,26 @@ import timeseries.operators.LagPolynomial;
 
 import static java.lang.Math.sqrt;
 
+/**
+ * A forecaster for ARIMA models.
+ */
 public class ArimaForecaster implements Forecaster {
 
     private final Arima model;
 
-    public ArimaForecaster(Arima model) {
+
+    private ArimaForecaster(Arima model) {
         this.model = model;
+    }
+
+    /**
+     * Create a new forecaster from the provided ARIMA model.
+     *
+     * @param model the model to be used by the forecaster.
+     * @return a new forecaster.
+     */
+    public static ArimaForecaster from(Arima model) {
+        return new ArimaForecaster(model);
     }
 
     @Override
