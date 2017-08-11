@@ -21,9 +21,10 @@
  *
  * Jacob Rachiele
  */
-package timeseries.forecast;
+package timeseries.model.randomwalk;
 
 import timeseries.TimeSeries;
+import timeseries.forecast.Forecast;
 
 /**
  * A forecast from a random walk model.

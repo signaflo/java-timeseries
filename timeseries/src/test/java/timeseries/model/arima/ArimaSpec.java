@@ -102,7 +102,7 @@ public class ArimaSpec {
         Arima model = Arima.model(series, coeffs, TimePeriod.oneYear());
         double[] expected = {457.660172, 458.904464, 459.71085, 460.233443, 460.572118, 460.791603, 460.933844,
                 461.026026, 461.085766, 461.124482};
-        assertArrayEquals(expected, model.pointForecast(10).asArray(), 1E-4);
+        assertArrayEquals(expected, model.forecast(10).asArray(), 1E-4);
     }
 
 

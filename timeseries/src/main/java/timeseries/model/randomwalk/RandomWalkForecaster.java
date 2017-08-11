@@ -22,29 +22,29 @@
  * Jacob Rachiele
  */
 
-package timeseries.forecast;
+package timeseries.model.randomwalk;
 
 import math.stats.distributions.Normal;
+import timeseries.TimePeriod;
 import timeseries.TimeSeries;
-import timeseries.model.Model;
-import timeseries.model.RandomWalk;
+import timeseries.forecast.Forecaster;
+
+import java.time.OffsetDateTime;
 
 class RandomWalkForecaster implements Forecaster {
 
-    private final Model model;
+    private final TimeSeries timeSeries;
+    private final TimeSeries predictionErrors;
 
-    RandomWalkForecaster(final Model model) {
-        this.model = model;
-    }
-
-    RandomWalkForecaster(final TimeSeries series) {
-        this.model = new RandomWalk(series);
+    RandomWalkForecaster(TimeSeries observations, TimeSeries predictionErrors) {
+        this.timeSeries = observations;
+        this.predictionErrors = predictionErrors;
     }
 
     @Override
     public TimeSeries computeUpperPredictionBounds(TimeSeries forecast, final int steps, final double alpha) {
         double[] upperPredictionValues = new double[steps];
-        double criticalValue = new Normal(0, model.predictionErrors().stdDeviation()).quantile(1 - alpha / 2);
+        double criticalValue = new Normal(0, this.predictionErrors.stdDeviation()).quantile(1 - alpha / 2);
         for (int t = 0; t < steps; t++) {
             upperPredictionValues[t] = forecast.at(t) + criticalValue * Math.sqrt(t + 1);
         }
@@ -54,7 +54,8 @@ class RandomWalkForecaster implements Forecaster {
     @Override
     public TimeSeries computeLowerPredictionBounds(TimeSeries forecast, final int steps, final double alpha) {
         double[] upperPredictionValues = new double[steps];
-        double criticalValue = new Normal(0, model.predictionErrors().stdDeviation()).quantile(1 - alpha / 2);
+        double criticalValue = new Normal(0, this.predictionErrors.stdDeviation())
+                .quantile(1 - alpha / 2);
         for (int t = 0; t < steps; t++) {
             upperPredictionValues[t] = forecast.at(t) - criticalValue * Math.sqrt(t + 1);
         }
@@ -63,7 +64,21 @@ class RandomWalkForecaster implements Forecaster {
 
     @Override
     public TimeSeries computePointForecasts(int steps) {
-        return this.model.pointForecast(steps);
+        int n = timeSeries.size();
+        TimePeriod timePeriod = timeSeries.timePeriod();
+        final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
+                                                   .plus(timePeriod.periodLength() * timePeriod.timeUnit().unitLength(),
+                                                         timePeriod.timeUnit().temporalUnit());
+        double[] forecast = new double[steps];
+        for (int t = 0; t < steps; t++) {
+            forecast[t] = timeSeries.at(n - 1);
+        }
+        return TimeSeries.from(timePeriod, startTime, forecast);
+    }
+
+    @Override
+    public RandomWalkForecast forecast(int steps) {
+        return forecast(steps, 0.05);
     }
 
     @Override

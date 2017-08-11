@@ -84,7 +84,7 @@ class MeanForecaster implements Forecaster {
 
     @Override
     public TimeSeries computePointForecasts(int steps) {
-        return this.model.pointForecast(steps);
+        return this.model.forecast(steps);
     }
 
     @Override

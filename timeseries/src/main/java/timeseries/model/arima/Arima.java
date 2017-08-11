@@ -153,7 +153,7 @@ public interface Arima extends Model {
     }
 
     @Override
-    TimeSeries pointForecast(int steps);
+    TimeSeries forecast(int steps);
 
     @Override
     TimeSeries timeSeries();

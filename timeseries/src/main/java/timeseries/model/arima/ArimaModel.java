@@ -420,7 +420,7 @@ final class ArimaModel implements Arima {
     }
 
     @Override
-    public TimeSeries pointForecast(final int steps) {
+    public TimeSeries forecast(final int steps) {
         final int n = observations.size();
         double[] fcst = fcst(steps);
         TimePeriod timePeriod = observations.timePeriod();

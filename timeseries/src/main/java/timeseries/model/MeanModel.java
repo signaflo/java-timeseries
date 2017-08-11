@@ -49,7 +49,7 @@ public final class MeanModel implements Model {
     }
 
     @Override
-    public TimeSeries pointForecast(final int steps) {
+    public TimeSeries forecast(final int steps) {
         int n = timeSeries.size();
         TimePeriod timePeriod = timeSeries.timePeriod();
 

@@ -24,6 +24,7 @@
 package timeseries.model;
 
 import timeseries.TimeSeries;
+import timeseries.forecast.Forecast;
 
 /**
  * A representation of a time series model. A time series model is an attempt to capture the essential
@@ -34,12 +35,12 @@ import timeseries.TimeSeries;
 public interface Model {
 
     /**
-     * Produce a time series of point forecasts from this model up to the given number of steps ahead.
+     * Produce a forecast from this model up to the given number of steps ahead.
      *
      * @param steps the number of time periods ahead to forecast.
-     * @return a time series of point forecasts from this model up to the given number of steps ahead.
+     * @return a forecast from this model up to the given number of steps ahead.
      */
-    TimeSeries pointForecast(int steps);
+    Forecast forecast(int steps);
 
     /**
      * Get the series of observations.

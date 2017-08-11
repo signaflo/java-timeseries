@@ -21,13 +21,14 @@
  *
  * Jacob Rachiele
  */
-package timeseries.model;
+package timeseries.model.randomwalk;
 
 import lombok.NonNull;
 import math.stats.distributions.Distribution;
 import math.stats.distributions.Normal;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
+import timeseries.model.Model;
 
 import java.time.OffsetDateTime;
 
@@ -116,7 +117,7 @@ public final class RandomWalk implements Model {
     }
 
     @Override
-    public TimeSeries pointForecast(final int steps) {
+    public RandomWalkForecast forecast(final int steps) {
         int n = timeSeries.size();
         TimePeriod timePeriod = timeSeries.timePeriod();
         final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
@@ -126,7 +127,8 @@ public final class RandomWalk implements Model {
         for (int t = 0; t < steps; t++) {
             forecast[t] = timeSeries.at(n - 1);
         }
-        return TimeSeries.from(timePeriod, startTime, forecast);
+        RandomWalkForecaster forecaster = new RandomWalkForecaster(timeSeries, this.predictionErrors());
+        return forecaster.forecast(steps);
     }
 
     @Override

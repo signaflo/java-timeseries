@@ -106,7 +106,7 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
     }
 
     @Override
-    public TimeSeries pointForecast(int steps) {
+    public TimeSeries forecast(int steps) {
         Matrix predictionMatrix = getPredictionMatrix(steps);
         double[] forecasts = predictionMatrix.times(Vector.from(beta())).elements();
         TimePeriod timePeriod = timeSeries.timePeriod();

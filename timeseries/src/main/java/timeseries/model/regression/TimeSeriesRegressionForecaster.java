@@ -44,7 +44,7 @@ class TimeSeriesRegressionForecaster implements Forecaster {
 
     @Override
     public TimeSeries computePointForecasts(int steps) {
-        return model.pointForecast(steps);
+        return model.forecast(steps);
     }
 
     @Override

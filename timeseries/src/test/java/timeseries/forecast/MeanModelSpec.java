@@ -77,7 +77,7 @@ public class MeanModelSpec {
     @Test
     public void whenMeanForecastComputedForecastValuesCorrect() {
         int h = 6;
-        TimeSeries pointForecast = meanModel.pointForecast(h);
+        TimeSeries pointForecast = meanModel.forecast(h);
         double[] expected = DoubleFunctions.fill(h, series.mean());
         assertArrayEquals(expected, pointForecast.asArray(), 1E-2);
         MeanForecaster forecaster = new MeanForecaster(meanModel);
@@ -87,14 +87,14 @@ public class MeanModelSpec {
 
     @Test
     public void whenMeanForecastComputedFirstObservationTimeCorrect() {
-        TimeSeries pointForecast = meanModel.pointForecast(6);
+        TimeSeries pointForecast = meanModel.forecast(6);
         OffsetDateTime expectedTime = OffsetDateTime.of(2008, 10, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0));
         assertThat(pointForecast.observationTimes().get(0), is(equalTo(expectedTime)));
     }
 
     @Test
     public void whenMeanForecastComputedTimePeriodUnchanged() {
-        TimeSeries pointForecast = meanModel.pointForecast(6);
+        TimeSeries pointForecast = meanModel.forecast(6);
         TimeUnit timeUnit = TimeUnit.QUARTER;
         assertThat(pointForecast.timePeriod().timeUnit(), is(equalTo(timeUnit)));
     }

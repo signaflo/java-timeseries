@@ -86,7 +86,7 @@ class ArimaForecaster implements Forecaster {
 
     @Override
     public TimeSeries computePointForecasts(int steps) {
-        return model.pointForecast(steps);
+        return model.forecast(steps);
     }
 
     private double[] getStdErrors(TimeSeries forecast, final double criticalValue) {
