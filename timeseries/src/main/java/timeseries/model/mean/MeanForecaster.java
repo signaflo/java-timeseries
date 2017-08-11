@@ -22,10 +22,11 @@
  * Jacob Rachiele
  */
 
-package timeseries.forecast;
+package timeseries.model.mean;
 
 import math.stats.distributions.StudentsT;
 import timeseries.TimeSeries;
+import timeseries.forecast.Forecaster;
 import timeseries.model.Model;
 
 class MeanForecaster implements Forecaster {

@@ -21,12 +21,14 @@
  *
  * Jacob Rachiele
  */
-package timeseries.model;
+package timeseries.model.mean;
 
 import lombok.NonNull;
 import math.operations.DoubleFunctions;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
+import timeseries.model.Model;
+
 import java.time.OffsetDateTime;
 
 /**
@@ -49,7 +51,7 @@ public final class MeanModel implements Model {
     }
 
     @Override
-    public TimeSeries forecast(final int steps) {
+    public MeanForecast forecast(final int steps) {
         int n = timeSeries.size();
         TimePeriod timePeriod = timeSeries.timePeriod();
 

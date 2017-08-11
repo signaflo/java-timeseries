@@ -21,11 +21,12 @@
  *
  * Jacob Rachiele
  */
-package timeseries.forecast;
+package timeseries.model.mean;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import timeseries.TimeSeries;
+import timeseries.forecast.Forecast;
 
 /**
  * A mean model forecast.
