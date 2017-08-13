@@ -25,8 +25,11 @@ package timeseries;
 
 import data.DataSet;
 import data.DoubleDataSet;
+import math.linear.doubles.Matrix;
+import math.linear.doubles.Vector;
 import math.operations.DoubleFunctions;
 import math.operations.Operators;
+import timeseries.operators.LagPolynomial;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -36,6 +39,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.List;
+
+import static math.operations.DoubleFunctions.slice;
 
 /**
  * An immutable sequence of observations taken at regular time intervals.

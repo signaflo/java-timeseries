@@ -25,32 +25,44 @@
 package timeseries.model.regression;
 
 import data.regression.LinearRegressionPrediction;
+import data.regression.MultipleLinearRegression;
 import data.regression.MultipleLinearRegressionPredictor;
 import math.linear.doubles.Matrix;
+import math.linear.doubles.Vector;
+import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.forecast.Forecaster;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 class TimeSeriesRegressionForecaster implements Forecaster {
 
-    private final TimeSeriesLinearRegressionModel model;
+    private final TimeSeries timeSeries;
     private final MultipleLinearRegressionPredictor predictor;
+    private final Vector beta;
+    private final Matrix predictionMatrix;
 
-    TimeSeriesRegressionForecaster(TimeSeriesLinearRegressionModel regression) {
-        this.model = regression;
-        this.predictor = MultipleLinearRegressionPredictor.from(this.model);
+    TimeSeriesRegressionForecaster(TimeSeries timeSeries, MultipleLinearRegressionPredictor predictor,
+                                   Vector beta, Matrix predictionMatrix) {
+        this.timeSeries = timeSeries;
+        this.predictor = predictor;
+        this.beta = beta;
+        this.predictionMatrix = predictionMatrix;
     }
 
     @Override
     public TimeSeries computePointForecasts(int steps) {
-        return model.forecast(steps);
+        double[] forecasts = predictionMatrix.times(beta).elements();
+        TimePeriod timePeriod = timeSeries.timePeriod();
+        OffsetDateTime sampleEnd = this.timeSeries.observationTimes().get(timeSeries.size() - 1);
+        OffsetDateTime startTime = sampleEnd.plus(timePeriod.unitLength(), timePeriod.timeUnit().temporalUnit());
+        return TimeSeries.from(timePeriod, startTime, forecasts);
     }
 
     @Override
     public TimeSeriesRegressionForecast forecast(int steps, double alpha) {
         final TimeSeries forecast = computePointForecasts(steps);
-        Matrix predictionMatrix = this.model.getPredictionMatrix(steps);
         List<LinearRegressionPrediction> predictions = this.predictor.predictWithIntercept(predictionMatrix, alpha);
         final TimeSeries lowerBounds = computeLowerPredictionBounds(predictions, forecast, steps);
         final TimeSeries upperBounds = computeUpperPredictionBounds(predictions, forecast, steps);
@@ -77,7 +89,6 @@ class TimeSeriesRegressionForecaster implements Forecaster {
 
     @Override
     public TimeSeries computeLowerPredictionBounds(TimeSeries forecast, int steps, double alpha) {
-        Matrix predictionMatrix = this.model.getPredictionMatrix(steps);
         List<LinearRegressionPrediction> predictions = this.predictor.predictWithIntercept(predictionMatrix, alpha);
         double[] bounds = new double[steps];
         for (int i = 0; i < steps; i++) {
@@ -88,7 +99,6 @@ class TimeSeriesRegressionForecaster implements Forecaster {
 
     @Override
     public TimeSeries computeUpperPredictionBounds(TimeSeries forecast, int steps, double alpha) {
-        Matrix predictionMatrix = this.model.getPredictionMatrix(steps);
         List<LinearRegressionPrediction> predictions = this.predictor.predictWithIntercept(predictionMatrix, alpha);
         double[] bounds = new double[steps];
         for (int i = 0; i < steps; i++) {

@@ -27,6 +27,7 @@ package timeseries.model.randomwalk;
 import math.stats.distributions.Normal;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
+import timeseries.forecast.Forecast;
 import timeseries.forecast.Forecaster;
 
 import java.time.OffsetDateTime;
@@ -76,10 +77,10 @@ class RandomWalkForecaster implements Forecaster {
         return TimeSeries.from(timePeriod, startTime, forecast);
     }
 
-    @Override
-    public RandomWalkForecast forecast(int steps) {
-        return forecast(steps, 0.05);
-    }
+//    @Override
+//    public Forecast forecast(int steps) {
+//        return forecast(steps, 0.05);
+//    }
 
     @Override
     public RandomWalkForecast forecast(int steps, double alpha) {

@@ -30,8 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import timeseries.TimeSeries;
-import timeseries.model.randomwalk.RandomWalk;
-import timeseries.model.randomwalk.RandomWalkForecast;
+import timeseries.forecast.Forecast;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.hamcrest.MatcherAssert.*;
@@ -77,20 +76,20 @@ public class RandomWalkSpec {
     public void whenPointForecastThenEqualToLastObserved() {
         TimeSeries series = TestData.sydneyAir;
         RandomWalk model = new RandomWalk(series);
-        assertThat(model.forecast(1).pointForecast().at(0), is(series.at(series.size() - 1)));
+        assertThat(model.forecast(1).pointEstimates().at(0), is(series.at(series.size() - 1)));
         double[] expected = new double[6];
         for (int i = 0; i < expected.length; i++) {
             expected[i] = series.at(series.size() - 1);
         }
-        RandomWalkForecast forecast = model.forecast(6);
-        assertArrayEquals(expected, forecast.pointForecast().asArray(), 1E-4);
+        Forecast forecast = model.forecast(6);
+        assertArrayEquals(expected, forecast.pointEstimates().asArray(), 1E-4);
     }
 
     @Test
     public void whenForecastThenPredictionIntervalCorrect() {
         TimeSeries series = TestData.sydneyAir;
         RandomWalk model = new RandomWalk(series);
-        RandomWalkForecast forecast = model.forecast(7);
+        Forecast forecast = model.forecast(7);
         double[] lowerValues = {0.955726, 0.735251, 0.566075, 0.423453, 0.2978, 0.184201, 0.079736};
         double[] upperValues = {2.020274, 2.240749, 2.409925, 2.552547, 2.6782, 2.791799, 2.896264};
         assertArrayEquals(lowerValues, forecast.lowerPredictionInterval().asArray(), 1E-4);

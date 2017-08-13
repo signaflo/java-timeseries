@@ -207,6 +207,10 @@ public class ArimaCoefficients {
         return D;
     }
 
+    final int seasonalFrequency() {
+        return this.seasonalFrequency;
+    }
+
     /**
      * Get the model mean.
      *

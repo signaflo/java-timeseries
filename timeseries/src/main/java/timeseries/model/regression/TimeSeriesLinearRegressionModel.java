@@ -33,6 +33,8 @@ import math.linear.doubles.Vector;
 import math.operations.DoubleFunctions;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
+import timeseries.forecast.Forecast;
+import timeseries.forecast.Forecaster;
 import timeseries.model.Model;
 
 import java.time.OffsetDateTime;
@@ -106,13 +108,13 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
     }
 
     @Override
-    public TimeSeries forecast(int steps) {
+    public Forecast forecast(int steps, double alpha) {
+        MultipleLinearRegressionPredictor predictor = MultipleLinearRegressionPredictor.from(this);
+        Vector beta = Vector.from(this.beta());
         Matrix predictionMatrix = getPredictionMatrix(steps);
-        double[] forecasts = predictionMatrix.times(Vector.from(beta())).elements();
-        TimePeriod timePeriod = timeSeries.timePeriod();
-        OffsetDateTime sampleEnd = this.timeSeries.observationTimes().get(timeSeries.size() - 1);
-        OffsetDateTime startTime = sampleEnd.plus(timePeriod.unitLength(), timePeriod.timeUnit().temporalUnit());
-        return TimeSeries.from(timePeriod, startTime, forecasts);
+        Forecaster forecaster = new TimeSeriesRegressionForecaster(this.timeSeries, predictor, beta, predictionMatrix);
+        return forecaster.forecast(steps, alpha);
+
     }
 
     @Override

@@ -21,7 +21,7 @@
  *
  * Jacob Rachiele
  */
-package timeseries.forecast;
+package timeseries.model.arima;
 
 import timeseries.TimeSeries;
 import timeseries.forecast.Forecast;
@@ -46,7 +46,7 @@ final class ArimaForecast implements Forecast {
     }
 
     @Override
-    public TimeSeries pointForecast() {
+    public TimeSeries pointEstimates() {
         return this.pointForecast;
     }
 

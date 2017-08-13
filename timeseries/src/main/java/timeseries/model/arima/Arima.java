@@ -27,6 +27,7 @@ package timeseries.model.arima;
 import lombok.NonNull;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
+import timeseries.forecast.Forecast;
 import timeseries.model.Model;
 
 /**
@@ -153,7 +154,7 @@ public interface Arima extends Model {
     }
 
     @Override
-    TimeSeries forecast(int steps);
+    Forecast forecast(int steps, double alpha);
 
     @Override
     TimeSeries timeSeries();

@@ -27,6 +27,7 @@ import lombok.NonNull;
 import math.operations.DoubleFunctions;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
+import timeseries.forecast.Forecast;
 import timeseries.model.Model;
 
 import java.time.OffsetDateTime;
@@ -51,15 +52,9 @@ public final class MeanModel implements Model {
     }
 
     @Override
-    public MeanForecast forecast(final int steps) {
-        int n = timeSeries.size();
-        TimePeriod timePeriod = timeSeries.timePeriod();
-
-        final double[] forecasted = DoubleFunctions.fill(steps, this.mean);
-        final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
-                                                   .plus(timePeriod.periodLength() * timePeriod.timeUnit().unitLength(),
-                                                         timePeriod.timeUnit().temporalUnit());
-        return TimeSeries.from(timePeriod, startTime, forecasted);
+    public Forecast forecast(final int steps, final double alpha) {
+        MeanForecaster forecaster = new MeanForecaster(this.timeSeries);
+        return forecaster.forecast(steps, alpha);
     }
 
     @Override

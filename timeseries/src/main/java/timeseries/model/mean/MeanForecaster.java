@@ -24,17 +24,21 @@
 
 package timeseries.model.mean;
 
+import math.operations.DoubleFunctions;
 import math.stats.distributions.StudentsT;
+import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.forecast.Forecaster;
 import timeseries.model.Model;
 
+import java.time.OffsetDateTime;
+
 class MeanForecaster implements Forecaster {
 
-    private final Model model;
+    private final TimeSeries timeSeries;
 
-    MeanForecaster(Model model) {
-        this.model = model;
+    MeanForecaster(TimeSeries timeSeries) {
+        this.timeSeries = timeSeries;
     }
 
     @Override
@@ -73,9 +77,9 @@ class MeanForecaster implements Forecaster {
 
     private TimeSeries getFcstErrors(TimeSeries forecast, int steps, double alpha) {
         double[] errors = new double[steps];
-        double criticalValue = new StudentsT(model.timeSeries().size() - 1).quantile(1 - alpha / 2);
-        double variance = model.timeSeries().variance();
-        double meanStdError = variance / model.timeSeries().size();
+        double criticalValue = new StudentsT(timeSeries.size() - 1).quantile(1 - alpha / 2);
+        double variance = timeSeries.variance();
+        double meanStdError = variance / timeSeries.size();
         double fcstStdError = Math.sqrt(variance + meanStdError);
         for (int t = 0; t < errors.length; t++) {
             errors[t] = criticalValue * fcstStdError;
@@ -85,7 +89,14 @@ class MeanForecaster implements Forecaster {
 
     @Override
     public TimeSeries computePointForecasts(int steps) {
-        return this.model.forecast(steps);
+        int n = timeSeries.size();
+        TimePeriod timePeriod = timeSeries.timePeriod();
+
+        final double[] forecasted = DoubleFunctions.fill(steps, timeSeries.mean());
+        final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
+                                                   .plus(timePeriod.periodLength() * timePeriod.timeUnit().unitLength(),
+                                                         timePeriod.timeUnit().temporalUnit());
+        return TimeSeries.from(timePeriod, startTime, forecasted);
     }
 
     @Override

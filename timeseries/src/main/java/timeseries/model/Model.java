@@ -34,13 +34,17 @@ import timeseries.forecast.Forecast;
  */
 public interface Model {
 
+    Forecast forecast(int steps, double alpha);
+
     /**
      * Produce a forecast from this model up to the given number of steps ahead.
      *
      * @param steps the number of time periods ahead to forecast.
      * @return a forecast from this model up to the given number of steps ahead.
      */
-    Forecast forecast(int steps);
+    default Forecast forecast(int steps) {
+        return forecast(steps, 0.05);
+    }
 
     /**
      * Get the series of observations.

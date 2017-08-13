@@ -54,7 +54,7 @@ class TimeSeriesRegressionForecast implements Forecast {
     }
 
     @Override
-    public TimeSeries pointForecast() {
+    public TimeSeries pointEstimates() {
         return this.pointForecast;
     }
 

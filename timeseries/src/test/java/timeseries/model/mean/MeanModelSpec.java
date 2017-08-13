@@ -34,9 +34,6 @@ import timeseries.TimeSeries;
 import timeseries.TimeUnit;
 import timeseries.Ts;
 import timeseries.forecast.Forecast;
-import timeseries.model.mean.MeanModel;
-import timeseries.model.mean.MeanForecast;
-import timeseries.model.mean.MeanForecaster;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -80,40 +77,32 @@ public class MeanModelSpec {
     @Test
     public void whenMeanForecastComputedForecastValuesCorrect() {
         int h = 6;
-        TimeSeries pointForecast = meanModel.forecast(h);
         double[] expected = DoubleFunctions.fill(h, series.mean());
+        TimeSeries pointForecast = meanModel.forecast(h).pointEstimates();
         assertArrayEquals(expected, pointForecast.asArray(), 1E-2);
-        MeanForecaster forecaster = new MeanForecaster(meanModel);
-        Forecast forecast = forecaster.forecast(h, 0.05);
-        assertArrayEquals(expected, forecast.pointForecast().asArray(), 1E-2);
     }
 
     @Test
     public void whenMeanForecastComputedFirstObservationTimeCorrect() {
-        TimeSeries pointForecast = meanModel.forecast(6);
+        TimeSeries pointForecast = meanModel.forecast(6).pointEstimates();
         OffsetDateTime expectedTime = OffsetDateTime.of(2008, 10, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0));
         assertThat(pointForecast.observationTimes().get(0), is(equalTo(expectedTime)));
     }
 
     @Test
     public void whenMeanForecastComputedTimePeriodUnchanged() {
-        TimeSeries pointForecast = meanModel.forecast(6);
+        TimeSeries pointForecast = meanModel.forecast(6).pointEstimates();
         TimeUnit timeUnit = TimeUnit.QUARTER;
         assertThat(pointForecast.timePeriod().timeUnit(), is(equalTo(timeUnit)));
     }
 
     @Test
     public void whenMeanForecastThenPredictionIntervalsCorrect() {
-        MeanForecaster forecaster = new MeanForecaster(meanModel);
-        MeanForecast forecast = forecaster.forecast(6, 0.05);
+        Forecast forecast = meanModel.forecast(6, 0.05);
         double[] lowerValues = {243.129289, 243.129289, 243.129289, 243.129289, 243.129289, 243.129289};
         double[] upperValues = {586.775924, 586.775924, 586.775924, 586.775924, 586.775924, 586.775924};
         assertArrayEquals(lowerValues, forecast.lowerPredictionInterval().asArray(), 1E-2);
         assertArrayEquals(upperValues, forecast.upperPredictionInterval().asArray(), 1E-2);
-        assertArrayEquals(lowerValues, forecaster.computeLowerPredictionBounds(
-                forecast.pointForecast(),6, 0.05).asArray(), 1E-2);
-        assertArrayEquals(upperValues, forecaster.computeUpperPredictionBounds(
-                forecast.pointForecast(), 6, 0.05).asArray(), 1E-2);
     }
 
     @Test

@@ -44,7 +44,7 @@ final class RandomWalkForecast implements Forecast {
     }
 
     @Override
-    public TimeSeries pointForecast() {
+    public TimeSeries pointEstimates() {
         return this.forecast;
     }
 

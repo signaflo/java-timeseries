@@ -28,6 +28,8 @@ import math.stats.distributions.Distribution;
 import math.stats.distributions.Normal;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
+import timeseries.forecast.Forecast;
+import timeseries.forecast.Forecaster;
 import timeseries.model.Model;
 
 import java.time.OffsetDateTime;
@@ -117,7 +119,7 @@ public final class RandomWalk implements Model {
     }
 
     @Override
-    public RandomWalkForecast forecast(final int steps) {
+    public Forecast forecast(final int steps, double alpha) {
         int n = timeSeries.size();
         TimePeriod timePeriod = timeSeries.timePeriod();
         final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
@@ -127,8 +129,8 @@ public final class RandomWalk implements Model {
         for (int t = 0; t < steps; t++) {
             forecast[t] = timeSeries.at(n - 1);
         }
-        RandomWalkForecaster forecaster = new RandomWalkForecaster(timeSeries, this.predictionErrors());
-        return forecaster.forecast(steps);
+        Forecaster forecaster = new RandomWalkForecaster(timeSeries, this.predictionErrors());
+        return forecaster.forecast(steps, alpha);
     }
 
     @Override

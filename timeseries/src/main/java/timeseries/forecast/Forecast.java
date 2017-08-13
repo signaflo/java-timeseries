@@ -52,6 +52,6 @@ public interface Forecast {
      *
      * @return the point forecasts.
      */
-    TimeSeries pointForecast();
+    TimeSeries pointEstimates();
 
 }

@@ -44,9 +44,8 @@ public class TimeSeriesRegressionForecastSpec {
                                                .response(debitcards)
                                                .seasonal(Seasonal.INCLUDE);
         TimeSeriesLinearRegressionModel regression = tslmBuilder.build();
-        TimeSeriesRegressionForecaster forecaster = new TimeSeriesRegressionForecaster(regression);
-        Forecast forecast = forecaster.forecast(13);
-        assertArrayEquals(expected, forecast.pointForecast().asArray(), 1E-4);
+        Forecast forecast = regression.forecast(13);
+        assertArrayEquals(expected, forecast.pointEstimates().asArray(), 1E-4);
     }
 
     @Test
@@ -59,9 +58,8 @@ public class TimeSeriesRegressionForecastSpec {
                                                .response(debitcards)
                                                .seasonal(Seasonal.INCLUDE);
         TimeSeriesLinearRegressionModel regression = tslmBuilder.build();
-        TimeSeriesRegressionForecaster forecaster = new TimeSeriesRegressionForecaster(regression);
-        Forecast forecast = forecaster.forecast(13);
-        assertArrayEquals(expected, forecast.pointForecast().asArray(), 1E-4);
+        Forecast forecast = regression.forecast(13);
+        assertArrayEquals(expected, forecast.pointEstimates().asArray(), 1E-4);
     }
 
     @Test
@@ -74,8 +72,7 @@ public class TimeSeriesRegressionForecastSpec {
                                                .response(debitcards)
                                                .seasonal(Seasonal.INCLUDE);
         TimeSeriesLinearRegressionModel regression = tslmBuilder.build();
-        TimeSeriesRegressionForecaster forecaster = new TimeSeriesRegressionForecaster(regression);
-        Forecast forecast = forecaster.forecast(13);
-        assertArrayEquals(expected, forecast.pointForecast().asArray(), 1E-4);
+        Forecast forecast = regression.forecast(13);
+        assertArrayEquals(expected, forecast.pointEstimates().asArray(), 1E-4);
     }
 }
