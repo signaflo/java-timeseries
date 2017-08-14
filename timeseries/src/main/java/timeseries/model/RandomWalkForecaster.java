@@ -22,7 +22,7 @@
  * Jacob Rachiele
  */
 
-package timeseries.model.randomwalk;
+package timeseries.model;
 
 import math.stats.distributions.Normal;
 import timeseries.TimePeriod;
@@ -67,9 +67,9 @@ class RandomWalkForecaster implements Forecaster {
     public TimeSeries computePointForecasts(int steps) {
         int n = timeSeries.size();
         TimePeriod timePeriod = timeSeries.timePeriod();
+        long amountToAdd = timePeriod.periodLength() * timePeriod.timeUnit().unitLength();
         final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
-                                                   .plus(timePeriod.periodLength() * timePeriod.timeUnit().unitLength(),
-                                                         timePeriod.timeUnit().temporalUnit());
+                                                   .plus(amountToAdd, timePeriod.timeUnit().temporalUnit());
         double[] forecast = new double[steps];
         for (int t = 0; t < steps; t++) {
             forecast[t] = timeSeries.at(n - 1);
@@ -83,7 +83,7 @@ class RandomWalkForecaster implements Forecaster {
 //    }
 
     @Override
-    public RandomWalkForecast forecast(int steps, double alpha) {
+    public Forecast forecast(int steps, double alpha) {
         TimeSeries forecast = computePointForecasts(steps);
         TimeSeries lowerBounds = computeLowerPredictionBounds(forecast, steps, alpha);
         TimeSeries upperBounds = computeUpperPredictionBounds(forecast, steps, alpha);

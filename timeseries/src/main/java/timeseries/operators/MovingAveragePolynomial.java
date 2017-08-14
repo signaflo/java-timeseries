@@ -32,14 +32,14 @@ import timeseries.TimeSeries;
  * <a target="_blank" href="https://en.wikipedia.org/wiki/Lag_operator#Lag_polynomials"> the wiki entry</a>. The
  * polynomial is taken in the lag operator, but is algebraically equivalent to a real or complex polynomial.
  */
-public final class MovingAveragePolynomial extends LagPolynomial {
+final class MovingAveragePolynomial extends LagPolynomial {
 
     /**
      * Create a new moving average polynomial with the given parameters.
      *
      * @param parameters the moving average parameters of the polynomial.
      */
-    public MovingAveragePolynomial(final double... parameters) {
+    MovingAveragePolynomial(final double... parameters) {
         super(parameters);
     }
 

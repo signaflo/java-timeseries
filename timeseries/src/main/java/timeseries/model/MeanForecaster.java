@@ -22,14 +22,13 @@
  * Jacob Rachiele
  */
 
-package timeseries.model.mean;
+package timeseries.model;
 
 import math.operations.DoubleFunctions;
 import math.stats.distributions.StudentsT;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.forecast.Forecaster;
-import timeseries.model.Model;
 
 import java.time.OffsetDateTime;
 

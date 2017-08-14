@@ -22,7 +22,7 @@
  * Jacob Rachiele
  */
 
-package timeseries.model.mean;
+package timeseries.model;
 
 import math.operations.DoubleFunctions;
 import org.hamcrest.MatcherAssert;
@@ -34,6 +34,7 @@ import timeseries.TimeSeries;
 import timeseries.TimeUnit;
 import timeseries.Ts;
 import timeseries.forecast.Forecast;
+import timeseries.model.MeanModel;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;

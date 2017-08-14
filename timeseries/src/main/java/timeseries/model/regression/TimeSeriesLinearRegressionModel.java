@@ -37,7 +37,6 @@ import timeseries.forecast.Forecast;
 import timeseries.forecast.Forecaster;
 import timeseries.model.Model;
 
-import java.time.OffsetDateTime;
 import java.util.Arrays;
 
 import static math.operations.DoubleFunctions.copy;
@@ -118,8 +117,8 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
     }
 
     @Override
-    public TimeSeries timeSeries() {
-        return this.observations();
+    public TimeSeries observations() {
+        return this.timeSeriesResponse();
     }
 
     @Override
@@ -142,8 +141,7 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
         return this.seasonalCycle;
     }
 
-    @Override
-    public TimeSeries observations() {
+    public TimeSeries timeSeriesResponse() {
         return this.timeSeries;
     }
 
@@ -264,7 +262,7 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
          */
         public final Builder from(TimeSeriesLinearRegression regression) {
             this.externalRegressors = copy(regression.predictors());
-            this.response = regression.observations();
+            this.response = regression.timeSeriesResponse();
             this.intercept = regression.intercept();
             this.timeTrend = regression.timeTrend();
             this.seasonal = regression.seasonal();

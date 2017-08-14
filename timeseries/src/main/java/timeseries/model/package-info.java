@@ -1,10 +1,8 @@
 /*
  * Copyright (c) 2016 Jacob Rachiele
  */
-
 /**
- * Statistical model for time series data.
- * @author Jacob Rachiele
+ * Statistical models for time series.
  *
  */
 package timeseries.model;

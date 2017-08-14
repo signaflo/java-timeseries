@@ -21,7 +21,7 @@
  *
  * Jacob Rachiele
  */
-package timeseries.model.randomwalk;
+package timeseries.model;
 
 import lombok.NonNull;
 import math.stats.distributions.Distribution;
@@ -30,7 +30,6 @@ import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.forecast.Forecast;
 import timeseries.forecast.Forecaster;
-import timeseries.model.Model;
 
 import java.time.OffsetDateTime;
 
@@ -134,7 +133,7 @@ public final class RandomWalk implements Model {
     }
 
     @Override
-    public TimeSeries timeSeries() {
+    public TimeSeries observations() {
         return this.timeSeries;
     }
 

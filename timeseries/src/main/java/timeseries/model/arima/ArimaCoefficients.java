@@ -144,11 +144,11 @@ public class ArimaCoefficients {
         return intercept / (1 - sumOf(autoRegressiveCoefficients));
     }
 
-    public double[] getAllMovingAverageCoefficients() {
+    double[] getAllMovingAverageCoefficients() {
         return expandMaCoefficients(maCoeffs(), seasonalMACoeffs(), seasonalFrequency);
     }
 
-    public double[] getAllAutoRegressiveCoefficients() {
+    double[] getAllAutoRegressiveCoefficients() {
         return expandArCoefficients(arCoeffs(), seasonalARCoeffs(), seasonalFrequency);
     }
 

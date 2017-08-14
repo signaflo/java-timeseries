@@ -24,10 +24,9 @@
 package timeseries.forecast;
 
 import timeseries.TimeSeries;
-import timeseries.model.Model;
 
 /**
- * A forecast produced by a time series {@link Model}.
+ * A time series forecast.
  *
  * @author Jacob Rachiele
  */

@@ -34,13 +34,20 @@ import timeseries.forecast.Forecast;
  */
 public interface Model {
 
-    Forecast forecast(int steps, double alpha);
-
     /**
      * Produce a forecast from this model up to the given number of steps ahead.
      *
      * @param steps the number of time periods ahead to forecast.
+     * @param alpha the significance level to use for the prediction interval.
      * @return a forecast from this model up to the given number of steps ahead.
+     */
+    Forecast forecast(int steps, double alpha);
+
+    /**
+     * Create a new forecast for the given number of steps ahead with a default &alpha; significance level of 0.05.
+     *
+     * @param steps the number of time periods ahead to forecast.
+     * @return a new forecast for the given number of steps ahead with a default &alpha; significance level of 0.05.
      */
     default Forecast forecast(int steps) {
         return forecast(steps, 0.05);
@@ -51,7 +58,7 @@ public interface Model {
      *
      * @return the series of observations.
      */
-    TimeSeries timeSeries();
+    TimeSeries observations();
 
     /**
      * Get the model fitted values, which are in-sample one-step ahead forecasts.
@@ -66,7 +73,7 @@ public interface Model {
      * @return the model prediction errors.
      */
     default TimeSeries predictionErrors() {
-        return this.timeSeries().minus(this.fittedSeries());
+        return this.observations().minus(this.fittedSeries());
     }
 
 //    /**

@@ -62,7 +62,7 @@ public class ArimaSimulation {
      *
      * @return a new builder for an ARIMA simulation.
      */
-    public static Builder newBuilder() {
+    public static Builder builder() {
         return new Builder();
     }
 

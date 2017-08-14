@@ -21,7 +21,7 @@
  *
  * Jacob Rachiele
  */
-package timeseries.model.randomwalk;
+package timeseries.model;
 
 import timeseries.TimeSeries;
 import timeseries.forecast.Forecast;

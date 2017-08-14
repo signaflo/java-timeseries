@@ -12,7 +12,7 @@ import timeseries.TimeSeries;
  */
 public interface TimeSeriesLinearRegression extends MultipleLinearRegression {
 
-    TimeSeries observations();
+    TimeSeries timeSeriesResponse();
 
     Intercept intercept();
 

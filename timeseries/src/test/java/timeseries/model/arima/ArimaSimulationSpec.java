@@ -16,24 +16,24 @@ public class ArimaSimulationSpec {
     @Test
     public void whenSimulateNLessThanOneThenException() {
         exception.expect(IllegalArgumentException.class);
-        ArimaSimulation.newBuilder().setN(0);
+        ArimaSimulation.builder().setN(0);
     }
 
     @Test
     public void whenSimulateDistributionNullThenNPE() {
         exception.expect(NullPointerException.class);
-        ArimaSimulation.newBuilder().setDistribution(null);
+        ArimaSimulation.builder().setDistribution(null);
     }
 
     @Test
     public void whenSimulateCoefficientsNullThenNPE() {
         exception.expect(NullPointerException.class);
-        ArimaSimulation.newBuilder().setCoefficients(null);
+        ArimaSimulation.builder().setCoefficients(null);
     }
 
     @Test
     public void whenSimulateThenSeriesOfSizeNReturned() {
-        TimeSeries series = ArimaSimulation.newBuilder().setN(50).build().sim();
+        TimeSeries series = ArimaSimulation.builder().setN(50).build().sim();
         assertThat(series.size(), is(50));
     }
 }

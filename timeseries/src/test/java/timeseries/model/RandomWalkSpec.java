@@ -22,7 +22,7 @@
  * Jacob Rachiele
  */
 
-package timeseries.model.randomwalk;
+package timeseries.model;
 
 import org.hamcrest.MatcherAssert;
 import timeseries.TestData;
@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import timeseries.TimeSeries;
 import timeseries.forecast.Forecast;
+import timeseries.model.RandomWalk;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.hamcrest.MatcherAssert.*;

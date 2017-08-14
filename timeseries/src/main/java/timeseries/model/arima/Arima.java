@@ -157,7 +157,7 @@ public interface Arima extends Model {
     Forecast forecast(int steps, double alpha);
 
     @Override
-    TimeSeries timeSeries();
+    TimeSeries observations();
 
     @Override
     TimeSeries fittedSeries();
@@ -165,6 +165,11 @@ public interface Arima extends Model {
     @Override
     TimeSeries predictionErrors();
 
+    /**
+     * Get the estimate of the process variance.
+     *
+     * @return the estimate of the process variance.
+     */
     double sigma2();
 
     /**

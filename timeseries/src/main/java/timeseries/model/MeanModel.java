@@ -21,16 +21,12 @@
  *
  * Jacob Rachiele
  */
-package timeseries.model.mean;
+package timeseries.model;
 
 import lombok.NonNull;
 import math.operations.DoubleFunctions;
-import timeseries.TimePeriod;
 import timeseries.TimeSeries;
 import timeseries.forecast.Forecast;
-import timeseries.model.Model;
-
-import java.time.OffsetDateTime;
 
 /**
  * A time series model that assumes no trend or seasonal factors are present, and that puts as much weight
@@ -58,7 +54,7 @@ public final class MeanModel implements Model {
     }
 
     @Override
-    public TimeSeries timeSeries() {
+    public TimeSeries observations() {
         return this.timeSeries;
     }
 

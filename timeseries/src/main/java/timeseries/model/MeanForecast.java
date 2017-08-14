@@ -21,7 +21,7 @@
  *
  * Jacob Rachiele
  */
-package timeseries.model.mean;
+package timeseries.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

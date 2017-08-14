@@ -474,7 +474,7 @@ final class ArimaModel implements Arima {
     }
 
     @Override
-    public TimeSeries timeSeries() {
+    public TimeSeries observations() {
         return this.observations;
     }
 

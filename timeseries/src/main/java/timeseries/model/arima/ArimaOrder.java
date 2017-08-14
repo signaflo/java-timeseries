@@ -39,14 +39,14 @@ public class ArimaOrder {
     private final int P;
     private final int D;
     private final int Q;
-    private final ArimaModel.Constant constant;
-    private final ArimaModel.Drift drift;
+    private final Arima.Constant constant;
+    private final Arima.Drift drift;
     private final int sumARMA;
     private final int npar;
     private final int numRegressors;
 
     ArimaOrder(final int p, final int d, final int q, final int P, final int D, final int Q,
-               final ArimaModel.Constant constant, final ArimaModel.Drift drift) {
+               final Arima.Constant constant, final Arima.Drift drift) {
         this.p = p;
         this.d = d;
         this.q = q;
@@ -70,8 +70,8 @@ public class ArimaOrder {
      * @return a new ARIMA model order.
      */
     public static ArimaOrder order(final int p, final int d, final int q) {
-        ArimaModel.Constant constant = (d == 0) ? ArimaModel.Constant.INCLUDE : ArimaModel.Constant.EXCLUDE;
-        return new ArimaOrder(p, d, q, 0, 0, 0, constant, ArimaModel.Drift.EXCLUDE);
+        Arima.Constant constant = (d == 0) ? Arima.Constant.INCLUDE : Arima.Constant.EXCLUDE;
+        return new ArimaOrder(p, d, q, 0, 0, 0, constant, Arima.Drift.EXCLUDE);
     }
 
     /**
@@ -84,8 +84,8 @@ public class ArimaOrder {
      * @param constant determines whether or not a constant is fitted with the model.
      * @return         a new ARIMA model order.
      */
-    public static ArimaOrder order(final int p, final int d, final int q, final ArimaModel.Constant constant) {
-        return new ArimaOrder(p, d, q, 0, 0, 0, constant, ArimaModel.Drift.EXCLUDE);
+    public static ArimaOrder order(final int p, final int d, final int q, final Arima.Constant constant) {
+        return new ArimaOrder(p, d, q, 0, 0, 0, constant, Arima.Drift.EXCLUDE);
     }
 
     /**
@@ -99,7 +99,7 @@ public class ArimaOrder {
      * @param drift    determines whether or not a drift term is fitted with the model.
      * @return         a new ARIMA model order.
      */
-    public static ArimaOrder order(final int p, final int d, final int q, final ArimaModel.Drift drift) {
+    public static ArimaOrder order(final int p, final int d, final int q, final Arima.Drift drift) {
         Arima.Constant constant = (d > 0 && drift.include())? Arima.Constant.EXCLUDE : Arima.Constant.INCLUDE;
         return new ArimaOrder(p, d, q, 0, 0, 0, constant, drift);
     }
@@ -118,8 +118,8 @@ public class ArimaOrder {
      * @throws IllegalArgumentException if the degree of differencing is greater than zero
      *                                  and both a drift term and constant are set to be included.
      */
-    public static ArimaOrder order(final int p, final int d, final int q, final ArimaModel.Constant constant,
-                                   final ArimaModel.Drift drift) {
+    public static ArimaOrder order(final int p, final int d, final int q, final Arima.Constant constant,
+                                   final Arima.Drift drift) {
         if (d > 0 && constant.include() && drift.include()) {
             throw new IllegalArgumentException("Arima model cannot be fit with both a constant and a" +
                                                " drift term when the degree of differencing is greater" +
@@ -141,8 +141,8 @@ public class ArimaOrder {
      * @return a new ARIMA model order.
      */
     public static ArimaOrder order(final int p, final int d, final int q, final int P, final int D, final int Q) {
-        ArimaModel.Constant constant = (d == 0 && D == 0) ? ArimaModel.Constant.INCLUDE : ArimaModel.Constant.EXCLUDE;
-        return new ArimaOrder(p, d, q, P, D, Q, constant, ArimaModel.Drift.EXCLUDE);
+        Arima.Constant constant = (d == 0 && D == 0) ? Arima.Constant.INCLUDE : Arima.Constant.EXCLUDE;
+        return new ArimaOrder(p, d, q, P, D, Q, constant, Arima.Drift.EXCLUDE);
     }
 
     /**
@@ -159,8 +159,8 @@ public class ArimaOrder {
      * @return a new ARIMA model order.
      */
     public static ArimaOrder order(final int p, final int d, final int q, final int P, final int D, final int Q,
-                                   final ArimaModel.Constant constant) {
-        return new ArimaOrder(p, d, q, P, D, Q, constant, ArimaModel.Drift.EXCLUDE);
+                                   final Arima.Constant constant) {
+        return new ArimaOrder(p, d, q, P, D, Q, constant, Arima.Drift.EXCLUDE);
     }
 
     /**
@@ -178,7 +178,7 @@ public class ArimaOrder {
      * @return a new ARIMA model order.
      */
     public static ArimaOrder order(final int p, final int d, final int q, final int P, final int D, final int Q,
-                                   final ArimaModel.Drift drift) {
+                                   final Arima.Drift drift) {
         Arima.Constant constant = ((d + D) > 0)? Arima.Constant.EXCLUDE : Arima.Constant.INCLUDE;
         return new ArimaOrder(p, d, q, P, D, Q, constant, drift);
     }
@@ -201,7 +201,7 @@ public class ArimaOrder {
      *                                  and both a drift term and constant are included.
      */
     public static ArimaOrder order(final int p, final int d, final int q, final int P, final int D, final int Q,
-                                   final ArimaModel.Constant constant, final Arima.Drift drift) {
+                                   final Arima.Constant constant, final Arima.Drift drift) {
         if ((d > 0 || D > 0) && constant.include() && drift.include()) {
             throw new IllegalArgumentException("Arima model cannot be fit with both a constant and a" +
                                                " drift term when the degree of differencing is greater" +
@@ -210,27 +210,27 @@ public class ArimaOrder {
         return new ArimaOrder(p, d, q, P, D, Q, constant, drift);
     }
 
-    public int p() {
+    int p() {
         return p;
     }
 
-    public int q() {
+    int q() {
         return q;
     }
 
-    public int P() {
+    int P() {
         return P;
     }
 
-    public int Q() {
+    int Q() {
         return Q;
     }
 
-    public int d() {
+    int d() {
         return d;
     }
 
-    public int D() {
+    int D() {
         return D;
     }
 
@@ -266,8 +266,8 @@ public class ArimaOrder {
         if (isSeasonal) {
             builder.append(") x (").append(P).append(", ").append(D).append(", ").append(Q);
         }
-        builder.append(") with").append((constant == ArimaModel.Constant.INCLUDE) ? " a constant" : " no constant");
-        builder.append((drift == ArimaModel.Drift.INCLUDE) ? " and drift" : "");
+        builder.append(") with").append((constant == Arima.Constant.INCLUDE) ? " a constant" : " no constant");
+        builder.append((drift == Arima.Drift.INCLUDE) ? " and drift" : "");
         return builder.toString();
     }
 
