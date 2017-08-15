@@ -18,7 +18,7 @@ public final class Pair<T extends Comparable<T>, S extends Comparable<S>>
         return new Pair<>(first, second);
     }
 
-    static <T extends Comparable<T>, S extends Comparable<S>> Pair<T, S> newPair(T first, S second) {
+    public static <T extends Comparable<T>, S extends Comparable<S>> Pair<T, S> newPair(T first, S second) {
         return new Pair<>(first, second);
     }
 

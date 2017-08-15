@@ -37,8 +37,11 @@ public final class Range {
         this.by = by;
         int size = (int) (Math.abs((to - from) / by) + TOLERANCE) + 1;
         range = new double[size];
-        for (int i = 0; i < range.length; i++) {
-            range[i] = from + Math.signum(to - from) * i * by;
+        if (size > 0) {
+            range[0] = from;
+        }
+        for (int i = 1; i < range.length; i++) {
+            range[i] = range[i - 1] + Math.signum(to - from) * by;
         }
     }
 
