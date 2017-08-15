@@ -118,10 +118,10 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
     }
 
     @Override
-    public List<LinearRegressionPrediction> predict(Matrix newData, double alpha) {
-        List<LinearRegressionPrediction> predictions = new ArrayList<>(newData.nrow());
-        for (int i = 0; i < newData.nrow(); i++) {
-            predictions.add(predict(newData.getRow(i), alpha));
+    public List<LinearRegressionPrediction> predict(Matrix observations, double alpha) {
+        List<LinearRegressionPrediction> predictions = new ArrayList<>(observations.nrow());
+        for (int i = 0; i < observations.nrow(); i++) {
+            predictions.add(predict(observations.getRow(i), alpha));
         }
         return predictions;
     }
