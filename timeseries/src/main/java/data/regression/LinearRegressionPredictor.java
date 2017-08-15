@@ -6,7 +6,7 @@ import math.linear.doubles.Vector;
 import java.util.List;
 
 /**
- * A predictor that uses linear regression model to make predictions.
+ * A predictor that makes predictions using a linear regression model.
  *
  * @author Jacob Rachiele
  *         Jul. 22, 2017
@@ -33,7 +33,7 @@ public interface LinearRegressionPredictor {
     }
 
     /**
-     * Predict a series of responses, one for each row in the observations matrix.
+     * Predict a series of responses, one for each row in the observation matrix.
      *
      * @param observations the new observations.
      * @param alpha the significance level.
@@ -42,7 +42,7 @@ public interface LinearRegressionPredictor {
     List<LinearRegressionPrediction> predict(Matrix observations, double alpha);
 
     /**
-     * Predict a series of responses, one for each row in the observations matrix. This method
+     * Predict a series of responses, one for each row in the observation matrix. This method
      * uses a default significance level of 0.05.
      *
      * @param observations the new observations.

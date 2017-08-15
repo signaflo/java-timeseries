@@ -111,7 +111,7 @@ public final class MultipleLinearRegressionModel implements MultipleLinearRegres
 
     @Override
     public double[] beta() {
-        return beta;
+        return beta.clone();
     }
 
     @Override

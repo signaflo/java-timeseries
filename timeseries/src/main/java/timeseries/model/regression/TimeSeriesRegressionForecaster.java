@@ -25,7 +25,6 @@
 package timeseries.model.regression;
 
 import data.regression.LinearRegressionPrediction;
-import data.regression.MultipleLinearRegression;
 import data.regression.MultipleLinearRegressionPredictor;
 import math.linear.doubles.Matrix;
 import math.linear.doubles.Vector;
@@ -63,7 +62,7 @@ class TimeSeriesRegressionForecaster implements Forecaster {
     @Override
     public TimeSeriesRegressionForecast forecast(int steps, double alpha) {
         final TimeSeries forecast = computePointForecasts(steps);
-        List<LinearRegressionPrediction> predictions = this.predictor.predictWithIntercept(predictionMatrix, alpha);
+        List<LinearRegressionPrediction> predictions = this.predictor.predictDesignMatrix(predictionMatrix, alpha);
         final TimeSeries lowerBounds = computeLowerPredictionBounds(predictions, forecast, steps);
         final TimeSeries upperBounds = computeUpperPredictionBounds(predictions, forecast, steps);
         return new TimeSeriesRegressionForecast(forecast, lowerBounds, upperBounds);
@@ -89,7 +88,7 @@ class TimeSeriesRegressionForecaster implements Forecaster {
 
     @Override
     public TimeSeries computeLowerPredictionBounds(TimeSeries forecast, int steps, double alpha) {
-        List<LinearRegressionPrediction> predictions = this.predictor.predictWithIntercept(predictionMatrix, alpha);
+        List<LinearRegressionPrediction> predictions = this.predictor.predictDesignMatrix(predictionMatrix, alpha);
         double[] bounds = new double[steps];
         for (int i = 0; i < steps; i++) {
             bounds[i] = predictions.get(i).predictionInterval().first();
@@ -99,7 +98,7 @@ class TimeSeriesRegressionForecaster implements Forecaster {
 
     @Override
     public TimeSeries computeUpperPredictionBounds(TimeSeries forecast, int steps, double alpha) {
-        List<LinearRegressionPrediction> predictions = this.predictor.predictWithIntercept(predictionMatrix, alpha);
+        List<LinearRegressionPrediction> predictions = this.predictor.predictDesignMatrix(predictionMatrix, alpha);
         double[] bounds = new double[steps];
         for (int i = 0; i < steps; i++) {
             bounds[i] = predictions.get(i).predictionInterval().second();

@@ -3,7 +3,7 @@ package data;
 import lombok.NonNull;
 
 /**
- * Represents a 2-tuple of primitive doubles.
+ * Represents a 2-tuple of primitive doubles. This class is immutable and thread-safe.
  *
  * @author Jacob Rachiele
  * Aug. 05, 2017

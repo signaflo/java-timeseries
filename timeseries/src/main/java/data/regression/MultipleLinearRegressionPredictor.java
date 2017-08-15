@@ -35,6 +35,9 @@ import math.stats.distributions.StudentsT;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A predictor that makes predictions using a multiple linear regression model.
+ */
 @ToString
 public class MultipleLinearRegressionPredictor implements LinearRegressionPredictor {
 
@@ -48,6 +51,12 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
         this.degreesOfFreedom = model.response().length - model.designMatrix().length;
     }
 
+    /**
+     * Create a new predictor from the given multiple linear regression model.
+     *
+     * @param model the regression model to base predictions off of.
+     * @return a new predictor.
+     */
     public static MultipleLinearRegressionPredictor from(MultipleLinearRegression model) {
         return new MultipleLinearRegressionPredictor(model);
     }
@@ -117,7 +126,14 @@ public class MultipleLinearRegressionPredictor implements LinearRegressionPredic
         return predictions;
     }
 
-    public List<LinearRegressionPrediction> predictWithIntercept(Matrix designMatrix, double alpha) {
+    /**
+     * Predict a series of responses, one for each row in the design matrix.
+     *
+     * @param designMatrix the design matrix for the prediction.
+     * @param alpha the significance level.
+     * @return a list of predictions, one for each row in the design matrix.
+     */
+    public List<LinearRegressionPrediction> predictDesignMatrix(Matrix designMatrix, double alpha) {
         List<LinearRegressionPrediction> predictions = new ArrayList<>(designMatrix.nrow());
         for (int i = 0; i < designMatrix.nrow(); i++) {
             predictions.add(predictWithIntercept(designMatrix.getRow(i), alpha));
