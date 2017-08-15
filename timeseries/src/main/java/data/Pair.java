@@ -3,7 +3,7 @@ package data;
 import lombok.NonNull;
 
 /**
- * Represents a 2-tuple. This class is immutable and thread-safe only if both classes
+ * Represents a 2-tuple. This class is immutable and thread-safe only if the runtime classes
  * represented by the type parameters are.
  *
  * @param <T> the type of the first element.
