@@ -144,10 +144,6 @@ public final class MultipleLinearRegressionModel implements MultipleLinearRegres
         return this.hasIntercept;
     }
 
-    public static MultipleLinearRegressionBuilder builder() {
-        return new MultipleLinearRegressionBuilder();
-    }
-
     /**
      * Create a new linear regression model from this one, using the given boolean to determine whether
      * to fit an intercept or not.

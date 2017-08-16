@@ -61,7 +61,7 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
         this.externalRegressors = timeSeriesRegressionBuilder.externalRegressors;
         double[][] allPredictors = DoubleFunctions.combine(timeSeriesRegressionBuilder.timeBasedPredictors,
                                                            timeSeriesRegressionBuilder.externalRegressors);
-        MultipleRegressionBuilder regressionBuilder = MultipleLinearRegressionModel.builder();
+        MultipleRegressionBuilder regressionBuilder = MultipleLinearRegression.builder();
         regressionBuilder.hasIntercept(timeSeriesRegressionBuilder.intercept.include())
                          .predictors(allPredictors)
                          .response(timeSeries.asArray());
@@ -165,11 +165,16 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
         return (int) this.timeSeries.timePeriod().frequencyPer(this.seasonalCycle);
     }
 
+    /**
+     * Return a new builder for a time series linear regression model.
+     *
+     * @return a new builder for a time series linear regression model.
+     */
     public static TimeSeriesLinearRegressionModel.Builder builder() {
         return new Builder();
     }
 
-    static double[] getIthSeasonalRegressor(int nrows, int startRow, int seasonalFrequency) {
+    private static double[] getIthSeasonalRegressor(int nrows, int startRow, int seasonalFrequency) {
         double[] regressor = new double[nrows];
         for (int j = 0; j < regressor.length - startRow; j += seasonalFrequency) {
             regressor[j + startRow] = 1.0;
@@ -190,7 +195,7 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
         return seasonalRegressors;
     }
 
-    Matrix getPredictionMatrix(int steps) {
+    private Matrix getPredictionMatrix(int steps) {
         int intercept = this.intercept().asInt();
         int timeTrend = this.timeTrend().asInt();
         int seasonal = this.seasonal().asInt();
@@ -390,7 +395,7 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
          * Specify the length of time it takes for the seasonal pattern to complete one cycle.
          *
          * @param seasonalCycle the length of time it takes for the seasonal pattern to complete one cycle.
-         *                      the default value for this property is one year.
+         *                      The default value for this property is one year.
          * @return this builder.
          */
         public Builder seasonalCycle(@NonNull TimePeriod seasonalCycle) {
@@ -401,7 +406,7 @@ public final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRe
         public TimeSeriesLinearRegressionModel build() {
             if (response == null) {
                 throw new IllegalStateException("A time series linear regression model " +
-                                                "must have a non-null response.");
+                                                "must have a non-null response variable.");
             }
             if (this.timeTrend.include()) {
                 this.timeBasedPredictors(Range.inclusiveRange(1, response.size()).asArray());

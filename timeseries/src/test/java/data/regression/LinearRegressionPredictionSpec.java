@@ -44,10 +44,11 @@ public class LinearRegressionPredictionSpec {
     private double[] mtcars_hp = TestData.mtcars_hp.clone();
     private double[] mtcars_wt = TestData.mtcars_wt.clone();
     private double[][] predictors = {mtcars_hp, mtcars_wt};
-    private MultipleLinearRegressionModel regression = MultipleLinearRegressionModel.builder()
-                                                                            .response(mtcars_mpg)
-                                                                            .predictors(predictors)
-                                                                            .build();
+    private MultipleLinearRegressionModel regression = (MultipleLinearRegressionModel)
+            MultipleLinearRegression.builder()
+                                    .response(mtcars_mpg)
+                                    .predictors(predictors)
+                                    .build();
     private MultipleLinearRegressionPredictor predictor = MultipleLinearRegressionPredictor.from(regression);
 
     @Test

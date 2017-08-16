@@ -278,18 +278,19 @@ public class LagPolynomial {
 
     @Override
     public String toString() {
+        final double epsilon = Math.ulp(1.0);
         StringBuilder builder = new StringBuilder();
         builder.append("1");
         for (int i = 1; i < coefficients.length - 1; i++) {
-            if (Math.abs(coefficients[i]) > 1E-16) {
+            if (Math.abs(coefficients[i]) > epsilon) {
 
                 if (coefficients[i] < 0) {
                     builder.append(" - ");
                 } else {
                     builder.append(" + ");
                 }
-                if (Math.abs(coefficients[i]) - 1.0 > 1E-16) {
-                    builder.append(Math.abs(coefficients[i]));
+                if (Math.abs(coefficients[i] - 1.0) > epsilon) {
+                    builder.append(Double.toString(Math.abs(coefficients[i])));
                 }
                 builder.append("L");
                 if (i > 1) {
@@ -305,7 +306,7 @@ public class LagPolynomial {
         }
         if (coefficients.length > 1) {
             if (coefficients[lastIndex] != 1.0) {
-                builder.append(Math.abs(coefficients[lastIndex]));
+                builder.append(Double.toString(Math.abs(coefficients[lastIndex])));
             }
             builder.append("L");
         }
