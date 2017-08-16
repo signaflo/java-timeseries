@@ -45,7 +45,7 @@ public class LagPolynomial {
 
     /**
      * Construct a new lag polynomial from the given parameters. Note that the parameters given here are not the same as
-     * the coefficients of the polynomial since the coefficient at the zero-degreee term is always equal to 1.
+     * the coefficients of the polynomial since the coefficient at the zero-degree term is always equal to 1.
      *
      * @param parameters the parameters of the polynomial.
      */
@@ -194,8 +194,8 @@ public class LagPolynomial {
     }
 
     /**
-     * Use this lag polynomial to fit the implied ARIMA model at the given index by applying the polynomial, then
-     * solving for the time series value at that index.
+     * Use this lag polynomial to fit the lag polynomial at the given index by applying the polynomial, then
+     * solving for the value of the series at that index.
      *
      * @param timeSeries the time series containing the index to apply the lag polynomial to.
      * @param index      the index of the series to apply the lag polynomial at.
@@ -211,14 +211,13 @@ public class LagPolynomial {
     }
 
     /**
-     * Use this lag polynomial to fit the implied ARIMA model at the given date and time by applying the polynomial,
-     * then
-     * solving for the value of the series at that date and time.
+     * Use this lag polynomial to fit the lag polynomial at the given date-time by applying the polynomial,
+     * then solving for the value of the series at that date-time.
      *
-     * @param timeSeries the time series containing the date and time to apply the lag polynomial to.
-     * @param dateTime   the date and time of the series to apply the lag polynomial at.
-     * @return the result of applying this lag polynomial to the time series at the given date and time, then solving
-     * for the value of the series at that date and time.
+     * @param timeSeries the time series containing the date-time to apply the lag polynomial to.
+     * @param dateTime   the date-time of the series to apply the lag polynomial at.
+     * @return the result of applying this lag polynomial to the time series at the given date-time, then solving
+     * for the value of the series at that date-time.
      */
     public double fit(final TimeSeries timeSeries, OffsetDateTime dateTime) {
         double value = 0.0;
@@ -229,8 +228,8 @@ public class LagPolynomial {
     }
 
     /**
-     * Use this lag polynomial to fit the implied ARIMA model at the given index by applying the polynomial, then
-     * solving for the time series value at that index.
+     * Use this lag polynomial to fit the lag polynomial at the given index by applying the polynomial, then
+     * solving for the value of the series at that index.
      *
      * @param timeSeries the time series containing the index to apply the lag polynomial to.
      * @param index      the index of the series to apply the lag polynomial at.
@@ -255,9 +254,9 @@ public class LagPolynomial {
     }
 
     /**
-     * Return the additive inverse of the parameters of this  lag polynomial.
+     * Return the additive inverse of the parameters of this lag polynomial.
      *
-     * @return the additive inverse of the parameters of this  lag polynomial.
+     * @return the additive inverse of the parameters of this lag polynomial.
      */
     public final double[] inverseParams() {
         final double[] invParams = new double[parameters.length];

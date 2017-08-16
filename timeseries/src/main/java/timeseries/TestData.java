@@ -29,7 +29,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 /**
- * Static methods for retrieving test data.
+ * Static fields containing test data.
  *
  * @author Jacob Rachiele
  */
