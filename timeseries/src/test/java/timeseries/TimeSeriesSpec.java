@@ -39,49 +39,65 @@ import static org.junit.Assert.assertArrayEquals;
 
 public class TimeSeriesSpec {
 
+    private TimeSeries timeSeries = TestData.ausbeer;
+
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Test
+    public void whenAtIndexLessThanZeroThenIndexOutOfBoundsException() {
+        exception.expect(IndexOutOfBoundsException.class);
+        timeSeries.at(-3);
+    }
+
+    @Test
+    public void whenAtIndexGreaterThanSeriesLengthThenIndexOutOfBoundsException() {
+        exception.expect(IndexOutOfBoundsException.class);
+        timeSeries.at(timeSeries.size() + 1);
+    }
+
+    @Test
+    public void whenDateTimeIndexNonExistentThenIllegalArgument() {
+        exception.expect(IllegalArgumentException.class);
+        OffsetDateTime dateTime = OffsetDateTime.parse("1955-01-01T00:00Z");
+        timeSeries.at(dateTime);
+    }
+
+    @Test
     public void whenAggregateWithSmallerPeriodThenIllegalArgument() {
-        TimeSeries timeSeries = TestData.ausbeer;
         exception.expect(IllegalArgumentException.class);
         timeSeries.aggregate(TimePeriod.oneMonth());
     }
 
     @Test
     public void whenBoxCoxBackTransformLambdaTooBigThenIllegalArgument() {
-        TimeSeries series = TestData.ausbeer;
         exception.expect(IllegalArgumentException.class);
-        series.backTransform(2.5);
+        timeSeries.backTransform(2.5);
     }
 
     @Test
     public void whenBoxCoxTransformationLambdaTooBigThenIllegalArgument() {
-        TimeSeries series = TestData.ausbeer;
         exception.expect(IllegalArgumentException.class);
-        series.transform(2.5);
+        timeSeries.transform(2.5);
     }
 
     @Test
     public void whenBoxCoxBackTransformLambdaTooSmallThenIllegalArgument() {
-        TimeSeries series = TestData.ausbeer;
         exception.expect(IllegalArgumentException.class);
-        series.backTransform(-1.5);
+        timeSeries.backTransform(-1.5);
     }
 
     @Test
     public void whenBoxCoxTransformationLambdaTooSmallThenIllegalArgument() {
-        TimeSeries series = TestData.ausbeer;
         exception.expect(IllegalArgumentException.class);
-        series.transform(-1.5);
+        timeSeries.transform(-1.5);
     }
 
     @Test
     public void whenBoxCoxTransformLogThenDataTransformedCorrectly() {
         double[] data = new double[]{3.0, 7.0, Math.E};
         double[] expected = new double[]{Math.log(3.0), Math.log(7.0), 1.0};
-        TimeSeries timeSeries = TimeSeries.from(data);
+        timeSeries = TimeSeries.from(data);
         assertArrayEquals(expected, timeSeries.transform(0).asArray(), 1E-4);
     }
 
@@ -89,33 +105,49 @@ public class TimeSeriesSpec {
     public void whenBoxCoxInvTransformLogThenDataTransformedCorrectly() {
         double[] data = new double[]{Math.log(3.0), Math.log(7.0), 1.0};
         double[] expected = new double[]{3.0, 7.0, Math.E};
-        TimeSeries timeSeries = TimeSeries.from(data);
+        timeSeries = TimeSeries.from(data);
         assertArrayEquals(expected, timeSeries.backTransform(0).asArray(), 1E-4);
+    }
+
+
+    @Test
+    public void whenDifferenceWithLagLessThanOneThenIllegalArgument() {
+        exception.expect(IllegalArgumentException.class);
+        TimeSeries.difference(TestData.ausbeerArray, 0, 1);
+    }
+
+    @Test
+    public void whenDifferenceWithLagGreaterThanSeriesLengthThenIllegalArgument() {
+        exception.expect(IllegalArgumentException.class);
+        TimeSeries.difference(TestData.ausbeerArray, TestData.ausbeerArray.length + 1, 1);
+    }
+
+    @Test
+    public void whenDifferencedZeroTimesThenOriginalSeries() {
+        assertThat(TimeSeries.difference(TestData.ausbeerArray, 1, 0), is(TestData.ausbeerArray));
     }
 
     @Test
     public void whenDifferencedNoArgThenDifferencedOnce() {
-        TimeSeries timeSeries = TestData.ausbeer;
         assertThat(timeSeries.difference(), is(timeSeries.difference(1)));
     }
 
     @Test
     public void whenStartTimeThenFirstObservationTime() {
-        TimeSeries timeSeries = Ts.newQuarterlySeries(1956, 1, TestData.ausbeerArray);
+        timeSeries = Ts.newQuarterlySeries(1956, 1, TestData.ausbeerArray);
         OffsetDateTime expected = OffsetDateTime.parse("1956-01-01T00:00:00Z");
         assertThat(timeSeries.startTime(), is(expected));
     }
 
     @Test
     public void whenDifferencedMoreThanOnceThenCorrectData() {
-        TimeSeries timeSeries = TestData.ausbeer;
         TimeSeries diffedTwice = timeSeries.difference().difference();
         assertThat(timeSeries.difference(1, 2), is(diffedTwice));
     }
 
     @Test
     public void whenDataPointAccessedThenExpectedValueReturned() {
-        TimeSeries timeSeries = TestData.debitcards;
+        timeSeries = TestData.debitcards;
         OffsetDateTime period = OffsetDateTime.parse("2000-01-01T00:00:00Z");
         assertThat(timeSeries.at(period), is(timeSeries.at(0)));
     }
@@ -129,9 +161,8 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenAutoCovarianceNegativeLagThenIllegalArgument() {
-        TimeSeries series = TestData.ausbeer;
         exception.expect(IllegalArgumentException.class);
-        series.autoCovarianceAtLag(-1);
+        timeSeries.autoCovarianceAtLag(-1);
     }
 
     @Test
@@ -207,8 +238,7 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenTimeSeriesAggregatedDatesCorrect() {
-        TimeSeries series = TestData.ausbeer;
-        TimeSeries aggregated = series.aggregate(TimeUnit.DECADE);
+        TimeSeries aggregated = timeSeries.aggregate(TimeUnit.DECADE);
         OffsetDateTime expectedStart = OffsetDateTime.of(LocalDateTime.of(1956, 1, 1, 0, 0), ZoneOffset.ofHours(0));
         OffsetDateTime expectedEnd = OffsetDateTime.of(LocalDateTime.of(1996, 1, 1, 0, 0), ZoneOffset.ofHours(0));
         assertThat(aggregated.observationTimes().get(0), is(equalTo(expectedStart)));

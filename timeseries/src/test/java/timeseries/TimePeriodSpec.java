@@ -38,13 +38,13 @@ public class TimePeriodSpec {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void whenZeroUnitLengthThenIllegalArgument() {
+    public void whenZeroPeriodLengthThenIllegalArgument() {
         exception.expect(IllegalArgumentException.class);
         new TimePeriod(TimeUnit.DAY, 0);
     }
 
     @Test
-    public void whenNegativeUnitLengthThenIllegalArgument() {
+    public void whenNegativePeriodLengthThenIllegalArgument() {
         exception.expect(IllegalArgumentException.class);
         new TimePeriod(TimeUnit.DAY, -1);
     }

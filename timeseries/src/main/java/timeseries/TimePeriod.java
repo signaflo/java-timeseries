@@ -45,6 +45,8 @@ public final class TimePeriod {
      *                     converting to an appropriate time unit with a smaller order of magnitude. For example, the
      *                     {@link TimePeriod#halfMonth} constructor works by converting
      *                     15.2184375 days to 1314873 seconds.
+     *
+     * @throws IllegalArgumentException if the given period length is less than or equal to 0.
      */
     public TimePeriod(final TimeUnit timeUnit, final long periodLength) {
         validate(periodLength);
@@ -275,9 +277,10 @@ public final class TimePeriod {
         return thisDuration * this.periodLength;
     }
 
-    private void validate(final long unitLength) {
-        if (unitLength <= 0) {
-            throw new IllegalArgumentException("The provided unitLength must be a positive integer");
+    private void validate(final long periodLength) {
+        if (periodLength <= 0) {
+            throw new IllegalArgumentException("The given period length must be a positive integer but was " +
+                                               periodLength);
         }
 
     }

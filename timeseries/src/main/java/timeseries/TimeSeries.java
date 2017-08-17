@@ -25,11 +25,8 @@ package timeseries;
 
 import data.DataSet;
 import data.DoubleDataSet;
-import math.linear.doubles.Matrix;
-import math.linear.doubles.Vector;
 import math.operations.DoubleFunctions;
 import math.operations.Operators;
-import timeseries.operators.LagPolynomial;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -39,8 +36,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.List;
-
-import static math.operations.DoubleFunctions.slice;
 
 /**
  * An immutable sequence of observations taken at regular time intervals.
@@ -69,7 +64,7 @@ public final class TimeSeries implements DataSet {
         this(timePeriod, OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC), series);
     }
 
-    private TimeSeries(final TimePeriod timePeriod, final String startTime, final double... series) {
+    private TimeSeries(final TimePeriod timePeriod, final CharSequence startTime, final double... series) {
         this.dataSet = new DoubleDataSet(series);
         this.series = series.clone();
         this.n = series.length;
@@ -117,7 +112,7 @@ public final class TimeSeries implements DataSet {
         this.dateTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
     }
 
-    private TimeSeries(final TimeUnit timeUnit, final String startTime, final double... series) {
+    private TimeSeries(final TimeUnit timeUnit, final CharSequence startTime, final double... series) {
         this(new TimePeriod(timeUnit, 1), startTime, series);
     }
 
@@ -177,11 +172,13 @@ public final class TimeSeries implements DataSet {
      * Create a new time series using the given time period, the time of first observation, and observation data.
      *
      * @param timePeriod the period of time between observations.
-     * @param startTime  the time at which the first observation was made. Usually a rough approximation.
+     * @param startTime  the time of the first observation. The characters must represent either a valid
+     *                   {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
+     *                   UTC/Greenwich offset, i.e., an offset of 0, will be used.
      * @param series     the observation data.
      * @return a new time series from the supplied data.
      */
-    public static TimeSeries from(final TimePeriod timePeriod, final String startTime, final double... series) {
+    public static TimeSeries from(final TimePeriod timePeriod, final CharSequence startTime, final double... series) {
         return new TimeSeries(timePeriod, startTime, series);
     }
 
@@ -189,7 +186,7 @@ public final class TimeSeries implements DataSet {
      * Create a new time series with the given time period, observation times, and observation data.
      *
      * @param timePeriod       the period of time between observations.
-     * @param observationTimes the sequence of dates and times at which the observations are made.
+     * @param observationTimes the observation times.
      * @param series           the observation data.
      * @return a new time series from the supplied data.
      */
@@ -202,13 +199,13 @@ public final class TimeSeries implements DataSet {
      * Create a new time series using the given unit of time, the time of first observation, and the observation data.
      *
      * @param timeUnit  the unit of time in which observations are made.
-     * @param startTime the time at which the first observation was made. The string must represent either a valid
+     * @param startTime the time of the first observation. The characters must represent either a valid
      *                  {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
      *                  UTC/Greenwich offset, i.e., an offset of 0, will be used.
      * @param series    the observation data.
      * @return a new time series from the supplied data.
      */
-    public static TimeSeries from(final TimeUnit timeUnit, final String startTime, final double... series) {
+    public static TimeSeries from(final TimeUnit timeUnit, final CharSequence startTime, final double... series) {
         return new TimeSeries(timeUnit, startTime, series);
     }
 
@@ -216,7 +213,7 @@ public final class TimeSeries implements DataSet {
      * Create a new time series with the given time period, the time of first observation, and the observation data.
      *
      * @param timePeriod the period of time between observations.
-     * @param startTime  the time at which the first observation was made. May be an approximation.
+     * @param startTime  the time of the first observation.
      * @param series     the observation data.
      * @return a new time series from the supplied data.
      */
@@ -228,7 +225,7 @@ public final class TimeSeries implements DataSet {
      * Create a new time series using the given unit of time, the time of first observation, and the observation data.
      *
      * @param timeUnit  the unit of time in which observations are made.
-     * @param startTime the time at which the first observation was made. May be an approximation.
+     * @param startTime the time of the first observation.
      * @param series    the observation data.
      * @return a new time series from the supplied data.
      */
@@ -242,17 +239,45 @@ public final class TimeSeries implements DataSet {
      * @param series the series to difference.
      * @param lag    the lag at which to take differences.
      * @param times  the number of times to difference the series at the given lag.
+     *               Note that this argument may equal 0, in which case a copy of the
+     *               original series is returned.
      * @return a new time series differenced the given number of times at the given lag.
+     *
+     * @throws IllegalArgumentException if lag is less than 1.
+     * @throws IllegalArgumentException if times is less than 0.
+     * @throws IllegalArgumentException if the product of lag and times is greater than the length
+     *                                  of the series.
      */
     public static double[] difference(final double[] series, final int lag, final int times) {
-        if (times > 0) {
-            double[] diffed = differenceArray(series, lag);
-            for (int i = 1; i < times; i++) {
-                diffed = differenceArray(diffed, lag);
-            }
-            return diffed;
+        validate(lag);
+        validate(series, lag, times);
+        if (times == 0) {
+            return series.clone();
         }
-        return series.clone();
+        double[] diffed = differenceArray(series, lag);
+        for (int i = 1; i < times; i++) {
+            diffed = differenceArray(diffed, lag);
+        }
+        return diffed;
+    }
+
+    private static void validate(double[] series, int lag, int times) {
+        if (times < 0) {
+            throw new IllegalArgumentException("The number of differences must be non-negative " +
+                                               "but was " + times);
+        }
+        if (times * lag > series.length) {
+            throw new IllegalArgumentException("The product of the lag and the number of differences " +
+                                               "must be less than the length of the series, but " +
+                                               times + " * " + lag + " = " + times * lag +
+                                               " is greater than " + series.length);
+        }
+    }
+
+    private static void validate(int lag) {
+        if (lag < 1) {
+            throw new IllegalArgumentException("The lag must be positive, but was " + lag);
+        }
     }
 
     /**
@@ -322,22 +347,31 @@ public final class TimeSeries implements DataSet {
     }
 
     /**
-     * Retrieve the value of the time series at the given index.
+     * Retrieve the value of the time series at the given index. Indexing begins at 0.
      *
      * @param index the index of the value to return.
      * @return the value of the time series at the given index.
+     *
      */
     public final double at(final int index) {
+        if (index < 0 || index >= this.series.length) {
+            throw new IndexOutOfBoundsException("No observation available at index: " + index);
+        }
         return this.series[index];
     }
 
     /**
-     * Retrieve the value of the time series at the given date and time.
+     * Retrieve the value of the time series at the given date-time.
      *
-     * @param dateTime the date and time of the value to return.
-     * @return the value of the time series at the given date and time.
+     * @param dateTime the date-time of the value to return.
+     * @return the value of the time series at the given date-time.
+     *
+     * @throws IllegalArgumentException if no observation corresponds to the given date-time.
      */
     public final double at(final OffsetDateTime dateTime) {
+        if (!dateTimeIndex.containsKey(dateTime)) {
+            throw new IllegalArgumentException("No observation available at date-time: " + dateTime);
+        }
         return this.series[dateTimeIndex.get(dateTime)];
     }
 
@@ -346,8 +380,11 @@ public final class TimeSeries implements DataSet {
      *
      * @param k the lag to compute the autocorrelation at.
      * @return the correlation of this series with itself at lag k.
+     *
+     * @throws IllegalArgumentException if k is less than 0.
      */
     public final double autoCorrelationAtLag(final int k) {
+        validateLag(k);
         final double variance = autoCovarianceAtLag(0);
         return autoCovarianceAtLag(k) / variance;
     }
@@ -357,8 +394,11 @@ public final class TimeSeries implements DataSet {
      *
      * @param k the maximum lag to compute the autocorrelation at.
      * @return every correlation coefficient of this series with itself up to the given lag.
+     *
+     * @throws IllegalArgumentException if k is less than 0.
      */
     public final double[] autoCorrelationUpToLag(final int k) {
+        validateLag(k);
         final double[] autoCorrelation = new double[Math.min(k + 1, n)];
         for (int i = 0; i < Math.min(k + 1, n); i++) {
             autoCorrelation[i] = autoCorrelationAtLag(i);
@@ -371,11 +411,11 @@ public final class TimeSeries implements DataSet {
      *
      * @param k the lag to compute the autocovariance at.
      * @return the covariance of this series with itself at lag k.
+     *
+     * @throws IllegalArgumentException if k is less than 0.
      */
     public final double autoCovarianceAtLag(final int k) {
-        if (k < 0) {
-            throw new IllegalArgumentException("The lag, k, must be non-negative, but was " + k);
-        }
+        validateLag(k);
         double sumOfProductOfDeviations = 0.0;
         for (int t = 0; t < n - k; t++) {
             sumOfProductOfDeviations += (series[t] - mean) * (series[t + k] - mean);
@@ -388,13 +428,22 @@ public final class TimeSeries implements DataSet {
      *
      * @param k the maximum lag to compute the autocovariance at.
      * @return every covariance measure of this series with itself up to the given lag.
+     *
+     * @throws IllegalArgumentException if k is less than 0.
      */
     public final double[] autoCovarianceUpToLag(final int k) {
+        validateLag(k);
         final double[] acv = new double[Math.min(k + 1, n)];
         for (int i = 0; i < Math.min(k + 1, n); i++) {
             acv[i] = autoCovarianceAtLag(i);
         }
         return acv;
+    }
+
+    private void validateLag(int k) {
+        if (k < 0) {
+            throw new IllegalArgumentException("The lag, k, must be non-negative, but was " + k);
+        }
     }
 
     /**
