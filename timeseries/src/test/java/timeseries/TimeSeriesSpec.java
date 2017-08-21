@@ -57,6 +57,12 @@ public class TimeSeriesSpec {
     }
 
     @Test
+    public void whenAtIndexEqualToSeriesLengthThenIndexOutOfBoundsException() {
+        exception.expect(IndexOutOfBoundsException.class);
+        timeSeries.at(timeSeries.size());
+    }
+
+    @Test
     public void whenDateTimeIndexNonExistentThenIllegalArgument() {
         exception.expect(IllegalArgumentException.class);
         OffsetDateTime dateTime = OffsetDateTime.parse("1955-01-01T00:00Z");
@@ -123,6 +129,12 @@ public class TimeSeriesSpec {
     }
 
     @Test
+    public void whenDifferenceWithNegativeTimesThenIllegalArgument() {
+        exception.expect(IllegalArgumentException.class);
+        TimeSeries.difference(TestData.ausbeerArray, 1, -1);
+    }
+
+    @Test
     public void whenDifferencedZeroTimesThenOriginalSeries() {
         assertThat(TimeSeries.difference(TestData.ausbeerArray, 1, 0), is(TestData.ausbeerArray));
     }
@@ -133,6 +145,12 @@ public class TimeSeriesSpec {
     }
 
     @Test
+    public void whenDifferencedMoreThanOnceThenCorrectData() {
+        TimeSeries diffedTwice = timeSeries.difference().difference();
+        assertThat(timeSeries.difference(1, 2), is(diffedTwice));
+    }
+
+    @Test
     public void whenStartTimeThenFirstObservationTime() {
         timeSeries = Ts.newQuarterlySeries(1956, 1, TestData.ausbeerArray);
         OffsetDateTime expected = OffsetDateTime.parse("1956-01-01T00:00:00Z");
@@ -140,13 +158,7 @@ public class TimeSeriesSpec {
     }
 
     @Test
-    public void whenDifferencedMoreThanOnceThenCorrectData() {
-        TimeSeries diffedTwice = timeSeries.difference().difference();
-        assertThat(timeSeries.difference(1, 2), is(diffedTwice));
-    }
-
-    @Test
-    public void whenDataPointAccessedThenExpectedValueReturned() {
+    public void whenAtDateTimeAccessedThenCorrectValueReturned() {
         timeSeries = TestData.debitcards;
         OffsetDateTime period = OffsetDateTime.parse("2000-01-01T00:00:00Z");
         assertThat(timeSeries.at(period), is(timeSeries.at(0)));

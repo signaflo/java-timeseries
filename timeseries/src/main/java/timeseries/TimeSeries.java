@@ -35,7 +35,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.List;
 
 /**
  * An immutable sequence of observations taken at regular time intervals.
@@ -261,24 +260,6 @@ public final class TimeSeries implements DataSet {
         return diffed;
     }
 
-    private static void validate(double[] series, int lag, int times) {
-        if (times < 0) {
-            throw new IllegalArgumentException("The number of differences must be non-negative " +
-                                               "but was " + times);
-        }
-        if (times * lag > series.length) {
-            throw new IllegalArgumentException("The product of the lag and the number of differences " +
-                                               "must be less than the length of the series, but " +
-                                               times + " * " + lag + " = " + times * lag +
-                                               " is greater than " + series.length);
-        }
-    }
-
-    private static void validate(int lag) {
-        if (lag < 1) {
-            throw new IllegalArgumentException("The lag must be positive, but was " + lag);
-        }
-    }
 
     /**
      * Difference the given series the given number of times at lag 1.
@@ -286,6 +267,10 @@ public final class TimeSeries implements DataSet {
      * @param series the series to difference.
      * @param times  the number of times to difference the series.
      * @return a new time series differenced the given number of times at lag 1.
+     *
+     * @throws IllegalArgumentException if times is less than 0.
+     * @throws IllegalArgumentException if times is greater than the length
+     *                                  of the series.
      */
     public static double[] difference(final double[] series, final int times) {
         return difference(series, 1, times);
@@ -297,6 +282,34 @@ public final class TimeSeries implements DataSet {
             differenced[i] = series[i + lag] - series[i];
         }
         return differenced;
+    }
+
+    private static void validate(double[] series, int lag, int times) {
+        if (times < 0) {
+            throw new IllegalArgumentException("The value of times must be non-negative " + "but was " + times);
+        }
+        if (times * lag > series.length) {
+            throw new IllegalArgumentException(
+                    "The product of lag and times " + "must be less than or equal to the length of the series, but " +
+                    times + " * " + lag + " = " + times * lag + " is greater than " + series.length);
+        }
+    }
+
+    private static void validate(double[] series, int lag) {
+        if (lag < 1) {
+            throw new IllegalArgumentException("The lag must be positive, but was " + lag);
+        }
+        if (lag > series.length) {
+            throw new IllegalArgumentException(
+                    "The lag must be less than or equal to the length of the series, " + "but " + lag +
+                    " is greater than " + series.length);
+        }
+    }
+
+    private static void validate(int lag) {
+        if (lag < 1) {
+            throw new IllegalArgumentException("The lag must be positive, but was " + lag);
+        }
     }
 
     /**
@@ -351,7 +364,6 @@ public final class TimeSeries implements DataSet {
      *
      * @param index the index of the value to return.
      * @return the value of the time series at the given index.
-     *
      */
     public final double at(final int index) {
         if (index < 0 || index >= this.series.length) {
@@ -366,7 +378,7 @@ public final class TimeSeries implements DataSet {
      * @param dateTime the date-time of the value to return.
      * @return the value of the time series at the given date-time.
      *
-     * @throws IllegalArgumentException if no observation corresponds to the given date-time.
+     * @throws IllegalArgumentException if there is no observation at the given date-time.
      */
     public final double at(final OffsetDateTime dateTime) {
         if (!dateTimeIndex.containsKey(dateTime)) {
@@ -477,6 +489,8 @@ public final class TimeSeries implements DataSet {
      *
      * @param boxCoxLambda the Box-Cox transformation parameter to use for the inversion.
      * @return a new time series with the inverse Box-Cox transformation applied.
+     *
+     * @throws IllegalArgumentException if boxCoxLambda is not strictly between -1 and 2.
      */
     public final TimeSeries backTransform(final double boxCoxLambda) {
         if (boxCoxLambda > 2 || boxCoxLambda < -1) {
@@ -544,8 +558,14 @@ public final class TimeSeries implements DataSet {
      * @param lag   the lag at which to take differences.
      * @param times the number of times to difference the series at the given lag.
      * @return a new time series differenced the given number of times at the given lag.
+     *
+     * @throws IllegalArgumentException if lag is less than 1.
+     * @throws IllegalArgumentException if times is less than 0.
+     * @throws IllegalArgumentException if the product of lag and times is greater than the length
+     *                                  of the series.
      */
     public final TimeSeries difference(final int lag, final int times) {
+        validate(this.series, lag, times);
         if (times > 0) {
             TimeSeries diffed = difference(lag);
             for (int i = 1; i < times; i++) {
@@ -561,8 +581,12 @@ public final class TimeSeries implements DataSet {
      *
      * @param lag the lag at which to take differences.
      * @return a new time series differenced at the given lag.
+     *
+     * @throws IllegalArgumentException if lag is less than 1.
+     * @throws IllegalArgumentException if lag is greater than the size of this series.
      */
     public final TimeSeries difference(final int lag) {
+        validate(this.series, lag);
         double[] diffed = differenceArray(this.asArray(), lag);
         final List<OffsetDateTime> obsTimes = this.observationTimes.subList(lag, n);
         return new TimeSeries(this.timePeriod, obsTimes, diffed);
@@ -579,9 +603,14 @@ public final class TimeSeries implements DataSet {
 
     /**
      * Subtract the given series from this time series and return the result as a new time series.
+     * Note that if the other series is empty, then this series is returned. However, in all other
+     * cases in which the two series differ in size, an IllegalArgumentException is thrown.
      *
      * @param otherSeries the series to subtract from this one.
      * @return The difference between this series and the given series.
+     *
+     * @throws IllegalArgumentException if the other series is non-empty and the two series
+     * differ in size.
      */
     public final TimeSeries minus(final TimeSeries otherSeries) {
         if (otherSeries.size() == 0) {
@@ -598,10 +627,15 @@ public final class TimeSeries implements DataSet {
     }
 
     /**
-     * Subtract the given series from this time series and return the result as a new time series.
+     * Subtract the given series from this series and return the result as a new time series.
+     * Note that if the other series is empty, then this series is returned. However, in all other
+     * cases in which the two series differ in size, an IllegalArgumentException is thrown.
      *
      * @param otherSeries the series to subtract from this one.
      * @return The difference between this series and the given series.
+     *
+     * @throws IllegalArgumentException if the other series is non-empty and the two series
+     * differ in size.
      */
     public final TimeSeries minus(final double[] otherSeries) {
         if (otherSeries.length == 0) {
@@ -755,13 +789,13 @@ public final class TimeSeries implements DataSet {
     @Override
     public TimeSeries times(DataSet otherData) {
         return new TimeSeries(this.timePeriod(), this.observationTimes(),
-                    Operators.productOf(this.asArray(), otherData.asArray()));
+                              Operators.productOf(this.asArray(), otherData.asArray()));
     }
 
     @Override
     public TimeSeries plus(DataSet otherData) {
-        return new TimeSeries(this.timePeriod(), this.observationTimes(), Operators.sumOf(this.asArray(),
-                                                                                          otherData.asArray()));
+        return new TimeSeries(this.timePeriod(), this.observationTimes(),
+                              Operators.sumOf(this.asArray(), otherData.asArray()));
     }
 
     @Override
