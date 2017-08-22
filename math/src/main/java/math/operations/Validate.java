@@ -1,5 +1,7 @@
 package math.operations;
 
+import lombok.NonNull;
+
 /**
  * Validation methods.
  *
@@ -10,7 +12,7 @@ public final class Validate {
 
     private Validate() {}
 
-    public static <T> void argumentsNotNull(Class<T> clazz, Object... args) {
+    public static <T> void argumentsNotNull(@NonNull Class<T> clazz, Object... args) {
         if (args == null) {
             throw new NullPointerException("null-valued " + clazz.getSimpleName() + " given as " +
                                            "an argument.");
@@ -22,4 +24,5 @@ public final class Validate {
             }
         }
     }
+
 }

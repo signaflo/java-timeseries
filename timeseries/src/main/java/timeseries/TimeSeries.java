@@ -25,8 +25,10 @@ package timeseries;
 
 import data.DataSet;
 import data.DoubleDataSet;
+import lombok.NonNull;
 import math.operations.DoubleFunctions;
 import math.operations.Operators;
+import math.operations.Validate;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -35,6 +37,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An immutable sequence of observations taken at regular time intervals.
@@ -138,8 +142,9 @@ public final class TimeSeries implements DataSet {
      *
      * @param series the observation data.
      * @return a new time series from the supplied data.
+     *
      */
-    public static TimeSeries from(final double... series) {
+    public static TimeSeries from(@NonNull final double... series) {
         return new TimeSeries(series);
     }
 
@@ -150,7 +155,7 @@ public final class TimeSeries implements DataSet {
      * @param series    the observation data.
      * @return a new time series from the supplied data.
      */
-    public static TimeSeries from(final OffsetDateTime startTime, final double... series) {
+    public static TimeSeries from(@NonNull final OffsetDateTime startTime, @NonNull final double... series) {
         return new TimeSeries(startTime, series);
     }
 
@@ -163,7 +168,7 @@ public final class TimeSeries implements DataSet {
      * @param series     the observation data.
      * @return a new time series from the supplied data.
      */
-    public static TimeSeries from(final TimePeriod timePeriod, final double... series) {
+    public static TimeSeries from(@NonNull final TimePeriod timePeriod, @NonNull final double... series) {
         return new TimeSeries(timePeriod, series);
     }
 
@@ -177,7 +182,9 @@ public final class TimeSeries implements DataSet {
      * @param series     the observation data.
      * @return a new time series from the supplied data.
      */
-    public static TimeSeries from(final TimePeriod timePeriod, final CharSequence startTime, final double... series) {
+    public static TimeSeries from(@NonNull final TimePeriod timePeriod,
+                                  @NonNull final CharSequence startTime,
+                                  @NonNull final double... series) {
         return new TimeSeries(timePeriod, startTime, series);
     }
 
@@ -189,8 +196,9 @@ public final class TimeSeries implements DataSet {
      * @param series           the observation data.
      * @return a new time series from the supplied data.
      */
-    public static TimeSeries from(final TimePeriod timePeriod, final List<OffsetDateTime> observationTimes,
-                                  final double... series) {
+    public static TimeSeries from(@NonNull final TimePeriod timePeriod,
+                                  @NonNull final List<OffsetDateTime> observationTimes,
+                                  @NonNull final double... series) {
         return new TimeSeries(timePeriod, observationTimes, series);
     }
 
@@ -204,7 +212,9 @@ public final class TimeSeries implements DataSet {
      * @param series    the observation data.
      * @return a new time series from the supplied data.
      */
-    public static TimeSeries from(final TimeUnit timeUnit, final CharSequence startTime, final double... series) {
+    public static TimeSeries from(@NonNull final TimeUnit timeUnit,
+                                  @NonNull final CharSequence startTime,
+                                  @NonNull final double... series) {
         return new TimeSeries(timeUnit, startTime, series);
     }
 
@@ -216,7 +226,9 @@ public final class TimeSeries implements DataSet {
      * @param series     the observation data.
      * @return a new time series from the supplied data.
      */
-    public static TimeSeries from(final TimePeriod timePeriod, final OffsetDateTime startTime, final double... series) {
+    public static TimeSeries from(@NonNull final TimePeriod timePeriod,
+                                  @NonNull final OffsetDateTime startTime,
+                                  @NonNull final double... series) {
         return new TimeSeries(timePeriod, startTime, series);
     }
 
@@ -228,7 +240,9 @@ public final class TimeSeries implements DataSet {
      * @param series    the observation data.
      * @return a new time series from the supplied data.
      */
-    public static TimeSeries from(final TimeUnit timeUnit, final OffsetDateTime startTime, final double... series) {
+    public static TimeSeries from(@NonNull final TimeUnit timeUnit,
+                                  @NonNull final OffsetDateTime startTime,
+                                  @NonNull final double... series) {
         return new TimeSeries(new TimePeriod(timeUnit, 1), startTime, series);
     }
 
@@ -247,7 +261,9 @@ public final class TimeSeries implements DataSet {
      * @throws IllegalArgumentException if the product of lag and times is greater than the length
      *                                  of the series.
      */
-    public static double[] difference(final double[] series, final int lag, final int times) {
+    public static double[] difference(@NonNull final double[] series,
+                                      final int lag,
+                                      final int times) {
         validate(lag);
         validate(series, lag, times);
         if (times == 0) {
@@ -337,7 +353,7 @@ public final class TimeSeries implements DataSet {
      * @param timePeriod the time period to aggregate up to.
      * @return A new time series aggregated up to the given time period.
      */
-    public final TimeSeries aggregate(final TimePeriod timePeriod) {
+    public final TimeSeries aggregate(@NonNull final TimePeriod timePeriod) {
         final int period = (int) (this.timePeriod.frequencyPer(timePeriod));
         if (period == 0) {
             throw new IllegalArgumentException(
@@ -380,7 +396,7 @@ public final class TimeSeries implements DataSet {
      *
      * @throws IllegalArgumentException if there is no observation at the given date-time.
      */
-    public final double at(final OffsetDateTime dateTime) {
+    public final double at(@NonNull final OffsetDateTime dateTime) {
         if (!dateTimeIndex.containsKey(dateTime)) {
             throw new IllegalArgumentException("No observation available at date-time: " + dateTime);
         }
@@ -612,7 +628,7 @@ public final class TimeSeries implements DataSet {
      * @throws IllegalArgumentException if the other series is non-empty and the two series
      * differ in size.
      */
-    public final TimeSeries minus(final TimeSeries otherSeries) {
+    public final TimeSeries minus(@NonNull final TimeSeries otherSeries) {
         if (otherSeries.size() == 0) {
             return this;
         }
@@ -637,7 +653,7 @@ public final class TimeSeries implements DataSet {
      * @throws IllegalArgumentException if the other series is non-empty and the two series
      * differ in size.
      */
-    public final TimeSeries minus(final double[] otherSeries) {
+    public final TimeSeries minus(@NonNull final double[] otherSeries) {
         if (otherSeries.length == 0) {
             return this;
         }
@@ -674,7 +690,8 @@ public final class TimeSeries implements DataSet {
      *              time series.
      * @return a slice of this time series from start (inclusive) to end (inclusive).
      */
-    public final TimeSeries slice(final OffsetDateTime start, final OffsetDateTime end) {
+    public final TimeSeries slice(@NonNull final OffsetDateTime start,
+                                  @NonNull final OffsetDateTime end) {
         final int startIdx = this.dateTimeIndex.get(start);
         final int endIdx = this.dateTimeIndex.get(end);
         final double[] sliced = new double[endIdx - startIdx + 1];
@@ -787,13 +804,13 @@ public final class TimeSeries implements DataSet {
     }
 
     @Override
-    public TimeSeries times(DataSet otherData) {
+    public TimeSeries times(@NonNull DataSet otherData) {
         return new TimeSeries(this.timePeriod(), this.observationTimes(),
                               Operators.productOf(this.asArray(), otherData.asArray()));
     }
 
     @Override
-    public TimeSeries plus(DataSet otherData) {
+    public TimeSeries plus(@NonNull DataSet otherData) {
         return new TimeSeries(this.timePeriod(), this.observationTimes(),
                               Operators.sumOf(this.asArray(), otherData.asArray()));
     }

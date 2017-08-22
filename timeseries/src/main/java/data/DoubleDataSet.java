@@ -23,6 +23,7 @@
  */
 package data;
 
+import lombok.NonNull;
 import math.operations.Operators;
 
 import math.stats.Statistics;
@@ -44,10 +45,7 @@ public final class DoubleDataSet implements DataSet {
      *
      * @param data the collection of observations.
      */
-    public DoubleDataSet(final double... data) {
-        if (data == null) {
-            throw new NullPointerException("Null array passed to DoubleDataSet constructor.");
-        }
+    public DoubleDataSet(@NonNull final double... data) {
         this.data = data.clone();
     }
 
@@ -77,12 +75,12 @@ public final class DoubleDataSet implements DataSet {
     }
 
     @Override
-    public final DataSet times(final DataSet otherData) {
+    public final DataSet times(@NonNull final DataSet otherData) {
         return new DoubleDataSet(Operators.productOf(this.data, otherData.asArray()));
     }
 
     @Override
-    public final DataSet plus(final DataSet otherData) {
+    public final DataSet plus(@NonNull final DataSet otherData) {
         return new DoubleDataSet(Operators.sumOf(this.data, otherData.asArray()));
     }
 
@@ -97,12 +95,12 @@ public final class DoubleDataSet implements DataSet {
     }
 
     @Override
-    public final double covariance(final DataSet otherData) {
+    public final double covariance(@NonNull final DataSet otherData) {
         return Statistics.covarianceOf(this.data, otherData.asArray());
     }
 
     @Override
-    public final double correlation(DataSet otherData) {
+    public final double correlation(@NonNull final DataSet otherData) {
         return Statistics.correlationOf(this.data, otherData.asArray());
     }
 
