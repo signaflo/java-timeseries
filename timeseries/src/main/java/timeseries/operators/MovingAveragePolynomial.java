@@ -44,7 +44,7 @@ final class MovingAveragePolynomial extends LagPolynomial {
     }
 
     @Override
-    public double fit(final TimeSeries residualSeries, final int index) {
+    public double solve(final TimeSeries residualSeries, final int index) {
         double value = 0.0;
         for (int i = 0; i < parameters.length; i++) {
             value += parameters[i] * LagOperator.apply(residualSeries, index, i + 1);
@@ -53,7 +53,7 @@ final class MovingAveragePolynomial extends LagPolynomial {
     }
 
     @Override
-    public double fit(final double[] residualSeries, final int index) {
+    public double solve(final double[] residualSeries, final int index) {
         double value = 0.0;
         for (int i = 0; i < parameters.length; i++) {
             value += parameters[i] * LagOperator.apply(residualSeries, index, i + 1);

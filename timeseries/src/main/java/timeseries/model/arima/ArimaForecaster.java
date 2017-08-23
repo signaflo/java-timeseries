@@ -140,7 +140,7 @@ class ArimaForecaster implements Forecaster {
         LagPolynomial seasDiffPolynomial = LagPolynomial.seasonalDifferences(seasonalFrequency, D);
         LagPolynomial lagPolynomial = diffPolynomial.times(seasDiffPolynomial);
         for (int t = 0; t < steps; t++) {
-            fcst[m + t] = lagPolynomial.fit(fcst, m + t);
+            fcst[m + t] = lagPolynomial.solve(fcst, m + t);
             for (int i = 0; i < arSarCoeffs.length; i++) {
                 diffedFcst[n + t] += arSarCoeffs[i] * diffedFcst[n + t - i - 1];
                 fcst[m + t] += arSarCoeffs[i] * diffedFcst[n + t - i - 1];

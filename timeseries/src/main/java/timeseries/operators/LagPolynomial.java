@@ -194,15 +194,15 @@ public class LagPolynomial {
     }
 
     /**
-     * Use this lag polynomial to fit the lag polynomial at the given index by applying the polynomial, then
-     * solving for the value of the series at that index.
+     * Apply this lag polynomial to the series at the given index,
+     * then solve for the value of the series at that index.
      *
      * @param timeSeries the time series containing the index to apply the lag polynomial to.
      * @param index      the index of the series to apply the lag polynomial at.
      * @return the result of applying this lag polynomial to the time series at the given index, then solving
      * for the value of the series at that index.
      */
-    public double fit(final TimeSeries timeSeries, final int index) {
+    public double solve(final TimeSeries timeSeries, final int index) {
         double value = 0.0;
         for (int i = 0; i < parameters.length; i++) {
             value -= parameters[i] * LagOperator.apply(timeSeries, index, i + 1);
@@ -211,15 +211,15 @@ public class LagPolynomial {
     }
 
     /**
-     * Use this lag polynomial to fit the lag polynomial at the given date-time by applying the polynomial,
-     * then solving for the value of the series at that date-time.
+     * Apply this lag polynomial to the series at the given date-time,
+     * then solve for the value of the series at that date-time.
      *
      * @param timeSeries the time series containing the date-time to apply the lag polynomial to.
      * @param dateTime   the date-time of the series to apply the lag polynomial at.
      * @return the result of applying this lag polynomial to the time series at the given date-time, then solving
      * for the value of the series at that date-time.
      */
-    public double fit(final TimeSeries timeSeries, OffsetDateTime dateTime) {
+    public double solve(final TimeSeries timeSeries, OffsetDateTime dateTime) {
         double value = 0.0;
         for (int i = 0; i < parameters.length; i++) {
             value -= parameters[i] * LagOperator.apply(timeSeries, dateTime, i + 1);
@@ -228,15 +228,15 @@ public class LagPolynomial {
     }
 
     /**
-     * Use this lag polynomial to fit the lag polynomial at the given index by applying the polynomial, then
-     * solving for the value of the series at that index.
+     * Apply this lag polynomial to the series at the given index,
+     * then solve for the value of the series at that index.
      *
      * @param timeSeries the time series containing the index to apply the lag polynomial to.
      * @param index      the index of the series to apply the lag polynomial at.
      * @return the result of applying this lag polynomial to the time series at the given index, then solving
      * for the value of the series at that index.
      */
-    public double fit(final double[] timeSeries, final int index) {
+    public double solve(final double[] timeSeries, final int index) {
         double value = 0.0;
         for (int i = 0; i < parameters.length; i++) {
             value -= parameters[i] * LagOperator.apply(timeSeries, index, i + 1);

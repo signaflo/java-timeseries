@@ -109,7 +109,7 @@ public class ArimaSimulation {
                                                                                    coefficients.D()));
         end = n + burnin;
         for (int t = diffOffset; t < end; t++) {
-            series[t] += poly.fit(series, t);
+            series[t] += poly.solve(series, t);
         }
         series = DoubleFunctions.slice(series, burnin, n + burnin);
         return TimeSeries.from(period, OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);

@@ -65,12 +65,12 @@ public final class LagPolynomialSpec {
     public void whenLagPolyFitThenResultCorrect() {
         TimeSeries series = TestData.ausbeer;
         LagPolynomial poly = LagPolynomial.firstDifference();
-        assertThat(poly.fit(series, 2), is(equalTo(series.at(1))));
+        assertThat(poly.solve(series, 2), is(equalTo(series.at(1))));
         OffsetDateTime thirdObservationPeriod = OffsetDateTime.of(1956, 7, 1, 0, 0, 0, 0, ZoneOffset.UTC);
-        assertThat(poly.fit(series, thirdObservationPeriod), is(equalTo(series.at(1))));
+        assertThat(poly.solve(series, thirdObservationPeriod), is(equalTo(series.at(1))));
         poly = LagPolynomial.movingAverage(0.5);
-        assertThat(poly.fit(series, 2), is(equalTo(series.at(1) * 0.5)));
-        assertThat(poly.fit(series.asArray(), 2), is(equalTo(series.at(1) * 0.5)));
+        assertThat(poly.solve(series, 2), is(equalTo(series.at(1) * 0.5)));
+        assertThat(poly.solve(series.asArray(), 2), is(equalTo(series.at(1) * 0.5)));
     }
 
     @Test
@@ -87,7 +87,7 @@ public final class LagPolynomialSpec {
     public void whenLagPolyTwoDiffFitThenResultCorrect() {
         TimeSeries series = TestData.ausbeer;
         LagPolynomial poly = LagPolynomial.differences(2);
-        assertThat(poly.fit(series, 2), is(equalTo(2 * series.at(1) - series.at(0))));
+        assertThat(poly.solve(series, 2), is(equalTo(2 * series.at(1) - series.at(0))));
     }
 
     @Test
