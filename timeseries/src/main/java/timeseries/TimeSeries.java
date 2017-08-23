@@ -28,7 +28,6 @@ import data.DoubleDataSet;
 import lombok.NonNull;
 import math.operations.DoubleFunctions;
 import math.operations.Operators;
-import math.operations.Validate;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -38,7 +37,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkPositionIndexes;
 
 /**
  * An immutable sequence of observations taken at regular time intervals.
