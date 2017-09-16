@@ -179,11 +179,11 @@ public class LagPolynomial {
     }
 
     /**
-     * Apply this lag polynomial to a time series at the given date and time.
+     * Apply this lag polynomial to a time series at the given date-time.
      *
      * @param timeSeries the time series containing the index to apply this lag polynomial to.
-     * @param dateTime   the date and time of the series to apply the lag polynomial at.
-     * @return the result of applying this lag polynomial to the given time series at the given date and time.
+     * @param dateTime   the date-time of the series to apply the lag polynomial at.
+     * @return the result of applying this lag polynomial to the given time series at the given date-time.
      */
     public final double apply(final TimeSeries timeSeries, final OffsetDateTime dateTime) {
         double value = 0.0;

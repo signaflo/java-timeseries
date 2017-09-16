@@ -75,4 +75,19 @@ public class TimeSeriesRegressionForecastSpec {
         Forecast forecast = regression.forecast(13);
         assertArrayEquals(expected, forecast.pointEstimates().asArray(), 1E-4);
     }
+
+    @Test
+    public void whenForecastWithPeriodOffsetSixThenLowerPredictionBoundsCorrect() {
+        double[] expected = new double[] {20764.743921, 21578.993921, 19676.743921, 19756.660588, 19465.743921,
+                24268.243921, 18721.510341, 18469.356495, 19497.125725, 19366.202648, 21258.356495,
+                21527.510341, 21872.111524};
+        TimeSeries debitcards = TestData.debitcards.timeSlice(1, 150);
+        TimeSeriesLinearRegressionModel.Builder tslmBuilder =
+                TimeSeriesLinearRegressionModel.builder()
+                .response(debitcards)
+                .seasonal(Seasonal.INCLUDE);
+        TimeSeriesLinearRegressionModel regression = tslmBuilder.build();
+        Forecast forecast = regression.forecast(13);
+        assertArrayEquals(expected, forecast.lowerPredictionInterval().asArray(), 1E-2);
+    }
 }
