@@ -37,8 +37,8 @@ import math.function.AbstractMultivariateFunction;
 import math.optim.BFGS;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
-import timeseries.model.regression.TimeSeriesLinearRegressionModel;
 import timeseries.model.regression.TimeSeriesLinearRegression;
+import timeseries.model.regression.TimeSeriesLinearRegressionBuilder;
 import timeseries.operators.LagPolynomial;
 
 import java.text.DecimalFormat;
@@ -224,7 +224,7 @@ final class ArimaModel implements Arima {
         for (int i = 0; i < diffedMatrix.length; i++) {
             diffedMatrix[i] = TimeSeries.difference(diffedMatrix[i], seasonalFrequency, order.D());
         }
-        TimeSeriesLinearRegressionModel.Builder regressionBuilder = TimeSeriesLinearRegressionModel.builder();
+        TimeSeriesLinearRegressionBuilder regressionBuilder = TimeSeriesLinearRegression.tsBuilder();
         regressionBuilder.response(differencedSeries);
         regressionBuilder.hasIntercept(TimeSeriesLinearRegression.Intercept.EXCLUDE);
         regressionBuilder.timeTrend(TimeSeriesLinearRegression.TimeTrend.EXCLUDE);

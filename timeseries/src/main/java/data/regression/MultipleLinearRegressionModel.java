@@ -41,7 +41,7 @@ import static math.operations.DoubleFunctions.*;
  * This implementation is immutable and thread-safe.
  */
 @EqualsAndHashCode @ToString
-public final class MultipleLinearRegressionModel implements MultipleLinearRegression {
+final class MultipleLinearRegressionModel implements MultipleLinearRegression {
 
     private final double[][] predictors;
     private final double[][] XtXInv;

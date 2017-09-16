@@ -3,6 +3,7 @@ package timeseries.model.regression;
 import data.regression.MultipleLinearRegression;
 import timeseries.TimePeriod;
 import timeseries.TimeSeries;
+import timeseries.model.Model;
 
 /**
  * A linear regression model for time series data.
@@ -10,7 +11,16 @@ import timeseries.TimeSeries;
  * @author Jacob Rachiele
  * Aug. 01, 2017
  */
-public interface TimeSeriesLinearRegression extends MultipleLinearRegression {
+public interface TimeSeriesLinearRegression extends MultipleLinearRegression, Model {
+
+    /**
+     * Return a new builder for a time series linear regression model.
+     *
+     * @return a new builder for a time series linear regression model.
+     */
+    static TimeSeriesLinearRegressionBuilder tsBuilder() {
+        return new TimeSeriesLinearRegressionBuilder();
+    }
 
     TimeSeries timeSeriesResponse();
 
