@@ -35,7 +35,7 @@ public interface LinearRegression {
      *
      * @return a new builder for a linear regression model.
      */
-    static MultipleRegressionBuilder builder() {
+    static RegressionBuilder builder() {
         return new MultipleLinearRegressionModel.MultipleLinearRegressionBuilder();
     }
 

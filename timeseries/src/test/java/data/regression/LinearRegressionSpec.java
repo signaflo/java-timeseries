@@ -83,7 +83,7 @@ public class LinearRegressionSpec {
 
     @Test
     public void whenSimpleRegressionNoInterceptThenBetaEstimatedCorrectly() {
-        LinearRegression regression = LinearRegression.builder().from(this.regression).hasIntercept(false)
+        LinearRegression regression = MultipleLinearRegression.builder().from(this.regression).hasIntercept(false)
                                                       .build();
         double[] expected = {11.76188};
         assertArrayEquals(expected, regression.beta(), 1E-4);
@@ -97,7 +97,7 @@ public class LinearRegressionSpec {
     @Test
     public void whenInterceptDirectlyGivenThenResultsEquivalent() {
         double[] ones = DoubleFunctions.fill(47, 1.0);
-        LinearRegression multipleRegression = LinearRegression.builder()
+        LinearRegression multipleRegression = MultipleLinearRegression.builder()
                                                               .from(this.regression)
                                                               .hasIntercept(false)
                                                               .predictors(ones, time)
@@ -108,25 +108,25 @@ public class LinearRegressionSpec {
     @Test
     public void equalsContract() {
         MultipleLinearRegression other =
-                LinearRegression.builder()
+                MultipleLinearRegression.builder()
                                 .predictors(time)
                                 .response(response)
                                 .hasIntercept(!hasIntercept)
                                 .build();
-        MultipleLinearRegression other2 = LinearRegression.builder()
+        MultipleLinearRegression other2 = MultipleLinearRegression.builder()
                                                   .predictors(Range.inclusiveRange(
                                                                     1961, 2007, 1.0).asArray())
                                                   .response(response)
                                                   .build();
-        MultipleLinearRegression other3 = LinearRegression.builder()
+        MultipleLinearRegression other3 = MultipleLinearRegression.builder()
                                                   .predictors(time)
                                                   .response(TestData.livestock.demean().asArray())
                                                   .build();
         new EqualsTester()
-                .addEqualityGroup(this.regression, LinearRegression.builder().from(this.regression).build())
-                .addEqualityGroup(other, LinearRegression.builder().from(other).build())
-                .addEqualityGroup(other2, LinearRegression.builder().from(other2).build())
-                .addEqualityGroup(other3, LinearRegression.builder().from(other3).build())
+                .addEqualityGroup(this.regression, MultipleLinearRegression.builder().from(this.regression).build())
+                .addEqualityGroup(other, MultipleLinearRegression.builder().from(other).build())
+                .addEqualityGroup(other2, MultipleLinearRegression.builder().from(other2).build())
+                .addEqualityGroup(other3, MultipleLinearRegression.builder().from(other3).build())
                 .testEquals();
     }
 
