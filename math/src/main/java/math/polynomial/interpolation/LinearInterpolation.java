@@ -35,8 +35,8 @@ public final class LinearInterpolation {
         if (x0 == x1) {
             throw new IllegalArgumentException("x0 and x1 must be distinct points, but both were equal to: " + x1);
         }
-        this.a0 = (x1 * f0 - f1 * x0) / (x1 - x0);
-        this.a1 = (f1 - a0) / x1;
+        this.a1 = (f1 - f0) / (x1 - x0);
+        this.a0 = f1 - a1 * x1;
     }
 
     public double a0() {
