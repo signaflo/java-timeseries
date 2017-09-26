@@ -224,7 +224,7 @@ final class ArimaModel implements Arima {
         for (int i = 0; i < diffedMatrix.length; i++) {
             diffedMatrix[i] = TimeSeries.difference(diffedMatrix[i], seasonalFrequency, order.D());
         }
-        TimeSeriesLinearRegressionBuilder regressionBuilder = TimeSeriesLinearRegression.tsBuilder();
+        TimeSeriesLinearRegressionBuilder regressionBuilder = TimeSeriesLinearRegression.builder();
         regressionBuilder.response(differencedSeries);
         regressionBuilder.hasIntercept(TimeSeriesLinearRegression.Intercept.EXCLUDE);
         regressionBuilder.timeTrend(TimeSeriesLinearRegression.TimeTrend.EXCLUDE);

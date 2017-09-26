@@ -18,7 +18,7 @@ public interface TimeSeriesLinearRegression extends MultipleLinearRegression, Mo
      *
      * @return a new builder for a time series linear regression model.
      */
-    static TimeSeriesLinearRegressionBuilder tsBuilder() {
+    static TimeSeriesLinearRegressionBuilder builder() {
         return new TimeSeriesLinearRegressionBuilder();
     }
 

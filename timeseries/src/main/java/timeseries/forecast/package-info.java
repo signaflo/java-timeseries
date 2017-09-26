@@ -1,7 +1,4 @@
-/*
- * Copyright (c) 2016 Jacob Rachiele
- */
 /**
- * Time series forecasting interface.
+ * Provides the interface for time series forecasting.
  */
 package timeseries.forecast;

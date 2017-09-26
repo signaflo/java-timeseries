@@ -38,7 +38,7 @@ public class TimeSeriesLinearRegressionSpec {
 
     private TimeSeries livestock = TestData.livestock;
     private TimeSeriesLinearRegression model =
-            TimeSeriesLinearRegression.tsBuilder()
+            TimeSeriesLinearRegression.builder()
                                       .response(livestock)
                                       .build();
 
@@ -46,7 +46,7 @@ public class TimeSeriesLinearRegressionSpec {
     public void whenTSLRFitThenBetaCorrect() {
         TimeSeries debitcards = TestData.debitcards.timeSlice(1, 156);
         TimeSeriesLinearRegressionBuilder tslmBuilder =
-                TimeSeriesLinearRegression.tsBuilder()
+                TimeSeriesLinearRegression.builder()
                                           .response(debitcards)
                                           .seasonal(TimeSeriesLinearRegressionModel.Seasonal.INCLUDE);
         TimeSeriesLinearRegression regression = tslmBuilder.build();
@@ -92,24 +92,24 @@ public class TimeSeriesLinearRegressionSpec {
 
     @Test
     public void equalsContract() {
-        TimeSeriesLinearRegression otherModel = TimeSeriesLinearRegression.tsBuilder().from(model).build();
+        TimeSeriesLinearRegression otherModel = TimeSeriesLinearRegression.builder().from(model).build();
         TimeSeriesLinearRegression modelA =
-                TimeSeriesLinearRegression.tsBuilder()
+                TimeSeriesLinearRegression.builder()
                                           .response(livestock)
                                           .hasIntercept(TimeSeriesLinearRegressionModel.Intercept.EXCLUDE)
                                           .build();
-        TimeSeriesLinearRegression modelB = TimeSeriesLinearRegression.tsBuilder().from(modelA).build();
+        TimeSeriesLinearRegression modelB = TimeSeriesLinearRegression.builder().from(modelA).build();
         TimeSeriesLinearRegression model2A =
-                TimeSeriesLinearRegression.tsBuilder()
+                TimeSeriesLinearRegression.builder()
                                           .response(livestock)
                                           .timeTrend(TimeSeriesLinearRegressionModel.TimeTrend.EXCLUDE)
                                           .build();
-        TimeSeriesLinearRegression model2B = TimeSeriesLinearRegression.tsBuilder().from(model2A).build();
+        TimeSeriesLinearRegression model2B = TimeSeriesLinearRegression.builder().from(model2A).build();
         TimeSeriesLinearRegression model3A =
-                TimeSeriesLinearRegression.tsBuilder()
+                TimeSeriesLinearRegression.builder()
                                           .response(livestock.demean())
                                           .build();
-        TimeSeriesLinearRegression model3B = TimeSeriesLinearRegression.tsBuilder().from(model3A).build();
+        TimeSeriesLinearRegression model3B = TimeSeriesLinearRegression.builder().from(model3A).build();
         new EqualsTester()
                 .addEqualityGroup(model, otherModel)
                 .addEqualityGroup(modelA, modelB)

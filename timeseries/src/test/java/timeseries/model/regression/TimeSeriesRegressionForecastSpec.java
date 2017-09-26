@@ -40,7 +40,7 @@ public class TimeSeriesRegressionForecastSpec {
                 22163.4204, 22243.337, 21952.4204, 26754.9204, 21210.6578, 21070.1645};
         TimeSeries debitcards = TestData.debitcards.timeSlice(1, 145);
         TimeSeriesLinearRegressionBuilder tslmBuilder =
-                TimeSeriesLinearRegression.tsBuilder()
+                TimeSeriesLinearRegression.builder()
                                           .response(debitcards)
                                           .seasonal(Seasonal.INCLUDE);
         TimeSeriesLinearRegression regression = tslmBuilder.build();
@@ -54,7 +54,7 @@ public class TimeSeriesRegressionForecastSpec {
                 23036.9231, 23242.4615, 22893.1538, 27763.6923, 22209.6264};
         TimeSeries debitcards = TestData.debitcards.timeSlice(1, 156);
         TimeSeriesLinearRegressionBuilder tslmBuilder =
-                TimeSeriesLinearRegression.tsBuilder()
+                TimeSeriesLinearRegression.builder()
                                           .response(debitcards)
                                           .seasonal(Seasonal.INCLUDE);
         TimeSeriesLinearRegression regression = tslmBuilder.build();
@@ -68,7 +68,7 @@ public class TimeSeriesRegressionForecastSpec {
                 21906.5805, 21775.6574, 23667.8113, 23936.9651, 24292.6128};
         TimeSeries debitcards = TestData.debitcards.timeSlice(1, 150);
         TimeSeriesLinearRegressionBuilder tslmBuilder =
-                TimeSeriesLinearRegression.tsBuilder()
+                TimeSeriesLinearRegression.builder()
                                           .response(debitcards)
                                           .seasonal(Seasonal.INCLUDE);
         TimeSeriesLinearRegression regression = tslmBuilder.build();
@@ -83,7 +83,7 @@ public class TimeSeriesRegressionForecastSpec {
                 21527.510341, 21872.111524};
         TimeSeries debitcards = TestData.debitcards.timeSlice(1, 150);
         TimeSeriesLinearRegressionBuilder tslmBuilder =
-                TimeSeriesLinearRegression.tsBuilder()
+                TimeSeriesLinearRegression.builder()
                                           .response(debitcards)
                                           .seasonal(Seasonal.INCLUDE);
         TimeSeriesLinearRegression regression = tslmBuilder.build();
