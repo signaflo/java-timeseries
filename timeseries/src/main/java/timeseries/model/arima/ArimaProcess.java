@@ -5,65 +5,113 @@ import math.operations.DoubleFunctions;
 import math.stats.distributions.Distribution;
 import math.stats.distributions.Normal;
 import timeseries.TimePeriod;
+import timeseries.operators.LagPolynomial;
 
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.function.DoubleSupplier;
+import java.util.stream.DoubleStream;
 
 /**
- * [Insert class description]
+ * Represents an indefinite, observation generating ARIMA process.
  *
  * @author Jacob Rachiele
  * Oct. 06, 2017
  */
-public class ArimaProcess implements Iterator<Double> {
+public class ArimaProcess implements DoubleSupplier {
 
     private final ArimaCoefficients coefficients;
     private final Distribution distribution;
-    private final TimePeriod period;
-    private final TimePeriod seasonalCycle;
-    private final int seasonalFrequency;
 
-    private final double[] arSarCoeffs;
-    private final double[] maSmaCoeffs;
-    private final int diffOffset;
-    private final int offset;
+    private final LagPolynomial maPoly;
+    private final LagPolynomial arPoly;
+    private final LagPolynomial diffPoly;
+    private final Queue<Double> diffSeries;
     private final Queue<Double> series;
     private final Queue<Double> errors;
 
     private ArimaProcess(Builder builder) {
         this.coefficients = builder.coefficients;
         this.distribution = builder.distribution;
-        this.period = builder.period;
-        this.seasonalCycle = builder.seasonalCycle;
-        this.seasonalFrequency = (int) period.frequencyPer(seasonalCycle);
-        this.arSarCoeffs = ArimaCoefficients.expandArCoefficients(coefficients.arCoeffs(), coefficients.seasonalARCoeffs(),
-                                                                  seasonalFrequency);
-        this.maSmaCoeffs = ArimaCoefficients.expandMaCoefficients(coefficients.maCoeffs(), coefficients.seasonalMACoeffs(),
-                                                             seasonalFrequency);
-        this.diffOffset = coefficients.d() + coefficients.D() * seasonalFrequency;
-        this.offset = arSarCoeffs.length;
-        this.errors = EvictingQueue.create(this.offset);
-        this.series = EvictingQueue.create(this.offset);
-        initialize();
+        int seasonalFrequency = (int) builder.period.frequencyPer(builder.seasonalCycle);
+        double[] arSarCoeffs = ArimaCoefficients.expandArCoefficients(coefficients.arCoeffs(),
+                                                                      coefficients.seasonalARCoeffs(),
+
+                                                                      seasonalFrequency);
+        double[] maSmaCoeffs = ArimaCoefficients.expandMaCoefficients(coefficients.maCoeffs(),
+                                                                      coefficients.seasonalMACoeffs(),
+                                                                      seasonalFrequency);
+        this.errors = EvictingQueue.create(maSmaCoeffs.length);
+        this.diffSeries = EvictingQueue.create(arSarCoeffs.length);
+        this.series = EvictingQueue.create(coefficients.d() + coefficients.D() * seasonalFrequency);
+        this.maPoly = LagPolynomial.movingAverage(maSmaCoeffs);
+        this.arPoly = LagPolynomial.autoRegressive(arSarCoeffs);
+        this.diffPoly = LagPolynomial.differences(coefficients.d())
+                                     .times(LagPolynomial.seasonalDifferences(seasonalFrequency, coefficients.D()));
+        //initialize();
     }
 
-    private Queue<Double> initialize() {
-        for (int i = 0; i < this.offset; i++) {
-            Double error = distribution.rand();
-            errors.add(error);
-            series.add(error);
+//    private void initialize() {
+//        int p = arSarCoeffs.length;
+//        int q = maSmaCoeffs.length;
+//        int d = this.diffOffset;
+//        int r = Math.max(p, d);
+//        for (int i = 0; i < Math.max(q, r); i++) {
+//            double error = distribution.rand();
+//            double newValue = error;
+//            double[] errorArray = getErrors();
+//            double[] seriesArray = getSeries();
+//            double[] diffSeries = getDiffSeries();
+//            newValue += (d == 0)? coefficients.intercept() : coefficients.drift();
+//            newValue += arPoly.solve(diffSeries, diffSeries.length);
+//            newValue += maPoly.solve(errorArray, errorArray.length);
+//            this.diffSeries.add(newValue);
+//            newValue += diffPoly.solve(seriesArray, seriesArray.length);
+//            this.series.add(newValue);
+//            errors.add(error);
+//        }
+//    }
+
+//    @Override
+//    public boolean hasNext() {
+//        return true;
+//    }
+
+    /**
+     * Generate the next observation from this ARIMA process.
+     * @return the next observation from this ARIMA process.
+     */
+    @Override
+    public double getAsDouble() {
+        double error = distribution.rand();
+        double newValue = error;
+        double[] series = getSeries();
+        double[] errors = getErrors();
+        double[] diffSeries = getDiffSeries();
+        int p = diffSeries.length;
+        int q = errors.length;
+        int d = series.length;
+        newValue += (d == 0)? coefficients.intercept() : coefficients.drift();
+        newValue += arPoly.solve(diffSeries, p);
+        newValue += maPoly.solve(errors, q);
+        this.diffSeries.add(newValue);
+        newValue += diffPoly.solve(series, d);
+        this.series.add(newValue);
+        this.errors.add(error);
+        return newValue;
+    }
+
+    /**
+     * Generate and return the next n values of this process.
+     * @param n the number of values to generate.
+     * @return the next n values of this process.
+     */
+    public double[] getNext(int n) {
+        double[] next = new double[n];
+        for (int i = 0; i < n; i++) {
+            next[i] = getAsDouble();
         }
-        return errors;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return true;
-    }
-
-    @Override
-    public Double next() {
-        return 0.0;
+        return next;
     }
 
     double[] getErrors() {
@@ -72,6 +120,26 @@ public class ArimaProcess implements Iterator<Double> {
 
     double[] getSeries() {
         return DoubleFunctions.arrayFrom(this.series);
+    }
+
+    double[] getDiffSeries() {
+        return DoubleFunctions.arrayFrom(this.diffSeries);
+    }
+
+    public DoubleStream toInfiniteStream() {
+        return DoubleStream.generate(this);
+    }
+
+    public DoubleStream toFiniteStream(long limit) {
+        return DoubleStream.generate(this).limit(limit);
+    }
+
+    public Iterator<Double> toInfiniteIterator() {
+        return toInfiniteStream().iterator();
+    }
+
+    public Iterator<Double> toFiniteIterator(long limit) {
+        return toFiniteStream(limit).iterator();
     }
 
     public static Builder builder() {

@@ -55,7 +55,7 @@ final class MovingAveragePolynomial extends LagPolynomial {
     @Override
     public double solve(final double[] residualSeries, final int index) {
         double value = 0.0;
-        for (int i = 0; i < parameters.length; i++) {
+        for (int i = 0; i < Math.min(parameters.length, index); i++) {
             value += parameters[i] * LagOperator.apply(residualSeries, index, i + 1);
         }
         return value;

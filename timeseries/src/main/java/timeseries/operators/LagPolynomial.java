@@ -238,7 +238,7 @@ public class LagPolynomial {
      */
     public double solve(final double[] timeSeries, final int index) {
         double value = 0.0;
-        for (int i = 0; i < parameters.length; i++) {
+        for (int i = 0; i < Math.min(parameters.length, timeSeries.length); i++) {
             value -= parameters[i] * LagOperator.apply(timeSeries, index, i + 1);
         }
         return value;
