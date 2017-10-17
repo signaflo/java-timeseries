@@ -5,12 +5,12 @@ import math.operations.DoubleFunctions;
 import math.stats.distributions.Distribution;
 import math.stats.distributions.Normal;
 import timeseries.TimePeriod;
+import timeseries.TimeSeries;
 import timeseries.operators.LagPolynomial;
 
-import java.util.Iterator;
+import java.util.PrimitiveIterator;
 import java.util.Queue;
 import java.util.function.DoubleSupplier;
-import java.util.stream.DoubleStream;
 
 /**
  * Represents an indefinite, observation generating ARIMA process.
@@ -18,10 +18,12 @@ import java.util.stream.DoubleStream;
  * @author Jacob Rachiele
  * Oct. 06, 2017
  */
-public class ArimaProcess implements DoubleSupplier {
+public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble {
 
     private final ArimaCoefficients coefficients;
     private final Distribution distribution;
+    private final TimePeriod period;
+    private final TimePeriod seasonalCycle;
 
     private final LagPolynomial maPoly;
     private final LagPolynomial arPoly;
@@ -33,6 +35,8 @@ public class ArimaProcess implements DoubleSupplier {
     private ArimaProcess(Builder builder) {
         this.coefficients = builder.coefficients;
         this.distribution = builder.distribution;
+        this.period = builder.period;
+        this.seasonalCycle = builder.seasonalCycle;
         int seasonalFrequency = (int) builder.period.frequencyPer(builder.seasonalCycle);
         double[] arSarCoeffs = ArimaCoefficients.expandArCoefficients(coefficients.arCoeffs(),
                                                                       coefficients.seasonalARCoeffs(),
@@ -48,41 +52,24 @@ public class ArimaProcess implements DoubleSupplier {
         this.arPoly = LagPolynomial.autoRegressive(arSarCoeffs);
         this.diffPoly = LagPolynomial.differences(coefficients.d())
                                      .times(LagPolynomial.seasonalDifferences(seasonalFrequency, coefficients.D()));
-        //initialize();
     }
 
-//    private void initialize() {
-//        int p = arSarCoeffs.length;
-//        int q = maSmaCoeffs.length;
-//        int d = this.diffOffset;
-//        int r = Math.max(p, d);
-//        for (int i = 0; i < Math.max(q, r); i++) {
-//            double error = distribution.rand();
-//            double newValue = error;
-//            double[] errorArray = getErrors();
-//            double[] seriesArray = getSeries();
-//            double[] diffSeries = getDiffSeries();
-//            newValue += (d == 0)? coefficients.intercept() : coefficients.drift();
-//            newValue += arPoly.solve(diffSeries, diffSeries.length);
-//            newValue += maPoly.solve(errorArray, errorArray.length);
-//            this.diffSeries.add(newValue);
-//            newValue += diffPoly.solve(seriesArray, seriesArray.length);
-//            this.series.add(newValue);
-//            errors.add(error);
-//        }
-//    }
+    @Override
+    public boolean hasNext() {
+        return true;
+    }
 
-//    @Override
-//    public boolean hasNext() {
-//        return true;
-//    }
+    @Override
+    public double nextDouble() {
+        return getAsDouble();
+    }
 
     /**
      * Generate the next observation from this ARIMA process.
      * @return the next observation from this ARIMA process.
      */
     @Override
-    public double getAsDouble() {
+    public synchronized double getAsDouble() {
         double error = distribution.rand();
         double newValue = error;
         double[] series = getSeries();
@@ -114,6 +101,10 @@ public class ArimaProcess implements DoubleSupplier {
         return next;
     }
 
+    public TimeSeries toSeries(int size) {
+        return TimeSeries.from(this.period, getNext(size));
+    }
+
     double[] getErrors() {
         return DoubleFunctions.arrayFrom(this.errors);
     }
@@ -126,20 +117,13 @@ public class ArimaProcess implements DoubleSupplier {
         return DoubleFunctions.arrayFrom(this.diffSeries);
     }
 
-    public DoubleStream toInfiniteStream() {
-        return DoubleStream.generate(this);
-    }
-
-    public DoubleStream toFiniteStream(long limit) {
-        return DoubleStream.generate(this).limit(limit);
-    }
-
-    public Iterator<Double> toInfiniteIterator() {
-        return toInfiniteStream().iterator();
-    }
-
-    public Iterator<Double> toFiniteIterator(long limit) {
-        return toFiniteStream(limit).iterator();
+    public ArimaProcess startOver() {
+        return builder()
+                .setCoefficients(this.coefficients)
+                .setDistribution(this.distribution)
+                .setPeriod(this.period)
+                .setSeasonalCycle(this.seasonalCycle)
+                .build();
     }
 
     public static Builder builder() {
