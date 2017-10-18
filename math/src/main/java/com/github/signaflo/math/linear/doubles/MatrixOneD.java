@@ -38,17 +38,17 @@ final class MatrixOneD implements Matrix {
     private final Layout layout;
 
     /**
-     * Create a new matrix with the supplied com.github.signaflo.data and dimensions. The com.github.signaflo.data is assumed to be in row-major order.
+     * Create a new matrix with the supplied data and dimensions. The data is assumed to be in row-major order.
      *
      * @param nrow the number of columns for the matrix.
      * @param ncol the number of columns for the matrix.
-     * @param data the com.github.signaflo.data in row-major order.
+     * @param data the data in row-major order.
      */
     MatrixOneD(final int nrow, final int ncol, final double... data) {
         if (nrow * ncol != data.length) {
             throw new IllegalArgumentException(
-                    "The dimensions do not match the amount of com.github.signaflo.data provided. " + "There were " + data.length +
-                    " com.github.signaflo.data points provided but the number of columns and columns " + "were " + nrow + " and " + ncol +
+                    "The dimensions do not match the amount of data provided. " + "There were " + data.length +
+                    " data points provided but the number of columns and columns " + "were " + nrow + " and " + ncol +
                     " respectively.");
         }
         this.nrow = nrow;
@@ -62,7 +62,7 @@ final class MatrixOneD implements Matrix {
      *
      * @param nrow  the number of columns for the matrix.
      * @param ncol  the number of columns for the matrix.
-     * @param value the com.github.signaflo.data point to fill the matrix with.
+     * @param value the data point to fill the matrix with.
      */
     MatrixOneD(final int nrow, final int ncol, final double value) {
         this.nrow = nrow;
@@ -75,15 +75,15 @@ final class MatrixOneD implements Matrix {
     }
 
     /**
-     * Create a new matrix from the given two-dimensional array of com.github.signaflo.data.
+     * Create a new matrix from the given two-dimensional array of data.
      *
      * @param layout the layout of the elements in the supplied two dimensional array.
-     * @param matrixData  the two-dimensional array of com.github.signaflo.data constituting the matrix.
+     * @param matrixData  the two-dimensional array of data constituting the matrix.
      */
     MatrixOneD(Layout layout, final double[]... matrixData) {
         this.layout = layout;
         if (matrixData.length == 0) {
-            //throw new IllegalArgumentException("The matrix com.github.signaflo.data cannot be empty.");
+            //throw new IllegalArgumentException("The matrix data cannot be empty.");
             this.ncol = 0;
             this.nrow = 0;
             this.data = new double[0];
@@ -387,7 +387,7 @@ final class MatrixOneD implements Matrix {
         }
 
         /**
-         * Create a new matrix using the com.github.signaflo.data in this builder.
+         * Create a new matrix using the data in this builder.
          *
          * @return a new matrix from this builder.
          */

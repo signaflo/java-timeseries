@@ -43,7 +43,7 @@ public final class Operators {
      */
     public static double[] productOf(final double[] left, final double[] right) {
         if (left.length != right.length) {
-            throw new IllegalArgumentException("The com.github.signaflo.data arrays must have the same length.");
+            throw new IllegalArgumentException("The data arrays must have the same length.");
         }
         final double[] product = new double[left.length];
         for (int i = 0; i < left.length; i++) {
@@ -61,7 +61,7 @@ public final class Operators {
      */
     public static double[] sumOf(final double[] left, final double[] right) {
         if (left.length != right.length) {
-            throw new IllegalArgumentException("The com.github.signaflo.data arrays must have the same length.");
+            throw new IllegalArgumentException("The data arrays must have the same length.");
         }
         final double[] sum = new double[left.length];
         for (int i = 0; i < left.length; i++) {
@@ -79,7 +79,7 @@ public final class Operators {
      */
     public static double[] differenceOf(final double[] left, final double[] right) {
         if (left.length != right.length) {
-            throw new IllegalArgumentException("The com.github.signaflo.data arrays must have the same length.");
+            throw new IllegalArgumentException("The data arrays must have the same length.");
         }
         final double[] difference = new double[left.length];
         for (int i = 0; i < left.length; i++) {
@@ -108,7 +108,7 @@ public final class Operators {
      */
     public static double[] quotientOf(final double[] numerator, final double[] denominator) {
         if (numerator.length != denominator.length) {
-            throw new IllegalArgumentException("The com.github.signaflo.data arrays must have the same length.");
+            throw new IllegalArgumentException("The data arrays must have the same length.");
         }
         final double[] quotient = new double[numerator.length];
         for (int i = 0; i < numerator.length; i++) {
@@ -118,11 +118,11 @@ public final class Operators {
     }
 
     /**
-     * Scale the original com.github.signaflo.data by alpha and return the result in a new array.
+     * Scale the original data by alpha and return the result in a new array.
      *
-     * @param original the com.github.signaflo.data to be scaled.
+     * @param original the data to be scaled.
      * @param alpha    the scaling factor.
-     * @return the original com.github.signaflo.data scaled by alpha.
+     * @return the original data scaled by alpha.
      */
     public static double[] scale(final double[] original, final double alpha) {
         final double[] scaled = new double[original.length];
@@ -133,11 +133,11 @@ public final class Operators {
     }
 
     /**
-     * Subtract the given value from each element of the supplied com.github.signaflo.data and return the result in a new array.
+     * Subtract the given value from each element of the supplied data and return the result in a new array.
      *
-     * @param data  the com.github.signaflo.data to subtract the value from.
+     * @param data  the data to subtract the value from.
      * @param value the value to be subtracted.
-     * @return a new array with each element of the supplied com.github.signaflo.data subtracted by the given value.
+     * @return a new array with each element of the supplied data subtracted by the given value.
      */
     public static double[] subtract(final double[] data, final double value) {
         final double[] diff = new double[data.length];
@@ -147,9 +147,9 @@ public final class Operators {
         return diff;
     }
 
-//  private static void subtractBang(final double[] com.github.signaflo.data, final double value) {
-//    for (int i = 0; i < com.github.signaflo.data.length; i++) {
-//      com.github.signaflo.data[i] -= value;
+//  private static void subtractBang(final double[] data, final double value) {
+//    for (int i = 0; i < data.length; i++) {
+//      data[i] -= value;
 //    }
 //  }
 }

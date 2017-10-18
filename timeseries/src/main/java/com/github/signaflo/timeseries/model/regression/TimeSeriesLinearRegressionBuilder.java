@@ -38,10 +38,10 @@ public final class TimeSeriesLinearRegressionBuilder {
     }
 
     /**
-     * Specify prediction variable com.github.signaflo.data for the linear regression model. Note that if this method has already been
+     * Specify prediction variable data for the linear regression model. Note that if this method has already been
      * called on this object, then the array of prediction variables will be <i>appended to</i> rather than
      * overwritten. Each element of the two dimensional external regressors outer array is interpreted as a
-     * column vector of com.github.signaflo.data for a single prediction variable.
+     * column vector of data for a single prediction variable.
      *
      * @param regressors the external regressors to add to the regression model specification.
      * @return this builder.
@@ -66,10 +66,10 @@ public final class TimeSeriesLinearRegressionBuilder {
     }
 
     /**
-     * Specify prediction variable com.github.signaflo.data for the linear regression model. Note that if this method has already been
+     * Specify prediction variable data for the linear regression model. Note that if this method has already been
      * called on this object, then the array of prediction variables will be <i>appended to</i> rather than
      * overwritten. Each element of the two dimensional external predictors outer array is interpreted as a
-     * column vector of com.github.signaflo.data for a single prediction variable.
+     * column vector of data for a single prediction variable.
      *
      * @param predictors the external predictors to add to the regression model specification.
      * @return this builder.
@@ -94,7 +94,7 @@ public final class TimeSeriesLinearRegressionBuilder {
     }
 
     /**
-     * Specify prediction variable com.github.signaflo.data for the linear regression model. Note that if this method has already been
+     * Specify prediction variable data for the linear regression model. Note that if this method has already been
      * called on this object, then the matrix of prediction variables will be <i>appended to</i> rather than
      * overwritten.
      *

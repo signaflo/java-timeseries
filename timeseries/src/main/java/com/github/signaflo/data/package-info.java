@@ -1,5 +1,5 @@
 /**
- * Types for creating and manipulating collections of com.github.signaflo.data.
+ * Types for creating and manipulating collections of data.
  *
  */
 package com.github.signaflo.data;

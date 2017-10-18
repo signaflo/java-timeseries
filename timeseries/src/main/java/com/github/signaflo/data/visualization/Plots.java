@@ -72,7 +72,7 @@ public class Plots {
      * @param title      the title of the plot.
      */
     public static void plot(final TimeSeries timeSeries, final String title) {
-        plot(timeSeries, title, "com.github.signaflo.data values");
+        plot(timeSeries, title, "values");
     }
 
     /**
@@ -162,10 +162,10 @@ public class Plots {
     }
 
     /**
-     * Plot a com.github.signaflo.data set. This method will produce a scatter plot of the com.github.signaflo.data values against the integers
-     * from 0 to n - 1, where n is the size of the com.github.signaflo.data set.
+     * Plot a data set. This method will produce a scatter plot of the data values against the integers
+     * from 0 to n - 1, where n is the size of the data set.
      *
-     * @param dataSet the com.github.signaflo.data set to plot.
+     * @param dataSet the data set to plot.
      */
     public static void plot(final DataSet dataSet) {
         Thread plotThread = new Thread(() -> {
@@ -189,11 +189,11 @@ public class Plots {
     }
 
     /**
-     * Plot the first com.github.signaflo.data set against the second com.github.signaflo.data set. The first com.github.signaflo.data set will be plotted on the x-axis, while
-     * the second com.github.signaflo.data set will be plotted on the y-axis.
+     * Plot the first data set against the second data set. The first data set will be plotted on the x-axis, while
+     * the second data set will be plotted on the y-axis.
      *
-     * @param firstDataSet the com.github.signaflo.data set to plot on the x-axis.
-     * @param secondDataSet the com.github.signaflo.data set to plot against the first com.github.signaflo.data set.
+     * @param firstDataSet the data set to plot on the x-axis.
+     * @param secondDataSet the data set to plot against the first data set.
      */
     public static void plot(final DataSet firstDataSet, final DataSet secondDataSet) {
         Thread plotThread = new Thread(() -> {

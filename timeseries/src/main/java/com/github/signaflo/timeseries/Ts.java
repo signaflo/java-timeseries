@@ -45,7 +45,7 @@ public final class Ts {
      *
      * @param startYear the year of the first observation.
      * @param series    the sequence of observations constituting this time series.
-     * @return a new time series with the given series com.github.signaflo.data and start year.
+     * @return a new time series with the given series data and start year.
      */
     public static TimeSeries newAnnualSeries(final int startYear, final double... series) {
         final LocalDateTime localDateTime = LocalDateTime.of(startYear, Month.JANUARY, 1, 0, 0);
@@ -57,7 +57,7 @@ public final class Ts {
      * Construct a new time series with observations made annually, without regard to the observation dates.
      *
      * @param series the sequence of observations constituting this time series.
-     * @return a new time series with the given series com.github.signaflo.data.
+     * @return a new time series with the given series data.
      */
     public static TimeSeries newAnnualSeries(final double... series) {;
         return TimeSeries.from(TimePeriod.oneYear(), series);
@@ -67,7 +67,7 @@ public final class Ts {
      * Construct a new time series of monthly observations without regard to the observation dates.
      *
      * @param series the sequence of observations constituting this time series.
-     * @return a new time series with the given series com.github.signaflo.data.
+     * @return a new time series with the given series data.
      */
     public static TimeSeries newMonthlySeries(final double... series) {
         return TimeSeries.from(TimePeriod.oneMonth(), series);
@@ -80,7 +80,7 @@ public final class Ts {
      * @param startMonth the month of the first observation - an integer between
      *                   1 and 12 corresponding to the months January through December.
      * @param series     the sequence of observations constituting this time series.
-     * @return a new time series with the given series com.github.signaflo.data, start year, and start month.
+     * @return a new time series with the given series data, start year, and start month.
      */
     public static TimeSeries newMonthlySeries(final int startYear, final int startMonth, final double... series) {
         return newMonthlySeries(startYear, startMonth, 1, series);
@@ -94,7 +94,7 @@ public final class Ts {
      *                   1 and 12 corresponding to the months January through December.
      * @param startDay   The day of the first observation - an integer between 1 and 31.
      * @param series     The sequence of observations constituting this time series.
-     * @return A new time series with the given year, month, day, and series com.github.signaflo.data.
+     * @return A new time series with the given year, month, day, and series data.
      */
     public static TimeSeries newMonthlySeries(final int startYear, final int startMonth, final int startDay,
                                               final double... series) {
@@ -107,7 +107,7 @@ public final class Ts {
      * Construct a new time series with quarterly observations without regard to the observation dates.
      *
      * @param series       The sequence of observations constituting this time series.
-     * @return A new time series with the given year, quarter, and series com.github.signaflo.data.
+     * @return A new time series with the given year, quarter, and series data.
      */
     public static TimeSeries newQuarterlySeries(final double... series) {
         return TimeSeries.from(TimePeriod.oneQuarter(), series);
@@ -120,7 +120,7 @@ public final class Ts {
      * @param startQuarter The quarter of the first observation - an integer between
      *                     1 and 4 corresponding to the four quarters of a year.
      * @param series       The sequence of observations constituting this time series.
-     * @return A new time series with the given year, quarter, and series com.github.signaflo.data.
+     * @return A new time series with the given year, quarter, and series data.
      */
     public static TimeSeries newQuarterlySeries(final int startYear, final int startQuarter, final double... series) {
         final int startMonth = 3 * startQuarter - 2;
@@ -141,7 +141,7 @@ public final class Ts {
      *                   1 and 12 corresponding to the months January through December.
      * @param startDay   The day of the first observation - an integer between 1 and 31.
      * @param series     The sequence of observations constituting this time series.
-     * @return A new time series with the given year, month, day, and series com.github.signaflo.data.
+     * @return A new time series with the given year, month, day, and series data.
      */
     public static TimeSeries newWeeklySeries(int startYear, int startMonth, int startDay, double... series) {
         final OffsetDateTime startPeriod = OffsetDateTime

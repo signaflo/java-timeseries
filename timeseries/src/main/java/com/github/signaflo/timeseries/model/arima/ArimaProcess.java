@@ -90,6 +90,7 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
 
     /**
      * Generate and return the next n values of this process.
+     * 
      * @param n the number of values to generate.
      * @return the next n values of this process.
      */
@@ -101,6 +102,13 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
         return next;
     }
 
+    /**
+     *
+     * Transform a snapshot of the process into a time series of the given size.
+     *
+     * @param size the size of the returned series.
+     * @return a snapshot of the process as a time series of the given size.
+     */
     public TimeSeries toSeries(int size) {
         return TimeSeries.from(this.period, getNext(size));
     }
@@ -117,6 +125,11 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
         return DoubleFunctions.arrayFrom(this.diffSeries);
     }
 
+    /**
+     * Start this process from the beginning.
+     *
+     * @return a new process with the same structure as this one.
+     */
     public ArimaProcess startOver() {
         return builder()
                 .setCoefficients(this.coefficients)
@@ -131,7 +144,7 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
     }
 
     /**
-     * An ARIMA simulation builder.
+     * An ARIMA process builder.
      */
     public static class Builder {
 
@@ -142,9 +155,9 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
         private boolean periodSet = false;
 
         /**
-         * Set the model coefficients to be used in simulating the ARIMA model.
+         * Set the process model coefficients.
          *
-         * @param coefficients the model coefficients for the simulation.
+         * @param coefficients the model coefficients for the process.
          * @return this builder.
          */
         public Builder setCoefficients(ArimaCoefficients coefficients) {
@@ -204,9 +217,9 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
         }
 
         /**
-         * Construct and return a new fully built and immutable ArimaSimulation object.
+         * Construct and return a new ArimaProcess.
          *
-         * @return a new fully built and immutable ArimaSimulation object.
+         * @return a new ArimaProcess.
          */
         public ArimaProcess build() {
             return new ArimaProcess(this);

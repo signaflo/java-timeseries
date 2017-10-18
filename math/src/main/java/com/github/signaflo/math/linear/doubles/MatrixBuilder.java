@@ -22,7 +22,7 @@ public interface MatrixBuilder {
     MatrixBuilder setColumn(int j, Vector column);
 
     /**
-     * Create a new matrix using the com.github.signaflo.data in this builder.
+     * Create a new matrix using the data in this builder.
      *
      * @return a new matrix from this builder.
      */

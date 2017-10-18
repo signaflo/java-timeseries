@@ -8,14 +8,14 @@ package com.github.signaflo.math.linear.doubles;
  */
 public interface Matrix {
     /**
-     * Create a new matrix with the supplied com.github.signaflo.data and dimensions. The com.github.signaflo.data is assumed to be in row-major order.
+     * Create a new matrix with the supplied data and dimensions. The data is assumed to be in row-major order.
      *
      * @param nrow the number of rows for the matrix.
      * @param ncol the number of columns for the matrix.
-     * @param data the com.github.signaflo.data in row-major order.
-     * @return a new matrix with the supplied com.github.signaflo.data and dimensions.
+     * @param data the data in row-major order.
+     * @return a new matrix with the supplied data and dimensions.
      *
-     * @throws IllegalArgumentException if the length of the com.github.signaflo.data array does not equal the given number of rows
+     * @throws IllegalArgumentException if the length of the data array does not equal the given number of rows
      * multiplied by the given number of columns.
      */
     static Matrix create(final int nrow, final int ncol, final double... data) {
@@ -27,7 +27,7 @@ public interface Matrix {
      *
      * @param nrow  the number of rows for the matrix.
      * @param ncol  the number of columns for the matrix.
-     * @param value the com.github.signaflo.data point to fill the matrix with.
+     * @param value the data point to fill the matrix with.
      * @return a new matrix with the given dimensions filled with the provided value.
      */
     static Matrix fill(final int nrow, final int ncol, final double value) {
@@ -35,23 +35,23 @@ public interface Matrix {
     }
 
     /**
-     * Create a new matrix from the given two-dimensional array of com.github.signaflo.data, assuming that the
-     * com.github.signaflo.data is laid out by row. If the com.github.signaflo.data is instead laid out by column, then specify that
+     * Create a new matrix from the given two-dimensional array of data, assuming that the
+     * data is laid out by row. If the data is instead laid out by column, then specify that
      * by supplying {@link Layout#BY_COLUMN} as the second argument to this method.
      *
-     * @param matrixData the two-dimensional array of com.github.signaflo.data constituting the matrix.
-     * @return a new matrix with the given com.github.signaflo.data.
+     * @param matrixData the two-dimensional array of data constituting the matrix.
+     * @return a new matrix with the given data.
      */
     static Matrix create(final double[]... matrixData) {
         return new MatrixOneD(Layout.BY_ROW, matrixData);
     }
 
     /**
-     * Create a new matrix from the given two-dimensional array of com.github.signaflo.data.
+     * Create a new matrix from the given two-dimensional array of data.
      *
-     * @param layout     the layout of the elements in the matrix com.github.signaflo.data.
-     * @param matrixData the two-dimensional array of com.github.signaflo.data constituting the matrix.
-     * @return a new matrix with the given com.github.signaflo.data and layout.
+     * @param layout     the layout of the elements in the matrix data.
+     * @param matrixData the two-dimensional array of data constituting the matrix.
+     * @return a new matrix with the given data and layout.
      */
     static Matrix create(Layout layout, final double[]... matrixData) {
         return new MatrixOneD(layout, matrixData);
@@ -179,7 +179,7 @@ public interface Matrix {
     /**
      * Push the provided vector to the top of this matrix, shifting all other vectors down.
      *
-     * @param newData the new vector of com.github.signaflo.data.
+     * @param newData the new vector of data.
      * @return a matrix with the given vector pushed to the top of this matrix.
      *
      * @throws IllegalArgumentException if size of the given vector does not equal the number of columns of this matrix.
@@ -189,7 +189,7 @@ public interface Matrix {
     /**
      * Push the provided vector to the front of this matrix, shifting all other vectors to the right.
      *
-     * @param newData the new vector of com.github.signaflo.data.
+     * @param newData the new vector of data.
      * @return a matrix with the given vector pushed to the front of this matrix.
      *
      * @throws IllegalArgumentException if size of the given vector does not equal the number of rows of this matrix.
@@ -204,24 +204,24 @@ public interface Matrix {
     double[] diagonal();
 
     /**
-     * Obtain the array of com.github.signaflo.data underlying this matrix in row-major order.
+     * Obtain the array of data underlying this matrix in row-major order.
      *
-     * @return the array of com.github.signaflo.data underlying this matrix in row-major order.
+     * @return the array of data underlying this matrix in row-major order.
      */
     double[] data();
 
     /**
-     * Obtain the com.github.signaflo.data in this matrix as a two-dimensional array.
+     * Obtain the data in this matrix as a two-dimensional array.
      *
-     * @param layout the layout of the elements in the matrix com.github.signaflo.data.
-     * @return the com.github.signaflo.data in this matrix as a two-dimensional array.
+     * @param layout the layout of the elements in the matrix data.
+     * @return the data in this matrix as a two-dimensional array.
      */
     double[][] data2D(Layout layout);
 
     /**
-     * Obtain the com.github.signaflo.data in this matrix as a two-dimensional array.
+     * Obtain the data in this matrix as a two-dimensional array.
      *
-     * @return the com.github.signaflo.data in this matrix as a two-dimensional array.
+     * @return the data in this matrix as a two-dimensional array.
      */
     double[][] data2D();
 

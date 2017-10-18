@@ -37,11 +37,11 @@ final class ComplexVectors {
     }
 
     /**
-     * Produce a com.github.signaflo.math.linear combination from the given vectors and scalars.
+     * Produce a linear combination from the given vectors and scalars.
      *
-     * @param vectors the vector components of the com.github.signaflo.math.linear combination.
-     * @param scalars the scalar components of the com.github.signaflo.math.linear combination.
-     * @return a com.github.signaflo.math.linear combination of the given vectors and scalars.
+     * @param vectors the vector components of the linear combination.
+     * @param scalars the scalar components of the linear combination.
+     * @return a linear combination of the given vectors and scalars.
      */
     static FieldVector<Complex> linearCombination(List<FieldVector<Complex>> vectors, List<Complex> scalars) {
         FieldVector<Complex> result = zeroVector(scalars.size());

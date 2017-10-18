@@ -113,9 +113,9 @@ public final class Range {
     }
 
     /**
-     * Get the sum of the com.github.signaflo.data in this range.
+     * Get the sum of the data in this range.
      *
-     * @return the sum of the com.github.signaflo.data in this range.
+     * @return the sum of the data in this range.
      */
     public double sum() {
         return Statistics.sumOf(range);

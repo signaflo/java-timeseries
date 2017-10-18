@@ -134,11 +134,11 @@ public final class TimeSeries implements DataSet {
     }
 
     /**
-     * Create a new time series from the given com.github.signaflo.data without regard to when the observations were made. Use this
+     * Create a new time series from the given data without regard to when the observations were made. Use this
      * constructor if the dates and times associated with the observations do not matter.
      *
-     * @param series the observation com.github.signaflo.data.
-     * @return a new time series from the supplied com.github.signaflo.data.
+     * @param series the observation data.
+     * @return a new time series from the supplied data.
      *
      */
     public static TimeSeries from(@NonNull final double... series) {
@@ -146,38 +146,38 @@ public final class TimeSeries implements DataSet {
     }
 
     /**
-     * Create a new time series from the given com.github.signaflo.data with the supplied start time.
+     * Create a new time series from the given data with the supplied start time.
      *
      * @param startTime the time of the first observation.
-     * @param series    the observation com.github.signaflo.data.
-     * @return a new time series from the supplied com.github.signaflo.data.
+     * @param series    the observation data.
+     * @return a new time series from the supplied data.
      */
     public static TimeSeries from(@NonNull final OffsetDateTime startTime, @NonNull final double... series) {
         return new TimeSeries(startTime, series);
     }
 
     /**
-     * Create a new time series using the given time period and observation com.github.signaflo.data. This constructor will set the
+     * Create a new time series using the given time period and observation data. This constructor will set the
      * starting observation period to Jan. 1st of year 1. It is useful for when the time period between
      * observations matter, but the actual dates do not.
      *
      * @param timePeriod the period of time between observations.
-     * @param series     the observation com.github.signaflo.data.
-     * @return a new time series from the supplied com.github.signaflo.data.
+     * @param series     the observation data.
+     * @return a new time series from the supplied data.
      */
     public static TimeSeries from(@NonNull final TimePeriod timePeriod, @NonNull final double... series) {
         return new TimeSeries(timePeriod, series);
     }
 
     /**
-     * Create a new time series using the given time period, the time of first observation, and observation com.github.signaflo.data.
+     * Create a new time series using the given time period, the time of first observation, and observation data.
      *
      * @param timePeriod the period of time between observations.
      * @param startTime  the time of the first observation. The characters must represent either a valid
      *                   {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
      *                   UTC/Greenwich offset, i.e., an offset of 0, will be used.
-     * @param series     the observation com.github.signaflo.data.
-     * @return a new time series from the supplied com.github.signaflo.data.
+     * @param series     the observation data.
+     * @return a new time series from the supplied data.
      */
     public static TimeSeries from(@NonNull final TimePeriod timePeriod,
                                   @NonNull final CharSequence startTime,
@@ -186,12 +186,12 @@ public final class TimeSeries implements DataSet {
     }
 
     /**
-     * Create a new time series with the given time period, observation times, and observation com.github.signaflo.data.
+     * Create a new time series with the given time period, observation times, and observation data.
      *
      * @param timePeriod       the period of time between observations.
      * @param observationTimes the observation times.
-     * @param series           the observation com.github.signaflo.data.
-     * @return a new time series from the supplied com.github.signaflo.data.
+     * @param series           the observation data.
+     * @return a new time series from the supplied data.
      */
     public static TimeSeries from(@NonNull final TimePeriod timePeriod,
                                   @NonNull final List<OffsetDateTime> observationTimes,
@@ -200,14 +200,14 @@ public final class TimeSeries implements DataSet {
     }
 
     /**
-     * Create a new time series using the given unit of time, the time of first observation, and the observation com.github.signaflo.data.
+     * Create a new time series using the given unit of time, the time of first observation, and the observation data.
      *
      * @param timeUnit  the unit of time in which observations are made.
      * @param startTime the time of the first observation. The characters must represent either a valid
      *                  {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
      *                  UTC/Greenwich offset, i.e., an offset of 0, will be used.
-     * @param series    the observation com.github.signaflo.data.
-     * @return a new time series from the supplied com.github.signaflo.data.
+     * @param series    the observation data.
+     * @return a new time series from the supplied data.
      */
     public static TimeSeries from(@NonNull final TimeUnit timeUnit,
                                   @NonNull final CharSequence startTime,
@@ -216,12 +216,12 @@ public final class TimeSeries implements DataSet {
     }
 
     /**
-     * Create a new time series with the given time period, the time of first observation, and the observation com.github.signaflo.data.
+     * Create a new time series with the given time period, the time of first observation, and the observation data.
      *
      * @param timePeriod the period of time between observations.
      * @param startTime  the time of the first observation.
-     * @param series     the observation com.github.signaflo.data.
-     * @return a new time series from the supplied com.github.signaflo.data.
+     * @param series     the observation data.
+     * @return a new time series from the supplied data.
      */
     public static TimeSeries from(@NonNull final TimePeriod timePeriod,
                                   @NonNull final OffsetDateTime startTime,
@@ -230,12 +230,12 @@ public final class TimeSeries implements DataSet {
     }
 
     /**
-     * Create a new time series using the given unit of time, the time of first observation, and the observation com.github.signaflo.data.
+     * Create a new time series using the given unit of time, the time of first observation, and the observation data.
      *
      * @param timeUnit  the unit of time in which observations are made.
      * @param startTime the time of the first observation.
-     * @param series    the observation com.github.signaflo.data.
-     * @return a new time series from the supplied com.github.signaflo.data.
+     * @param series    the observation data.
+     * @return a new time series from the supplied data.
      */
     public static TimeSeries from(@NonNull final TimeUnit timeUnit,
                                   @NonNull final OffsetDateTime startTime,

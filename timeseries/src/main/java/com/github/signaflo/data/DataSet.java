@@ -36,27 +36,27 @@ public interface DataSet {
     double median();
 
     /**
-     * The size of the com.github.signaflo.data set.
+     * The size of the data set.
      *
-     * @return the size of the com.github.signaflo.data set.
+     * @return the size of the data set.
      */
     int size();
 
     /**
-     * Multiply every element of this com.github.signaflo.data set with the corresponding element of the given com.github.signaflo.data set.
+     * Multiply every element of this data set with the corresponding element of the given data set.
      *
-     * @param otherData The com.github.signaflo.data to multiply by.
-     * @return A new com.github.signaflo.data set containing every element of this com.github.signaflo.data set multiplied by
-     * the corresponding element of the given com.github.signaflo.data set.
+     * @param otherData The data to multiply by.
+     * @return A new data set containing every element of this data set multiplied by
+     * the corresponding element of the given data set.
      */
     DataSet times(DataSet otherData);
 
     /**
-     * Add every element of this com.github.signaflo.data set to the corresponding element of the given com.github.signaflo.data set.
+     * Add every element of this data set to the corresponding element of the given data set.
      *
-     * @param otherData The com.github.signaflo.data to add to.
-     * @return A new com.github.signaflo.data set containing every element of this com.github.signaflo.data set added to
-     * the corresponding element of the given com.github.signaflo.data set.
+     * @param otherData The data to add to.
+     * @return A new data set containing every element of this data set added to
+     * the corresponding element of the given data set.
      */
     DataSet plus(DataSet otherData);
 
@@ -76,21 +76,21 @@ public interface DataSet {
 
     /**
      * The unbiased sample covariance of these observations with the observations
-     * contained in the given com.github.signaflo.data set.
+     * contained in the given data set.
      *
-     * @param otherData the com.github.signaflo.data to compute the covariance with.
+     * @param otherData the data to compute the covariance with.
      * @return the unbiased sample covariance of these observations with the observations
-     * contained in the given com.github.signaflo.data set.
+     * contained in the given data set.
      */
     double covariance(DataSet otherData);
 
     /**
      * The unbiased sample correlation of these observations with the observations
-     * contained in the given com.github.signaflo.data set.
+     * contained in the given data set.
      *
-     * @param otherData the com.github.signaflo.data to compute the correlation coefficient with.
+     * @param otherData the data to compute the correlation coefficient with.
      * @return the unbiased sample correlation of these observations with the observations
-     * contained in the given com.github.signaflo.data set.
+     * contained in the given data set.
      */
     double correlation(DataSet otherData);
 

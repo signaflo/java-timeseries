@@ -44,10 +44,10 @@ public final class DoubleFunctions {
     }
 
     /**
-     * Create and return a new array from the given com.github.signaflo.data.
+     * Create and return a new array from the given data.
      *
-     * @param data the com.github.signaflo.data to create a new array from.
-     * @return a new array from the given com.github.signaflo.data.
+     * @param data the data to create a new array from.
+     * @return a new array from the given data.
      */
     public static double[] arrayFrom(double... data) {
         return data.clone();
@@ -128,7 +128,7 @@ public final class DoubleFunctions {
     /**
      * Create a new primitive double array from the given collection of numbers.
      *
-     * @param data the com.github.signaflo.data to use in the new array.
+     * @param data the data to use in the new array.
      * @return a new array from the given collection of numbers.
      */
     public static double[] arrayFrom(Collection<? extends Number> data) {
@@ -146,7 +146,7 @@ public final class DoubleFunctions {
     /**
      * Create a new primitive double array from the given boxed Number array.
      *
-     * @param data the com.github.signaflo.data to use in the new array.
+     * @param data the data to use in the new array.
      * @return a new array from the given boxed Number array.
      */
     public static double[] arrayFrom(Number[] data) {
@@ -159,11 +159,11 @@ public final class DoubleFunctions {
     }
 
     /**
-     * Create a new array from the com.github.signaflo.data in the given array at the specified indices.
+     * Create a new array from the data in the given array at the specified indices.
      *
-     * @param data the com.github.signaflo.data to create the new array from.
-     * @param indices the indices at which to select com.github.signaflo.data from the given array.
-     * @return a new array from the com.github.signaflo.data in the given array at the specified indices.
+     * @param data the data to create the new array from.
+     * @param indices the indices at which to select data from the given array.
+     * @return a new array from the data in the given array at the specified indices.
      */
     static double[] arrayFrom(double[] data, int... indices) {
         double[] newArray = new double[indices.length];
@@ -191,7 +191,7 @@ public final class DoubleFunctions {
     /**
      * Create a new list of boxed Doubles from the given array of primitive doubles.
      *
-     * @param data the com.github.signaflo.data to populate the new list with.
+     * @param data the data to populate the new list with.
      * @return a new list of boxed Doubles from the given array of primitive doubles.
      */
     public static List<Double> listFrom(final double... data) {
@@ -215,12 +215,12 @@ public final class DoubleFunctions {
     }
 
     /**
-     * Return a slice of the com.github.signaflo.data between the given indices.
+     * Return a slice of the data between the given indices.
      *
-     * @param data the com.github.signaflo.data to slice.
+     * @param data the data to slice.
      * @param from the starting index.
      * @param to   the ending index. The value at this index is excluded from the result.
-     * @return a slice of the com.github.signaflo.data between the given indices.
+     * @return a slice of the data between the given indices.
      */
     public static double[] slice(final double[] data, final int from, final int to) {
         final double[] sliced = new double[to - from];
@@ -229,11 +229,11 @@ public final class DoubleFunctions {
     }
 
     /**
-     * Transform the given com.github.signaflo.data using a Box-Cox transformation with the given lambda value.
+     * Transform the given data using a Box-Cox transformation with the given lambda value.
      *
-     * @param data   the com.github.signaflo.data to transform.
+     * @param data   the data to transform.
      * @param lambda the Box-Cox parameter.
-     * @return the com.github.signaflo.data transformed using a Box-Cox transformation with the given lambda value.
+     * @return the data transformed using a Box-Cox transformation with the given lambda value.
      */
     public static double[] boxCox(final double[] data, final double lambda) {
         final double[] boxCoxed = new double[data.length];
@@ -251,11 +251,11 @@ public final class DoubleFunctions {
     }
 
     /**
-     * Invert the Box-Cox transformation, returning the original untransformed com.github.signaflo.data.
+     * Invert the Box-Cox transformation, returning the original untransformed data.
      *
-     * @param data   the transformed com.github.signaflo.data to invert.
+     * @param data   the transformed data to invert.
      * @param lambda the Box-Cox parameter used in the transformation.
-     * @return the original, untransformed com.github.signaflo.data in a new array.
+     * @return the original, untransformed data in a new array.
      */
     public static double[] inverseBoxCox(final double[] data, final double lambda) {
         final double[] invBoxCoxed = new double[data.length];
@@ -274,7 +274,7 @@ public final class DoubleFunctions {
     /**
      * Take the square root of each element of the given array and return the result in a new array.
      *
-     * @param data the com.github.signaflo.data to take the square root of.
+     * @param data the data to take the square root of.
      * @return a new array containing the square root of each element.
      */
     public static double[] sqrt(final double... data) {
@@ -285,38 +285,38 @@ public final class DoubleFunctions {
         return sqrtData;
     }
 
-//    public static double[] reverse(final double... com.github.signaflo.data) {
-//        int n = com.github.signaflo.data.length;
+//    public static double[] reverse(final double... data) {
+//        int n = data.length;
 //        double[] reversed = new double[n];
 //        for (int i = 0; i < reversed.length; i++, --n) {
-//            reversed[i] = com.github.signaflo.data[n];
+//            reversed[i] = data[n];
 //        }
 //        return reversed;
 //    }
 //
-//    public static List<Double> reverseArrayToList(final double... com.github.signaflo.data) {
-//        int n = com.github.signaflo.data.length;
+//    public static List<Double> reverseArrayToList(final double... data) {
+//        int n = data.length;
 //        List<Double> reversed = new ArrayList<>(n);
 //        while (n > 0) {
-//            reversed.add(com.github.signaflo.data[--n]);
+//            reversed.add(data[--n]);
 //        }
 //        return reversed;
 //    }
 
-//    public static double[] reverseListToArray(final List<Double> com.github.signaflo.data) {
-//        int n = com.github.signaflo.data.size();
-//        double[] reversed = new double[com.github.signaflo.data.size()];
+//    public static double[] reverseListToArray(final List<Double> data) {
+//        int n = data.size();
+//        double[] reversed = new double[data.size()];
 //        for (int i = 0; i < reversed.length; i++) {
-//            reversed[i] = com.github.signaflo.data.get(--n);
+//            reversed[i] = data.get(--n);
 //        }
 //        return reversed;
 //    }
 //
-//    public static List<Double> reverse(final List<Double> com.github.signaflo.data) {
-//        int n = com.github.signaflo.data.size();
+//    public static List<Double> reverse(final List<Double> data) {
+//        int n = data.size();
 //        List<Double> reversed = new ArrayList<>(n);
 //        while (n > 0) {
-//            reversed.add(com.github.signaflo.data.get(--n));
+//            reversed.add(data.get(--n));
 //        }
 //        return reversed;
 //    }
@@ -349,10 +349,10 @@ public final class DoubleFunctions {
     }
 
     /**
-     * Remove the mean from the given com.github.signaflo.data and return the result in a new array.
+     * Remove the mean from the given data and return the result in a new array.
      *
-     * @param data the com.github.signaflo.data to remove the mean from.
-     * @return the com.github.signaflo.data with the mean removed.
+     * @param data the data to remove the mean from.
+     * @return the data with the mean removed.
      */
     static double[] demean(final double[] data) {
         final double mean = Statistics.meanOf(data);
@@ -366,7 +366,7 @@ public final class DoubleFunctions {
     /**
      * Take the additive inverse, or negative, of each element of the given array and return the result in a new array.
      *
-     * @param data the com.github.signaflo.data to take the additive inverse of.
+     * @param data the data to take the additive inverse of.
      * @return a new array containing the additive inverse, or negative, of each element.
      */
     static double[] negativeOf(final double[] data) {

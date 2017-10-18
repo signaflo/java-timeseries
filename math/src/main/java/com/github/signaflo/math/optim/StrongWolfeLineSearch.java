@@ -62,7 +62,7 @@ final class StrongWolfeLineSearch {
     /**
      * Use a builder to create a new line search object.
      *
-     * @param builder the line search builder containing the necessary com.github.signaflo.data for the new object.
+     * @param builder the line search builder containing the necessary data for the new object.
      */
     private StrongWolfeLineSearch(final Builder builder) {
         this.phi = builder.phi;

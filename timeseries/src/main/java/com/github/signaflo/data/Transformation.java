@@ -1,7 +1,7 @@
 package com.github.signaflo.data;
 
 /**
- * Specifies a transformation to be applied to a set of com.github.signaflo.data.
+ * Specifies a transformation to be applied to a set of data.
  *
  * @author Jacob Rachiele
  */

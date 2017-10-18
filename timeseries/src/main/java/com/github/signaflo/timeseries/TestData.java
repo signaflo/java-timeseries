@@ -29,7 +29,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 /**
- * Static fields containing test com.github.signaflo.data.
+ * Static fields containing test data.
  *
  * @author Jacob Rachiele
  */
@@ -40,7 +40,7 @@ public final class TestData {
      * <a target="_blank" href="https://datamarket.com/data/set/22xx/monthly-sales-of-tasty-cola#!ds=22xx&display=line"
      * >monthly sales of tasty cola</a> (Bowerman and O'Connell (1993)), made available by Rob J Hyndman at DataMarket.
      *
-     * the monthly sales of tasty cola com.github.signaflo.data set.
+     * the monthly sales of tasty cola data set.
      */
     public static double[] sodaSalesArray = new double[]{189, 229, 249, 289, 260, 431, 660, 777, 915, 613, 485, 277,
             244, 296, 319, 370, 313, 556, 831, 960, 1152, 759, 607, 371, 298, 378, 373, 443, 374, 660, 1004, 1153,

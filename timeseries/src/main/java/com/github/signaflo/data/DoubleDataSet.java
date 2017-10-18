@@ -41,7 +41,7 @@ public final class DoubleDataSet implements DataSet {
     private final double[] data;
 
     /**
-     * Construct a new com.github.signaflo.data set from the given com.github.signaflo.data.
+     * Construct a new data set from the given data.
      *
      * @param data the collection of observations.
      */

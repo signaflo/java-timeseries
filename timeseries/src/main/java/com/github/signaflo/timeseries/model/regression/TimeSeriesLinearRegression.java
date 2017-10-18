@@ -6,7 +6,7 @@ import com.github.signaflo.timeseries.TimeSeries;
 import com.github.signaflo.timeseries.model.Model;
 
 /**
- * A linear regression model for time series com.github.signaflo.data.
+ * A linear regression model for time series data.
  *
  * @author Jacob Rachiele
  * Aug. 01, 2017

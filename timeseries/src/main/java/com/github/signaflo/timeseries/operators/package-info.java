@@ -1,5 +1,5 @@
 /**
- * Operators designed specifically for time series com.github.signaflo.data.
+ * Operators designed specifically for time series data.
  *
  */
 package com.github.signaflo.timeseries.operators;

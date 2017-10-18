@@ -41,7 +41,7 @@ import java.util.Arrays;
 import static com.github.signaflo.math.operations.DoubleFunctions.copy;
 
 /**
- * A linear regression model for time series com.github.signaflo.data.
+ * A linear regression model for time series data.
  */
 @ToString
 final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRegression, Model {

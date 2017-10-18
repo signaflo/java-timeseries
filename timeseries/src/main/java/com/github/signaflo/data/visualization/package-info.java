@@ -1,4 +1,4 @@
 /**
- * Classes and methods for visualizing com.github.signaflo.data.
+ * Classes and methods for visualizing data.
  */
 package com.github.signaflo.data.visualization;

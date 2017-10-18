@@ -55,7 +55,7 @@ public interface Arima extends Model {
      * @param observations  the time series of observations.
      * @param order         the order of the ARIMA model.
      * @param seasonalCycle the amount of time it takes for the seasonal pattern to complete one cycle. For example,
-     *                      monthly com.github.signaflo.data usually has a cycle of one year, hourly com.github.signaflo.data a cycle of one day, etc...
+     *                      monthly data usually has a cycle of one year, hourly data a cycle of one day, etc...
      *                      However, a seasonal cycle may be an arbitrary amount of time.
      *
      * @return a new ARIMA model from the given observations, model order, and seasonal cycle.
@@ -70,7 +70,7 @@ public interface Arima extends Model {
      *
      * @param observations    the time series of observations.
      * @param order           the order of the ARIMA model.
-     * @param fittingStrategy the strategy to use to fit the model to the com.github.signaflo.data. Maximum-likelihood estimates are
+     * @param fittingStrategy the strategy to use to fit the model to the data. Maximum-likelihood estimates are
      *                        typically preferred for greater precision and accuracy, but take longer to obtain than
      *                        conditional sum-of-squares estimates.
      *
@@ -87,9 +87,9 @@ public interface Arima extends Model {
      * @param observations    the time series of observations.
      * @param order           the order of the ARIMA model.
      * @param seasonalCycle   the amount of time it takes for the seasonal pattern to complete one cycle. For example,
-     *                        monthly com.github.signaflo.data usually has a cycle of one year, hourly com.github.signaflo.data a cycle of one day, etc...
+     *                        monthly data usually has a cycle of one year, hourly data a cycle of one day, etc...
      *                        However, a seasonal cycle may be an arbitrary amount of time.
-     * @param fittingStrategy the strategy to use to fit the model to the com.github.signaflo.data. Maximum-likelihood estimates are
+     * @param fittingStrategy the strategy to use to fit the model to the data. Maximum-likelihood estimates are
      *                        typically preferred for greater precision and accuracy, but take longer to obtain than
      *                        conditional sum-of-squares estimates.
      *
@@ -106,7 +106,7 @@ public interface Arima extends Model {
      *
      * @param observations    the time series of observations.
      * @param coeffs          the coefficients of the model.
-     * @param fittingStrategy the strategy to use to fit the model to the com.github.signaflo.data. Maximum-likelihood estimates are
+     * @param fittingStrategy the strategy to use to fit the model to the data. Maximum-likelihood estimates are
      *                        typically preferred for greater precision and accuracy, but take longer to obtain than
      *                        conditional sum-of-squares estimates.
      *
@@ -124,7 +124,7 @@ public interface Arima extends Model {
      * @param observations  the time series of observations.
      * @param coeffs        the coefficients of the model.
      * @param seasonalCycle the amount of time it takes for the seasonal pattern to complete one cycle. For example,
-     *                      monthly com.github.signaflo.data usually has a cycle of one year, hourly com.github.signaflo.data a cycle of one day, etc...
+     *                      monthly data usually has a cycle of one year, hourly data a cycle of one day, etc...
      *                      However, a seasonal cycle may be an arbitrary amount of time.
      *
      * @return a new ARIMA model from the given observations, model coefficients, and seasonal cycle.
@@ -140,9 +140,9 @@ public interface Arima extends Model {
      * @param observations    the time series of observations.
      * @param coeffs          the coefficients of the model.
      * @param seasonalCycle   the amount of time it takes for the seasonal pattern to complete one cycle. For example,
-     *                        monthly com.github.signaflo.data usually has a cycle of one year, hourly com.github.signaflo.data a cycle of one day, etc...
+     *                        monthly data usually has a cycle of one year, hourly data a cycle of one day, etc...
      *                        However, a seasonal cycle may be an arbitrary amount of time.
-     * @param fittingStrategy the strategy to use to fit the model to the com.github.signaflo.data. Maximum-likelihood estimates are
+     * @param fittingStrategy the strategy to use to fit the model to the data. Maximum-likelihood estimates are
      *                        typically preferred for greater precision and accuracy, but take longer to obtain than
      *                        conditional sum-of-squares estimates.
      *
@@ -201,9 +201,9 @@ public interface Arima extends Model {
     ArimaOrder order();
 
     /**
-     * Get the natural logarithm of the likelihood of the model given the com.github.signaflo.data.
+     * Get the natural logarithm of the likelihood of the model given the data.
      *
-     * @return the natural logarithm of the likelihood of the model given the com.github.signaflo.data.
+     * @return the natural logarithm of the likelihood of the model given the data.
      */
     double logLikelihood();
 
