@@ -5,9 +5,9 @@ Time series analysis in Java.
 ## IMPORTANT NOTICE
 
 Major API changes have been made with release 0.3. The first and most obvious
-is that the single java-timeseries project has been split up into two
-seperate modules -- math and timeseries. The timeseries module contains
-the time series data types, models, and forecasts. The math module
+is that the single java-com.github.signaflo.timeseries project has been split up into two
+seperate modules -- com.github.signaflo.math and com.github.signaflo.timeseries. The com.github.signaflo.timeseries module contains
+the time series com.github.signaflo.data types, models, and forecasts. The com.github.signaflo.math module
 contains much of the lower-level supporting structure and is likely to
 be of less interest to library users.
 
@@ -43,14 +43,14 @@ Major API changes are expected in the near future.
 ```groovy
 <dependency>
     <groupId>com.github.jrachiele</groupId>
-    <artifactId>timeseries</artifactId>
+    <artifactId>com.github.signaflo.timeseries</artifactId>
     <version>0.3</version>
 </dependency>
 ```
 
 #### Gradle
 ```groovy
-compile 'com.github.jrachiele:timeseries:0.3'
+compile 'com.github.jrachiele:com.github.signaflo.timeseries:0.3'
 ```
 
 Credits

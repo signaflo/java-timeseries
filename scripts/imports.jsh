@@ -11,19 +11,19 @@ import java.util.regex.*
 import java.util.stream.*
 import java.time.*;
 
-import math.stats.distributions.*;
-import math.linear.doubles.*;
-import math.linear.doubles.Vector;
+import com.github.signaflo.math.stats.distributions.*;
+import com.github.signaflo.math.linear.doubles.*;
+import com.github.signaflo.math.linear.doubles.Vector;
 
-import timeseries.*;
-import timeseries.model.*;
-import timeseries.model.arima.*;
-import data.regression.*;
+import com.github.signaflo.timeseries.*;
+import com.github.signaflo.timeseries.model.*;
+import com.github.signaflo.timeseries.model.arima.*;
+import com.github.signaflo.data.regression.*;
 
-import static math.operations.DoubleFunctions.*;
-import static math.operations.Operators.*;
-import static data.visualization.Plots.*;
-import static timeseries.TestData.*;
-import static timeseries.model.arima.Arima.*;
-import static timeseries.model.arima.ArimaOrder.*;
-import static math.stats.Statistics.*;
+import static com.github.signaflo.math.operations.DoubleFunctions.*;
+import static com.github.signaflo.math.operations.Operators.*;
+import static com.github.signaflo.data.visualization.Plots.*;
+import static com.github.signaflo.timeseries.TestData.*;
+import static com.github.signaflo.timeseries.model.arima.Arima.*;
+import static com.github.signaflo.timeseries.model.arima.ArimaOrder.*;
+import static com.github.signaflo.math.stats.Statistics.*;
