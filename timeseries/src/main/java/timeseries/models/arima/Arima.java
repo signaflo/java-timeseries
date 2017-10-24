@@ -42,7 +42,7 @@ public interface Arima extends Model {
      *
      * @return a new ARIMA model from the given observations and model order.
      */
-    static Arima model(TimeSeries observations, ArimaOrder order) {
+    static Arima model(TimeSeries observations, ArimaOrder order) throws InterruptedException {
         return new ArimaModel(observations, order, TimePeriod.oneYear(), FittingStrategy.CSSML);
     }
 
@@ -58,7 +58,7 @@ public interface Arima extends Model {
      *
      * @return a new ARIMA model from the given observations, model order, and seasonal cycle.
      */
-    static Arima model(TimeSeries observations, ArimaOrder order, TimePeriod seasonalCycle) {
+    static Arima model(TimeSeries observations, ArimaOrder order, TimePeriod seasonalCycle) throws InterruptedException {
         return new ArimaModel(observations, order, seasonalCycle, FittingStrategy.CSSML);
     }
 
@@ -74,7 +74,7 @@ public interface Arima extends Model {
      *
      * @return a new ARIMA model from the given observations, model order, and fitting strategy.
      */
-    static Arima model(TimeSeries observations, ArimaOrder order, FittingStrategy fittingStrategy) {
+    static Arima model(TimeSeries observations, ArimaOrder order, FittingStrategy fittingStrategy) throws InterruptedException {
         return new ArimaModel(observations, order, TimePeriod.oneYear(), fittingStrategy);
     }
 
@@ -93,7 +93,7 @@ public interface Arima extends Model {
      * @return a new ARIMA model from the given observations, model order, seasonal cycle, and fitting strategy.
      */
     static Arima model(TimeSeries observations, ArimaOrder order, TimePeriod seasonalCycle,
-                            FittingStrategy fittingStrategy) {
+                            FittingStrategy fittingStrategy) throws InterruptedException {
         return new ArimaModel(observations, order, seasonalCycle, fittingStrategy);
     }
 

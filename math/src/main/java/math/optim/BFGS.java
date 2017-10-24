@@ -60,7 +60,7 @@ public final class BFGS {
      * @param functionChangeTolerance the tolerance for the change in function value.
      */
     public BFGS(final AbstractMultivariateFunction f, final Vector startingPoint, final double gradientTolerance,
-                final double functionChangeTolerance) {
+                final double functionChangeTolerance) throws InterruptedException {
         this(f, startingPoint, gradientTolerance, functionChangeTolerance, Matrices.identity(startingPoint.size()));
     }
 
@@ -74,7 +74,7 @@ public final class BFGS {
      * @param initialHessian          The initial guess for the inverse Hessian approximation.
      */
     public BFGS(final AbstractMultivariateFunction f, final Vector startingPoint, final double gradientNormTolerance,
-                final double relativeChangeTolerance, final Matrix initialHessian) {
+                final double relativeChangeTolerance, final Matrix initialHessian) throws InterruptedException {
         this.identity = Matrices.identity(startingPoint.size());
         this.H = initialHessian;
         this.iterate = startingPoint;
@@ -97,6 +97,7 @@ public final class BFGS {
             int iterationsSinceIdentityReset = 0;
 
             while (!stop) {
+                handleInterruption();
                 if (iterationsSinceIdentityReset > 2 * iterate.size()) {
                     H = identity;
                     iterationsSinceIdentityReset = 0;
@@ -122,6 +123,8 @@ public final class BFGS {
                 functionValue = f.at(nextIterate);
                 while (!(Double.isFinite(functionValue) &&
                          functionValue < priorFunctionValue + C1 * stepSize * slopeAt0) && !stop) {
+                    handleInterruption();
+
                     relativeChangeDenominator = max(abs(priorFunctionValue), abs(nextIterate.norm()));
                     relativeChange = Math.abs((priorFunctionValue - functionValue) / relativeChangeDenominator);
                     if (relativeChange <= relativeChangeTolerance) {
@@ -187,6 +190,12 @@ public final class BFGS {
 ////        .c2(c2).alphaMax(50).alpha0(1.0).build();
 ////    return lineSearch.search();
 //  }
+
+    private void handleInterruption() throws InterruptedException {
+        if (Thread.currentThread().interrupted()) {
+            throw new InterruptedException();
+        }
+    }
 
     private Matrix updateHessian() {
         Matrix a = identity.minus(s.outerProduct(y).scaledBy(rho));

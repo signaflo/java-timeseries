@@ -80,12 +80,12 @@ final class ArimaModel implements Arima {
     private final double[] stdErrors;
 
     ArimaModel(final TimeSeries observations, final ArimaOrder order, final TimePeriod seasonalCycle,
-               final FittingStrategy fittingStrategy) {
+               final FittingStrategy fittingStrategy) throws InterruptedException {
         this(observations, order, seasonalCycle, fittingStrategy, null);
     }
 
     private ArimaModel(final TimeSeries observations, final ArimaOrder order, final TimePeriod seasonalCycle,
-                       final FittingStrategy fittingStrategy, LinearRegressionModel regression) {
+                       final FittingStrategy fittingStrategy, LinearRegressionModel regression) throws InterruptedException {
         this.observations = observations;
         this.order = order;
         this.fittingStrategy = fittingStrategy;

@@ -44,7 +44,7 @@ public class ArimaSpec {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void whenZerosThenFittedAreZero() {
+    public void whenZerosThenFittedAreZero() throws InterruptedException {
         TimeSeries timeSeries = new TimeSeries(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         double[] expected = new double[timeSeries.size()];
         ArimaOrder order = ArimaOrder.order(1, 0, 1, 0, 0, 0, Constant.INCLUDE);
@@ -137,7 +137,7 @@ public class ArimaSpec {
     }
 
     @Test
-    public void testEqualsAndHashCode() {
+    public void testEqualsAndHashCode() throws InterruptedException {
         TimeSeries series = TestData.livestock;
         ArimaOrder order = ArimaOrder.order(1, 1, 1);
         ArimaOrder order2 = ArimaOrder.order(1, 0, 1, Constant.INCLUDE);
