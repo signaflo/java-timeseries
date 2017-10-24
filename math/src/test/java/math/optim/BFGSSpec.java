@@ -8,7 +8,7 @@ import math.linear.doubles.Vector;
 public final class BFGSSpec {
   
   @Test
-  public void testBFGS() {
+  public void testBFGS() throws InterruptedException {
     AbstractMultivariateFunction f = new RosenbrockFunction();
     Vector startingPoint = new Vector(0.5, 1.5);
     final double tol = 1E-8;
