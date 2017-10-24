@@ -856,7 +856,9 @@ public final class TimeSeries implements DataSet {
     public String toString() {
         String newLine = System.lineSeparator();
         NumberFormat numFormatter = new DecimalFormat("#0.00");
-        return newLine + "number of observations: " + n + newLine + "mean: " + numFormatter.format(mean) + newLine +
-               "std: " + numFormatter.format(stdDeviation()) + newLine + "period: " + timePeriod;
+        return newLine + "Time Series: " + newLine + "number of observations: " + n + newLine +
+               "mean: " + numFormatter.format(mean) + newLine +
+               "std: " + numFormatter.format(stdDeviation()) + newLine +
+               "period: " + timePeriod;
     }
 }

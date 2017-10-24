@@ -7,10 +7,16 @@ import com.github.signaflo.math.stats.distributions.Normal;
 import com.github.signaflo.timeseries.TimePeriod;
 import com.github.signaflo.timeseries.TimeSeries;
 import com.github.signaflo.timeseries.operators.LagPolynomial;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.PrimitiveIterator;
 import java.util.Queue;
 import java.util.function.DoubleSupplier;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents an indefinite, observation generating ARIMA process.
@@ -24,6 +30,8 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
     private final Distribution distribution;
     private final TimePeriod period;
     private final TimePeriod seasonalCycle;
+    private final OffsetDateTime startTime;
+    private OffsetDateTime currentTime;
 
     private final LagPolynomial maPoly;
     private final LagPolynomial arPoly;
@@ -37,6 +45,8 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
         this.distribution = builder.distribution;
         this.period = builder.period;
         this.seasonalCycle = builder.seasonalCycle;
+        this.startTime = builder.startTime;
+        this.currentTime = startTime;
         int seasonalFrequency = (int) builder.period.frequencyPer(builder.seasonalCycle);
         double[] arSarCoeffs = ArimaCoefficients.expandArCoefficients(coefficients.arCoeffs(),
                                                                       coefficients.seasonalARCoeffs(),
@@ -54,11 +64,20 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
                                      .times(LagPolynomial.seasonalDifferences(seasonalFrequency, coefficients.D()));
     }
 
+    /**
+     * This method always returns true.
+     *
+     * @return true.
+     */
     @Override
     public boolean hasNext() {
         return true;
     }
 
+    /**
+     * Generate the next observation from this ARIMA process.
+     * @return the next observation from this ARIMA process.
+     */
     @Override
     public double nextDouble() {
         return getAsDouble();
@@ -85,16 +104,17 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
         newValue += diffPoly.solve(series, d);
         this.series.add(newValue);
         this.errors.add(error);
+        this.currentTime = this.currentTime.plus(period.unitLength(), period.timeUnit().temporalUnit());
         return newValue;
     }
 
     /**
      * Generate and return the next n values of this process.
-     * 
+     *
      * @param n the number of values to generate.
      * @return the next n values of this process.
      */
-    public double[] getNext(int n) {
+    public synchronized double[] getNext(int n) {
         double[] next = new double[n];
         for (int i = 0; i < n; i++) {
             next[i] = getAsDouble();
@@ -109,8 +129,8 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
      * @param size the size of the returned series.
      * @return a snapshot of the process as a time series of the given size.
      */
-    public TimeSeries toSeries(int size) {
-        return TimeSeries.from(this.period, getNext(size));
+    public TimeSeries simulate(int size) {
+        return TimeSeries.from(this.period, currentTime, getNext(size));
     }
 
     double[] getErrors() {
@@ -136,7 +156,43 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
                 .setDistribution(this.distribution)
                 .setPeriod(this.period)
                 .setSeasonalCycle(this.seasonalCycle)
+                .setStartTime(this.startTime)
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ArimaProcess that = (ArimaProcess) o;
+
+        if (!coefficients.equals(that.coefficients)) return false;
+        if (!distribution.equals(that.distribution)) return false;
+        if (!period.equals(that.period)) return false;
+        if (!seasonalCycle.equals(that.seasonalCycle)) return false;
+        return startTime.equals(that.startTime);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = coefficients.hashCode();
+        result = 31 * result + distribution.hashCode();
+        result = 31 * result + period.hashCode();
+        result = 31 * result + seasonalCycle.hashCode();
+        result = 31 * result + startTime.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        String nl = System.lineSeparator();
+        return nl + "Arima Process: " + nl +
+               "Coefficients: " + coefficients.toString() + nl +
+               "Distribution: " + distribution.toString() + nl +
+               "Period: " + period.toString() + nl +
+               "Seasonal Cycle: " + seasonalCycle.toString() + nl +
+               "Process Start: " + startTime.toString();
     }
 
     public static Builder builder() {
@@ -152,6 +208,8 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
         private Distribution distribution = new Normal();
         private TimePeriod period = (coefficients.isSeasonal()) ? TimePeriod.oneMonth() : TimePeriod.oneYear();
         private TimePeriod seasonalCycle = TimePeriod.oneYear();
+        private OffsetDateTime startTime = OffsetDateTime.of(1, 1, 1, 0, 0,
+                                                               0, 0, ZoneOffset.UTC);
         private boolean periodSet = false;
 
         /**
@@ -161,10 +219,7 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
          * @return this builder.
          */
         public Builder setCoefficients(ArimaCoefficients coefficients) {
-            if (coefficients == null) {
-                throw new NullPointerException("The model coefficients cannot be null.");
-            }
-            this.coefficients = coefficients;
+            this.coefficients = checkNotNull(coefficients, "The model coefficients cannot be null.");
             if (!periodSet) {
                 this.period = (coefficients.isSeasonal()) ? TimePeriod.oneMonth() : TimePeriod.oneYear();
             }
@@ -178,41 +233,43 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
          * @return this builder.
          */
         public Builder setDistribution(Distribution distribution) {
-            if (distribution == null) {
-                throw new NullPointerException("The distribution cannot be null.");
-            }
-            this.distribution = distribution;
+            this.distribution = checkNotNull(distribution, "The distribution cannot be null.");
             return this;
         }
 
         /**
-         * Set the time period between simulated observations. The default is one year for
+         * Set the time period between process observations. The default is one year for
          * non-seasonal model coefficients and one month for seasonal model coefficients.
          *
-         * @param period the time period between simulated observations.
+         * @param period the time period between process observations.
          * @return this builder.
          */
         public Builder setPeriod(TimePeriod period) {
-            if (period == null) {
-                throw new NullPointerException("The time period cannot be null.");
-            }
             this.periodSet = true;
-            this.period = period;
+            this.period = checkNotNull(period, "The time period cannot be null.");
             return this;
         }
 
         /**
-         * Set the time cycle at which the seasonal pattern of the simulated time series repeats. This defaults
+         * Set the time cycle at which the seasonal pattern of the process repeats. This defaults
          * to one year.
          *
-         * @param seasonalCycle the time cycle at which the seasonal pattern of the simulated time series repeats.
+         * @param seasonalCycle the time cycle at which the seasonal pattern of the process repeats.
          * @return this builder.
          */
         public Builder setSeasonalCycle(TimePeriod seasonalCycle) {
-            if (seasonalCycle == null) {
-                throw new NullPointerException("The seasonal cycle cannot be null.");
-            }
-            this.seasonalCycle = seasonalCycle;
+            this.seasonalCycle = checkNotNull(seasonalCycle, "The seasonal cycle cannot be null.");
+            return this;
+        }
+
+        /**
+         * Set the start time of the process.
+         *
+         * @param startTime the start time of the process.
+         * @return this builder.
+         */
+        public Builder setStartTime(OffsetDateTime startTime) {
+            this.startTime = checkNotNull(startTime, "The start time cannot be null.");
             return this;
         }
 
