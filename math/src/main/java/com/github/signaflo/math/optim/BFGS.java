@@ -26,6 +26,8 @@ package com.github.signaflo.math.optim;
 import com.github.signaflo.math.linear.doubles.Matrix;
 import com.github.signaflo.math.linear.doubles.Vector;
 import com.github.signaflo.math.function.AbstractMultivariateFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
@@ -38,6 +40,7 @@ import static java.lang.Math.max;
  */
 public final class BFGS {
 
+    private static final Logger logger = LoggerFactory.getLogger(BFGS.class);
     private static final double C1 = 1E-4;
     private static final double STEP_REDUCTION_FACTOR = 0.2;
     //private static final double c2 = 0.9;
@@ -94,7 +97,6 @@ public final class BFGS {
             double gradientNorm = gradient.norm();
             boolean stop = gradientNorm < gradientNormTolerance || !Double.isFinite(gradientNorm);
             int iterationsSinceIdentityReset = 0;
-
             while (!stop) {
                 if (iterationsSinceIdentityReset > 2 * iterate.size()) {
                     H = identity;
@@ -119,13 +121,20 @@ public final class BFGS {
                 nextIterate = iterate.plus(s);
                 priorFunctionValue = functionValue;
                 functionValue = f.at(nextIterate);
+                final int maxStepReductions = 25;
+                int stepReductions = 0;
                 while (!(Double.isFinite(functionValue) &&
                          functionValue < priorFunctionValue + C1 * stepSize * slopeAt0) && !stop) {
                     relativeChangeDenominator = max(abs(priorFunctionValue), abs(nextIterate.norm()));
                     relativeChange = Math.abs((priorFunctionValue - functionValue) / relativeChangeDenominator);
                     if (relativeChange <= relativeChangeTolerance) {
                         stop = true;
+                    } else if (stepReductions > maxStepReductions) {
+                        logger.warn("Maximum step reductions, " + maxStepReductions, " exceeded." +
+                                    "Stopping BFGS algorithm.");
+                        stop = true;
                     } else {
+                        stepReductions++;
                         stepSize *= STEP_REDUCTION_FACTOR;
                         s = searchDirection.scaledBy(stepSize);
                         nextIterate = iterate.plus(s);

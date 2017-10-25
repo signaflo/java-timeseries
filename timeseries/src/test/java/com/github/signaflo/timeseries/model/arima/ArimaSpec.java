@@ -164,7 +164,6 @@ public class ArimaSpec {
 
     @Test
     public void whenNullObservationsThenNPE5() {
-        ArimaOrder order = ArimaOrder.order(0, 1, 0);
         ArimaCoefficients coefficients = ArimaCoefficients.builder().build();
         Arima.FittingStrategy fittingStrategy = Arima.FittingStrategy.CSSML;
         exception.expect(NullPointerException.class);
@@ -173,7 +172,6 @@ public class ArimaSpec {
 
     @Test
     public void whenNullObservationsThenNPE6() {
-        ArimaOrder order = ArimaOrder.order(0, 1, 0);
         ArimaCoefficients coefficients = ArimaCoefficients.builder().build();
         TimePeriod period = TimePeriod.oneYear();
         exception.expect(NullPointerException.class);

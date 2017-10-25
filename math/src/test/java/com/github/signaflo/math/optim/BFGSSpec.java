@@ -22,6 +22,5 @@ public final class BFGSSpec {
         assertArrayEquals(expectedSolution, solver.parameters().elements(), 1E-3);
         double[] expectedHessian = {0.2, 0.4, 0.4, 0.8};
         assertArrayEquals(expectedHessian, solver.inverseHessian().data(), 1E-2);
-
     }
 }
