@@ -2,7 +2,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             pom.project {
-                name 'com.github.jrachiele:math'
+                name 'com.github.signaflo:math'
                 artifactId 'math'
             }
         }

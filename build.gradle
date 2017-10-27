@@ -69,9 +69,9 @@ subprojects {
                     url 'https://github.com/jrachiele/java-timeseries'
 
                     scm {
-                        connection 'scm:git:git://github.com/jrachiele/java-timeseries.git'
-                        developerConnection 'scm:git:ssh://github.com/jrachiele/java-timeseries.git'
-                        url 'https://github.com/jrachiele/java-timeseries'
+                        connection 'scm:git:git://github.com/signaflo/java-timeseries.git'
+                        developerConnection 'scm:git:ssh://github.com/signaflo/java-timeseries.git'
+                        url 'https://github.com/signaflo/java-timeseries'
                     }
 
                     licenses {

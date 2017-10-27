@@ -2,7 +2,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             pom.project {
-                name 'com.github.jrachiele:timeseries'
+                name 'com.github.signaflo:timeseries'
                 artifactId 'timeseries'
             }
         }
