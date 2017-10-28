@@ -2,27 +2,12 @@ Java Time Series
 ===============
 Time series analysis in Java.
 
-## IMPORTANT NOTICE
+## Announcements
 
-Major API changes have been made with release 0.3. The first and most obvious
-is that the single java-com.github.signaflo.timeseries project has been split up into two
-seperate modules -- com.github.signaflo.math and com.github.signaflo.timeseries. The com.github.signaflo.timeseries module contains
-the time series com.github.signaflo.data types, models, and forecasts. The com.github.signaflo.math module
-contains much of the lower-level supporting structure and is likely to
-be of less interest to library users.
+Pre-release version 0.4 is now available. 
 
-The arima package has undergone a lot of refactoring and some structural
-changes. One critical change worth noting is that the arima classes now
-have the concept of a drift term, and differentiate between the mean
-and the drift in certain special cases. If clarification is needed, don't
-hesitate to create an issue for discussion.
+The project groupId has changed to com.github.signaflo. See the using section below for updated coordinates.
 
-For this release, time series linear regression model and forecast classes
-have been added. However, these are unlikely to be very useful on their
-own at this time, at least for forecasting purposes. The best you can
-get out of them currently is a point forecast. For the next release,
-the time series linear regression forecast class will implement the Forecast
-interface, which will make it much more useful. 
  
 Features
 -------
@@ -42,15 +27,15 @@ Major API changes are expected in the near future.
 
 ```groovy
 <dependency>
-    <groupId>com.github.jrachiele</groupId>
-    <artifactId>com.github.signaflo.timeseries</artifactId>
-    <version>0.3</version>
+    <groupId>com.github.signaflo</groupId>
+    <artifactId>timeseries</artifactId>
+    <version>0.4</version>
 </dependency>
 ```
 
 #### Gradle
 ```groovy
-compile 'com.github.jrachiele:com.github.signaflo.timeseries:0.3'
+compile 'com.github.signaflo:timeseries:0.4'
 ```
 
 Credits
