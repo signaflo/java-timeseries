@@ -64,8 +64,8 @@ public final class QuadraticForm {
     }
 
     private static void validateArguments(Vector x, Matrix A) {
-        Validate.argumentsNotNull(x.getClass(), x);
-        Validate.argumentsNotNull(A.getClass(), A);
+        Validate.argumentsNotNull(Vector.class, x);
+        Validate.argumentsNotNull(Matrix.class, A);
         if (!A.isSquare()) {
             throw new IllegalArgumentException("The matrix must be square.");
         }
