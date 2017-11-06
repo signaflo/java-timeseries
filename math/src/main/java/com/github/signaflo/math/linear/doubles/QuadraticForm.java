@@ -27,6 +27,8 @@ package com.github.signaflo.math.linear.doubles;
 import lombok.ToString;
 import com.github.signaflo.math.operations.Validate;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Represents a quadratic form (see <a target="_blank" href="http://cs229.stanford.edu/section/cs229-linalg.pdf">
  * section 3.11 here</a>). Note that an object of this class may be constructed with any square
@@ -64,8 +66,8 @@ public final class QuadraticForm {
     }
 
     private static void validateArguments(Vector x, Matrix A) {
-        Validate.argumentsNotNull(Vector.class, x);
-        Validate.argumentsNotNull(Matrix.class, A);
+        checkNotNull(x, "null Vector argument.");
+        checkNotNull(A, "null Matrix argument.");
         if (!A.isSquare()) {
             throw new IllegalArgumentException("The matrix must be square.");
         }
