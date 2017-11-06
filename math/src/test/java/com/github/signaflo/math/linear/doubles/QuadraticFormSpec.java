@@ -24,15 +24,40 @@
 
 package com.github.signaflo.math.linear.doubles;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 public class QuadraticFormSpec {
 
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
     private Vector x = Vector.from(1.0, 3.0);
     private Matrix A = Matrix.create(2, 2, 2.0, 4.0, 6.0, 8.0);
     private QuadraticForm q = new QuadraticForm(x, A);
+
+    @Test
+    public void whenNonSquareMatrixThenIllegalArgument() {
+        A = Matrix.create(2, 3, 2.0, 4.0, 6.0, 8.0, 5.5, 1.5);
+        String expectedMessage = "The matrix must be square.";
+        exception.expectMessage(expectedMessage);
+        exception.expect(IllegalArgumentException.class);
+        new QuadraticForm(x, A);
+    }
+
+    @Test
+    public void whenIncorrectDimensionsThenIllegalArgument() {
+        A = Matrix.create(3, 3, 2.0, 4.0, 6.0, 8.0, 5.5, 1.5, 9.0, -5.4, 7.5);
+        String expectedMessage = "The number of matrix columns must be the same" +
+                                 " as the size of the vector.";
+        exception.expectMessage(expectedMessage);
+        exception.expect(IllegalArgumentException.class);
+        new QuadraticForm(x, A);
+    }
 
     @Test
     public void whenMultiplyTwoByTwoThenCorrectResult() {
@@ -57,8 +82,10 @@ public class QuadraticFormSpec {
         Matrix B = Matrix.create(Matrix.Layout.BY_COLUMN, data);
         QuadraticForm r = new QuadraticForm(y, B);
         QuadraticForm s = new QuadraticForm(x, A);
+        assertThat(q, is(q));
         assertThat(q, is(s));
         assertThat(q.hashCode(), is(s.hashCode()));
         assertThat(r, is(not(s)));
+        assertThat(q, is(notNullValue()));
     }
 }

@@ -40,6 +40,12 @@ public final class QuadraticForm {
     private final Vector x;
     private final Matrix A;
 
+    /**
+     * Construct a new quadratic form with the given vector and matrix.
+     *
+     * @param x the vector component of the quadratic form.
+     * @param A the matrix component of the quadratic form.
+     */
     public QuadraticForm(Vector x, Matrix A) {
         validateArguments(x, A);
         this.x = x;
@@ -78,7 +84,7 @@ public final class QuadraticForm {
     }
 
     /**
-     * Compute <em>x</em><sup>T</sup><em>A</em><em>x</em> and return the resulting value.
+     * Compute <em>x</em><sup>T</sup><em>A</em><em>x</em> and return the result.
      *
      * @return the result of <em>x</em><sup>T</sup><em>A</em><em>x</em>.
      */
