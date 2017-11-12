@@ -17,6 +17,7 @@ public interface Matrix {
      *
      * @throws IllegalArgumentException if the length of the data array does not equal the given number of rows
      * multiplied by the given number of columns.
+     * @throws NullPointerException if the data is null.
      */
     static Matrix create(final int nrow, final int ncol, final double... data) {
         return new MatrixOneD(nrow, ncol, data);
@@ -189,10 +190,10 @@ public interface Matrix {
     /**
      * Push the provided vector to the front of this matrix, shifting all other vectors to the right.
      *
-     * @param newData the new vector of data.
+     * @param newData the new vector.
      * @return a matrix with the given vector pushed to the front of this matrix.
      *
-     * @throws IllegalArgumentException if size of the given vector does not equal the number of rows of this matrix.
+     * @throws IllegalArgumentException if the size of the given vector does not equal the number of rows of this matrix.
      */
     Matrix pushColumn(Vector newData);
 
