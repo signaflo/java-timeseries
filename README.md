@@ -37,8 +37,10 @@ Major API changes are expected in the near future.
 ```groovy
 compile 'com.github.signaflo:timeseries:0.4'
 ```
-#### [timeseries module javadoc](https://javadoc.io/doc/com.github.signaflo/timeseries/0.4)
-#### [math module javadoc](https://javadoc.io/doc/com.github.signaflo/math/0.4)
+#### Javadoc
+[timeseries module](https://javadoc.io/doc/com.github.signaflo/timeseries/0.4)
+
+[math module](https://javadoc.io/doc/com.github.signaflo/math/0.4) (interproject dependency of timeseries module)
 
 Credits
 ------
