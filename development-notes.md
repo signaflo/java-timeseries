@@ -7,3 +7,5 @@ for such a small, greenfield project.
 * Future direction of project may be to conceive of TimeSeries object as a reactive stream, and the current fixed and immutable
 implementation as a sample from such a stream. This actually fits better with the textbook definition of a time series
 as a realization of an infinite stochastic process.
+
+* Documentation has to be at the top of the priority list for the foreseeable future.
