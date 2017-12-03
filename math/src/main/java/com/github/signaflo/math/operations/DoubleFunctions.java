@@ -53,6 +53,10 @@ public final class DoubleFunctions {
         return data.clone();
     }
 
+    public static double[] emptyArray() {
+        return arrayFrom();
+    }
+
     /**
      * Create a new array by combining the elements of the input arrays in the order given.
      *

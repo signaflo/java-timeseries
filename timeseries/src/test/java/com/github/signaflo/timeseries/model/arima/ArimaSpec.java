@@ -56,6 +56,7 @@ public class ArimaSpec {
                                                 4.348214285714286, 0.9818548387096774, 1.0145833333333334,
                                                 4.909274193548387, 9.13125);
         Arima model = Arima.model(timeSeries, ArimaOrder.order(1, 1, 0, 1, 0, 1));
+        System.out.println(model);
     }
 
     @Test
@@ -128,6 +129,25 @@ public class ArimaSpec {
                                                           .build();
         Arima model = Arima.model(TestData.livestock, coefficients, ArimaModel.FittingStrategy.ML);
         assertThat(model.coefficients().drift(), is(closeTo(4.85376578, 1E-4)));
+    }
+
+    @Test
+    public void whenSimpleDataWithLinearTrendThenCorrectFit() {
+        double[] data = new double[] {
+                100.1,
+                200.4,
+                300.2,
+                400.5,
+                500.1,
+                600.7,
+                700.7,
+                800.7};
+        //TimeSeries series = TimeSeries.from(data);
+        TimeSeries series = TestData.livestock;
+        ArimaOrder order = ArimaOrder.order(0, 1, 1, Arima.Constant.INCLUDE);
+        Arima model = Arima.model(series, order);
+        assertThat(model.coefficients().maCoeffs()[0], is(closeTo(-1.000, 1E-8)));
+        assertThat(model.coefficients().drift(), is(closeTo(100.0810, 1e-1)));
     }
 
     @Test

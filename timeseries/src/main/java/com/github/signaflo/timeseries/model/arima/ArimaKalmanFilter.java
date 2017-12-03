@@ -184,7 +184,7 @@ class ArimaKalmanFilter {
      * @param theta the moving-average parameters.
      * @return the initial covariance matrix of the state variables as a lower triangular matrix in a 1D array.
      */
-    private static double[] getInitialStateCovariance(final double[] phi, final double[] theta) {
+    static double[] getInitialStateCovariance(final double[] phi, final double[] theta) {
         final int p = phi.length;
         final int q = theta.length;
         if (p == 0 && q == 0) {
