@@ -44,6 +44,7 @@ public class ArimaSpec {
 
     @Test
     public void testArimaInvertible() {
+        Arima.model(TestData.ukcars, ArimaOrder.order(0, 2, 0, Arima.Drift.INCLUDE));
         TimeSeries timeSeries = TimeSeries.from(TimePeriod.oneMonth(), "2000-01-01T00:00",
         30.4375, 29.455645161290324, 40.58333333333333, 41.23790322580645, 15.21875, 10.800403225806452,
                                                 30.4375, 25.002232142857142, 54.983870967741936, 33.48125,
