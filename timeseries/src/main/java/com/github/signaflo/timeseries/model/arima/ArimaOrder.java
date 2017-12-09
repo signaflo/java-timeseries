@@ -197,8 +197,8 @@ public class ArimaOrder {
     }
 
     /**
-     * Create a new ArimaOrder using the provided number of autoregressive and moving-average parameters, as well as the
-     * degrees of differencing and indication of whether or not to fit a drift term. A constant will be included
+     * Create a new model order using the provided number of autoregressive and moving-average parameters, as well
+     * as the degrees of differencing and indication of whether or not to fit a drift term. A constant will be included
      * only if both d and D are equal to 0.
      *
      * @param p        the number of non-seasonal autoregressive coefficients.
@@ -226,8 +226,8 @@ public class ArimaOrder {
     }
 
     /**
-     * Create a new ArimaOrder using the provided number of autoregressive and moving-average parameters, as well as the
-     * degrees of differencing and indication of whether or not to fit a constant and/or a drift term.
+     * Create a new model order using the provided number of autoregressive and moving-average parameters, as well as
+     * the degrees of differencing and indication of whether or not to fit a constant and/or a drift term.
      *
      * @param p        the number of non-seasonal autoregressive coefficients.
      * @param d        the degree of non-seasonal differencing.
