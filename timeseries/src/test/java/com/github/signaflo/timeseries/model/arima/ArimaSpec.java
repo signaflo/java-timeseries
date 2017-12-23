@@ -43,6 +43,23 @@ public class ArimaSpec {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
+    public void whenSeasonalComponentIncludedButSeasonalFrequencyEqualsOneThenIllegalArgument() {
+        exception.expectMessage("There was a seasonal component in the model, but the number of " +
+                                "observations per seasonal cycle was equal to 1.");
+        exception.expect(IllegalArgumentException.class);
+        Arima.model(TestData.livestock, ArimaOrder.order(0, 0, 0, 1, 0, 0));
+    }
+
+    @Test
+    public void whenSeasonalFrequencyLessThanOneThenIllegalArgument() {
+        exception.expectMessage("The number of observations per seasonal cycle should be an integer" +
+                                " greater than or equal to 1, but was 0");
+        exception.expect(IllegalArgumentException.class);
+        TimeSeries series = TimeSeries.from(TimePeriod.twoYears(), 3.0, 5.0, 8.0, 1.5, 10.0, 7.5, 4.6);
+        Arima.model(series, ArimaOrder.order(0, 0, 0, 0, 0, 0));
+    }
+
+    @Test
     public void testArimaInvertible() {
         Arima.model(TestData.ukcars, ArimaOrder.order(0, 2, 0, Arima.Drift.INCLUDE));
         TimeSeries timeSeries = TimeSeries.from(TimePeriod.oneMonth(), "2000-01-01T00:00",

@@ -62,6 +62,7 @@ final class ArimaModel implements Arima {
 
     private static final double EPSILON = Math.ulp(1.0);
     private static final double DEFAULT_TOLERANCE = Math.sqrt(EPSILON);
+
     private final TimeSeries observations;
     private final TimeSeries differencedSeries;
     private final TimeSeries fittedSeries;
@@ -70,6 +71,7 @@ final class ArimaModel implements Arima {
     private final ModelInformation modelInfo;
     private final ArimaCoefficients coefficients;
     private final FittingStrategy fittingStrategy;
+
     private final int seasonalFrequency;
     private final double[] arSarCoeffs;
     private final double[] maSmaCoeffs;
@@ -86,6 +88,7 @@ final class ArimaModel implements Arima {
         this.order = order;
         this.fittingStrategy = fittingStrategy;
         this.seasonalFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
+        validateFreq(order, seasonalFrequency);
         this.differencedSeries = observations.difference(1, order.d()).difference(seasonalFrequency, order.D());
 
         final Vector initParams;
@@ -170,6 +173,22 @@ final class ArimaModel implements Arima {
         }
     }
 
+    private void validateFreq(ArimaOrder order, int seasonalFrequency) {
+        if (seasonalFrequency < 1) {
+            String errorMessage = "The number of observations per seasonal cycle should be an integer" +
+                                  " greater than or equal to 1, but was " + seasonalFrequency;
+            throw new IllegalArgumentException(errorMessage);
+        }
+        if (seasonalFrequency == 1) {
+            int seasonalComponents = order.P() + order.Q() + order.D();
+            if (seasonalComponents > 0) {
+                String errorMessage = "There was a seasonal component in the model, but the number of " +
+                                      "observations per seasonal cycle was equal to 1.";
+                throw new IllegalArgumentException(errorMessage);
+            }
+        }
+    }
+
     ArimaModel(final TimeSeries observations, final ArimaCoefficients coeffs, final TimePeriod seasonalCycle,
                final FittingStrategy fittingStrategy) {
         this.observations = observations;
@@ -177,6 +196,7 @@ final class ArimaModel implements Arima {
         this.fittingStrategy = fittingStrategy;
         this.order = coeffs.extractModelOrder();
         this.seasonalFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
+        validateFreq(order, seasonalFrequency);
         this.differencedSeries = observations.difference(1, order.d()).difference(seasonalFrequency, order.D());
         this.arSarCoeffs = ArimaCoefficients.expandArCoefficients(coeffs.arCoeffs(), coeffs.seasonalARCoeffs(),
                                                                   seasonalFrequency);

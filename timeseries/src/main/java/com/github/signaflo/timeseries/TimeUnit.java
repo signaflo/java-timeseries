@@ -30,8 +30,7 @@ import java.time.temporal.TemporalUnit;
 /**
  * A set of constants representing standard time units, ranging from nanoseconds to centuries. This class
  * wraps a {@link ChronoUnit} together with a length of time to create a broader set of time units than
- * those provided by ChronoUnit and to allow additional functionality. For even more fine-tuned time modeling
- * use the {@link TimePeriod} class.
+ * those provided by ChronoUnit and to allow additional functionality.
  *
  * @author Jacob Rachiele
  */
@@ -90,20 +89,6 @@ public enum TimeUnit {
     public double frequencyPer(final TimeUnit otherTimeUnit) {
         return otherTimeUnit.totalDuration() / this.totalDuration();
 
-    }
-
-    /**
-     * Compute and return the number of times this time unit occurs in the given time period.
-     * <p>
-     * For example, if this time unit is a month and the given time period is half a year, the return value is 6,
-     * since a month occurs 6 times in one year.
-     * </p>
-     *
-     * @param timePeriod the time period for which the frequency of occurrence of this time unit is to be found.
-     * @return the number of times this time unit occurs in the provided time period.
-     */
-    public double frequencyPer(final TimePeriod timePeriod) {
-        return timePeriod.totalSeconds() / this.totalDuration();
     }
 
     /**
