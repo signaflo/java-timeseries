@@ -38,5 +38,7 @@ artifacts {
 
 dependencies {
     api project(':math')
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
+    implementation 'org.reactivestreams:reactive-streams-flow-adapters:1.0.2'
     implementation 'org.apache.commons:commons-csv:1.4'
 }
