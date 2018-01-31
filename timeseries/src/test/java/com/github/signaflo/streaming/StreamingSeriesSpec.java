@@ -24,6 +24,9 @@
 
 package com.github.signaflo.streaming;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+
 import io.reactivex.Flowable;
 import io.reactivex.subscribers.DefaultSubscriber;
 import org.junit.Test;
@@ -32,13 +35,16 @@ import org.reactivestreams.Subscriber;
 
 public class StreamingSeriesSpec {
 
-    Publisher<Double> publisher = Flowable.just(1.0);
-    StreamingSeries<Double> series = new StreamingSeries<>(publisher);
+    private Publisher<Double> publisher = Flowable.just(1.0);
+    private StreamingSeries<Double> series = new StreamingSeries<>(publisher);
+    private Double currentValue = 0.0;
+    private String status = "Uninitialized";
 
     Subscriber<Double> subscriber = new DefaultSubscriber<>() {
+
         @Override
         public void onNext(Double d) {
-            System.out.println(d);
+            currentValue = 1.0;
         }
 
         @Override
@@ -48,12 +54,14 @@ public class StreamingSeriesSpec {
 
         @Override
         public void onComplete() {
-            System.out.println("Completed");
+            status = "Completed";
         }
     };
 
     @Test
-    public void testSubscribe() {
+    public void whenSeriesSubscribedToThenStateChangesVisible() {
         series.subscribe(subscriber);
+        assertThat(currentValue, is(1.0));
+        assertThat(status, is("Completed"));
     }
 }
