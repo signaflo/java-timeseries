@@ -93,7 +93,7 @@ public class MeanModelSpec {
     public void whenMeanForecastComputedTimePeriodUnchanged() {
         TimeSeries pointForecast = meanModel.forecast(6).pointEstimates();
         TimeUnit timeUnit = TimeUnit.QUARTER;
-        assertThat(pointForecast.timePeriod().timeUnit(), is(equalTo(timeUnit)));
+        assertThat(pointForecast.samplingInterval().timeUnit(), is(equalTo(timeUnit)));
     }
 
     @Test

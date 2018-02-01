@@ -54,7 +54,7 @@ class MeanForecaster implements Forecaster {
         for (int t = 0; t < steps; t++) {
             upperPredictionValues[t] = forecast.at(t) + fcstStdError.at(t);
         }
-        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
+        return TimeSeries.from(forecast.samplingInterval(), forecast.observationTimes().get(0), upperPredictionValues);
     }
 
     @Override
@@ -71,7 +71,7 @@ class MeanForecaster implements Forecaster {
         for (int t = 0; t < steps; t++) {
             lowerPredictionValues[t] = forecast.at(t) - fcstStdError.at(t);
         }
-        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), lowerPredictionValues);
+        return TimeSeries.from(forecast.samplingInterval(), forecast.observationTimes().get(0), lowerPredictionValues);
     }
 
     private TimeSeries getFcstErrors(TimeSeries forecast, int steps, double alpha) {
@@ -83,13 +83,13 @@ class MeanForecaster implements Forecaster {
         for (int t = 0; t < errors.length; t++) {
             errors[t] = criticalValue * fcstStdError;
         }
-        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), errors);
+        return TimeSeries.from(forecast.samplingInterval(), forecast.observationTimes().get(0), errors);
     }
 
     @Override
     public TimeSeries computePointForecasts(int steps) {
         int n = timeSeries.size();
-        TimePeriod timePeriod = timeSeries.timePeriod();
+        TimePeriod timePeriod = timeSeries.samplingInterval();
 
         final double[] forecasted = DoubleFunctions.fill(steps, timeSeries.mean());
         final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)

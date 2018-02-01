@@ -120,7 +120,7 @@ public final class RandomWalk implements Model {
     @Override
     public Forecast forecast(final int steps, double alpha) {
         int n = timeSeries.size();
-        TimePeriod timePeriod = timeSeries.timePeriod();
+        TimePeriod timePeriod = timeSeries.samplingInterval();
         final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
                                                    .plus(timePeriod.periodLength() * timePeriod.timeUnit().unitLength(),
                                                          timePeriod.timeUnit().temporalUnit());
@@ -153,7 +153,7 @@ public final class RandomWalk implements Model {
         for (int t = 1; t < timeSeries.size(); t++) {
             fitted[t] = timeSeries.at(t - 1);
         }
-        return TimeSeries.from(timeSeries.timePeriod(), timeSeries.observationTimes().get(0), fitted);
+        return TimeSeries.from(timeSeries.samplingInterval(), timeSeries.observationTimes().get(0), fitted);
     }
 
     private TimeSeries calculateResiduals() {
@@ -161,7 +161,7 @@ public final class RandomWalk implements Model {
         for (int t = 1; t < timeSeries.size(); t++) {
             residuals[t] = timeSeries.at(t) - fittedSeries.at(t);
         }
-        return TimeSeries.from(timeSeries.timePeriod(), timeSeries.observationTimes().get(0), residuals);
+        return TimeSeries.from(timeSeries.samplingInterval(), timeSeries.observationTimes().get(0), residuals);
     }
 
     @Override

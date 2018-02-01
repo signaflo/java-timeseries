@@ -24,19 +24,59 @@
 
 package com.github.signaflo.streaming;
 
-import io.reactivex.Flowable;
+import com.github.signaflo.timeseries.Observation;
+import com.github.signaflo.timeseries.TimePeriod;
+import com.google.common.collect.EvictingQueue;
 import org.reactivestreams.FlowAdapters;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.time.OffsetDateTime;
+import java.util.Queue;
 import java.util.concurrent.Flow;
 
-public class StreamingSeries<T extends Number> implements Flow.Publisher<T> {
+public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
 
+    private static final Logger logger = LoggerFactory.getLogger(StreamingSeries.class);
+
+    private final String name;
     private final Publisher<T> publisher;
+    private final TimePeriod samplingInterval;
+    private OffsetDateTime currentObservationPeriod;
+    private final Queue<Observation<T>> observations;
 
-    StreamingSeries(Publisher<T> publisher) {
-        this.publisher = publisher;
+    private StreamingSeries(StreamingSeriesBuilder seriesBuilder) {
+        this.name = seriesBuilder.name;
+        this.publisher = seriesBuilder.publisher;
+        this.samplingInterval = seriesBuilder.samplingInterval;
+        this.observations = EvictingQueue.create(seriesBuilder.memory);
+        this.currentObservationPeriod = seriesBuilder.startPeriod;
+        this.publisher.subscribe(FlowAdapters.toSubscriber(this));
+    }
+
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+        subscription.request(Long.MAX_VALUE);
+    }
+
+    @Override
+    public void onNext(T observed) {
+        Observation<T> currentObservation = new Observation<>(observed, currentObservationPeriod);
+        currentObservationPeriod = currentObservationPeriod.plus(samplingInterval.unitLength(),
+                                                                 samplingInterval.timeUnit().temporalUnit());
+        observations.add(currentObservation);
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+        logger.error("Abnormal termination of {}", this.toString());
+    }
+
+    @Override
+    public void onComplete() {
+        logger.info("Time Series stream, {}, completed succesfully.", this.toString());
     }
 
     @Override
@@ -46,5 +86,35 @@ public class StreamingSeries<T extends Number> implements Flow.Publisher<T> {
 
     public void subscribe(Subscriber<? super T> subscriber) {
         this.publisher.subscribe(subscriber);
+    }
+
+    Queue<Observation<T>> getObservations() {
+        return this.observations;
+    }
+
+    public static <T extends Number> StreamingSeriesBuilder getStreamingSeriesBuilder(Publisher<T> publisher) {
+        return new StreamingSeriesBuilder(publisher);
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + ": " + this.name;
+    }
+
+    public static class StreamingSeriesBuilder<T extends Number> {
+
+        private String name = "Unnamed";
+        private int memory = 10000;
+        private Publisher<T> publisher;
+        private OffsetDateTime startPeriod = OffsetDateTime.now();
+        private TimePeriod samplingInterval = TimePeriod.oneMonth();
+
+        private StreamingSeriesBuilder(Publisher<T> publisher) {
+            this.publisher = publisher;
+        }
+
+        public StreamingSeries<T> build() {
+            return new StreamingSeries<>(this);
+        }
     }
 }

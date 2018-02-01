@@ -161,7 +161,7 @@ final class TimeSeriesLinearRegressionModel implements TimeSeriesLinearRegressio
 
     @Override
     public int seasonalFrequency() {
-        return (int) this.timeSeries.timePeriod().frequencyPer(this.seasonalCycle);
+        return (int) this.timeSeries.samplingInterval().frequencyPer(this.seasonalCycle);
     }
 
     private static double[] getIthSeasonalRegressor(int nrows, int startRow, int seasonalFrequency) {

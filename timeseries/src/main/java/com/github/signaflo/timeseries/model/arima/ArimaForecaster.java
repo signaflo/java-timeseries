@@ -82,7 +82,7 @@ class ArimaForecaster implements Forecaster {
         for (int t = 0; t < steps; t++) {
             upperPredictionValues[t] = forecast.at(t) + errors[t];
         }
-        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
+        return TimeSeries.from(forecast.samplingInterval(), forecast.observationTimes().get(0), upperPredictionValues);
     }
 
     @Override
@@ -93,14 +93,14 @@ class ArimaForecaster implements Forecaster {
         for (int t = 0; t < steps; t++) {
             lowerPredictionValues[t] = forecast.at(t) + errors[t];
         }
-        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), lowerPredictionValues);
+        return TimeSeries.from(forecast.samplingInterval(), forecast.observationTimes().get(0), lowerPredictionValues);
     }
 
     @Override
     public TimeSeries computePointForecasts(int steps) {
         final int n = observations.size();
         double[] fcst = fcst(steps);
-        TimePeriod timePeriod = observations.timePeriod();
+        TimePeriod timePeriod = observations.samplingInterval();
         final OffsetDateTime startTime = observations.observationTimes()
                                                      .get(n - 1)
                                                      .plus(timePeriod.periodLength() *

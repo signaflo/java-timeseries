@@ -43,7 +43,7 @@ public final class MeanModel implements Model {
     public MeanModel(@NonNull final TimeSeries observed) {
         this.timeSeries = observed;
         this.mean = this.timeSeries.mean();
-        this.fittedSeries = TimeSeries.from(observed.timePeriod(), observed.observationTimes().get(0),
+        this.fittedSeries = TimeSeries.from(observed.samplingInterval(), observed.observationTimes().get(0),
                                             DoubleFunctions.fill(observed.size(), this.mean));
     }
 

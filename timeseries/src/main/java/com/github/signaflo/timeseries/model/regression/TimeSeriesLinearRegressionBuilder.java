@@ -174,7 +174,7 @@ public final class TimeSeriesLinearRegressionBuilder {
             this.timeBasedPredictors(Range.inclusiveRange(1, response.size()).asArray());
         }
         if (this.seasonal.include()) {
-            int seasonalFrequency = (int) this.response.timePeriod().frequencyPer(this.seasonalCycle);
+            int seasonalFrequency = (int) this.response.samplingInterval().frequencyPer(this.seasonalCycle);
             int periodOffset = 0;
             double[][] seasonalRegressors = TimeSeriesLinearRegressionModel.getSeasonalRegressors(this.response.size(), seasonalFrequency,
                                                                                                   periodOffset);

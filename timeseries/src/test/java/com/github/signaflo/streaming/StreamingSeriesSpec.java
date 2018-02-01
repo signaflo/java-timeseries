@@ -35,16 +35,15 @@ import org.reactivestreams.Subscriber;
 
 public class StreamingSeriesSpec {
 
-    private Publisher<Double> publisher = Flowable.just(1.0);
-    private StreamingSeries<Double> series = new StreamingSeries<>(publisher);
-    private Double currentValue = 0.0;
+    private Publisher<Long> publisher = Flowable.just(1L, 3L);
+    private StreamingSeries<Long> series = StreamingSeries.getStreamingSeriesBuilder(publisher).build();
+    private Long currentValue = 0L;
     private String status = "Uninitialized";
 
-    Subscriber<Double> subscriber = new DefaultSubscriber<>() {
-
+    Subscriber<Long> subscriber = new DefaultSubscriber<>() {
         @Override
-        public void onNext(Double d) {
-            currentValue = 1.0;
+        public void onNext(Long l) {
+            currentValue = series.getObservations().element().getValue();
         }
 
         @Override
@@ -61,7 +60,9 @@ public class StreamingSeriesSpec {
     @Test
     public void whenSeriesSubscribedToThenStateChangesVisible() {
         series.subscribe(subscriber);
-        assertThat(currentValue, is(1.0));
+        System.out.println(series.getObservations());
+        assertThat(currentValue, is(1L));
         assertThat(status, is("Completed"));
+        System.out.println(series.getObservations());
     }
 }

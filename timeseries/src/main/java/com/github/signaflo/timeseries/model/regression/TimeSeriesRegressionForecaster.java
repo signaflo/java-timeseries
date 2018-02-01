@@ -53,7 +53,7 @@ class TimeSeriesRegressionForecaster implements Forecaster {
     @Override
     public TimeSeries computePointForecasts(int steps) {
         double[] forecasts = predictionMatrix.times(beta).elements();
-        TimePeriod timePeriod = timeSeries.timePeriod();
+        TimePeriod timePeriod = timeSeries.samplingInterval();
         OffsetDateTime sampleEnd = this.timeSeries.observationTimes().get(timeSeries.size() - 1);
         OffsetDateTime startTime = sampleEnd.plus(timePeriod.unitLength(), timePeriod.timeUnit().temporalUnit());
         return TimeSeries.from(timePeriod, startTime, forecasts);
@@ -74,7 +74,7 @@ class TimeSeriesRegressionForecaster implements Forecaster {
         for (int i = 0; i < steps; i++) {
             bounds[i] = predictions.get(i).predictionInterval().first();
         }
-        return TimeSeries.from(forecast.timePeriod(), forecast.startTime(), bounds);
+        return TimeSeries.from(forecast.samplingInterval(), forecast.startTime(), bounds);
     }
 
     private TimeSeries computeUpperPredictionBounds(List<LinearRegressionPrediction> predictions,
@@ -83,7 +83,7 @@ class TimeSeriesRegressionForecaster implements Forecaster {
         for (int i = 0; i < steps; i++) {
             bounds[i] = predictions.get(i).predictionInterval().second();
         }
-        return TimeSeries.from(forecast.timePeriod(), forecast.startTime(), bounds);
+        return TimeSeries.from(forecast.samplingInterval(), forecast.startTime(), bounds);
     }
 
     @Override
@@ -93,7 +93,7 @@ class TimeSeriesRegressionForecaster implements Forecaster {
         for (int i = 0; i < steps; i++) {
             bounds[i] = predictions.get(i).predictionInterval().first();
         }
-        return TimeSeries.from(forecast.timePeriod(), forecast.startTime(), bounds);
+        return TimeSeries.from(forecast.samplingInterval(), forecast.startTime(), bounds);
     }
 
     @Override
@@ -103,7 +103,7 @@ class TimeSeriesRegressionForecaster implements Forecaster {
         for (int i = 0; i < steps; i++) {
             bounds[i] = predictions.get(i).predictionInterval().second();
         }
-        return TimeSeries.from(forecast.timePeriod(), forecast.startTime(), bounds);
+        return TimeSeries.from(forecast.samplingInterval(), forecast.startTime(), bounds);
     }
 
 }

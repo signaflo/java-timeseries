@@ -85,7 +85,7 @@ final class ArimaModel implements Arima {
         this.observations = observations;
         this.order = order;
         this.fittingStrategy = fittingStrategy;
-        this.seasonalFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
+        this.seasonalFrequency = (int) (observations.samplingInterval().frequencyPer(seasonalCycle));
         this.differencedSeries = observations.difference(1, order.d()).difference(seasonalFrequency, order.D());
 
         final Vector initParams;
@@ -176,7 +176,7 @@ final class ArimaModel implements Arima {
         this.coefficients = coeffs;
         this.fittingStrategy = fittingStrategy;
         this.order = coeffs.extractModelOrder();
-        this.seasonalFrequency = (int) (observations.timePeriod().frequencyPer(seasonalCycle));
+        this.seasonalFrequency = (int) (observations.samplingInterval().frequencyPer(seasonalCycle));
         this.differencedSeries = observations.difference(1, order.d()).difference(seasonalFrequency, order.D());
         this.arSarCoeffs = ArimaCoefficients.expandArCoefficients(coeffs.arCoeffs(), coeffs.seasonalARCoeffs(),
                                                                   seasonalFrequency);

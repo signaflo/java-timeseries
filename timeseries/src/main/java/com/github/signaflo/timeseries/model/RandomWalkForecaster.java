@@ -49,7 +49,7 @@ class RandomWalkForecaster implements Forecaster {
         for (int t = 0; t < steps; t++) {
             upperPredictionValues[t] = forecast.at(t) + criticalValue * Math.sqrt(t + 1);
         }
-        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
+        return TimeSeries.from(forecast.samplingInterval(), forecast.observationTimes().get(0), upperPredictionValues);
     }
 
     @Override
@@ -60,13 +60,13 @@ class RandomWalkForecaster implements Forecaster {
         for (int t = 0; t < steps; t++) {
             upperPredictionValues[t] = forecast.at(t) - criticalValue * Math.sqrt(t + 1);
         }
-        return TimeSeries.from(forecast.timePeriod(), forecast.observationTimes().get(0), upperPredictionValues);
+        return TimeSeries.from(forecast.samplingInterval(), forecast.observationTimes().get(0), upperPredictionValues);
     }
 
     @Override
     public TimeSeries computePointForecasts(int steps) {
         int n = timeSeries.size();
-        TimePeriod timePeriod = timeSeries.timePeriod();
+        TimePeriod timePeriod = timeSeries.samplingInterval();
         long amountToAdd = timePeriod.periodLength() * timePeriod.timeUnit().unitLength();
         final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
                                                    .plus(amountToAdd, timePeriod.timeUnit().temporalUnit());

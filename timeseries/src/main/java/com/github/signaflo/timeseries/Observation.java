@@ -5,14 +5,14 @@ import lombok.NonNull;
 import java.time.OffsetDateTime;
 
 /**
- * An observation of some numerical event.
+ * An observation of a numerical event.
  *
  * @author Jacob Rachiele
  * Nov. 12, 2017
  */
-public class Observation {
+public class Observation<T extends Number> {
 
-    private final double value;
+    private final T value;
     private final OffsetDateTime observationPeriod;
 
     /**
@@ -21,9 +21,17 @@ public class Observation {
      * @param value the value observed.
      * @param observationPeriod the period in which the value was observed.
      */
-    public Observation(double value, @NonNull OffsetDateTime observationPeriod) {
+    public Observation(T value, @NonNull OffsetDateTime observationPeriod) {
         this.value = value;
         this.observationPeriod = observationPeriod;
+    }
+
+    public T getValue() {
+        return this.value;
+    }
+
+    public OffsetDateTime getObservationPeriod() {
+        return this.observationPeriod;
     }
 
     @Override
@@ -33,7 +41,7 @@ public class Observation {
 
         Observation that = (Observation) o;
 
-        if (Double.compare(that.value, value) != 0) return false;
+        if (!value.equals(that.value)) return false;
         return observationPeriod.equals(that.observationPeriod);
     }
 
@@ -41,7 +49,7 @@ public class Observation {
     public int hashCode() {
         int result;
         long temp;
-        temp = Double.doubleToLongBits(value);
+        temp = value.hashCode();
         result = (int) (temp ^ (temp >>> 32));
         result = 31 * result + observationPeriod.hashCode();
         return result;
@@ -49,6 +57,6 @@ public class Observation {
 
     @Override
     public String toString() {
-        return Double.toString(this.value) + " at " + this.observationPeriod.toString();
+        return value.toString() + " at " + this.observationPeriod.toString();
     }
 }
