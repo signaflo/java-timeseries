@@ -37,6 +37,11 @@ import java.time.OffsetDateTime;
 import java.util.Queue;
 import java.util.concurrent.Flow;
 
+/**
+ * A stream of observations generated sequentially in time, where observations are made at a fixed time interval.
+ *
+ * @param <T> The type of value observed.
+ */
 public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
 
     private static final Logger logger = LoggerFactory.getLogger(StreamingSeries.class);
@@ -45,13 +50,13 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
     private final Publisher<T> publisher;
     private final TimePeriod samplingInterval;
     private OffsetDateTime currentObservationPeriod;
-    private final Queue<Observation<T>> observations;
+    private final EvictingStore<Observation<T>> observations;
 
     private StreamingSeries(StreamingSeriesBuilder<T> seriesBuilder) {
         this.name = seriesBuilder.name;
         this.publisher = seriesBuilder.publisher;
         this.samplingInterval = seriesBuilder.samplingInterval;
-        this.observations = EvictingQueue.create(seriesBuilder.memory);
+        this.observations = EvictingStore.create(seriesBuilder.memory);
         this.currentObservationPeriod = seriesBuilder.startPeriod;
         this.publisher.subscribe(FlowAdapters.toSubscriber(this));
     }
@@ -88,7 +93,8 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
         this.publisher.subscribe(subscriber);
     }
 
-    Queue<Observation<T>> getObservations() {
+    // Must be copied if made public.
+    EvictingStore<Observation<T>> getObservations() {
         return this.observations;
     }
 

@@ -28,17 +28,27 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import com.github.signaflo.data.Range;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class EvictingStoreSpec {
 
     private final double[] x = Range.inclusiveRange(1.0, 10000.0, 2).asArray();
     private final double[] y = Range.inclusiveRange(2.0, 10000.0, 2).asArray();
+    private final int maxSize = 5000;
+    private final EvictingStore<Double> store = EvictingStore.create(maxSize);
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void testSeries() throws Exception {
-        int maxSize = 5000;
-        EvictingStore<Double> store = new EvictingStore<>(maxSize);
+    public void whenNullElementAddedThenNPE() {
+        exception.expect(NullPointerException.class);
+        store.add(null);
+    }
+    @Test
+    public void whenMultipleThreadsAddingThenMaxSizeNotExceeded() throws Exception {
         Thread t1 = new Thread(() -> {
             for (double elem : x) {
                 store.add(elem);

@@ -24,36 +24,81 @@
 
 package com.github.signaflo.streaming;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import lombok.NonNull;
 
+import java.util.*;
+
+/**
+ * A first-in, first-out storage structure such that the oldest element in the store is automatically removed whenever
+ * a new element is added and the store is at maximum capacity.
+ *
+ * @param <T> The type of value to store.
+ */
 public class EvictingStore<T> {
 
     private int numElements = 0;
-    private final int maxSize;
-    private final List<T> elements;
+    private final int maxCapacity;
+    private final LinkedList<T> elements;
     private final Object lock = new Object();
 
-    EvictingStore(final int maxSize) {
-        this.maxSize = maxSize;
+    private EvictingStore(final int maxCapacity) {
+        this.maxCapacity = maxCapacity;
         this.elements = new LinkedList<>();
     }
 
-    void add(T observation) {
+    public static <T> EvictingStore<T> create(int maxCapacity) {
+        return new EvictingStore<>(maxCapacity);
+    }
+
+    /**
+     * Add the specified value to the store.
+     *
+     * @param value the value to add to the store.
+     * @throws NullPointerException if a null argument is given.
+     */
+    void add(@NonNull T value) {
         synchronized (lock) {
-            if (numElements == maxSize) {
+            if (numElements == maxCapacity) {
                 this.elements.remove(0);
-                this.elements.add(observation);
+                this.elements.add(value);
             } else {
-                this.elements.add(observation);
+                this.elements.add(value);
                 numElements++;
             }
         }
     }
 
+    /**
+     * Get an Optional containing the last value added to the store if such a value exists and an empty Optional
+     * otherwise.
+     *
+     * @return an Optional containing the last value added to the store if such a value exists and an empty Optional
+     * otherwise.
+     */
+    Optional<T> peekLast() {
+        if (elements.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(elements.peekLast());
+    }
+
+    // Don't forget to copy list if this method is ever made public.
     List<T> elements() {
         return elements;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EvictingStore<?> that = (EvictingStore<?>) o;
+        return numElements == that.numElements && maxCapacity == that.maxCapacity &&
+               Objects.equals(elements, that.elements);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(numElements, maxCapacity, elements);
     }
 
     @Override
