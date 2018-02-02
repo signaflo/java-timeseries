@@ -40,7 +40,7 @@ public class StreamingSeriesSpec {
     private Long currentValue = 0L;
     private String status = "Uninitialized";
 
-    Subscriber<Long> subscriber = new DefaultSubscriber<>() {
+    private Subscriber<Long> subscriber = new DefaultSubscriber<>() {
         @Override
         public void onNext(Long l) {
             currentValue = series.getObservations().element().getValue();
@@ -48,7 +48,7 @@ public class StreamingSeriesSpec {
 
         @Override
         public void onError(Throwable t) {
-            t.printStackTrace();;
+            t.printStackTrace();
         }
 
         @Override

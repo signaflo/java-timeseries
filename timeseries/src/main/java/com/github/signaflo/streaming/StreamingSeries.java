@@ -47,7 +47,7 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
     private OffsetDateTime currentObservationPeriod;
     private final Queue<Observation<T>> observations;
 
-    private StreamingSeries(StreamingSeriesBuilder seriesBuilder) {
+    private StreamingSeries(StreamingSeriesBuilder<T> seriesBuilder) {
         this.name = seriesBuilder.name;
         this.publisher = seriesBuilder.publisher;
         this.samplingInterval = seriesBuilder.samplingInterval;
@@ -92,8 +92,8 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
         return this.observations;
     }
 
-    public static <T extends Number> StreamingSeriesBuilder getStreamingSeriesBuilder(Publisher<T> publisher) {
-        return new StreamingSeriesBuilder(publisher);
+    public static <T extends Number> StreamingSeriesBuilder<T> getStreamingSeriesBuilder(Publisher<T> publisher) {
+        return new StreamingSeriesBuilder<>(publisher);
     }
 
     @Override

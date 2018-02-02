@@ -24,40 +24,34 @@
 
 package com.github.signaflo.streaming;
 
-import com.google.common.collect.EvictingQueue;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.github.signaflo.data.Range;
+import org.junit.Test;
 
-public class FixedSizeStreamingSeries<T extends Number> {
+public class EvictingStoreSpec {
 
-    private AtomicInteger numElements = new AtomicInteger();
-    private final int maxSize;
-    final List<T> elements;
-    private final Object lock = new Object();
+    private final double[] x = Range.inclusiveRange(1.0, 10000.0, 2).asArray();
+    private final double[] y = Range.inclusiveRange(2.0, 10000.0, 2).asArray();
 
-    FixedSizeStreamingSeries(final int maxSize) {
-        this.maxSize = maxSize;
-        this.elements = Collections.synchronizedList(new LinkedList());
-    }
-
-    void add(T observation) {
-        synchronized (lock) {
-            if (numElements.get() == maxSize) {
-                this.elements.remove(0);
-                this.elements.add(observation);
-            } else {
-                this.elements.add(observation);
-                numElements.incrementAndGet();
+    @Test
+    public void testSeries() throws Exception {
+        int maxSize = 5000;
+        EvictingStore<Double> store = new EvictingStore<>(maxSize);
+        Thread t1 = new Thread(() -> {
+            for (double elem : x) {
+                store.add(elem);
             }
-        }
-    }
-
-    @Override
-    public String toString() {
-        return Arrays.toString(elements.toArray());
+        });
+        Thread t2 = new Thread(() -> {
+            for (double elem : y) {
+                store.add(elem);
+            }
+        });
+        t1.start();
+        t2.start();
+        Thread.sleep(100);
+        assertThat(store.elements().size(), is(maxSize));
     }
 }

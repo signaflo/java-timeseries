@@ -24,13 +24,13 @@ public class ObservationSpec {
     public ExpectedException exception = ExpectedException.none();
 
     private final OffsetDateTime dateTime = OffsetDateTime.of(getDefaultLocalDateTime(), getDefaultZoneOffset());
-    private final Observation x = new Observation(3.0, dateTime);
+    private final Observation<Double> x = new Observation<>(3.0, dateTime);
 
     @Test
     public void whenNullDateTimeThenNPE() {
         exception.expectMessage("observationPeriod");
         exception.expect(NullPointerException.class);
-        new Observation(3.0, null);
+        new Observation<>(3.0, null);
     }
 
     @Test
@@ -41,20 +41,20 @@ public class ObservationSpec {
 
     @Test
     public void whenDifferentIdentityButSameDataThenEquals() {
-        Observation y = new Observation(3.0, dateTime);
+        Observation<Double> y = new Observation<>(3.0, dateTime);
         assertThat(x, is(y));
         assertThat(x.hashCode(), is(y.hashCode()));
     }
 
     @Test
     public void whenSameValueButDifferentObservationPeriodThenNotEqual() {
-        Observation y = new Observation(3.0, OffsetDateTime.now());
+        Observation<Double> y = new Observation<>(3.0, OffsetDateTime.now());
         assertThat(x, is(not(y)));
     }
 
     @Test
     public void whenSameObservationPeriodButDifferentValueThenNotEqual() {
-        Observation y = new Observation(4.5, dateTime);
+        Observation<Double> y = new Observation<>(4.5, dateTime);
         assertThat(x, is(not(y)));
     }
 

@@ -153,7 +153,7 @@ public class DoubleFunctionsSpec {
 
     @Test
     public void whenNewArrayFromBoxedDoubleArrayThenCorrectArrayCreated() {
-        Double[] boxed = new Double[] {new Double(1.0), new Double(2.0), new Double(3.0)};
+        Double[] boxed = new Double[] {1.0, 2.0, 3.0};
         double[] expected = new double[] {1.0, 2.0, 3.0};
         assertThat(DoubleFunctions.arrayFrom(boxed), is(expected));
     }

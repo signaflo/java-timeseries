@@ -142,11 +142,11 @@ public class ArimaSpec {
                 600.7,
                 700.7,
                 800.7};
-        //TimeSeries series = TimeSeries.from(data);
-        TimeSeries series = TestData.livestock;
-        ArimaOrder order = ArimaOrder.order(0, 1, 1, Arima.Constant.INCLUDE);
+        TimeSeries series = TimeSeries.from(data);
+        //TimeSeries series = TestData.livestock;
+        ArimaOrder order = ArimaOrder.order(0, 1, 1, Arima.Drift.INCLUDE);
         Arima model = Arima.model(series, order);
-        assertThat(model.coefficients().maCoeffs()[0], is(closeTo(-1.000, 1E-8)));
+        assertThat(model.coefficients().maCoeffs()[0], is(closeTo(-1.000, 1E-3)));
         assertThat(model.coefficients().drift(), is(closeTo(100.0810, 1e-1)));
     }
 

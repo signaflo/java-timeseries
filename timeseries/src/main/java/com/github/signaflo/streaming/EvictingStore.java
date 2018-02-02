@@ -24,33 +24,40 @@
 
 package com.github.signaflo.streaming;
 
-import com.github.signaflo.data.Range;
-import com.github.signaflo.math.stats.distributions.Distribution;
-import com.github.signaflo.math.stats.distributions.Normal;
-import org.junit.Test;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
-public class FixedSizeStreamingSeriesSpec {
+public class EvictingStore<T> {
 
-    Distribution dist = new Normal(0.0, 1.0);
-    private final double[] x = Range.inclusiveRange(1.0, 100000.0, 2).asArray();
-    private final double[] y = Range.inclusiveRange(2.0, 100000.0, 2).asArray();
+    private int numElements = 0;
+    private final int maxSize;
+    private final List<T> elements;
+    private final Object lock = new Object();
 
-    @Test
-    public void testSeries() throws Exception {
-        FixedSizeStreamingSeries<Double> series = new FixedSizeStreamingSeries<>(10000);
-        Thread t1 = new Thread(() -> {
-            for (double elem : x) {
-                series.add(elem);
+    EvictingStore(final int maxSize) {
+        this.maxSize = maxSize;
+        this.elements = new LinkedList<>();
+    }
+
+    void add(T observation) {
+        synchronized (lock) {
+            if (numElements == maxSize) {
+                this.elements.remove(0);
+                this.elements.add(observation);
+            } else {
+                this.elements.add(observation);
+                numElements++;
             }
-        });
-        Thread t2 = new Thread(() -> {
-            for (double elem : y) {
-                series.add(elem);
-            }
-        });
-        t1.start();
-        t2.start();
-        Thread.sleep(1000);
-        System.out.println(series.elements.size());
+        }
+    }
+
+    List<T> elements() {
+        return elements;
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(elements.toArray());
     }
 }
