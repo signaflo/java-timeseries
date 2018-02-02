@@ -32,12 +32,12 @@ import org.junit.Test;
 public class FixedSizeStreamingSeriesSpec {
 
     Distribution dist = new Normal(0.0, 1.0);
-    private final double[] x = Range.inclusiveRange(1.0, 1000.0, 2).asArray();
-    private final double[] y = Range.inclusiveRange(2.0, 1000.0, 2).asArray();
+    private final double[] x = Range.inclusiveRange(1.0, 100000.0, 2).asArray();
+    private final double[] y = Range.inclusiveRange(2.0, 100000.0, 2).asArray();
 
     @Test
-    public void testSeries() {
-        FixedSizeStreamingSeries<Double> series = new FixedSizeStreamingSeries<>(100);
+    public void testSeries() throws Exception {
+        FixedSizeStreamingSeries<Double> series = new FixedSizeStreamingSeries<>(10000);
         Thread t1 = new Thread(() -> {
             for (double elem : x) {
                 series.add(elem);
@@ -50,6 +50,7 @@ public class FixedSizeStreamingSeriesSpec {
         });
         t1.start();
         t2.start();
+        Thread.sleep(1000);
         System.out.println(series.elements.size());
     }
 }

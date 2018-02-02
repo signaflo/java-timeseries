@@ -37,6 +37,7 @@ public class FixedSizeStreamingSeries<T extends Number> {
     private AtomicInteger numElements = new AtomicInteger();
     private final int maxSize;
     final List<T> elements;
+    private final Object lock = new Object();
 
     FixedSizeStreamingSeries(final int maxSize) {
         this.maxSize = maxSize;
@@ -44,12 +45,14 @@ public class FixedSizeStreamingSeries<T extends Number> {
     }
 
     void add(T observation) {
-        if (numElements.get() == maxSize) {
-            this.elements.remove(0);
-            this.elements.add(observation);
-        } else {
-            this.elements.add(observation);
-            numElements.incrementAndGet();
+        synchronized (lock) {
+            if (numElements.get() == maxSize) {
+                this.elements.remove(0);
+                this.elements.add(observation);
+            } else {
+                this.elements.add(observation);
+                numElements.incrementAndGet();
+            }
         }
     }
 
