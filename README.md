@@ -25,7 +25,7 @@ Major API changes are expected in the near future.
 
 #### Maven
 
-```groovy
+```XML
 <dependency>
     <groupId>com.github.signaflo</groupId>
     <artifactId>timeseries</artifactId>
