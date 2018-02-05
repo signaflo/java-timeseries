@@ -44,8 +44,8 @@ public class LagPolynomial {
     private final int degree;
 
     /**
-     * Construct a new lag polynomial from the given parameters. Note that the parameters given here are not the same as
-     * the coefficients of the polynomial since the coefficient at the zero-degree term is always equal to 1.
+     * Construct a new lag polynomial from the given parameters. Note that the given parameters are not the same as
+     * the polynomial coefficients since the coefficient at the zero-degree term is always equal to 1.
      *
      * @param parameters the parameters of the polynomial.
      */
@@ -69,10 +69,10 @@ public class LagPolynomial {
     /**
      * Create and return a new lag polynomial representing the first seasonal difference operator.
      *
-     * @param seasonalLag the period of seasonality, which is the lag to use for the operator.
+     * @param seasonalLag the number of periods in one seasonal cycle.
      * @return a new lag polynomial representing the first seasonal difference operator.
      */
-    private static LagPolynomial firstSeasonalDifference(final int seasonalLag) {
+    public static LagPolynomial firstSeasonalDifference(final int seasonalLag) {
         double[] poly = new double[seasonalLag];
         poly[seasonalLag - 1] = -1.0;
         return new LagPolynomial(poly);
@@ -81,7 +81,7 @@ public class LagPolynomial {
     /**
      * Create and return a new lag polynomial representing an arbitrary number of seasonal differences.
      *
-     * @param seasonalLag the period of seasonality; the lag to use for the operator.
+     * @param seasonalLag the number of periods in one seasonal cycle.
      * @param D           the number of seasonal differences.
      * @return a new lag polynomial representing an arbitrary number of seasonal differences.
      */
@@ -106,6 +106,8 @@ public class LagPolynomial {
      *
      * @param d the number of differences. An integer greater than or equal to 0.
      * @return a new lag polynomial representing an arbitrary number of differences.
+     *
+     * @throws IllegalArgumentException if the degree of differencing is less than 0.
      */
     public static LagPolynomial differences(final int d) {
         if (d < 0) {
@@ -194,13 +196,14 @@ public class LagPolynomial {
     }
 
     /**
-     * Apply this lag polynomial to the series at the given index,
-     * then solve for the value of the series at that index.
+     * Apply this lag polynomial to the series at the given index, then solve for the expected value
+     * of the series at that index. If this is a moving average polynomial, then the time series should
+     * be a series of residuals.
      *
      * @param timeSeries the time series containing the index to apply the lag polynomial to.
      * @param index      the index of the series to apply the lag polynomial at.
-     * @return the result of applying this lag polynomial to the time series at the given index, then solving
-     * for the value of the series at that index.
+     * @return the result of applying this lag polynomial to the time series at the given index and solving
+     * for the expected value of the series at that index.
      */
     public double solve(final TimeSeries timeSeries, final int index) {
         double value = 0.0;
@@ -211,13 +214,14 @@ public class LagPolynomial {
     }
 
     /**
-     * Apply this lag polynomial to the series at the given date-time,
-     * then solve for the value of the series at that date-time.
+     * Apply this lag polynomial to the series at the given date-time, then solve for the expected value
+     * of the series at that date-time.  If this is a moving average polynomial, then the time series
+     * should be a series of residuals.
      *
      * @param timeSeries the time series containing the date-time to apply the lag polynomial to.
      * @param dateTime   the date-time of the series to apply the lag polynomial at.
-     * @return the result of applying this lag polynomial to the time series at the given date-time, then solving
-     * for the value of the series at that date-time.
+     * @return the result of applying this lag polynomial to the time series at the given date-time and solving
+     * for the expected value of the series at that date-time.
      */
     public double solve(final TimeSeries timeSeries, OffsetDateTime dateTime) {
         double value = 0.0;
@@ -228,13 +232,14 @@ public class LagPolynomial {
     }
 
     /**
-     * Apply this lag polynomial to the series at the given index,
-     * then solve for the value of the series at that index.
+     * Apply this lag polynomial to the series at the given index, then solve for the expected value
+     * of the series at that index.  If this is a moving average polynomial, then the time series should
+     * be a series of residuals.
      *
      * @param timeSeries the time series containing the index to apply the lag polynomial to.
      * @param index      the index of the series to apply the lag polynomial at.
-     * @return the result of applying this lag polynomial to the time series at the given index, then solving
-     * for the value of the series at that index.
+     * @return the result of applying this lag polynomial to the time series at the given index and solving
+     * for the expected value of the series at that index.
      */
     public double solve(final double[] timeSeries, final int index) {
         double value = 0.0;

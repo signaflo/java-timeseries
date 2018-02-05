@@ -25,6 +25,8 @@ package com.github.signaflo.timeseries.operators;
 
 import com.github.signaflo.timeseries.TimeSeries;
 
+import java.time.OffsetDateTime;
+
 /**
  * Represents a moving average polynomial in the lag operator.
  * See <a target="_blank" href="https://goo.gl/1eLYnF"> Harvey's
@@ -57,6 +59,15 @@ final class MovingAveragePolynomial extends LagPolynomial {
         double value = 0.0;
         for (int i = 0; i < Math.min(parameters.length, index); i++) {
             value += parameters[i] * LagOperator.apply(residualSeries, index, i + 1);
+        }
+        return value;
+    }
+
+    @Override
+    public double solve(final TimeSeries timeSeries, OffsetDateTime dateTime) {
+        double value = 0.0;
+        for (int i = 0; i < parameters.length; i++) {
+            value += parameters[i] * LagOperator.apply(timeSeries, dateTime, i + 1);
         }
         return value;
     }

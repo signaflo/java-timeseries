@@ -256,8 +256,8 @@ public final class TimePeriod {
     /**
      * Compute and return the number of times this time period occurs in the given time period.
      * <p>
-     * For example, if this time period is a month and the given time period is half a year, the return value is
-     * 6 since a month occurs 6 times in one year.
+     * For example, if this time period is a month and the given time period is half of a year, the return value is
+     * 6 since a month occurs 6 times in half of a year.
      * </p>
      *
      * @param otherTimePeriod the time period for which the frequency of occurrence of this time period is to be found.

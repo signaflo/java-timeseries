@@ -18,6 +18,7 @@ import com.github.signaflo.math.linear.doubles.Vector;
 import com.github.signaflo.timeseries.*;
 import com.github.signaflo.timeseries.model.*;
 import com.github.signaflo.timeseries.model.arima.*;
+import com.github.signaflo.timeseries.forecast.*;
 import com.github.signaflo.data.regression.*;
 
 import static com.github.signaflo.math.operations.DoubleFunctions.*;

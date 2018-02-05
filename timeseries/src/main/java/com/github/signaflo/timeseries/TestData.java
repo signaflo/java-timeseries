@@ -37,7 +37,7 @@ import java.time.ZoneOffset;
 public final class TestData {
 
     /**
-     * <a target="_blank" href="https://datamarket.com/data/set/22xx/monthly-sales-of-tasty-cola#!ds=22xx&display=line"
+     * <a target="_blank" href="https://datamarket.com/data/set/22xx/monthly-sales-of-tasty-cola#!ds=22xx"
      * >monthly sales of tasty cola</a> (Bowerman and O'Connell (1993)), made available by Rob J Hyndman at DataMarket.
      *
      * the monthly sales of tasty cola data set.
