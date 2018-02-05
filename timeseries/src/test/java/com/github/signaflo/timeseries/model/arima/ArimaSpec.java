@@ -87,7 +87,7 @@ public class ArimaSpec {
     }
 
     @Test
-    public void whenArimaModelFitThenParametersSimilarToROutput() throws Exception {
+    public void whenArimaModelFitThenParametersSimilarToROutput() {
         TimeSeries series = TestData.livestock;
         ArimaOrder order = ArimaOrder.order(1, 1, 1);
         Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.CSSML);
@@ -96,7 +96,7 @@ public class ArimaSpec {
     }
 
     @Test
-    public void whenArimaModelFitDebitcardsThenParametersSimilarToROutput() throws Exception {
+    public void whenArimaModelFitDebitcardsThenParametersSimilarToROutput() {
         TimeSeries series = TestData.debitcards;
         ArimaOrder order = ArimaOrder.order(1, 1, 1, 1, 1, 1);
         Arima model = Arima.model(series, order, TimePeriod.oneYear(), Arima.FittingStrategy.CSSML);
@@ -114,7 +114,7 @@ public class ArimaSpec {
     }
 
     @Test
-    public void whenArimaModelForecastThenForecastValuesCorrect() throws Exception {
+    public void whenArimaModelForecastThenForecastValuesCorrect() {
         TimeSeries series = TestData.livestock;
         ArimaCoefficients coeffs = ArimaCoefficients.builder().setARCoeffs(0.6480679).setMACoeffs(-0.5035514).
                 setDifferences(1).build();

@@ -112,8 +112,7 @@ class ArimaForecaster implements Forecaster {
     /**
      * Compute point forecasts for the given number of steps ahead and return the result in a primitive array.
      *
-     * @param steps      the number of time periods ahead to forecast.
-     * @param arimaModel
+     * @param steps the number of time periods ahead to forecast.
      * @return point forecasts for the given number of steps ahead.
      */
     public double[] fcst(final int steps) {
