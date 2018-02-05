@@ -4,9 +4,6 @@ import com.google.common.testing.EqualsTester;
 import org.junit.Test;
 import com.github.signaflo.timeseries.TimePeriod;
 import com.github.signaflo.timeseries.TimeSeries;
-import org.omg.PortableServer.THREAD_POLICY_ID;
-
-import java.time.OffsetDateTime;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
