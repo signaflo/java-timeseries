@@ -7,8 +7,10 @@
 .settings/
 /*/gradle.properties
 /.gitignore
+*.iml
 .idea/
 /classes/
 /_config.yml
 */build/
 */out/
+
