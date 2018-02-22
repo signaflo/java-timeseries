@@ -20,6 +20,7 @@ import com.github.signaflo.timeseries.model.*;
 import com.github.signaflo.timeseries.model.arima.*;
 import com.github.signaflo.timeseries.forecast.*;
 import com.github.signaflo.data.regression.*;
+import com.github.signaflo.data.Range;
 
 import static com.github.signaflo.math.operations.DoubleFunctions.*;
 import static com.github.signaflo.math.operations.Operators.*;
