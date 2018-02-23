@@ -27,6 +27,7 @@ package com.github.signaflo.streaming;
 import com.github.signaflo.timeseries.Observation;
 import com.github.signaflo.timeseries.TimePeriod;
 import com.google.common.collect.EvictingQueue;
+import io.reactivex.Flowable;
 import org.reactivestreams.FlowAdapters;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
@@ -34,6 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.Flow;
 
@@ -47,10 +50,11 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
     private static final Logger logger = LoggerFactory.getLogger(StreamingSeries.class);
 
     private final String name;
-    private final Publisher<T> publisher;
+    private final Flowable<T> publisher;
     private final TimePeriod samplingInterval;
     private OffsetDateTime currentObservationPeriod;
     private final EvictingStore<Observation<T>> observations;
+    private final Map<OffsetDateTime, Observation<T>> observationMap;
 
     private StreamingSeries(StreamingSeriesBuilder<T> seriesBuilder) {
         this.name = seriesBuilder.name;
@@ -58,6 +62,12 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
         this.samplingInterval = seriesBuilder.samplingInterval;
         this.observations = EvictingStore.create(seriesBuilder.memory);
         this.currentObservationPeriod = seriesBuilder.startPeriod;
+        this.observationMap = new LinkedHashMap<>(seriesBuilder.memory) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<OffsetDateTime, Observation<T>> entry) {
+                return this.size() > seriesBuilder.memory;
+            }
+        };
         this.publisher.subscribe(FlowAdapters.toSubscriber(this));
     }
 
@@ -72,6 +82,7 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
         currentObservationPeriod = currentObservationPeriod.plus(samplingInterval.unitLength(),
                                                                  samplingInterval.timeUnit().temporalUnit());
         observations.add(currentObservation);
+        observationMap.put(currentObservationPeriod, currentObservation);
     }
 
     @Override
@@ -89,7 +100,7 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
         subscribe(FlowAdapters.toSubscriber(subscriber));
     }
 
-    public void subscribe(Subscriber<? super T> subscriber) {
+    void subscribe(Subscriber<? super T> subscriber) {
         this.publisher.subscribe(subscriber);
     }
 
@@ -98,7 +109,12 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
         return this.observations;
     }
 
-    public static <T extends Number> StreamingSeriesBuilder<T> getStreamingSeriesBuilder(Publisher<T> publisher) {
+    public static <T extends Number> StreamingSeriesBuilder<T> getStreamingSeriesBuilder(Flow.Publisher<T> publisher) {
+        return new StreamingSeriesBuilder<>(FlowAdapters.toPublisher(publisher));
+    }
+
+    //TODO: Decide whether to expose reactive-streams interface publicly.
+    static <T extends Number> StreamingSeriesBuilder<T> getStreamingSeriesBuilder(Publisher<T> publisher) {
         return new StreamingSeriesBuilder<>(publisher);
     }
 
@@ -111,12 +127,12 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
 
         private String name = "Unnamed";
         private int memory = 10000;
-        private Publisher<T> publisher;
+        private Flowable<T> publisher;
         private OffsetDateTime startPeriod = OffsetDateTime.now();
         private TimePeriod samplingInterval = TimePeriod.oneMonth();
 
         private StreamingSeriesBuilder(Publisher<T> publisher) {
-            this.publisher = publisher;
+            this.publisher = Flowable.fromPublisher(publisher);
         }
 
         public StreamingSeries<T> build() {
