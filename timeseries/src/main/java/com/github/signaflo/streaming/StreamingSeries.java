@@ -26,8 +26,6 @@ package com.github.signaflo.streaming;
 
 import com.github.signaflo.timeseries.Observation;
 import com.github.signaflo.timeseries.TimePeriod;
-import com.google.common.collect.EvictingQueue;
-import io.reactivex.Flowable;
 import org.reactivestreams.FlowAdapters;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
@@ -35,9 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Queue;
+import java.util.SortedMap;
 import java.util.concurrent.Flow;
 
 /**
@@ -50,24 +47,17 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
     private static final Logger logger = LoggerFactory.getLogger(StreamingSeries.class);
 
     private final String name;
-    private final Flowable<T> publisher;
+    private final Publisher<T> publisher;
     private final TimePeriod samplingInterval;
     private OffsetDateTime currentObservationPeriod;
-    private final EvictingStore<Observation<T>> observations;
-    private final Map<OffsetDateTime, Observation<T>> observationMap;
+    private final SortedLinkedHashMap<OffsetDateTime, T> observations;
 
     private StreamingSeries(StreamingSeriesBuilder<T> seriesBuilder) {
         this.name = seriesBuilder.name;
         this.publisher = seriesBuilder.publisher;
         this.samplingInterval = seriesBuilder.samplingInterval;
-        this.observations = EvictingStore.create(seriesBuilder.memory);
         this.currentObservationPeriod = seriesBuilder.startPeriod;
-        this.observationMap = new LinkedHashMap<>(seriesBuilder.memory) {
-            @Override
-            protected boolean removeEldestEntry(Map.Entry<OffsetDateTime, Observation<T>> entry) {
-                return this.size() > seriesBuilder.memory;
-            }
-        };
+        this.observations = new SortedLinkedHashMap<>(seriesBuilder.memory);
         this.publisher.subscribe(FlowAdapters.toSubscriber(this));
     }
 
@@ -78,11 +68,9 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
 
     @Override
     public void onNext(T observed) {
-        Observation<T> currentObservation = new Observation<>(observed, currentObservationPeriod);
         currentObservationPeriod = currentObservationPeriod.plus(samplingInterval.unitLength(),
                                                                  samplingInterval.timeUnit().temporalUnit());
-        observations.add(currentObservation);
-        observationMap.put(currentObservationPeriod, currentObservation);
+        observations.put(currentObservationPeriod, observed);
     }
 
     @Override
@@ -105,7 +93,7 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
     }
 
     // Must be copied if made public.
-    EvictingStore<Observation<T>> getObservations() {
+    SortedLinkedHashMap<OffsetDateTime, T> getObservations() {
         return this.observations;
     }
 
@@ -127,12 +115,12 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
 
         private String name = "Unnamed";
         private int memory = 10000;
-        private Flowable<T> publisher;
+        private Publisher<T> publisher;
         private OffsetDateTime startPeriod = OffsetDateTime.now();
         private TimePeriod samplingInterval = TimePeriod.oneMonth();
 
         private StreamingSeriesBuilder(Publisher<T> publisher) {
-            this.publisher = Flowable.fromPublisher(publisher);
+            this.publisher = publisher;
         }
 
         public StreamingSeries<T> build() {

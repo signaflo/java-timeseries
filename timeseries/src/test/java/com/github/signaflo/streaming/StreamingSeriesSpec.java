@@ -33,6 +33,10 @@ import org.junit.Test;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 
+import java.time.OffsetDateTime;
+import java.util.Map;
+import java.util.SortedMap;
+
 public class StreamingSeriesSpec {
 
     private final long lastValue = 3L;
@@ -44,7 +48,10 @@ public class StreamingSeriesSpec {
     private Subscriber<Long> subscriber = new DefaultSubscriber<>() {
         @Override
         public void onNext(Long l) {
-            currentValue = series.getObservations().peekLast().orElseThrow(RuntimeException::new).getValue();
+            SortedLinkedHashMap<OffsetDateTime, Long> map = series.getObservations();
+            if (!map.isEmpty()) {
+                currentValue = map.lastValue().orElseThrow(RuntimeException::new);
+            }
         }
 
         @Override
@@ -64,6 +71,9 @@ public class StreamingSeriesSpec {
         System.out.println(series.getObservations());
         assertThat(currentValue, is(lastValue));
         assertThat(status, is("Completed"));
+        SortedLinkedHashMap<OffsetDateTime, Long> observations = series.getObservations();
+        System.out.println(observations.comparator());
+        System.out.println(observations.remove(observations.firstKey()));
         System.out.println(series.getObservations());
     }
 }
