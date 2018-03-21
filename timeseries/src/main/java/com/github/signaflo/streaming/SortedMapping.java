@@ -29,18 +29,18 @@ import lombok.NonNull;
 import java.util.*;
 
 
-public class SortedLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements SortedMap<K, V> {
+public class SortedMapping<K, V> extends LinkedHashMap<K, V> implements SortedMap<K, V> {
 
     private static final int DEFAULT_MAX_SIZE = 1000;
 
     private final SortedMap<K, V> sortedMap;
     private final int maxSize;
 
-    public SortedLinkedHashMap() {
+    public SortedMapping() {
         this(DEFAULT_MAX_SIZE);
     }
 
-    public SortedLinkedHashMap(int maxSize) {
+    public SortedMapping(int maxSize) {
         super(maxSize);
         this.sortedMap = new TreeMap<>();
         this.maxSize = maxSize;
@@ -61,24 +61,28 @@ public class SortedLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements So
         return this.sortedMap.subMap(fromKey, toKey);
     }
 
+    @Override
     public SortedMap<K, V> headMap(@NonNull K toKey) {
         return this.sortedMap.headMap(toKey);
     }
 
+    @Override
     public SortedMap<K, V> tailMap(@NonNull K fromKey) {
         return this.sortedMap.tailMap(fromKey);
     }
 
+    @Override
     public K firstKey() {
         return this.sortedMap.firstKey();
     }
 
+    @Override
     public K lastKey() {
         return this.sortedMap.lastKey();
     }
 
     public Optional<V> lastValue() {
-        if (this.sortedMap.isEmpty()) {
+        if (this.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(this.sortedMap.get(this.sortedMap.lastKey()));
@@ -111,7 +115,7 @@ public class SortedLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements So
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        SortedLinkedHashMap<?, ?> that = (SortedLinkedHashMap<?, ?>) o;
+        SortedMapping<?, ?> that = (SortedMapping<?, ?>) o;
         return maxSize == that.maxSize && Objects.equals(sortedMap, that.sortedMap);
     }
 

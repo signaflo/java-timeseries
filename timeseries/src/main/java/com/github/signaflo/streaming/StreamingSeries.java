@@ -24,8 +24,8 @@
 
 package com.github.signaflo.streaming;
 
-import com.github.signaflo.timeseries.Observation;
 import com.github.signaflo.timeseries.TimePeriod;
+import io.reactivex.Flowable;
 import org.reactivestreams.FlowAdapters;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
@@ -33,8 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
-import java.util.Map;
-import java.util.SortedMap;
 import java.util.concurrent.Flow;
 
 /**
@@ -47,17 +45,17 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
     private static final Logger logger = LoggerFactory.getLogger(StreamingSeries.class);
 
     private final String name;
-    private final Publisher<T> publisher;
+    private final Flowable<T> publisher;
     private final TimePeriod samplingInterval;
     private OffsetDateTime currentObservationPeriod;
-    private final SortedLinkedHashMap<OffsetDateTime, T> observations;
+    private final SortedMapping<OffsetDateTime, T> observations;
 
     private StreamingSeries(StreamingSeriesBuilder<T> seriesBuilder) {
         this.name = seriesBuilder.name;
-        this.publisher = seriesBuilder.publisher;
+        this.publisher = Flowable.fromPublisher(seriesBuilder.publisher);
         this.samplingInterval = seriesBuilder.samplingInterval;
         this.currentObservationPeriod = seriesBuilder.startPeriod;
-        this.observations = new SortedLinkedHashMap<>(seriesBuilder.memory);
+        this.observations = new SortedMapping<>(seriesBuilder.memory);
         this.publisher.subscribe(FlowAdapters.toSubscriber(this));
     }
 
@@ -93,7 +91,7 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
     }
 
     // Must be copied if made public.
-    SortedLinkedHashMap<OffsetDateTime, T> getObservations() {
+    SortedMapping<OffsetDateTime, T> getObservations() {
         return this.observations;
     }
 
