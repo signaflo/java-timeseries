@@ -50,8 +50,8 @@ public enum TimeUnit {
     MICROSECOND(ChronoUnit.MICROS, 1L),
     NANOSECOND(ChronoUnit.NANOS, 1L);
 
-    private final TemporalUnit temporalUnit;
-    private final long unitLength;
+    public final TemporalUnit temporalUnit;
+    public final long unitLength;
 
     TimeUnit(final TemporalUnit timeUnit, final long unitLength) {
         this.temporalUnit = timeUnit;
