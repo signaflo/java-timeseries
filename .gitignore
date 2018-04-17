@@ -3,10 +3,10 @@
 /.classpath
 /.project
 /target/
+gradle/
 .gradle/
 .settings/
 /*/gradle.properties
-/.gitignore
 *.iml
 .idea/
 /classes/
