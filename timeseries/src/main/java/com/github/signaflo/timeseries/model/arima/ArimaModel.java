@@ -40,6 +40,10 @@ import com.github.signaflo.timeseries.TimeSeries;
 import com.github.signaflo.timeseries.model.regression.TimeSeriesLinearRegression;
 import com.github.signaflo.timeseries.model.regression.TimeSeriesLinearRegressionBuilder;
 import com.github.signaflo.timeseries.operators.LagPolynomial;
+import org.ejml.data.Complex64F;
+import org.ejml.data.DenseMatrix64F;
+import org.ejml.factory.DecompositionFactory;
+import org.ejml.interfaces.decomposition.EigenDecomposition;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -309,7 +313,7 @@ final class ArimaModel implements Arima {
         return kalmanFilter.output();
     }
 
-    static double[] getDelta(ArimaOrder order, int observationFrequency) {
+    private static double[] getDelta(ArimaOrder order, int observationFrequency) {
         LagPolynomial differencesPolynomial = LagPolynomial.differences(order.d());
         LagPolynomial seasonalDifferencesPolynomial = LagPolynomial.seasonalDifferences(observationFrequency, order.D());
 
@@ -317,74 +321,84 @@ final class ArimaModel implements Arima {
         return scale(finalPolynomial.parameters(), -1.0);
     }
 
-//    private static boolean isInvertible(double[] ma) {
-//        if (ma.length > 0) {
-//            double[] maCoeffs = new double[ma.length + 1];
-//            maCoeffs[0] = 1.0;
-//            System.arraycopy(ma, 0, maCoeffs, 1, ma.length);
-//            final double[] roots = roots(maCoeffs);
-//            for (double root : roots) {
-//                if (root <= 1.0) return false;
-//            }
-//            return true;
-//        }
-//        return true;
-//    }
-//
-//    private static boolean isStationary(double[] ar) {
-//        if (ar.length > 0) {
-//            double[] arCoeffs = new double[ar.length + 1];
-//            arCoeffs[0] = 1.0;
-//            for (int i = 0; i < ar.length; i++) {
-//                arCoeffs[i + 1] = -ar[i];
-//            }
-//            final double[] roots = roots(arCoeffs);
-//            for (double root : roots) {
-//                if (root <= 1.0) return false;
-//            }
-//            return true;
-//        }
-//        // If ar.length == 0 then it is stationary.
-//        return true;
-//    }
-//
-//    private static double[] roots(double[] arCoeffs) {
-//        final Complex64F[] complexRoots = findRoots(arCoeffs);
-//        final double[] absoluteRoots = new double[complexRoots.length];
-//        for (int i = 0; i < complexRoots.length; i++) {
-//            absoluteRoots[i] = complexRoots[i].getMagnitude();
-//        }
-//        return absoluteRoots;
-//    }
-//
-//    // Source: https://stackoverflow.com/questions/13805644/finding-roots-of-polynomial-in-java
-//    private static Complex64F[] findRoots(double... coefficients) {
-//        int N = coefficients.length - 1;
-//
-//        // Construct the companion matrix. This is a square N x N matrix.
-//        final DenseMatrix64F c = new DenseMatrix64F(N, N);
-//
-//        double a = coefficients[N];
-//        for (int i = 0; i < N; i++) {
-//            c.set(i, N - 1, -coefficients[i] / a);
-//        }
-//        for (int i = 1; i < N; i++) {
-//            c.set(i, i - 1, 1);
-//        }
-//
-//        // Use generalized eigenvalue decomposition to find the roots.
-//        EigenDecomposition<DenseMatrix64F> evd = DecompositionFactory.eig(N, false);
-//
-//        evd.decompose(c);
-//
-//        final Complex64F[] roots = new Complex64F[N];
-//
-//        for (int i = 0; i < N; i++) {
-//            roots[i] = evd.getEigenvalue(i);
-//        }
-//
-//        return roots;
-//    }
+    @Override
+    public boolean isInvertible() {
+        return isInvertible(this.maSmaCoeffs);
+    }
+
+    @Override
+    public boolean isStationary() {
+        return isStationary(this.arSarCoeffs);
+    }
+
+    private static boolean isInvertible(double[] ma) {
+        if (ma.length > 0) {
+            double[] maCoeffs = new double[ma.length + 1];
+            maCoeffs[0] = 1.0;
+            System.arraycopy(ma, 0, maCoeffs, 1, ma.length);
+            final double[] roots = roots(maCoeffs);
+            for (double root : roots) {
+                if (root <= 1.0) return false;
+            }
+            return true;
+        }
+        return true;
+    }
+
+    private static boolean isStationary(double[] ar) {
+        if (ar.length > 0) {
+            double[] arCoeffs = new double[ar.length + 1];
+            arCoeffs[0] = 1.0;
+            for (int i = 0; i < ar.length; i++) {
+                arCoeffs[i + 1] = -ar[i];
+            }
+            final double[] roots = roots(arCoeffs);
+            for (double root : roots) {
+                if (root <= 1.0) return false;
+            }
+            return true;
+        }
+        // If ar.length == 0 then it is stationary.
+        return true;
+    }
+
+    private static double[] roots(double[] coefficients) {
+        final Complex64F[] complexRoots = findRoots(coefficients);
+        final double[] absoluteRoots = new double[complexRoots.length];
+        for (int i = 0; i < complexRoots.length; i++) {
+            absoluteRoots[i] = complexRoots[i].getMagnitude();
+        }
+        return absoluteRoots;
+    }
+
+    // Source: https://stackoverflow.com/questions/13805644/finding-roots-of-polynomial-in-java
+    private static Complex64F[] findRoots(double... coefficients) {
+        int N = coefficients.length - 1;
+
+        // Construct the companion matrix. This is a square N x N matrix.
+        final DenseMatrix64F c = new DenseMatrix64F(N, N);
+
+        double a = coefficients[N];
+        for (int i = 0; i < N; i++) {
+            c.set(i, N - 1, -coefficients[i] / a);
+        }
+        for (int i = 1; i < N; i++) {
+            c.set(i, i - 1, 1);
+        }
+
+        // Use generalized eigenvalue decomposition to find the roots.
+        EigenDecomposition<DenseMatrix64F> evd = DecompositionFactory.eig(N, false);
+
+        evd.decompose(c);
+
+        final Complex64F[] roots = new Complex64F[N];
+
+        for (int i = 0; i < N; i++) {
+            roots[i] = evd.getEigenvalue(i);
+        }
+
+        return roots;
+    }
 
     @Override
     public Forecast forecast(final int steps, double alpha) {

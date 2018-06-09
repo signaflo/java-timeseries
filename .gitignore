@@ -3,8 +3,9 @@
 /.classpath
 /.project
 /target/
-gradle/
+gradle/*
 .gradle/
+gradlew
 .settings/
 /*/gradle.properties
 *.iml
