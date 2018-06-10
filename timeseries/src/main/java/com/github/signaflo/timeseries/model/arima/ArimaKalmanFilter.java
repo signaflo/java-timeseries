@@ -121,7 +121,6 @@ class ArimaKalmanFilter {
 
         predictionError[0] /= Math.sqrt(f);
 
-
         for (int t = 1; t < y.length; t++) {
 
             // Update predicted mean of the state vector.
@@ -168,12 +167,16 @@ class ArimaKalmanFilter {
         DenseMatrix64F arMatrix = new DenseMatrix64F(r, r, true, unpack(P));
         double[] kappa = new double[d * d];
         for (int i = 0; i < d; i++) {
-            kappa[i * d + i] = 1E6;
+            kappa[i * d + i] = initialNonStationaryVariance();
         }
         DenseMatrix64F kappaMatrix = new DenseMatrix64F(d, d, true, kappa);
         insert(arMatrix, P0, 0, 0);
         insert(kappaMatrix, P0, r, r);
         return P0;
+    }
+
+    private double initialNonStationaryVariance() {
+        return 1E6; // Recommended by Durbin & Koopman.
     }
 
     /**
@@ -392,26 +395,6 @@ class ArimaKalmanFilter {
 
     KalmanOutput output() {
         return this.kalmanOutput;
-    }
-
-    double[] predictionError() {
-        return this.predictionError.clone();
-    }
-
-    double ssq() {
-        return this.kalmanOutput.ssq();
-    }
-
-    int n() {
-        return this.kalmanOutput.n();
-    }
-
-    double sumLog() {
-        return this.kalmanOutput.sumLog();
-    }
-
-    double logLikelihood() {
-        return this.kalmanOutput.logLikelihood();
     }
 
     static class KalmanOutput {
