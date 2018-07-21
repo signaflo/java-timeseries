@@ -81,7 +81,7 @@ subprojects {
 
         //apt 'org.immutables:value:2.4.4'
         //compileOnly 'org.immutables:value:2.4.4:annotations'
-        compileOnly 'org.projectlombok:lombok:1.16.20'
+        compileOnly 'org.projectlombok:lombok:1.18.0'
 
         implementation 'com.google.guava:guava:21.0'
         implementation 'org.ejml:all:0.30'
