@@ -7,7 +7,6 @@ gradle/*
 .gradle/
 gradlew
 .settings/
-/*/gradle.properties
 *.iml
 .idea/
 /classes/
