@@ -1,4 +1,7 @@
-apply plugin: 'java-library'
+plugins {
+    id "com.github.johnrengelman.shadow" version "2.0.3"
+    id "java-library"
+}
 
 compileJava {
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
@@ -8,33 +11,8 @@ compileTestJava {
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
 }
 
-buildscript {
-  repositories {
-      jcenter()
-//      maven {
-//          url "https://plugins.gradle.org/m2/"
-//      }
-  }
-  dependencies {
-    classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
-            //'net.ltgt.gradle:gradle-apt-plugin:0.9'
-  }
-}
-
-//sourceSets {
-//    apt {
-//        java {
-//            srcDir 'build/generated/source/apt/main'
-//        }
-//    }
-//}
-
-allprojects {
-}
-
 subprojects {
     apply plugin: 'java-library'
-    apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'maven'
     apply plugin: 'signing'
     apply plugin: 'jacoco'
@@ -103,7 +81,7 @@ subprojects {
 
         //apt 'org.immutables:value:2.4.4'
         //compileOnly 'org.immutables:value:2.4.4:annotations'
-        compileOnly 'org.projectlombok:lombok:1.16.14'
+        compileOnly 'org.projectlombok:lombok:1.18.0'
 
         implementation 'com.google.guava:guava:21.0'
         implementation 'org.ejml:all:0.30'

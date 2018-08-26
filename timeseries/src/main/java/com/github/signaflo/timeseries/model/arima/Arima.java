@@ -216,6 +216,22 @@ public interface Arima extends Model {
     double aic();
 
     /**
+     * Check whether the model is stationary, which is the case if the roots of the autoregressive
+     * characteristic polynomial lie outside the unit circle.
+     *
+     * @return true if the model is stationary, false otherwise.
+     */
+    boolean isStationary();
+
+    /**
+     * Check whether the model is invertible, which is the case if the roots of the moving average
+     * characteristic polynomial lie outside the unit circle.
+     *
+     * @return true if the model is invertible, false otherwise.
+     */
+    boolean isInvertible();
+
+    /**
      * An indicator for whether an ARIMA model has a constant term.
      */
     enum Constant {
