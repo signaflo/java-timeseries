@@ -33,8 +33,8 @@ package com.github.signaflo.timeseries;
  */
 public final class TimePeriod {
 
-    private final TimeUnit timeUnit;
-    private final long periodLength;
+    public final TimeUnit timeUnit;
+    public final long periodLength;
 
     /**
      * Create a new time period with the given unit of time and period length.
