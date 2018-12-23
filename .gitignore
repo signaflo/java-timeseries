@@ -13,4 +13,4 @@ gradlew
 /_config.yml
 */build/
 */out/
-
+*.DS_Store
