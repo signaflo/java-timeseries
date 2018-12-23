@@ -33,20 +33,20 @@ import org.junit.Test;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 
 public class StreamingSeriesSpec {
 
-    private final long lastValue = 3L;
-    private Publisher<Long> publisher = Flowable.just(1L, lastValue);
-    private StreamingSeries<Long> series = StreamingSeries.getStreamingSeriesBuilder(publisher).build();
-    private Long currentValue = 0L;
+    private final double lastValue = 3.0;
+    private Publisher<Double> publisher = Flowable.just(1.0, lastValue);
+    private StreamingSeries series = StreamingSeries.getStreamingSeriesBuilder(publisher).build();
+    private Double currentValue = 0.0;
     private String status = "Uninitialized";
 
-    private Subscriber<Long> subscriber = new DefaultSubscriber<>() {
+    private Subscriber<Double> subscriber = new DefaultSubscriber<>() {
         @Override
-        public void onNext(Long l) {
-            SortedMapping<Instant, Long> map = series.getObservations();
+        public void onNext(Double value) {
+            SortedMapping<OffsetDateTime, Double> map = series.getObservations();
             if (!map.isEmpty()) {
                 currentValue = map.lastValue().orElseThrow(RuntimeException::new);
             }
@@ -66,12 +66,7 @@ public class StreamingSeriesSpec {
     @Test
     public void whenSeriesSubscribedToThenStateChangesVisible() {
         series.subscribe(subscriber);
-        System.out.println(series.getObservations());
         assertThat(currentValue, is(lastValue));
         assertThat(status, is("Completed"));
-        SortedMapping<Instant, Long> observations = series.getObservations();
-        System.out.println(observations.comparator());
-        System.out.println(observations.remove(observations.firstKey()));
-        System.out.println(series.getObservations());
     }
 }
