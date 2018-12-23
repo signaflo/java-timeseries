@@ -24,6 +24,7 @@
 
 package com.github.signaflo.streaming;
 
+import com.github.signaflo.timeseries.Observation;
 import com.github.signaflo.timeseries.TimePeriod;
 import io.reactivex.Flowable;
 import org.reactivestreams.FlowAdapters;
@@ -32,25 +33,25 @@ import org.reactivestreams.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.concurrent.Flow;
 
 /**
- * A stream of observations generated sequentially in time, where observations are made at a fixed time interval.
+ * A stream of observations generated sequentially in time, where observations are made at a
+ * fixed time interval.
  *
- * @param <T> The type of value observed.
  */
-public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
+public class StreamingSeries implements Flow.Processor<Observation, Observation> {
 
     private static final Logger logger = LoggerFactory.getLogger(StreamingSeries.class);
 
     private final String name;
-    private final Flowable<T> publisher;
+    private final Flowable<Observation> publisher;
     private final TimePeriod samplingInterval;
-    private OffsetDateTime currentObservationPeriod;
-    private final SortedMapping<OffsetDateTime, T> observations;
+    private Instant currentObservationPeriod;
+    private final SortedMapping<Instant, Observation> observations;
 
-    private StreamingSeries(StreamingSeriesBuilder<T> seriesBuilder) {
+    private StreamingSeries(StreamingSeriesBuilder seriesBuilder) {
         this.name = seriesBuilder.name;
         this.publisher = Flowable.fromPublisher(seriesBuilder.publisher);
         this.samplingInterval = seriesBuilder.samplingInterval;
@@ -65,7 +66,7 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
     }
 
     @Override
-    public void onNext(T observed) {
+    public void onNext(Observation observed) {
         currentObservationPeriod = currentObservationPeriod.plus(samplingInterval.unitLength(),
                                                                  samplingInterval.timeUnit().temporalUnit());
         observations.put(currentObservationPeriod, observed);
@@ -82,26 +83,26 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
     }
 
     @Override
-    public void subscribe(Flow.Subscriber<? super T> subscriber) {
+    public void subscribe(Flow.Subscriber<? super Observation> subscriber) {
         subscribe(FlowAdapters.toSubscriber(subscriber));
     }
 
-    void subscribe(Subscriber<? super T> subscriber) {
+    void subscribe(Subscriber<? super Observation> subscriber) {
         this.publisher.subscribe(subscriber);
     }
 
     // Must be copied if made public.
-    SortedMapping<OffsetDateTime, T> getObservations() {
+    SortedMapping<Instant, Observation> getObservations() {
         return this.observations;
     }
 
-    public static <T extends Number> StreamingSeriesBuilder<T> getStreamingSeriesBuilder(Flow.Publisher<T> publisher) {
-        return new StreamingSeriesBuilder<>(FlowAdapters.toPublisher(publisher));
+    public static StreamingSeriesBuilder getStreamingSeriesBuilder(Flow.Publisher<Observation> publisher) {
+        return new StreamingSeriesBuilder(FlowAdapters.toPublisher(publisher));
     }
 
     //TODO: Decide whether to expose reactive-streams interface publicly.
-    static <T extends Number> StreamingSeriesBuilder<T> getStreamingSeriesBuilder(Publisher<T> publisher) {
-        return new StreamingSeriesBuilder<>(publisher);
+    static StreamingSeriesBuilder getStreamingSeriesBuilder(Publisher<Observation> publisher) {
+        return new StreamingSeriesBuilder(publisher);
     }
 
     @Override
@@ -109,20 +110,20 @@ public class StreamingSeries<T extends Number> implements Flow.Processor<T, T> {
         return this.getClass().getSimpleName() + ": " + this.name;
     }
 
-    public static class StreamingSeriesBuilder<T extends Number> {
+    public static class StreamingSeriesBuilder {
 
         private String name = "Unnamed";
         private int memory = 10000;
-        private Publisher<T> publisher;
-        private OffsetDateTime startPeriod = OffsetDateTime.now();
+        private Publisher<Observation> publisher;
+        private Instant startPeriod = Instant.now();
         private TimePeriod samplingInterval = TimePeriod.oneMonth();
 
-        private StreamingSeriesBuilder(Publisher<T> publisher) {
+        private StreamingSeriesBuilder(Publisher<Observation> publisher) {
             this.publisher = publisher;
         }
 
-        public StreamingSeries<T> build() {
-            return new StreamingSeries<>(this);
+        public StreamingSeries build() {
+            return new StreamingSeries(this);
         }
     }
 }
