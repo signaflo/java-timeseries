@@ -1,3 +1,13 @@
+# IntelliJ
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/gradle.xml
+.idea/**/libraries
+.idea/modules.xml
+.idea/*.iml
+.idea/modules
+out/
+
 /bin/
 /build/
 /.classpath
@@ -6,7 +16,6 @@
 .gradle/
 .settings/
 *.iml
-.idea/
 /classes/
 /_config.yml
 */build/

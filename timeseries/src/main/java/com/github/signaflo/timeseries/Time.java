@@ -1,34 +1,20 @@
 package com.github.signaflo.timeseries;
 
-import lombok.NonNull;
-
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
+import lombok.NonNull;
 
 /**
  * Represents a particular point in time.
  */
-public final class Time {
+public final class Time implements Comparable<Time> {
 
   private final OffsetDateTime dateTime;
 
   Time(@NonNull OffsetDateTime dateTime) {
     this.dateTime = dateTime;
-  }
-
-  public Time plus(TimePeriod timePeriod) {
-    return plus(timePeriod.periodLength(), timePeriod);
-  }
-
-  private Time plus(long amountToAdd, TimePeriod timePeriod) {
-    OffsetDateTime addedDateTime = this.dateTime.plus(amountToAdd, timePeriod.timeUnit());
-    return new Time(addedDateTime);
-  }
-
-  public Instant toInstant() {
-    return this.dateTime.toInstant();
   }
 
   static Time now() {
@@ -51,6 +37,24 @@ public final class Time {
     ZoneOffset utc = ZoneOffset.UTC;
     OffsetDateTime dateTime = OffsetDateTime.of(year, month, day, 0, 0, 0, 0, utc);
     return new Time(dateTime);
+  }
+
+  public Time plus(TimePeriod timePeriod) {
+    return plus(timePeriod.periodLength(), timePeriod);
+  }
+
+  private Time plus(long amountToAdd, TimePeriod timePeriod) {
+    OffsetDateTime addedDateTime = this.dateTime.plus(amountToAdd, timePeriod.timeUnit());
+    return new Time(addedDateTime);
+  }
+
+  public Instant toInstant() {
+    return this.dateTime.toInstant();
+  }
+
+  @Override
+  public int compareTo(@NonNull Time otherTime) {
+    return this.dateTime.compareTo(otherTime.dateTime);
   }
 
   @Override

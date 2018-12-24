@@ -21,6 +21,7 @@
  *
  * Jacob Rachiele
  */
+
 package com.github.signaflo.timeseries;
 
 /**
@@ -30,112 +31,130 @@ package com.github.signaflo.timeseries;
  */
 public final class Ts {
 
-    private Ts() {
-    }
+  private Ts() {
+  }
 
-    /**
-     * Construct a new time series with observations made annually starting at the given year.
-     *
-     * @param startYear the year of the first observation.
-     * @param series    the sequence of observations constituting this time series.
-     * @return a new time series with the given series data and start year.
-     */
-    public static TimeSeries newAnnualSeries(final int startYear, final double... series) {
-        Time year = Time.fromYear(startYear);
-        return TimeSeries.from(TimePeriod.oneYear(), year, series);
-    }
+  /**
+   * Construct a new time series with observations made annually starting at the given year.
+   *
+   * @param startYear the year of the first observation.
+   * @param series    the sequence of observations constituting this time series.
+   *
+   * @return a new time series with the given series data and start year.
+   */
+  public static TimeSeries newAnnualSeries(final int startYear, final double... series) {
+    Time year = Time.fromYear(startYear);
+    return TimeSeries.from(TimePeriod.oneYear(), year, series);
+  }
 
-    /**
-     * Construct a new time series with observations made annually, without regard to the observation dates.
-     *
-     * @param series the sequence of observations constituting this time series.
-     * @return a new time series with the given series data.
-     */
-    public static TimeSeries newAnnualSeries(final double... series) {;
-        return TimeSeries.from(TimePeriod.oneYear(), series);
-    }
+  /**
+   * Construct a new time series with observations made annually, without regard to the observation
+   * dates.
+   *
+   * @param series the sequence of observations constituting this time series.
+   *
+   * @return a new time series with the given series data.
+   */
+  public static TimeSeries newAnnualSeries(final double... series) {
+    ;
+    return TimeSeries.from(TimePeriod.oneYear(), series);
+  }
 
-    /**
-     * Construct a new time series of monthly observations without regard to the observation dates.
-     *
-     * @param series the sequence of observations constituting this time series.
-     * @return a new time series with the given series data.
-     */
-    public static TimeSeries newMonthlySeries(final double... series) {
-        return TimeSeries.from(TimePeriod.oneMonth(), series);
-    }
+  /**
+   * Construct a new time series of monthly observations without regard to the observation dates.
+   *
+   * @param series the sequence of observations constituting this time series.
+   *
+   * @return a new time series with the given series data.
+   */
+  public static TimeSeries newMonthlySeries(final double... series) {
+    return TimeSeries.from(TimePeriod.oneMonth(), series);
+  }
 
-    /**
-     * Construct a new time series with monthly observations starting at the given year and month.
-     *
-     * @param startYear  the year of the first observation.
-     * @param startMonth the month of the first observation - an integer between
-     *                   1 and 12 corresponding to the months January through December.
-     * @param series     the sequence of observations constituting this time series.
-     * @return a new time series with the given series data, start year, and start month.
-     */
-    public static TimeSeries newMonthlySeries(final int startYear, final int startMonth, final double... series) {
-        return newMonthlySeries(startYear, startMonth, 1, series);
-    }
+  /**
+   * Construct a new time series with monthly observations starting at the given year and month.
+   *
+   * @param startYear  the year of the first observation.
+   * @param startMonth the month of the first observation - an integer between 1 and 12
+   *                   corresponding to the months January through December.
+   * @param series     the sequence of observations constituting this time series.
+   *
+   * @return a new time series with the given series data, start year, and start month.
+   */
+  public static TimeSeries newMonthlySeries(final int startYear, final int startMonth,
+      final double... series) {
+    return newMonthlySeries(startYear, startMonth, 1, series);
+  }
 
-    /**
-     * Construct a new time series with monthly observations starting at the given year, month, and day.
-     *
-     * @param startYear  The year of the first observation.
-     * @param startMonth The month of the first observation - an integer between
-     *                   1 and 12 corresponding to the months January through December.
-     * @param startDay   The day of the first observation - an integer between 1 and 31.
-     * @param series     The sequence of observations constituting this time series.
-     * @return A new time series with the given year, month, day, and series data.
-     */
-    public static TimeSeries newMonthlySeries(final int startYear, final int startMonth, final int startDay,
-                                              final double... series) {
-        final Time startPeriod = Time.fromYearMonthDay(startYear, startMonth, startDay);
-        return TimeSeries.from(TimePeriod.oneMonth(), startPeriod, series);
-    }
+  /**
+   * Construct a new time series with monthly observations starting at the given year, month, and
+   * day.
+   *
+   * @param startYear  The year of the first observation.
+   * @param startMonth The month of the first observation - an integer between 1 and 12
+   *                   corresponding to the months January through December.
+   * @param startDay   The day of the first observation - an integer between 1 and 31.
+   * @param series     The sequence of observations constituting this time series.
+   *
+   * @return A new time series with the given year, month, day, and series data.
+   */
+  public static TimeSeries newMonthlySeries(final int startYear, final int startMonth,
+      final int startDay, final double... series) {
+    final Time startPeriod = Time.fromYearMonthDay(startYear, startMonth, startDay);
+    return TimeSeries.from(TimePeriod.oneMonth(), startPeriod, series);
+  }
 
-    /**
-     * Construct a new time series with quarterly observations without regard to the observation dates.
-     *
-     * @param series       The sequence of observations constituting this time series.
-     * @return A new time series with the given year, quarter, and series data.
-     */
-    public static TimeSeries newQuarterlySeries(final double... series) {
-        return TimeSeries.from(TimePeriod.oneQuarter(), series);
-    }
+  /**
+   * Construct a new time series with quarterly observations without regard to the observation
+   * dates.
+   *
+   * @param series The sequence of observations constituting this time series.
+   *
+   * @return A new time series with the given year, quarter, and series data.
+   */
+  public static TimeSeries newQuarterlySeries(final double... series) {
+    return TimeSeries.from(TimePeriod.oneQuarter(), series);
+  }
 
-    /**
-     * Construct a new time series with quarterly observations starting at the given year and quarter.
-     *
-     * @param startYear    The year of the first observation.
-     * @param startQuarter The quarter of the first observation - an integer between
-     *                     1 and 4 corresponding to the four quarters of a year.
-     * @param series       The sequence of observations constituting this time series.
-     * @return A new time series with the given year, quarter, and series data.
-     */
-    public static TimeSeries newQuarterlySeries(final int startYear, final int startQuarter, final double... series) {
-        final int startMonth = 3 * startQuarter - 2;
-        final Time startPeriod = Time.fromYearMonth(startYear, startMonth);
-        return TimeSeries.from(TimePeriod.oneQuarter(), startPeriod, series);
-    }
+  /**
+   * Construct a new time series with quarterly observations starting at the given year and
+   * quarter.
+   *
+   * @param startYear    The year of the first observation.
+   * @param startQuarter The quarter of the first observation - an integer between 1 and 4
+   *                     corresponding to the four quarters of a year.
+   * @param series       The sequence of observations constituting this time series.
+   *
+   * @return A new time series with the given year, quarter, and series data.
+   */
+  public static TimeSeries newQuarterlySeries(final int startYear, final int startQuarter,
+      final double... series) {
+    final int startMonth = 3 * startQuarter - 2;
+    final Time startPeriod = Time.fromYearMonth(startYear, startMonth);
+    return TimeSeries.from(TimePeriod.oneQuarter(), startPeriod, series);
+  }
 
-    public static TimeSeries newWeeklySeries(double... series) {
-        return TimeSeries.from(TimePeriod.oneWeek(), series);
-    }
+  public static TimeSeries newWeeklySeries(double... series) {
+    return TimeSeries.from(TimePeriod.oneWeek(), series);
+  }
 
-    /**
-     * Construct a new time series with weekly observations starting at the given year, month, and day.
-     *
-     * @param startYear  The year of the first observation.
-     * @param startMonth The month of the first observation - an integer between
-     *                   1 and 12 corresponding to the months January through December.
-     * @param startDay   The day of the first observation - an integer between 1 and 31.
-     * @param series     The sequence of observations constituting this time series.
-     * @return A new time series with the given year, month, day, and series data.
-     */
-    public static TimeSeries newWeeklySeries(int startYear, int startMonth, int startDay, double... series) {
-        Time startTime = Time.fromYearMonthDay(startYear, startMonth, startDay);;
-        return TimeSeries.from(TimePeriod.oneWeek(), startTime, series);
-    }
+  /**
+   * Construct a new time series with weekly observations starting at the given year, month, and
+   * day.
+   *
+   * @param startYear  The year of the first observation.
+   * @param startMonth The month of the first observation - an integer between 1 and 12
+   *                   corresponding to the months January through December.
+   * @param startDay   The day of the first observation - an integer between 1 and 31.
+   * @param series     The sequence of observations constituting this time series.
+   *
+   * @return A new time series with the given year, month, day, and series data.
+   */
+  public static TimeSeries newWeeklySeries(int startYear, int startMonth, int startDay,
+      double... series) {
+    Time startTime = Time.fromYearMonthDay(startYear, startMonth, startDay);
+    ;
+    return TimeSeries.from(TimePeriod.oneWeek(), startTime, series);
+  }
 
 }
