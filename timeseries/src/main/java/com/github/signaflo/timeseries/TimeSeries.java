@@ -48,15 +48,15 @@ public final class TimeSeries implements DataSet {
     private final int n;
     private final double mean;
     private final double[] series;
-    private final List<OffsetDateTime> observationTimes;
-    private final Map<OffsetDateTime, Integer> dateTimeIndex;
+    private final List<Time> observationTimes;
+    private final Map<Time, Integer> timeToIntegerMap;
     private final DoubleDataSet dataSet;
 
     private TimeSeries(final double... series) {
-        this(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0)), series);
+        this(Time.fromYear(1), series);
     }
 
-    private TimeSeries(final OffsetDateTime startTime, final double... series) {
+    private TimeSeries(final Time startTime, final double... series) {
         this(TimePeriod.oneYear(), startTime, series);
     }
 
@@ -70,26 +70,29 @@ public final class TimeSeries implements DataSet {
         this.n = series.length;
         this.mean = this.dataSet.mean();
         this.timePeriod = timePeriod;
-        Map<OffsetDateTime, Integer> dateTimeIndex = new HashMap<>(series.length);
-        List<OffsetDateTime> dateTimes = new ArrayList<>(series.length);
+        Map<Time, Integer> timeToIntegerMap = new HashMap<>(series.length);
+        List<Time> times = new ArrayList<>(series.length);
         OffsetDateTime dateTime;
+        Time time;
         try {
             dateTime = OffsetDateTime.parse(startTime);
-            dateTimes.add(dateTime);
-            dateTimeIndex.put(dateTime, 0);
+            time = new Time(dateTime);
+            times.add(new Time(dateTime));
+            timeToIntegerMap.put(time, 0);
         } catch (DateTimeParseException e) {
             dateTime = OffsetDateTime.of(LocalDateTime.parse(startTime), ZoneOffset.ofHours(0));
-            dateTimes.add(dateTime);
-            dateTimeIndex.put(dateTime, 0);
+            time = new Time(dateTime);
+            times.add(time);
+            timeToIntegerMap.put(time, 0);
         }
 
         for (int i = 1; i < series.length; i++) {
-            dateTime = dateTimes.get(i - 1).plus(timePeriod.unitLength(), timePeriod.timeUnit().temporalUnit());
-            dateTimes.add(dateTime);
-            dateTimeIndex.put(dateTime, i);
+            time = times.get(i - 1).plus(timePeriod.unitLength(), timePeriod);
+            times.add(time);
+            timeToIntegerMap.put(time, i);
         }
-        this.observationTimes = Collections.unmodifiableList(dateTimes);
-        this.dateTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
+        this.observationTimes = Collections.unmodifiableList(times);
+        this.timeToIntegerMap = Collections.unmodifiableMap(timeToIntegerMap);
     }
 
     private TimeSeries(final TimePeriod timePeriod, final OffsetDateTime startTime, final double... series) {
@@ -109,7 +112,7 @@ public final class TimeSeries implements DataSet {
             dateTimeIndex.put(dateTime, i);
         }
         this.observationTimes = Collections.unmodifiableList(dateTimes);
-        this.dateTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
+        this.timeToIntegerMap = Collections.unmodifiableMap(dateTimeIndex);
     }
 
     private TimeSeries(final TimeUnit timeUnit, final CharSequence startTime, final double... series) {
@@ -130,7 +133,7 @@ public final class TimeSeries implements DataSet {
             dateTimeIndex.put(dt, i);
             i++;
         }
-        this.dateTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
+        this.timeToIntegerMap = Collections.unmodifiableMap(dateTimeIndex);
     }
 
     /**
@@ -394,10 +397,10 @@ public final class TimeSeries implements DataSet {
      * @throws IllegalArgumentException if there is no observation at the given date-time.
      */
     public final double at(@NonNull final OffsetDateTime dateTime) {
-        if (!dateTimeIndex.containsKey(dateTime)) {
+        if (!timeToIntegerMap.containsKey(dateTime)) {
             throw new IllegalArgumentException("No observation available at date-time: " + dateTime);
         }
-        return this.series[dateTimeIndex.get(dateTime)];
+        return this.series[timeToIntegerMap.get(dateTime)];
     }
 
     /**
@@ -689,8 +692,8 @@ public final class TimeSeries implements DataSet {
      */
     public final TimeSeries slice(@NonNull final OffsetDateTime start,
                                   @NonNull final OffsetDateTime end) {
-        final int startIdx = this.dateTimeIndex.get(start);
-        final int endIdx = this.dateTimeIndex.get(end);
+        final int startIdx = this.timeToIntegerMap.get(start);
+        final int endIdx = this.timeToIntegerMap.get(end);
         final double[] sliced = new double[endIdx - startIdx + 1];
         System.arraycopy(series, startIdx, sliced, 0, endIdx - startIdx + 1);
         final List<OffsetDateTime> obsTimes = this.observationTimes.subList(startIdx, endIdx + 1);
@@ -762,7 +765,7 @@ public final class TimeSeries implements DataSet {
      * @return the mapping of observation times to array indices for this series.
      */
     public final Map<OffsetDateTime, Integer> dateTimeIndex() {
-        return this.dateTimeIndex;
+        return this.timeToIntegerMap;
     }
 
     /**
