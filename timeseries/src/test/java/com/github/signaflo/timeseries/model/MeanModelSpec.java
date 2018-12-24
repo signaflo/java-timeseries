@@ -31,7 +31,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import com.github.signaflo.timeseries.TimeSeries;
-import com.github.signaflo.timeseries.TimeUnit;
 import com.github.signaflo.timeseries.Ts;
 import com.github.signaflo.timeseries.forecast.Forecast;
 
