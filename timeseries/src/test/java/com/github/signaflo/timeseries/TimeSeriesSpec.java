@@ -65,8 +65,8 @@ public class TimeSeriesSpec {
     @Test
     public void whenDateTimeIndexNonExistentThenIllegalArgument() {
         exception.expect(IllegalArgumentException.class);
-        OffsetDateTime dateTime = OffsetDateTime.parse("1955-01-01T00:00Z");
-        timeSeries.at(dateTime);
+        Time time = Time.fromYear(1);
+        timeSeries.at(time);
     }
 
     @Test
@@ -153,21 +153,21 @@ public class TimeSeriesSpec {
     @Test
     public void whenStartTimeThenFirstObservationTime() {
         timeSeries = Ts.newQuarterlySeries(1956, 1, TestData.ausbeerArray);
-        OffsetDateTime expected = OffsetDateTime.parse("1956-01-01T00:00:00Z");
+        Time expected = Time.fromYear(1956);
         assertThat(timeSeries.startTime(), is(expected));
     }
 
     @Test
     public void whenAtDateTimeAccessedThenCorrectValueReturned() {
         timeSeries = TestData.debitcards;
-        OffsetDateTime period = OffsetDateTime.parse("2000-01-01T00:00:00Z");
-        assertThat(timeSeries.at(period), is(timeSeries.at(0)));
+        Time year2000 = Time.fromYear(2000);
+        assertThat(timeSeries.at(year2000), is(timeSeries.at(0)));
     }
 
     @Test
     public void whenTimeSeriesMeanTakenThenResultCorrect() {
         double[] data = new double[]{3.0, 7.0, 5.0};
-        TimeSeries series = TimeSeries.from(OffsetDateTime.now(), data);
+        TimeSeries series = TimeSeries.from(Time.now(), data);
         assertThat(series.mean(), is(equalTo(5.0)));
     }
 
@@ -250,9 +250,9 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenTimeSeriesAggregatedDatesCorrect() {
-        TimeSeries aggregated = timeSeries.aggregate(TimeUnit.DECADE);
-        OffsetDateTime expectedStart = OffsetDateTime.of(LocalDateTime.of(1956, 1, 1, 0, 0), ZoneOffset.ofHours(0));
-        OffsetDateTime expectedEnd = OffsetDateTime.of(LocalDateTime.of(1996, 1, 1, 0, 0), ZoneOffset.ofHours(0));
+        TimeSeries aggregated = timeSeries.aggregate(TimePeriod.oneDecade());
+        Time expectedStart = Time.fromYear(1956);
+        Time expectedEnd = Time.fromYear(1996);
         assertThat(aggregated.observationTimes().get(0), is(equalTo(expectedStart)));
         assertThat(aggregated.observationTimes().get(aggregated.size() - 1), is(equalTo(expectedEnd)));
     }
@@ -261,7 +261,7 @@ public class TimeSeriesSpec {
     public void whenWeeklySeriesCreatedResultCorrect() {
         TimeSeries series = TestData.sydneyAir;
         TimeSeries seriesOne = series.aggregateToYears();
-        TimeSeries seriesTwo = series.aggregate(TimeUnit.YEAR);
+        TimeSeries seriesTwo = series.aggregate(TimePeriod.oneYear());
         MatcherAssert.assertThat(seriesOne, is(equalTo(seriesTwo)));
     }
 
@@ -269,10 +269,10 @@ public class TimeSeriesSpec {
     public void whenFromThenCorrectSliceOfDataReturned() {
         double[] ts = TestData.ausbeerArray;
         TimeSeries series = TimeSeries.from(TimePeriod.oneQuarter(), "1956-01-01T00:00:00", ts);
-        OffsetDateTime startSlice = OffsetDateTime.parse("1956-04-01T00:00:00Z");
-        OffsetDateTime endSlice = OffsetDateTime.parse("1957-01-01T00:00:00Z");
+        Time start = Time.fromYearMonth(1956, 4);
+        Time end = Time.fromYear(1957);
         TimeSeries expected = series.timeSlice(2, 5);
-        assertThat(series.slice(startSlice, endSlice), is(expected));
+        assertThat(series.slice(start, end), is(expected));
         assertThat(series.slice(1, 4), is(expected));
     }
 

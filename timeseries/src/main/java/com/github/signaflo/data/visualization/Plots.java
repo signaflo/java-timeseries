@@ -24,6 +24,7 @@
 
 package com.github.signaflo.data.visualization;
 
+import com.github.signaflo.timeseries.Time;
 import com.google.common.primitives.Doubles;
 import com.github.signaflo.data.DataSet;
 import org.knowm.xchart.XChartPanel;
@@ -85,8 +86,8 @@ public class Plots {
     public static void plot(final TimeSeries timeSeries, final String title, final String seriesName) {
         Thread plotThread = new Thread(() -> {
             final List<Date> xAxis = new ArrayList<>(timeSeries.observationTimes().size());
-            for (OffsetDateTime dateTime : timeSeries.observationTimes()) {
-                xAxis.add(Date.from(dateTime.toInstant()));
+            for (Time time : timeSeries.observationTimes()) {
+                xAxis.add(Date.from(time.toInstant()));
             }
             List<Double> seriesList = Doubles.asList(round(timeSeries.asArray(), 2));
             final XYChart chart = new XYChartBuilder().theme(Styler.ChartTheme.GGPlot2)

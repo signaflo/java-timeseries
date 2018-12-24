@@ -23,19 +23,12 @@
  */
 package com.github.signaflo.timeseries;
 
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-
 /**
  * Static factory constructors for {@link TimeSeries} objects.
  *
  * @author Jacob Rachiele
  */
 public final class Ts {
-
-    private static final int ZONE_OFFSET = 0;
 
     private Ts() {
     }
@@ -48,9 +41,8 @@ public final class Ts {
      * @return a new time series with the given series data and start year.
      */
     public static TimeSeries newAnnualSeries(final int startYear, final double... series) {
-        final LocalDateTime localDateTime = LocalDateTime.of(startYear, Month.JANUARY, 1, 0, 0);
-        final OffsetDateTime startPeriod = OffsetDateTime.of(localDateTime, ZoneOffset.ofHours(ZONE_OFFSET));
-        return TimeSeries.from(TimePeriod.oneYear(), startPeriod, series);
+        Time year = Time.fromYear(startYear);
+        return TimeSeries.from(TimePeriod.oneYear(), year, series);
     }
 
     /**
@@ -98,8 +90,7 @@ public final class Ts {
      */
     public static TimeSeries newMonthlySeries(final int startYear, final int startMonth, final int startDay,
                                               final double... series) {
-        final OffsetDateTime startPeriod = OffsetDateTime
-                .of(startYear, startMonth, startDay, 0, 0, 0, 0, ZoneOffset.ofHours(ZONE_OFFSET));
+        final Time startPeriod = Time.fromYearMonthDay(startYear, startMonth, startDay);
         return TimeSeries.from(TimePeriod.oneMonth(), startPeriod, series);
     }
 
@@ -124,8 +115,7 @@ public final class Ts {
      */
     public static TimeSeries newQuarterlySeries(final int startYear, final int startQuarter, final double... series) {
         final int startMonth = 3 * startQuarter - 2;
-        final OffsetDateTime startPeriod = OffsetDateTime
-                .of(startYear, startMonth, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0));
+        final Time startPeriod = Time.fromYearMonth(startYear, startMonth);
         return TimeSeries.from(TimePeriod.oneQuarter(), startPeriod, series);
     }
 
@@ -144,9 +134,8 @@ public final class Ts {
      * @return A new time series with the given year, month, day, and series data.
      */
     public static TimeSeries newWeeklySeries(int startYear, int startMonth, int startDay, double... series) {
-        final OffsetDateTime startPeriod = OffsetDateTime
-                .of(startYear, startMonth, startDay, 0, 0, 0, 0, ZoneOffset.ofHours(ZONE_OFFSET));
-        return TimeSeries.from(TimePeriod.oneWeek(), startPeriod, series);
+        Time startTime = Time.fromYearMonthDay(startYear, startMonth, startDay);;
+        return TimeSeries.from(TimePeriod.oneWeek(), startTime, series);
     }
 
 }

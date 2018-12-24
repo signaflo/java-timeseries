@@ -25,13 +25,14 @@
 package com.github.signaflo.timeseries.model;
 
 import com.github.signaflo.math.operations.DoubleFunctions;
+import com.github.signaflo.timeseries.Time;
+import com.github.signaflo.timeseries.TimePeriod;
 import org.hamcrest.MatcherAssert;
 import com.github.signaflo.timeseries.TestData;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import com.github.signaflo.timeseries.TimeSeries;
-import com.github.signaflo.timeseries.TimeUnit;
 import com.github.signaflo.timeseries.Ts;
 import com.github.signaflo.timeseries.forecast.Forecast;
 
@@ -85,15 +86,15 @@ public class MeanModelSpec {
     @Test
     public void whenMeanForecastComputedFirstObservationTimeCorrect() {
         TimeSeries pointForecast = meanModel.forecast(6).pointEstimates();
-        OffsetDateTime expectedTime = OffsetDateTime.of(2008, 10, 1, 0, 0, 0, 0, ZoneOffset.ofHours(0));
+        Time expectedTime = Time.fromYearMonth(2008, 10);
         assertThat(pointForecast.observationTimes().get(0), is(equalTo(expectedTime)));
     }
 
     @Test
     public void whenMeanForecastComputedTimePeriodUnchanged() {
         TimeSeries pointForecast = meanModel.forecast(6).pointEstimates();
-        TimeUnit timeUnit = TimeUnit.QUARTER;
-        assertThat(pointForecast.timePeriod().timeUnit(), is(equalTo(timeUnit)));
+        TimePeriod timePeriod = TimePeriod.oneQuarter();
+        assertThat(pointForecast.timePeriod(), is(equalTo(timePeriod)));
     }
 
     @Test

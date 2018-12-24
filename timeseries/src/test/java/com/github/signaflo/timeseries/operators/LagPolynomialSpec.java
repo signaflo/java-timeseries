@@ -25,6 +25,7 @@
 package com.github.signaflo.timeseries.operators;
 
 import com.github.signaflo.timeseries.TestData;
+import com.github.signaflo.timeseries.Time;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -66,7 +67,7 @@ public final class LagPolynomialSpec {
         TimeSeries series = TestData.ausbeer;
         LagPolynomial poly = LagPolynomial.firstDifference();
         assertThat(poly.solve(series, 2), is(equalTo(series.at(1))));
-        OffsetDateTime thirdObservationPeriod = OffsetDateTime.of(1956, 7, 1, 0, 0, 0, 0, ZoneOffset.UTC);
+        Time thirdObservationPeriod = Time.fromYearMonthDay(1956, 7, 1);
         assertThat(poly.solve(series, thirdObservationPeriod), is(equalTo(series.at(1))));
         poly = LagPolynomial.movingAverage(0.5);
         assertThat(poly.solve(series, 2), is(equalTo(series.at(1) * 0.5)));
@@ -78,7 +79,7 @@ public final class LagPolynomialSpec {
         TimeSeries series = TestData.ausbeer;
         LagPolynomial poly = LagPolynomial.firstDifference();
         assertThat(poly.apply(series, 1), is(equalTo(series.at(1) - series.at(0))));
-        OffsetDateTime secondObservationPeriod = OffsetDateTime.of(1956, 4, 1, 0, 0, 0, 0, ZoneOffset.UTC);
+        Time secondObservationPeriod = Time.fromYearMonthDay(1956, 4, 1);
         assertThat(poly.apply(series, secondObservationPeriod), is(
                 equalTo(series.at(1) - series.at(0))));
     }
@@ -145,8 +146,8 @@ public final class LagPolynomialSpec {
     @Test
     public void whenLagOperatorAppliedThenExpectedResult() {
         TimeSeries series = TestData.ausbeer;
-        OffsetDateTime dateTime = OffsetDateTime.of(1956, 4, 1, 0, 0, 0, 0, ZoneOffset.UTC);
-        assertThat(LagOperator.apply(series, dateTime), is(series.at(0)));
+        Time time = Time.fromYearMonth(1956, 4);
+        assertThat(LagOperator.apply(series, time), is(series.at(0)));
         assertThat(LagOperator.apply(series, 1), is(series.at(0)));
     }
 }

@@ -28,6 +28,7 @@ import com.github.signaflo.data.regression.LinearRegressionPrediction;
 import com.github.signaflo.data.regression.MultipleLinearRegressionPredictor;
 import com.github.signaflo.math.linear.doubles.Matrix;
 import com.github.signaflo.math.linear.doubles.Vector;
+import com.github.signaflo.timeseries.Time;
 import com.github.signaflo.timeseries.TimePeriod;
 import com.github.signaflo.timeseries.TimeSeries;
 import com.github.signaflo.timeseries.forecast.Forecaster;
@@ -54,8 +55,8 @@ class TimeSeriesRegressionForecaster implements Forecaster {
     public TimeSeries computePointForecasts(int steps) {
         double[] forecasts = predictionMatrix.times(beta).elements();
         TimePeriod timePeriod = timeSeries.timePeriod();
-        OffsetDateTime sampleEnd = this.timeSeries.observationTimes().get(timeSeries.size() - 1);
-        OffsetDateTime startTime = sampleEnd.plus(timePeriod.unitLength(), timePeriod.timeUnit().temporalUnit());
+        Time sampleEnd = this.timeSeries.observationTimes().get(timeSeries.size() - 1);
+        Time startTime = sampleEnd.plus(timePeriod);
         return TimeSeries.from(timePeriod, startTime, forecasts);
     }
 

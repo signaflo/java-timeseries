@@ -1,5 +1,6 @@
 package com.github.signaflo.timeseries.model.arima;
 
+import com.github.signaflo.timeseries.Time;
 import com.google.common.collect.EvictingQueue;
 import com.github.signaflo.math.operations.DoubleFunctions;
 import com.github.signaflo.math.stats.distributions.Distribution;
@@ -30,8 +31,8 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
     private final Distribution distribution;
     private final TimePeriod period;
     private final TimePeriod seasonalCycle;
-    private final OffsetDateTime startTime;
-    private OffsetDateTime currentTime;
+    private final Time startTime;
+    private Time currentTime;
 
     private final LagPolynomial maPoly;
     private final LagPolynomial arPoly;
@@ -104,7 +105,7 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
         newValue += diffPoly.solve(series, d);
         this.series.add(newValue);
         this.errors.add(error);
-        this.currentTime = this.currentTime.plus(period.unitLength(), period.timeUnit().temporalUnit());
+        this.currentTime = this.currentTime.plus(period);
         return newValue;
     }
 
@@ -208,8 +209,7 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
         private Distribution distribution = new Normal();
         private TimePeriod period = (coefficients.isSeasonal()) ? TimePeriod.oneMonth() : TimePeriod.oneYear();
         private TimePeriod seasonalCycle = TimePeriod.oneYear();
-        private OffsetDateTime startTime = OffsetDateTime.of(1, 1, 1, 0, 0,
-                                                               0, 0, ZoneOffset.UTC);
+        private Time startTime = Time.fromYear(1);
         private boolean periodSet = false;
 
         /**
@@ -268,7 +268,7 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
          * @param startTime the start time of the process.
          * @return this builder.
          */
-        public Builder setStartTime(OffsetDateTime startTime) {
+        public Builder setStartTime(Time startTime) {
             this.startTime = checkNotNull(startTime, "The start time cannot be null.");
             return this;
         }

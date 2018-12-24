@@ -23,6 +23,7 @@
  */
 package com.github.signaflo.timeseries.operators;
 
+import com.github.signaflo.timeseries.Time;
 import com.github.signaflo.timeseries.TimeSeries;
 
 import java.time.OffsetDateTime;
@@ -64,10 +65,10 @@ final class MovingAveragePolynomial extends LagPolynomial {
     }
 
     @Override
-    public double solve(final TimeSeries timeSeries, OffsetDateTime dateTime) {
+    public double solve(final TimeSeries timeSeries, Time time) {
         double value = 0.0;
         for (int i = 0; i < parameters.length; i++) {
-            value += parameters[i] * LagOperator.apply(timeSeries, dateTime, i + 1);
+            value += parameters[i] * LagOperator.apply(timeSeries, time, i + 1);
         }
         return value;
     }

@@ -29,6 +29,7 @@ import com.github.signaflo.math.linear.doubles.Matrix;
 import com.github.signaflo.math.linear.doubles.Vector;
 import com.github.signaflo.math.operations.DoubleFunctions;
 import com.github.signaflo.math.stats.distributions.Normal;
+import com.github.signaflo.timeseries.Time;
 import com.github.signaflo.timeseries.TimePeriod;
 import com.github.signaflo.timeseries.TimeSeries;
 import com.github.signaflo.timeseries.forecast.Forecast;
@@ -101,11 +102,9 @@ class ArimaForecaster implements Forecaster {
         final int n = observations.size();
         double[] fcst = fcst(steps);
         TimePeriod timePeriod = observations.timePeriod();
-        final OffsetDateTime startTime = observations.observationTimes()
+        final Time startTime = observations.observationTimes()
                                                      .get(n - 1)
-                                                     .plus(timePeriod.periodLength() *
-                                                           timePeriod.timeUnit().unitLength(),
-                                                           timePeriod.timeUnit().temporalUnit());
+                                                     .plus(timePeriod);
         return TimeSeries.from(timePeriod, startTime, fcst);
     }
 
@@ -113,7 +112,6 @@ class ArimaForecaster implements Forecaster {
      * Compute point forecasts for the given number of steps ahead and return the result in a primitive array.
      *
      * @param steps      the number of time periods ahead to forecast.
-     * @param arimaModel
      * @return point forecasts for the given number of steps ahead.
      */
     public double[] fcst(final int steps) {

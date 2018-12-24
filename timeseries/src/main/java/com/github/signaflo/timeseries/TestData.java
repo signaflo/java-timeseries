@@ -158,9 +158,8 @@ public final class TestData {
             1.2, 1.801, 1.727, 1.992, 1.865, 1.801, 1.661, 2.366, 2.003, 2.092, 1.703, 1.337, 1.985, 1.808, 1.839,
             1.714, 1.73, 1.725, 1.456, 1.447, 1.357, 1.28, 1.363, 1.228, 1.411, 1.13, 1.153, 1.257, 1.259, 1.153,
             1.202, 1.185, 1.247, 1.434, 1.45, 1.227, 1.245, 1.417, 1.458, 1.398, 1.423, 1.358, 1.488};
-    public static TimeSeries sydneyAir = TimeSeries.from(new TimePeriod(TimeUnit.WEEK, 1),
-                                                         OffsetDateTime.of(LocalDateTime.of(1987, 6, 22, 0, 0),
-                                                                          ZoneOffset.ofHours(0)), syd);
+    public static TimeSeries sydneyAir = TimeSeries.from(TimePeriod.oneWeek(),
+                                                         Time.fromYearMonthDay(1987, 6, 22), syd);
     private static double[] traffic = new double[]{4838.665, 4845.177, 5157.996, 5637.876, 5520.69, 5626.337,
             5350.546, 5356.983, 5385.814, 5403.906, 5666.348, 5764.142, 5902.474, 6012.859, 5829.679, 5852.245,
             6185.16, 5927.107, 5855.695, 5866.18, 5905.206, 5848.887, 6016.66, 5936.597, 6169.697, 6313.159,
@@ -383,9 +382,8 @@ public final class TestData {
             3619.604, 3545.919, 3580.011, 3507.3, 3463.601, 3359.582, 3391.929, 3364.103, 3344.854, 3265.992,
             3230.704, 3208.588, 3254.183, 3192.484, 3130.113, 3166.313, 3085.524, 3017.947, 3111.564, 3057.035,
             3024.072, 2936.645, 2974.818, 3005.528, 3066.679, 3017.318, 2976.698, 2959.047, 2952.356};
-    private static TimePeriod period = new TimePeriod(TimeUnit.MONTH, 1);
-    private static OffsetDateTime startTime = OffsetDateTime.of(LocalDateTime.of(2004, 11, 19, 0, 0),
-                                                 ZoneOffset.ofHours(0));
+    private static TimePeriod period = TimePeriod.oneMonth();
+    private static Time startTime = Time.fromYearMonthDay(2004, 11, 19);
     public static final TimeSeries internetTraffic = TimeSeries.from(period, startTime, traffic);
 
     public static double[] mtcars_mpg = {21, 21, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22.8, 19.2, 17.8, 16.4, 17.3, 15.2,

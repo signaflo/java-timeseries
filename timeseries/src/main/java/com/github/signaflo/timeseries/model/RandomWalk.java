@@ -120,14 +120,6 @@ public final class RandomWalk implements Model {
     @Override
     public Forecast forecast(final int steps, double alpha) {
         int n = timeSeries.size();
-        TimePeriod timePeriod = timeSeries.timePeriod();
-        final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
-                                                   .plus(timePeriod.periodLength() * timePeriod.timeUnit().unitLength(),
-                                                         timePeriod.timeUnit().temporalUnit());
-        double[] forecast = new double[steps];
-        for (int t = 0; t < steps; t++) {
-            forecast[t] = timeSeries.at(n - 1);
-        }
         Forecaster forecaster = new RandomWalkForecaster(timeSeries, this.predictionErrors());
         return forecaster.forecast(steps, alpha);
     }

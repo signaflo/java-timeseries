@@ -26,6 +26,7 @@ package com.github.signaflo.timeseries.model;
 
 import com.github.signaflo.math.operations.DoubleFunctions;
 import com.github.signaflo.math.stats.distributions.StudentsT;
+import com.github.signaflo.timeseries.Time;
 import com.github.signaflo.timeseries.TimePeriod;
 import com.github.signaflo.timeseries.TimeSeries;
 import com.github.signaflo.timeseries.forecast.Forecaster;
@@ -92,9 +93,7 @@ class MeanForecaster implements Forecaster {
         TimePeriod timePeriod = timeSeries.timePeriod();
 
         final double[] forecasted = DoubleFunctions.fill(steps, timeSeries.mean());
-        final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
-                                                   .plus(timePeriod.periodLength() * timePeriod.timeUnit().unitLength(),
-                                                         timePeriod.timeUnit().temporalUnit());
+        final Time startTime = timeSeries.observationTimes().get(n - 1).plus(timePeriod);
         return TimeSeries.from(timePeriod, startTime, forecasted);
     }
 

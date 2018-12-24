@@ -160,7 +160,7 @@ final class ArimaForecast implements Forecast {
                .append(String.format("%-70.70s", " -------------------------------------------------------------- "))
                .append(newLine);
         for (int i = 0; i < this.pointForecast.size(); i++) {
-            builder.append(String.format("%-18.18s", "| " + pointForecast.observationTimes().get(i).toLocalDateTime()))
+            builder.append(String.format("%-18.18s", "| " + pointForecast.observationTimes().get(i)))
                    .append("  ")
                    .append(String.format("%-13.13s", "| " +  Double.toString(pointForecast.at(i))))
                    .append("  ")

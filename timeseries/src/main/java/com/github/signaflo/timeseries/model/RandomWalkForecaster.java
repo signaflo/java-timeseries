@@ -25,6 +25,7 @@
 package com.github.signaflo.timeseries.model;
 
 import com.github.signaflo.math.stats.distributions.Normal;
+import com.github.signaflo.timeseries.Time;
 import com.github.signaflo.timeseries.TimePeriod;
 import com.github.signaflo.timeseries.TimeSeries;
 import com.github.signaflo.timeseries.forecast.Forecast;
@@ -67,9 +68,8 @@ class RandomWalkForecaster implements Forecaster {
     public TimeSeries computePointForecasts(int steps) {
         int n = timeSeries.size();
         TimePeriod timePeriod = timeSeries.timePeriod();
-        long amountToAdd = timePeriod.periodLength() * timePeriod.timeUnit().unitLength();
-        final OffsetDateTime startTime = timeSeries.observationTimes().get(n - 1)
-                                                   .plus(amountToAdd, timePeriod.timeUnit().temporalUnit());
+        long amountToAdd = timePeriod.periodLength();
+        final Time startTime = timeSeries.observationTimes().get(n - 1).plus(timePeriod);
         double[] forecast = new double[steps];
         for (int t = 0; t < steps; t++) {
             forecast[t] = timeSeries.at(n - 1);

@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 
 /**
@@ -61,7 +62,7 @@ public final class TimeSeries implements DataSet {
     }
 
     private TimeSeries(final TimePeriod timePeriod, final double... series) {
-        this(timePeriod, OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC), series);
+        this(timePeriod, Time.fromYear(1), series);
     }
 
     private TimeSeries(final TimePeriod timePeriod, final CharSequence startTime, final double... series) {
@@ -87,7 +88,7 @@ public final class TimeSeries implements DataSet {
         }
 
         for (int i = 1; i < series.length; i++) {
-            time = times.get(i - 1).plus(timePeriod.unitLength(), timePeriod);
+            time = times.get(i - 1).plus(timePeriod);
             times.add(time);
             timeToIntegerMap.put(time, i);
         }
@@ -95,19 +96,19 @@ public final class TimeSeries implements DataSet {
         this.timeToIntegerMap = Collections.unmodifiableMap(timeToIntegerMap);
     }
 
-    private TimeSeries(final TimePeriod timePeriod, final OffsetDateTime startTime, final double... series) {
+    private TimeSeries(final TimePeriod timePeriod, final Time startTime, final double... series) {
         this.dataSet = new DoubleDataSet(series);
         this.series = series.clone();
         this.n = series.length;
         this.mean = this.dataSet.mean();
         this.timePeriod = timePeriod;
-        List<OffsetDateTime> dateTimes = new ArrayList<>(series.length);
-        Map<OffsetDateTime, Integer> dateTimeIndex = new HashMap<>(series.length);
+        List<Time> dateTimes = new ArrayList<>(series.length);
+        Map<Time, Integer> dateTimeIndex = new HashMap<>(series.length);
         dateTimes.add(startTime);
         dateTimeIndex.put(startTime, 0);
-        OffsetDateTime dateTime;
+        Time dateTime;
         for (int i = 1; i < series.length; i++) {
-            dateTime = dateTimes.get(i - 1).plus(timePeriod.unitLength(), timePeriod.timeUnit().temporalUnit());
+            dateTime = dateTimes.get(i - 1).plus(timePeriod);
             dateTimes.add(dateTime);
             dateTimeIndex.put(dateTime, i);
         }
@@ -115,11 +116,11 @@ public final class TimeSeries implements DataSet {
         this.timeToIntegerMap = Collections.unmodifiableMap(dateTimeIndex);
     }
 
-    private TimeSeries(final TimeUnit timeUnit, final CharSequence startTime, final double... series) {
+    private TimeSeries(final TemporalUnit timeUnit, final CharSequence startTime, final double... series) {
         this(new TimePeriod(timeUnit, 1), startTime, series);
     }
 
-    private TimeSeries(final TimePeriod timePeriod, final List<OffsetDateTime> observationTimes,
+    private TimeSeries(final TimePeriod timePeriod, final List<Time> observationTimes,
                        final double... series) {
         this.dataSet = new DoubleDataSet(series);
         this.series = series.clone();
@@ -127,10 +128,10 @@ public final class TimeSeries implements DataSet {
         this.mean = this.dataSet.mean();
         this.timePeriod = timePeriod;
         this.observationTimes = Collections.unmodifiableList(observationTimes);
-        Map<OffsetDateTime, Integer> dateTimeIndex = new HashMap<>(series.length);
+        Map<Time, Integer> dateTimeIndex = new HashMap<>(series.length);
         int i = 0;
-        for (OffsetDateTime dt : observationTimes) {
-            dateTimeIndex.put(dt, i);
+        for (Time time : observationTimes) {
+            dateTimeIndex.put(time, i);
             i++;
         }
         this.timeToIntegerMap = Collections.unmodifiableMap(dateTimeIndex);
@@ -155,7 +156,7 @@ public final class TimeSeries implements DataSet {
      * @param series    the observation data.
      * @return a new time series from the supplied data.
      */
-    public static TimeSeries from(@NonNull final OffsetDateTime startTime, @NonNull final double... series) {
+    public static TimeSeries from(@NonNull final Time startTime, @NonNull final double... series) {
         return new TimeSeries(startTime, series);
     }
 
@@ -177,7 +178,7 @@ public final class TimeSeries implements DataSet {
      *
      * @param timePeriod the period of time between observations.
      * @param startTime  the time of the first observation. The characters must represent either a valid
-     *                   {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
+     *                   {@link Time} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
      *                   UTC/Greenwich offset, i.e., an offset of 0, will be used.
      * @param series     the observation data.
      * @return a new time series from the supplied data.
@@ -197,7 +198,7 @@ public final class TimeSeries implements DataSet {
      * @return a new time series from the supplied data.
      */
     public static TimeSeries from(@NonNull final TimePeriod timePeriod,
-                                  @NonNull final List<OffsetDateTime> observationTimes,
+                                  @NonNull final List<Time> observationTimes,
                                   @NonNull final double... series) {
         return new TimeSeries(timePeriod, observationTimes, series);
     }
@@ -207,12 +208,12 @@ public final class TimeSeries implements DataSet {
      *
      * @param timeUnit  the unit of time in which observations are made.
      * @param startTime the time of the first observation. The characters must represent either a valid
-     *                  {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
+     *                  {@link Time} or a valid {@link LocalDateTime}. If a LocalDateTime, then the default
      *                  UTC/Greenwich offset, i.e., an offset of 0, will be used.
      * @param series    the observation data.
      * @return a new time series from the supplied data.
      */
-    public static TimeSeries from(@NonNull final TimeUnit timeUnit,
+    public static TimeSeries from(@NonNull final TemporalUnit timeUnit,
                                   @NonNull final CharSequence startTime,
                                   @NonNull final double... series) {
         return new TimeSeries(timeUnit, startTime, series);
@@ -227,7 +228,7 @@ public final class TimeSeries implements DataSet {
      * @return a new time series from the supplied data.
      */
     public static TimeSeries from(@NonNull final TimePeriod timePeriod,
-                                  @NonNull final OffsetDateTime startTime,
+                                  @NonNull final Time startTime,
                                   @NonNull final double... series) {
         return new TimeSeries(timePeriod, startTime, series);
     }
@@ -240,8 +241,8 @@ public final class TimeSeries implements DataSet {
      * @param series    the observation data.
      * @return a new time series from the supplied data.
      */
-    public static TimeSeries from(@NonNull final TimeUnit timeUnit,
-                                  @NonNull final OffsetDateTime startTime,
+    public static TimeSeries from(@NonNull final TemporalUnit timeUnit,
+                                  @NonNull final Time startTime,
                                   @NonNull final double... series) {
         return new TimeSeries(new TimePeriod(timeUnit, 1), startTime, series);
     }
@@ -343,7 +344,7 @@ public final class TimeSeries implements DataSet {
      * @param timeUnit The time unit to aggregate up to.
      * @return a new time series aggregated up to the given time unit.
      */
-    public final TimeSeries aggregate(final TimeUnit timeUnit) {
+    public final TimeSeries aggregate(final TemporalUnit timeUnit) {
         return aggregate(new TimePeriod(timeUnit, 1));
     }
 
@@ -361,7 +362,7 @@ public final class TimeSeries implements DataSet {
                     "aggregate a series, the time period argument must be of a larger magnitude than the " +
                     "original.");
         }
-        final List<OffsetDateTime> obsTimes = new ArrayList<>();
+        final List<Time> obsTimes = new ArrayList<>();
         double[] aggregated = new double[series.length / period];
         double sum;
         for (int i = 0; i < aggregated.length; i++) {
@@ -396,7 +397,7 @@ public final class TimeSeries implements DataSet {
      *
      * @throws IllegalArgumentException if there is no observation at the given date-time.
      */
-    public final double at(@NonNull final OffsetDateTime dateTime) {
+    public final double at(@NonNull final Time dateTime) {
         if (!timeToIntegerMap.containsKey(dateTime)) {
             throw new IllegalArgumentException("No observation available at date-time: " + dateTime);
         }
@@ -537,7 +538,7 @@ public final class TimeSeries implements DataSet {
             }
             average[t] = sum / m;
         }
-        final List<OffsetDateTime> times = this.observationTimes.subList(k + c - 1, n - k);
+        final List<Time> times = this.observationTimes.subList(k + c - 1, n - k);
         return new TimeSeries(this.timePeriod, times, average);
     }
 
@@ -551,7 +552,7 @@ public final class TimeSeries implements DataSet {
         if (m % 2 == 1) return movingAverage(m);
         TimeSeries firstAverage = movingAverage(m);
         final int k = m / 2;
-        final List<OffsetDateTime> times = this.observationTimes.subList(k, n - k);
+        final List<Time> times = this.observationTimes.subList(k, n - k);
         return new TimeSeries(this.timePeriod, times, firstAverage.movingAverage(2).series);
     }
 
@@ -604,7 +605,7 @@ public final class TimeSeries implements DataSet {
     public final TimeSeries difference(final int lag) {
         validate(this.series, lag);
         double[] diffed = differenceArray(this.asArray(), lag);
-        final List<OffsetDateTime> obsTimes = this.observationTimes.subList(lag, n);
+        final List<Time> obsTimes = this.observationTimes.subList(lag, n);
         return new TimeSeries(this.timePeriod, obsTimes, diffed);
     }
 
@@ -677,7 +678,7 @@ public final class TimeSeries implements DataSet {
     public final TimeSeries slice(final int start, final int end) {
         final double[] sliced = new double[end - start + 1];
         System.arraycopy(series, start, sliced, 0, end - start + 1);
-        final List<OffsetDateTime> obsTimes = this.observationTimes.subList(start, end + 1);
+        final List<Time> obsTimes = this.observationTimes.subList(start, end + 1);
         return new TimeSeries(this.timePeriod, obsTimes, sliced);
     }
 
@@ -690,13 +691,13 @@ public final class TimeSeries implements DataSet {
      *              time series.
      * @return a slice of this time series from start (inclusive) to end (inclusive).
      */
-    public final TimeSeries slice(@NonNull final OffsetDateTime start,
-                                  @NonNull final OffsetDateTime end) {
+    public final TimeSeries slice(@NonNull final Time start,
+                                  @NonNull final Time end) {
         final int startIdx = this.timeToIntegerMap.get(start);
         final int endIdx = this.timeToIntegerMap.get(end);
         final double[] sliced = new double[endIdx - startIdx + 1];
         System.arraycopy(series, startIdx, sliced, 0, endIdx - startIdx + 1);
-        final List<OffsetDateTime> obsTimes = this.observationTimes.subList(startIdx, endIdx + 1);
+        final List<Time> obsTimes = this.observationTimes.subList(startIdx, endIdx + 1);
         return new TimeSeries(this.timePeriod, obsTimes, sliced);
     }
 
@@ -712,7 +713,7 @@ public final class TimeSeries implements DataSet {
     public final TimeSeries timeSlice(final int start, final int end) {
         final double[] sliced = new double[end - start + 1];
         System.arraycopy(series, start - 1, sliced, 0, end - start + 1);
-        final List<OffsetDateTime> obsTimes = this.observationTimes.subList(start - 1, end);
+        final List<Time> obsTimes = this.observationTimes.subList(start - 1, end);
         return new TimeSeries(this.timePeriod, obsTimes, sliced);
     }
 
@@ -746,7 +747,7 @@ public final class TimeSeries implements DataSet {
      *
      * @return the time at which the first observation was made.
      */
-    public final OffsetDateTime startTime() {
+    public final Time startTime() {
         return this.observationTimes.get(0);
     }
 
@@ -755,7 +756,7 @@ public final class TimeSeries implements DataSet {
      *
      * @return the list of observation times for this series.
      */
-    public final List<OffsetDateTime> observationTimes() {
+    public final List<Time> observationTimes() {
         return this.observationTimes;
     }
 
@@ -764,7 +765,7 @@ public final class TimeSeries implements DataSet {
      *
      * @return the mapping of observation times to array indices for this series.
      */
-    public final Map<OffsetDateTime, Integer> dateTimeIndex() {
+    public final Map<Time, Integer> timeIndex() {
         return this.timeToIntegerMap;
     }
 
