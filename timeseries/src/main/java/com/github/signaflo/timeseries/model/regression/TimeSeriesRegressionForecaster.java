@@ -55,7 +55,7 @@ class TimeSeriesRegressionForecaster implements Forecaster {
         double[] forecasts = predictionMatrix.times(beta).elements();
         TimePeriod timePeriod = timeSeries.timePeriod();
         OffsetDateTime sampleEnd = this.timeSeries.observationTimes().get(timeSeries.size() - 1);
-        OffsetDateTime startTime = sampleEnd.plus(timePeriod.unitLength(), timePeriod.timeUnit().temporalUnit());
+        OffsetDateTime startTime = sampleEnd.plus(timePeriod.unitLength(), timePeriod.temporalUnit());
         return TimeSeries.from(timePeriod, startTime, forecasts);
     }
 

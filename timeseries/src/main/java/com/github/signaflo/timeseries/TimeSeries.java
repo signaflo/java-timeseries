@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 
 /**
@@ -84,7 +85,7 @@ public final class TimeSeries implements DataSet {
         }
 
         for (int i = 1; i < series.length; i++) {
-            dateTime = dateTimes.get(i - 1).plus(timePeriod.unitLength(), timePeriod.timeUnit().temporalUnit());
+            dateTime = dateTimes.get(i - 1).plus(timePeriod.unitLength(), timePeriod.temporalUnit());
             dateTimes.add(dateTime);
             dateTimeIndex.put(dateTime, i);
         }
@@ -104,7 +105,7 @@ public final class TimeSeries implements DataSet {
         dateTimeIndex.put(startTime, 0);
         OffsetDateTime dateTime;
         for (int i = 1; i < series.length; i++) {
-            dateTime = dateTimes.get(i - 1).plus(timePeriod.unitLength(), timePeriod.timeUnit().temporalUnit());
+            dateTime = dateTimes.get(i - 1).plus(timePeriod.unitLength(), timePeriod.temporalUnit());
             dateTimes.add(dateTime);
             dateTimeIndex.put(dateTime, i);
         }
@@ -112,7 +113,7 @@ public final class TimeSeries implements DataSet {
         this.dateTimeIndex = Collections.unmodifiableMap(dateTimeIndex);
     }
 
-    private TimeSeries(final TimeUnit timeUnit, final CharSequence startTime, final double... series) {
+    private TimeSeries(final TemporalUnit timeUnit, final CharSequence startTime, final double... series) {
         this(new TimePeriod(timeUnit, 1), startTime, series);
     }
 
@@ -209,7 +210,7 @@ public final class TimeSeries implements DataSet {
      * @param series    the observation data.
      * @return a new time series from the supplied data.
      */
-    public static TimeSeries from(@NonNull final TimeUnit timeUnit,
+    public static TimeSeries from(@NonNull final TemporalUnit timeUnit,
                                   @NonNull final CharSequence startTime,
                                   @NonNull final double... series) {
         return new TimeSeries(timeUnit, startTime, series);
@@ -237,7 +238,7 @@ public final class TimeSeries implements DataSet {
      * @param series    the observation data.
      * @return a new time series from the supplied data.
      */
-    public static TimeSeries from(@NonNull final TimeUnit timeUnit,
+    public static TimeSeries from(@NonNull final TemporalUnit timeUnit,
                                   @NonNull final OffsetDateTime startTime,
                                   @NonNull final double... series) {
         return new TimeSeries(new TimePeriod(timeUnit, 1), startTime, series);
@@ -340,7 +341,7 @@ public final class TimeSeries implements DataSet {
      * @param timeUnit The time unit to aggregate up to.
      * @return a new time series aggregated up to the given time unit.
      */
-    public final TimeSeries aggregate(final TimeUnit timeUnit) {
+    public final TimeSeries aggregate(final TemporalUnit timeUnit) {
         return aggregate(new TimePeriod(timeUnit, 1));
     }
 

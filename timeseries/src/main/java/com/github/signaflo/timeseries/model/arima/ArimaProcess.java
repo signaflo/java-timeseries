@@ -104,7 +104,7 @@ public class ArimaProcess implements DoubleSupplier, PrimitiveIterator.OfDouble 
         newValue += diffPoly.solve(series, d);
         this.series.add(newValue);
         this.errors.add(error);
-        this.currentTime = this.currentTime.plus(period.unitLength(), period.timeUnit().temporalUnit());
+        this.currentTime = this.currentTime.plus(period.unitLength(), period.temporalUnit());
         return newValue;
     }
 

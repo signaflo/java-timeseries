@@ -250,7 +250,7 @@ public class TimeSeriesSpec {
 
     @Test
     public void whenTimeSeriesAggregatedDatesCorrect() {
-        TimeSeries aggregated = timeSeries.aggregate(TimeUnit.DECADE);
+        TimeSeries aggregated = timeSeries.aggregate(TimePeriod.oneDecade());
         OffsetDateTime expectedStart = OffsetDateTime.of(LocalDateTime.of(1956, 1, 1, 0, 0), ZoneOffset.ofHours(0));
         OffsetDateTime expectedEnd = OffsetDateTime.of(LocalDateTime.of(1996, 1, 1, 0, 0), ZoneOffset.ofHours(0));
         assertThat(aggregated.observationTimes().get(0), is(equalTo(expectedStart)));
@@ -261,7 +261,7 @@ public class TimeSeriesSpec {
     public void whenWeeklySeriesCreatedResultCorrect() {
         TimeSeries series = TestData.sydneyAir;
         TimeSeries seriesOne = series.aggregateToYears();
-        TimeSeries seriesTwo = series.aggregate(TimeUnit.YEAR);
+        TimeSeries seriesTwo = series.aggregate(TimePeriod.oneYear());
         MatcherAssert.assertThat(seriesOne, is(equalTo(seriesTwo)));
     }
 

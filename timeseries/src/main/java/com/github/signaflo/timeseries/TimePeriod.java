@@ -23,9 +23,13 @@
  */
 package com.github.signaflo.timeseries;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+
 /**
  * An amount of time expressed in a particular time unit.
- * This class wraps a {@link TimeUnit} together with a positive integer period length,
+ * This class wraps a {@link TemporalUnit} together with a positive integer period length,
  * allowing one to create a wide range of different time periods.
  * This class is immutable and thread-safe.
  *
@@ -33,13 +37,13 @@ package com.github.signaflo.timeseries;
  */
 public final class TimePeriod {
 
-    private final TimeUnit timeUnit;
+    private final TemporalUnit temporalUnit;
     private final long periodLength;
 
     /**
      * Create a new time period with the given unit of time and period length.
      *
-     * @param timeUnit     the unit of time underlying this time period
+     * @param temporalUnit the unit of time underlying this time period
      * @param periodLength the length of this time period relative to the given unit of time. Note that the
      *                     period length must be a long. Most decimal time periods can be modeled by
      *                     converting to an appropriate time unit with a smaller order of magnitude. For example, the
@@ -48,9 +52,9 @@ public final class TimePeriod {
      *
      * @throws IllegalArgumentException if the given period length is less than or equal to 0.
      */
-    public TimePeriod(final TimeUnit timeUnit, final long periodLength) {
+    public TimePeriod(final TemporalUnit temporalUnit, final long periodLength) {
         validate(periodLength);
-        this.timeUnit = timeUnit;
+        this.temporalUnit = temporalUnit;
         this.periodLength = periodLength;
     }
 
@@ -60,7 +64,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing exactly one hour.
      */
     public static TimePeriod oneHour() {
-        return new TimePeriod(TimeUnit.HOUR, 1);
+        return new TimePeriod(ChronoUnit.HOURS, 1);
     }
 
     /**
@@ -69,7 +73,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing exactly one year.
      */
     public static TimePeriod oneYear() {
-        return new TimePeriod(TimeUnit.YEAR, 1);
+        return new TimePeriod(java.time.temporal.ChronoUnit.YEARS, 1);
     }
 
     /**
@@ -78,7 +82,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing exactly two years.
      */
     public static TimePeriod twoYears() {
-        return new TimePeriod(TimeUnit.YEAR, 2);
+        return new TimePeriod(ChronoUnit.YEARS, 2);
     }
 
     /**
@@ -87,7 +91,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing one half of a decade.
      */
     public static TimePeriod halfDecade() {
-        return new TimePeriod(TimeUnit.YEAR, 5);
+        return new TimePeriod(ChronoUnit.YEARS, 5);
     }
 
     /**
@@ -96,7 +100,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing exactly one month.
      */
     public static TimePeriod oneMonth() {
-        return new TimePeriod(TimeUnit.MONTH, 1);
+        return new TimePeriod(ChronoUnit.MONTHS, 1);
     }
 
     /**
@@ -106,7 +110,7 @@ public final class TimePeriod {
      */
     public static TimePeriod halfMonth() {
         final int secondsInHalfMonth = 1314873;
-        return new TimePeriod(TimeUnit.SECOND, secondsInHalfMonth);
+        return new TimePeriod(ChronoUnit.SECONDS, secondsInHalfMonth);
     }
 
     /**
@@ -115,7 +119,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing one quarter of a year.
      */
     public static TimePeriod oneQuarter() {
-        return new TimePeriod(TimeUnit.QUARTER, 1);
+        return new TimePeriod(ChronoUnit.MONTHS, 3);
     }
 
     /**
@@ -124,7 +128,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing one week.
      */
     public static TimePeriod oneWeek() {
-        return new TimePeriod(TimeUnit.WEEK, 1);
+        return new TimePeriod(ChronoUnit.WEEKS, 1);
     }
 
     /**
@@ -133,7 +137,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing one day.
      */
     public static TimePeriod oneDay() {
-        return new TimePeriod(TimeUnit.DAY, 1);
+        return new TimePeriod(ChronoUnit.DAYS, 1);
     }
 
     /**
@@ -142,7 +146,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing one half of a year.
      */
     public static TimePeriod halfYear() {
-        return new TimePeriod(TimeUnit.MONTH, 6);
+        return new TimePeriod(ChronoUnit.MONTHS, 6);
     }
 
     /**
@@ -151,7 +155,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing exactly one decade.
      */
     public static TimePeriod oneDecade() {
-        return new TimePeriod(TimeUnit.DECADE, 1);
+        return new TimePeriod(ChronoUnit.DECADES, 1);
     }
 
     /**
@@ -160,7 +164,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing one half of a century.
      */
     public static TimePeriod halfCentury() {
-        return new TimePeriod(TimeUnit.DECADE, 5);
+        return new TimePeriod(ChronoUnit.DECADES, 5);
     }
 
     /**
@@ -169,7 +173,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing exactly one century.
      */
     public static TimePeriod oneCentury() {
-        return new TimePeriod(TimeUnit.CENTURY, 1);
+        return new TimePeriod(ChronoUnit.CENTURIES, 1);
     }
 
     /**
@@ -178,7 +182,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing one half of an hour.
      */
     public static TimePeriod halfHour() {
-        return new TimePeriod(TimeUnit.MINUTE, 30);
+        return new TimePeriod(ChronoUnit.MINUTES, 30);
     }
 
     /**
@@ -187,7 +191,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing one half of a day.
      */
     public static TimePeriod halfDay() {
-        return new TimePeriod(TimeUnit.HOUR, 12);
+        return new TimePeriod(ChronoUnit.HOURS, 12);
     }
 
     /**
@@ -196,7 +200,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing one third of a year.
      */
     public static TimePeriod triAnnual() {
-        return new TimePeriod(TimeUnit.MONTH, 4);
+        return new TimePeriod(ChronoUnit.MONTHS, 4);
     }
 
     /**
@@ -205,7 +209,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing one second.
      */
     public static TimePeriod oneSecond() {
-        return new TimePeriod(TimeUnit.SECOND, 1);
+        return new TimePeriod(ChronoUnit.SECONDS, 1);
     }
 
     /**
@@ -214,7 +218,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing one half of a second.
      */
     public static TimePeriod halfSecond() {
-        return new TimePeriod(TimeUnit.MILLISECOND, 500);
+        return new TimePeriod(ChronoUnit.MILLIS, 500);
     }
 
     /**
@@ -223,7 +227,7 @@ public final class TimePeriod {
      * @return a new TimePeriod representing one tenth of a second.
      */
     public static TimePeriod oneTenthSecond() {
-        return new TimePeriod(TimeUnit.MILLISECOND, 100);
+        return new TimePeriod(ChronoUnit.MILLIS, 100);
     }
 
     /**
@@ -231,8 +235,8 @@ public final class TimePeriod {
      *
      * @return the unit of time underlying this time period.
      */
-    public TimeUnit timeUnit() {
-        return this.timeUnit;
+    public TemporalUnit temporalUnit() {
+        return this.temporalUnit;
     }
 
     /**
@@ -244,13 +248,14 @@ public final class TimePeriod {
         return this.periodLength;
     }
 
+    // TODO: delete this or the periodLength method.
     /**
      * The length of this time period expressed in terms of its underlying time unit.
      *
      * @return the length of this time period expressed in terms of its underlying time unit.
      */
     public long unitLength() {
-        return this.periodLength * this.timeUnit.unitLength();
+        return this.periodLength();
     }
 
     /**
@@ -273,8 +278,13 @@ public final class TimePeriod {
      * @return the total amount of time in this time period measured in seconds.
      */
     public double totalSeconds() {
-        double thisDuration = this.timeUnit.totalDuration();
-        return thisDuration * this.periodLength;
+        final double nanoSecondsPerSecond = 1E9;
+        Duration thisDuration = this.temporalUnit.getDuration();
+        double seconds = thisDuration.getSeconds() * this.periodLength;
+        double nanos = thisDuration.getNano();
+        nanos = (nanos * this.periodLength);
+        nanos = (nanos / nanoSecondsPerSecond);
+        return seconds + nanos;
     }
 
     private void validate(final long periodLength) {
@@ -287,14 +297,14 @@ public final class TimePeriod {
 
     @Override
     public String toString() {
-        return periodLength + " " + timeUnit + ((periodLength > 1) ? "s" : "");
+        return periodLength + " " + temporalUnit + ((periodLength > 1) ? "s" : "");
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((timeUnit == null) ? 0 : timeUnit.hashCode());
+        result = prime * result + ((temporalUnit == null) ? 0 : temporalUnit.hashCode());
         long temp;
         temp = Double.doubleToLongBits(periodLength);
         result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -307,7 +317,7 @@ public final class TimePeriod {
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
         TimePeriod other = (TimePeriod) obj;
-        return timeUnit == other.timeUnit &&
+        return temporalUnit == other.temporalUnit &&
                Double.doubleToLongBits(periodLength) == Double.doubleToLongBits(other.periodLength);
     }
 

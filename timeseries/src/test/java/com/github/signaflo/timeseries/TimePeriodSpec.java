@@ -29,10 +29,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.time.temporal.ChronoUnit;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class TimePeriodSpec {
+    
+    private static final double EPSILON = Math.ulp(1.0);
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -40,55 +44,56 @@ public class TimePeriodSpec {
     @Test
     public void whenZeroPeriodLengthThenIllegalArgument() {
         exception.expect(IllegalArgumentException.class);
-        new TimePeriod(TimeUnit.DAY, 0);
+        new TimePeriod(ChronoUnit.DAYS, 0);
     }
 
     @Test
     public void whenNegativePeriodLengthThenIllegalArgument() {
         exception.expect(IllegalArgumentException.class);
-        new TimePeriod(TimeUnit.DAY, -1);
+        new TimePeriod(ChronoUnit.DAYS, -1);
     }
 
     @Test
     public final void whenDayTotalSecondsComputedThenResultCorrect() {
-        TimePeriod fiveDays = new TimePeriod(TimeUnit.DAY, 5);
-        assertThat(fiveDays.totalSeconds(), is(closeTo(432000, 1E-15)));
+        TimePeriod fiveDays = new TimePeriod(ChronoUnit.DAYS, 5);
+        assertThat(fiveDays.totalSeconds(), is(closeTo(432000, EPSILON)));
     }
 
     @Test
     public final void whenMillisecondsTotalComputedResultCorrect() {
-        TimePeriod millis = new TimePeriod(TimeUnit.MILLISECOND, 480);
+        TimePeriod millis = new TimePeriod(ChronoUnit.MILLIS, 480);
         assertThat(millis.totalSeconds(), is(equalTo(0.48)));
     }
 
     @Test
     public void whenNanosecondsTotalComputedResultCorrect() {
-        TimePeriod nanos = new TimePeriod(TimeUnit.NANOSECOND, 480);
-        assertThat(nanos.totalSeconds(), is(equalTo(480 * 1E-9)));
+        TimePeriod nanos = new TimePeriod(ChronoUnit.NANOS, 480);
+        double expectedNanos = 4.8E-7;
+        assertThat(nanos.totalSeconds(), is(equalTo(expectedNanos)));
     }
 
     @Test
     public void whenFrequencyPerComputedResultCorrect() {
-        TimePeriod nanos = new TimePeriod(TimeUnit.MINUTE, 4);
+        TimePeriod nanos = new TimePeriod(ChronoUnit.MINUTES, 4);
         assertThat(nanos.frequencyPer(TimePeriod.halfHour()), is(equalTo(7.5)));
     }
 
     @Test
     public void whenMilliFrequencyPerComputedResultCorrect() {
-        TimePeriod nanos = new TimePeriod(TimeUnit.MILLISECOND, 480);
+        TimePeriod nanos = new TimePeriod(ChronoUnit.MILLIS, 480);
         assertThat(nanos.frequencyPer(TimePeriod.halfHour()), is(equalTo(3750.0)));
     }
 
     @Test
     public void whenNanoFrequencyPerComputedResultCorrect() {
-        TimePeriod nanos = new TimePeriod(TimeUnit.NANOSECOND, 480);
+        TimePeriod nanos = new TimePeriod(ChronoUnit.NANOS, 480);
         assertThat(nanos.frequencyPer(TimePeriod.halfHour()), is(closeTo(3750.0 * 1E+6, 1E-4)));
     }
 
     @Test
     public void whenFrequencyPerReverseComputedResultCorrect() {
-        TimePeriod minutes = new TimePeriod(TimeUnit.MINUTE, 45);
-        assertThat(minutes.frequencyPer(new TimePeriod(TimeUnit.SECOND, 15)), is(
+        TimePeriod minutes = new TimePeriod(ChronoUnit.MINUTES, 45);
+        assertThat(minutes.frequencyPer(new TimePeriod(ChronoUnit.SECONDS, 15)), is(
                 closeTo(0.00555555556, 1E-4)));
     }
 
@@ -101,7 +106,7 @@ public class TimePeriodSpec {
     @Test
     public void whenOneHourCreatedThenSixtyMinutes() {
         TimePeriod hour = TimePeriod.oneHour();
-        TimePeriod minute = new TimePeriod(TimeUnit.MINUTE, 1);
+        TimePeriod minute = new TimePeriod(ChronoUnit.MINUTES, 1);
         assertThat(minute.frequencyPer(hour), is(60.0));
     }
 
