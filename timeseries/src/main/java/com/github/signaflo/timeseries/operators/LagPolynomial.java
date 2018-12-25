@@ -182,11 +182,11 @@ public class LagPolynomial {
     }
 
     /**
-     * Apply this lag polynomial to a time series at the given date-time.
+     * Apply this lag polynomial to a time series at the given time.
      *
      * @param timeSeries the time series containing the index to apply this lag polynomial to.
      * @param time       the time of the series to apply the lag polynomial at.
-     * @return the result of applying this lag polynomial to the given time series at the given date-time.
+     * @return the result of applying this lag polynomial to the given time series at the given time.
      */
     public final double apply(final TimeSeries timeSeries, final Time time) {
         double value = 0.0;
@@ -215,14 +215,14 @@ public class LagPolynomial {
     }
 
     /**
-     * Apply this lag polynomial to the series at the given date-time, then solve for the expected value
-     * of the series at that date-time.  If this is a moving average polynomial, then the time series
+     * Apply this lag polynomial to the series at the given time, then solve for the expected value
+     * of the series at that time.  If this is a moving average polynomial, then the time series
      * should be a series of residuals.
      *
-     * @param timeSeries the time series containing the date-time to apply the lag polynomial to.
+     * @param timeSeries the time series containing the time to apply the lag polynomial to.
      * @param time       the time of the series to apply the lag polynomial at.
-     * @return the result of applying this lag polynomial to the time series at the given date-time and solving
-     * for the expected value of the series at that date-time.
+     * @return the result of applying this lag polynomial to the time series at the given time and solving
+     * for the expected value of the series at that time.
      */
     public double solve(final TimeSeries timeSeries, Time time) {
         double value = 0.0;
