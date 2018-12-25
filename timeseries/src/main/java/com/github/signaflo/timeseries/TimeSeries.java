@@ -138,7 +138,7 @@ public final class TimeSeries implements DataSet {
     this.mean = this.dataSet.mean();
     this.timePeriod = timePeriod;
     this.observationTimes = Collections.unmodifiableList(observationTimes);
-    
+
     Map<Time, Integer> timeIntegerMap = new HashMap<>(series.length);
     int i = 0;
     for (Time time : observationTimes) {

@@ -21,44 +21,46 @@
  *
  * Jacob Rachiele
  */
+
 package com.github.signaflo.timeseries.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import com.github.signaflo.timeseries.TimeSeries;
 import com.github.signaflo.timeseries.forecast.Forecast;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * A mean model forecast.
  *
  * @author Jacob Rachiele
  */
-@EqualsAndHashCode @ToString
+@EqualsAndHashCode
+@ToString
 final class MeanForecast implements Forecast {
 
-    private final TimeSeries forecast;
-    private final TimeSeries upperValues;
-    private final TimeSeries lowerValues;
+  private final TimeSeries forecast;
+  private final TimeSeries upperValues;
+  private final TimeSeries lowerValues;
 
-    MeanForecast(TimeSeries pointForecast, TimeSeries lowerValues, TimeSeries upperValues) {
-        this.forecast = pointForecast;
-        this.lowerValues = lowerValues;
-        this.upperValues = upperValues;
-    }
+  MeanForecast(TimeSeries pointForecast, TimeSeries lowerValues, TimeSeries upperValues) {
+    this.forecast = pointForecast;
+    this.lowerValues = lowerValues;
+    this.upperValues = upperValues;
+  }
 
-    @Override
-    public TimeSeries pointEstimates() {
-        return this.forecast;
-    }
+  @Override
+  public TimeSeries pointEstimates() {
+    return this.forecast;
+  }
 
-    @Override
-    public TimeSeries upperPredictionInterval() {
-        return this.upperValues;
-    }
+  @Override
+  public TimeSeries upperPredictionInterval() {
+    return this.upperValues;
+  }
 
-    @Override
-    public TimeSeries lowerPredictionInterval() {
-        return this.lowerValues;
-    }
+  @Override
+  public TimeSeries lowerPredictionInterval() {
+    return this.lowerValues;
+  }
 
 }
