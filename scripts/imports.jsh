@@ -10,6 +10,7 @@ import java.util.prefs.*
 import java.util.regex.*
 import java.util.stream.*
 import java.time.*;
+import java.time.temporal.*;
 
 import com.github.signaflo.math.stats.distributions.*;
 import com.github.signaflo.math.linear.doubles.*;
