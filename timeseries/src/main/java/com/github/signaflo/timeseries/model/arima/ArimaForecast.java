@@ -21,71 +21,76 @@
  *
  * Jacob Rachiele
  */
+
 package com.github.signaflo.timeseries.model.arima;
 
 import com.github.signaflo.timeseries.TimeSeries;
 import com.github.signaflo.timeseries.forecast.Forecast;
 
 /**
- * A pointForecast for an ARIMA model. This class is immutable and thread-safe.
+ * A forecast for an ARIMA model. This class is immutable and thread-safe.
  *
  * @author Jacob Rachiele
  */
 final class ArimaForecast implements Forecast {
 
-    private final TimeSeries pointForecast;
-    private final TimeSeries lowerValues;
-    private final TimeSeries upperValues;
-    private final double alpha;
+  private final TimeSeries pointForecast;
+  private final TimeSeries lowerValues;
+  private final TimeSeries upperValues;
+  private final double alpha;
 
-    ArimaForecast(TimeSeries pointForecast, TimeSeries lowerValues, TimeSeries upperValues, double alpha) {
-        this.pointForecast = pointForecast;
-        this.lowerValues = lowerValues;
-        this.upperValues = upperValues;
-        this.alpha = alpha;
-    }
+  ArimaForecast(TimeSeries pointForecast, TimeSeries lowerValues, TimeSeries upperValues,
+                double alpha) {
+    this.pointForecast = pointForecast;
+    this.lowerValues = lowerValues;
+    this.upperValues = upperValues;
+    this.alpha = alpha;
+  }
 
-    @Override
-    public TimeSeries pointEstimates() {
-        return this.pointForecast;
-    }
+  @Override
+  public TimeSeries pointEstimates() {
+    return this.pointForecast;
+  }
 
-    @Override
-    public TimeSeries upperPredictionInterval() {
-        return this.upperValues;
-    }
+  @Override
+  public TimeSeries upperPredictionInterval() {
+    return this.upperValues;
+  }
 
-    @Override
-    public TimeSeries lowerPredictionInterval() {
-        return this.lowerValues;
-    }
+  @Override
+  public TimeSeries lowerPredictionInterval() {
+    return this.lowerValues;
+  }
 
-    @Override
-    public String toString() {
-        final String newLine = System.lineSeparator();
-        StringBuilder builder = new StringBuilder(newLine);
-        builder.append(String.format("%-18.18s", "| Date "))
-               .append("  ")
-               .append(String.format("%-13.13s", "| Forecast "))
-               .append("  ")
-               .append(String.format("%-13.13s", "| Lower " + String.format("%.1f", (1 - alpha) * 100) + "%"))
-               .append("  ")
-               .append(String.format("%-13.13s", "| Upper " + String.format("%.1f", (1 - alpha) * 100) + "%"))
-               .append(" |")
-               .append(newLine)
-               .append(String.format("%-70.70s", " -------------------------------------------------------------- "))
-               .append(newLine);
-        for (int i = 0; i < this.pointForecast.size(); i++) {
-            builder.append(String.format("%-18.18s", "| " + pointForecast.observationTimes().get(i)))
-                   .append("  ")
-                   .append(String.format("%-13.13s", "| " +  Double.toString(pointForecast.at(i))))
-                   .append("  ")
-                   .append(String.format("%-13.13s", "| " + Double.toString(this.lowerValues.at(i))))
-                   .append("  ")
-                   .append(String.format("%-13.13s", "| " + Double.toString(this.upperValues.at(i))))
-                   .append(" |")
-                   .append(newLine);
-        }
-        return builder.toString();
+  @Override
+  public String toString() {
+    final String newLine = System.lineSeparator();
+    StringBuilder builder = new StringBuilder(newLine);
+    builder.append(String.format("%-18.18s", "| Date "))
+        .append("  ")
+        .append(String.format("%-13.13s", "| Forecast "))
+        .append("  ")
+        .append(
+            String.format("%-13.13s", "| Lower " + String.format("%.1f", (1 - alpha) * 100) + "%"))
+        .append("  ")
+        .append(
+            String.format("%-13.13s", "| Upper " + String.format("%.1f", (1 - alpha) * 100) + "%"))
+        .append(" |")
+        .append(newLine)
+        .append(String.format("%-70.70s",
+                              " -------------------------------------------------------------- "))
+        .append(newLine);
+    for (int i = 0; i < this.pointForecast.size(); i++) {
+      builder.append(String.format("%-18.18s", "| " + pointForecast.observationTimes().get(i)))
+          .append("  ")
+          .append(String.format("%-13.13s", "| " + pointForecast.at(i)))
+          .append("  ")
+          .append(String.format("%-13.13s", "| " + this.lowerValues.at(i)))
+          .append("  ")
+          .append(String.format("%-13.13s", "| " + this.upperValues.at(i)))
+          .append(" |")
+          .append(newLine);
     }
+    return builder.toString();
+  }
 }

@@ -4,8 +4,8 @@ package com.github.signaflo.timeseries.model;
  * Represents an unknown property of a process or model. A parameter is a coefficient that has yet
  * to be set or fully estimated. The core difference between a parameter and a coefficient is that a
  * parameter may change as it goes through an estimation process, whereas a coefficient should be
- * fixed and immutable. This implies that a parameter's {@link this#getUncertainty()} score should
- * never be zero.
+ * fixed and immutable. This implies that a parameter's {@link Parameter#getUncertainty} score
+ * should never be zero.
  */
 public interface Parameter extends Coefficient {
 

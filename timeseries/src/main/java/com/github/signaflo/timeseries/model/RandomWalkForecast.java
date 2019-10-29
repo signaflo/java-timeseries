@@ -33,29 +33,29 @@ import com.github.signaflo.timeseries.forecast.Forecast;
  */
 final class RandomWalkForecast implements Forecast {
 
-    private final TimeSeries forecast;
-    private final TimeSeries upperValues;
-    private final TimeSeries lowerValues;
+  private final TimeSeries forecast;
+  private final TimeSeries upperValues;
+  private final TimeSeries lowerValues;
 
-    RandomWalkForecast(TimeSeries forecast, TimeSeries lowerValues, TimeSeries upperValues) {
-        this.forecast = forecast;
-        this.upperValues = upperValues;
-        this.lowerValues = lowerValues;
-    }
+  RandomWalkForecast(TimeSeries forecast, TimeSeries lowerValues, TimeSeries upperValues) {
+    this.forecast = forecast;
+    this.upperValues = upperValues;
+    this.lowerValues = lowerValues;
+  }
 
-    @Override
-    public TimeSeries pointEstimates() {
-        return this.forecast;
-    }
+  @Override
+  public TimeSeries pointEstimates() {
+    return this.forecast;
+  }
 
-    @Override
-    public TimeSeries upperPredictionInterval() {
-        return this.upperValues;
-    }
+  @Override
+  public TimeSeries upperPredictionInterval() {
+    return this.upperValues;
+  }
 
-    @Override
-    public TimeSeries lowerPredictionInterval() {
-        return this.lowerValues;
-    }
+  @Override
+  public TimeSeries lowerPredictionInterval() {
+    return this.lowerValues;
+  }
 
 }

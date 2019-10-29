@@ -138,7 +138,7 @@ public final class TimeSeries implements DataSet {
     this.mean = this.dataSet.mean();
     this.timePeriod = timePeriod;
     this.observationTimes = Collections.unmodifiableList(observationTimes);
-    
+
     Map<Time, Integer> timeIntegerMap = new HashMap<>(series.length);
     int i = 0;
     for (Time time : observationTimes) {
@@ -193,9 +193,9 @@ public final class TimeSeries implements DataSet {
    *
    * @param timePeriod the period of time between observations.
    * @param startTime  the time of the first observation. The characters must represent either a
-   *                   valid {@link OffsetDateTime} or a valid {@link LocalDateTime}.
-   *                   If a LocalDateTime, then the default UTC/Greenwich offset, i.e., an offset
-   *                   of 0, will be used.
+   *                   valid {@link OffsetDateTime} or a valid {@link LocalDateTime}. If a
+   *                   LocalDateTime, then the default UTC/Greenwich offset, i.e., an offset of 0,
+   *                   will be used.
    * @param series     the observation data.
    *
    * @return a new time series from the supplied data.
@@ -730,10 +730,10 @@ public final class TimeSeries implements DataSet {
   /**
    * Return a slice of this time series from start (inclusive) to end (inclusive).
    *
-   * @param start the beginning date and time of the slice. The value at the given time is
-   *              included in the returned time series.
-   * @param end   the ending date and time of the slice. The value at the given time is
-   *              included in the returned time series.
+   * @param start the beginning date and time of the slice. The value at the given time is included
+   *              in the returned time series.
+   * @param end   the ending date and time of the slice. The value at the given time is included in
+   *              the returned time series.
    *
    * @return a slice of this time series from start (inclusive) to end (inclusive).
    */

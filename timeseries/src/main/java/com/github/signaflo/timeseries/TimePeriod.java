@@ -32,7 +32,7 @@ import lombok.NonNull;
 
 /**
  * An amount of time expressed in a particular time unit. This class wraps a {@link TemporalUnit}
- * together with a positive integer period length, allowing one to create a wide range of different
+ * together with a positive integer length, allowing one to create a wide range of different
  * time periods. This class is immutable and thread-safe.
  *
  * @author Jacob Rachiele
@@ -40,24 +40,24 @@ import lombok.NonNull;
 public final class TimePeriod {
 
   private final TemporalUnit timeUnit;
-  private final long periodLength;
+  private final long length;
 
   /**
-   * Create a new time period with the given unit of time and period length.
+   * Create a new time period with the given unit of time and length.
    *
    * @param timeUnit     the unit of time underlying this time period
-   * @param periodLength the length of this time period relative to the given unit of time. Note
-   *                     that the period length must be a long. Most decimal time periods can be
+   * @param length       the length of this time period relative to the given unit of time. Note
+   *                     that the length must be a long. Most decimal time periods can be
    *                     modeled by converting to an appropriate time unit with a smaller order of
    *                     magnitude. For example, the {@link TimePeriod#halfMonth} constructor works
    *                     by converting 15.2184375 days to 1314873 seconds.
    *
-   * @throws IllegalArgumentException if the given period length is less than or equal to 0.
+   * @throws IllegalArgumentException if the given length is less than or equal to 0.
    */
-  public TimePeriod(@NonNull TemporalUnit timeUnit, long periodLength) {
-    validate(periodLength);
+  public TimePeriod(@NonNull TemporalUnit timeUnit, long length) {
+    validate(length);
     this.timeUnit = timeUnit;
-    this.periodLength = periodLength;
+    this.length = length;
   }
 
   /**
@@ -246,8 +246,8 @@ public final class TimePeriod {
    *
    * @return the length of this time period relative to the underlying time unit.
    */
-  public long periodLength() {
-    return this.periodLength;
+  public long length() {
+    return this.length;
   }
 
   /**
@@ -273,9 +273,9 @@ public final class TimePeriod {
   public double totalSeconds() {
     final double nanoSecondsPerSecond = 1E9;
     Duration thisDuration = this.timeUnit.getDuration();
-    double seconds = thisDuration.getSeconds() * this.periodLength;
+    double seconds = thisDuration.getSeconds() * this.length;
     double nanos = thisDuration.getNano();
-    nanos = (nanos * this.periodLength);
+    nanos = (nanos * this.length);
     nanos = (nanos / nanoSecondsPerSecond);
     return seconds + nanos;
   }
@@ -289,7 +289,8 @@ public final class TimePeriod {
 
   @Override
   public String toString() {
-    return periodLength + " " + timeUnit + ((periodLength > 1) ? "s" : "");
+    return length + " " + ((length > 1) ? timeUnit : timeUnit.toString().substring(
+        0, timeUnit.toString().length() - 1));
   }
 
   @Override
@@ -301,11 +302,11 @@ public final class TimePeriod {
       return false;
     }
     TimePeriod that = (TimePeriod) o;
-    return periodLength == that.periodLength && timeUnit.equals(that.timeUnit);
+    return length == that.length && timeUnit.equals(that.timeUnit);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(timeUnit, periodLength);
+    return Objects.hash(timeUnit, length);
   }
 }
