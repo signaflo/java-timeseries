@@ -1,6 +1,15 @@
 plugins {
     id "java-library"
     id "com.github.johnrengelman.shadow" version "2.0.3" apply false
+    id "org.sonarqube" version "3.5.0.2730"
+}
+
+sonarqube {
+  properties {
+    property "sonar.projectKey", "viveknittmca_java-timeseries"
+    property "sonar.organization", "viveknittmca"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
 }
 
 compileJava {
