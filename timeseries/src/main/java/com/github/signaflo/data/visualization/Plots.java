@@ -99,8 +99,9 @@ public class Plots {
             residualSeries.setXYSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
             residualSeries.setMarker(new Circle()).setMarkerColor(Color.RED);
 
-            JPanel panel = new XChartPanel<>(chart);
             JFrame frame = new JFrame(title);
+            JPanel panel = new XChartPanel<>(chart);
+            
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.add(panel);
             frame.pack();
@@ -116,8 +117,9 @@ public class Plots {
      * @param k the maximum lag to include in the acf plot.
      */
     public static void plotAcf(TimeSeries timeSeries, final int k) {
-        final double[] acf = timeSeries.autoCorrelationUpToLag(k);
         final double[] lags = new double[k + 1];
+        final double[] acf = timeSeries.autoCorrelationUpToLag(k);
+        
         for (int i = 1; i < lags.length; i++) {
             lags[i] = i;
         }
